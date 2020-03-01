@@ -37,6 +37,10 @@
     <link rel="search" title="Search" href="../../../search.html" />
    
   
+  <link rel="alternate" type="application/atom+xml"  href="../../../blog/atom.xml" title="Jörg Faschingbauer">
+  
+  
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
   
   <style type="text/css">
     ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
@@ -85,12 +89,14 @@
 
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
+    
             
             
               
             
             
-              <ul>
+              <p class="caption"><span class="caption-text">Content</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../courses/index.html">Schulungen</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../courses/linux/010-linux-basics.html">Linux Basics: Eine Einführung Anhand von Beispielen</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../courses/linux/020-sysprog-basics.html">Systemprogrammierung: Einführung</a></li>
@@ -109,6 +115,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../courses/programming-misc/010-bash.html">Shell Scripting mit der Bourne Again Shell (Bash)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../courses/programming-misc/020-make.html">GNU-Make: Eine Einführung</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../courses/programming-misc/030-svn.html">Subversion: Eine Einführung</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../courses/records/index.html">Bisher Gehaltene</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../courses/records/2020-01-10/index.html">10.1.2020 Graz: IPC in Linux</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../courses/records/2020-01-10/Proposal.html">Proposal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../courses/records/2020-01-10/Screenplay.html">Screenplay</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../about/index.html">Über mich</a><ul>
@@ -117,12 +131,28 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../about/projects-de.html">Eine Liste meiner bisherigen Projekte</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../index.html">Blog Posts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../TODO.html">To Do</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Blog Posts</a></li>
 </ul>
 
             
           
+
+<!--
+    <p class="caption">
+      <span class="caption-text">Blog</span>
+    </p>
+    <ul>
+      <li class="toctree-l1">
+	<a class="reference internal" href="../../index.html">blah</a>
+      </li>
+    </ul>
+-->
+
+
         </div>
       </div>
     </nav>
@@ -170,7 +200,7 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../../_sources/blog/2010/07/beagleboard-how-to-repair-nand-also known as 40w.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../../_sources/blog/2010/07/beagleboard-how-to-repair-nand-also-known-as-40w.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -185,6 +215,16 @@
             
   <div class="section" id="beagleboard-how-to-repair-nand-also-known-as-40w">
 <h1>Beagleboard: How to Repair NAND (also known as 40W)<a class="headerlink" href="#beagleboard-how-to-repair-nand-also-known-as-40w" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#basics" id="id1">Basics</a></p></li>
+<li><p><a class="reference internal" href="#getting-x-loader-and-u-boot" id="id2">Getting X-Loader and U-Boot</a></p></li>
+<li><p><a class="reference internal" href="#creating-a-bootable-mmc-sd-card" id="id3">Creating a Bootable MMC/SD card</a></p></li>
+<li><p><a class="reference internal" href="#repairing-the-nand" id="id4">Repairing the NAND</a></p></li>
+<li><p><a class="reference internal" href="#writing-x-loader-to-nand" id="id5">Writing X-Loader to NAND</a></p></li>
+<li><p><a class="reference internal" href="#writing-u-boot-to-nand" id="id6">Writing U-Boot to NAND</a></p></li>
+</ul>
+</div>
 <p>It happened again. Friends of mine have an alias,</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">alias</span> <span class="nv">faschingbauer</span><span class="o">=</span><span class="s2">&quot;rm -rf ~&quot;</span>
 </pre></div>
@@ -215,7 +255,7 @@ much. This is not what I like, so I researched a bit and write the
 annotated collected instructions down right here. You might find it
 useful - I surely will once I’ll brick my beagle again.</p>
 <div class="section" id="basics">
-<h2>Basics<a class="headerlink" href="#basics" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id1">Basics</a><a class="headerlink" href="#basics" title="Permalink to this headline">¶</a></h2>
 <p>The OMAP has a small boot ROM inside. This is the first of the chain
 of boot loaders, and it’s where the CPU core jumps to when it’s done
 with whatever CPU cores do when they are powered on). The boot ROM is
@@ -230,7 +270,7 @@ will prepare one such card, put the boot files on it, and write these
 to NAND.</p>
 </div>
 <div class="section" id="getting-x-loader-and-u-boot">
-<h2>Getting X-Loader and U-Boot<a class="headerlink" href="#getting-x-loader-and-u-boot" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id2">Getting X-Loader and U-Boot</a><a class="headerlink" href="#getting-x-loader-and-u-boot" title="Permalink to this headline">¶</a></h2>
 <p>The beagleboard guys wrote up a page with <a class="reference external" href="http://code.google.com/p/beagleboard/wiki/BeagleboardRevC3Validation">board validation
 instructions</a>. This
 is where I have most of the information from. There they give links to
@@ -249,7 +289,7 @@ something that sounds like <code class="docutils literal notranslate"><span clas
 refer to later on.</p>
 </div>
 <div class="section" id="creating-a-bootable-mmc-sd-card">
-<h2>Creating a Bootable MMC/SD card<a class="headerlink" href="#creating-a-bootable-mmc-sd-card" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id3">Creating a Bootable MMC/SD card</a><a class="headerlink" href="#creating-a-bootable-mmc-sd-card" title="Permalink to this headline">¶</a></h2>
 <p>For basic card configuration I refer you to <a class="reference external" href="http://processors.wiki.ti.com/index.php/MMC_Boot_Format">a TI maintained page</a> which is
 very concise and to the point, and where there is nothing much left to
 say. I followed the instruction using fdisk, and obvoiusly the card
@@ -275,7 +315,7 @@ meaningful in it, be sure to hold down the user button to force the
 boot ROM to boot from the card.</p>
 </div>
 <div class="section" id="repairing-the-nand">
-<h2>Repairing the NAND<a class="headerlink" href="#repairing-the-nand" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id4">Repairing the NAND</a><a class="headerlink" href="#repairing-the-nand" title="Permalink to this headline">¶</a></h2>
 <p>The following is taken from the <a class="reference external" href="http://beagleboard.googlecode.com/files/reset_revc_v3.scr">reset.scr</a> U-Boot
 script referred to by the <a class="reference external" href="http://code.google.com/p/beagleboard/wiki/BeagleboardRevC3Validation">beagleboard validation instructions</a>. I
 took care to annotate as much as possible in order to understand the
@@ -292,7 +332,7 @@ in the remainder explanations. Near the top of the file you’ll notice
 the partition table; you’ll find it insightful.</p>
 </div>
 <div class="section" id="writing-x-loader-to-nand">
-<h2>Writing X-Loader to NAND<a class="headerlink" href="#writing-x-loader-to-nand" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">Writing X-Loader to NAND</a><a class="headerlink" href="#writing-x-loader-to-nand" title="Permalink to this headline">¶</a></h2>
 <p>First, erase the X-Loader partition. According to the partition table,
 it starts at offset 0 (where the OMAP’s boot ROM expects it) and is
 4*128K=0x80000 bytes long.</p>
@@ -340,7 +380,7 @@ NAND write: device <span class="m">0</span> offset 0x60000, size 0x20000
 </div>
 </div>
 <div class="section" id="writing-u-boot-to-nand">
-<h2>Writing U-Boot to NAND<a class="headerlink" href="#writing-u-boot-to-nand" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">Writing U-Boot to NAND</a><a class="headerlink" href="#writing-u-boot-to-nand" title="Permalink to this headline">¶</a></h2>
 <p>Can’t find which ECC incarnation the X-Loader uses, software seems to
 be the choice (sounds like the do-nothing-and-cross-fingers approach).</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>OMAP3 beagleboard.org <span class="c1"># nandecc sw</span>
@@ -391,10 +431,10 @@ correct <code class="docutils literal notranslate"><span class="pre">nand</span>
   <span>&nbsp;</span>
   <span style="float: right;">
   
-  Next: 
+  
   <a href="../../2011/01/porting-to-linux-there-s-always-a-better-way.html">
     Porting to Linux (There’s Always A Better Way)
-    
+    <i class="fa fa-arrow-circle-right"></i>
   </a>
   
   </span>

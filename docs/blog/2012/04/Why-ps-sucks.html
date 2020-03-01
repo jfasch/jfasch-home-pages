@@ -37,6 +37,10 @@
     <link rel="search" title="Search" href="../../../search.html" />
    
   
+  <link rel="alternate" type="application/atom+xml"  href="../../../blog/atom.xml" title="Jörg Faschingbauer">
+  
+  
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
   
   <style type="text/css">
     ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
@@ -85,12 +89,14 @@
 
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
+    
             
             
               
             
             
-              <ul>
+              <p class="caption"><span class="caption-text">Content</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../courses/index.html">Schulungen</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../courses/linux/010-linux-basics.html">Linux Basics: Eine Einführung Anhand von Beispielen</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../courses/linux/020-sysprog-basics.html">Systemprogrammierung: Einführung</a></li>
@@ -109,6 +115,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../courses/programming-misc/010-bash.html">Shell Scripting mit der Bourne Again Shell (Bash)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../courses/programming-misc/020-make.html">GNU-Make: Eine Einführung</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../courses/programming-misc/030-svn.html">Subversion: Eine Einführung</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../courses/records/index.html">Bisher Gehaltene</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../courses/records/2020-01-10/index.html">10.1.2020 Graz: IPC in Linux</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../courses/records/2020-01-10/Proposal.html">Proposal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../courses/records/2020-01-10/Screenplay.html">Screenplay</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../about/index.html">Über mich</a><ul>
@@ -117,12 +131,28 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../about/projects-de.html">Eine Liste meiner bisherigen Projekte</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../index.html">Blog Posts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../TODO.html">To Do</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Blog Posts</a></li>
 </ul>
 
             
           
+
+<!--
+    <p class="caption">
+      <span class="caption-text">Blog</span>
+    </p>
+    <ul>
+      <li class="toctree-l1">
+	<a class="reference internal" href="../../index.html">blah</a>
+      </li>
+    </ul>
+-->
+
+
         </div>
       </div>
     </nav>
@@ -184,32 +214,27 @@
            <div itemprop="articleBody">
             
   <div class="section" id="why-ps-sucks-or-counting-memory-consumption">
-<h1><a class="toc-backref" href="#id2">“Why <code class="docutils literal notranslate"><span class="pre">ps</span></code> Sucks” or “Counting Memory Consumption”</a><a class="headerlink" href="#why-ps-sucks-or-counting-memory-consumption" title="Permalink to this headline">¶</a></h1>
-<div class="contents topic" id="contents">
-<p class="topic-title first">Contents</p>
+<h1>“Why <code class="docutils literal notranslate"><span class="pre">ps</span></code> Sucks” or “Counting Memory Consumption”<a class="headerlink" href="#why-ps-sucks-or-counting-memory-consumption" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#why-ps-sucks-or-counting-memory-consumption" id="id2">“Why <code class="docutils literal notranslate"><span class="pre">ps</span></code> Sucks” or “Counting Memory Consumption”</a></p>
+<li><p><a class="reference internal" href="#process-stack-management" id="id2">Process Stack Management</a></p>
 <ul>
-<li><p><a class="reference internal" href="#process-stack-management" id="id3">Process Stack Management</a></p>
-<ul>
-<li><p><a class="reference internal" href="#conclusion" id="id4">Conclusion</a></p></li>
+<li><p><a class="reference internal" href="#conclusion" id="id3">Conclusion</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#thread-pthread-stack-management" id="id5">Thread (<code class="docutils literal notranslate"><span class="pre">pthread</span></code>) Stack Management</a></p>
+<li><p><a class="reference internal" href="#thread-pthread-stack-management" id="id4">Thread (<code class="docutils literal notranslate"><span class="pre">pthread</span></code>) Stack Management</a></p>
 <ul>
-<li><p><a class="reference internal" href="#experiment-1-100-default-threads-eating-no-stack" id="id6">Experiment #1: 100 default threads, eating no stack</a></p></li>
-<li><p><a class="reference internal" href="#experiment-2-100-default-threads-eating-up-stack" id="id7">Experiment #2: 100 default threads, eating up stack</a></p></li>
-<li><p><a class="reference internal" href="#experiment-3-100-threads-with-limited-stack" id="id8">Experiment #3: 100 threads with limited stack</a></p></li>
-<li><p><a class="reference internal" href="#experiment-4-more-threads-than-my-system-could-take-eat-no-stack" id="id9">Experiment #4: more threads than my system could take (eat no stack)</a></p></li>
-<li><p><a class="reference internal" href="#experiment-5-more-threads-than-my-system-could-take-eat-stack" id="id10">Experiment #5: more threads than my system could take (eat stack)</a></p></li>
+<li><p><a class="reference internal" href="#experiment-1-100-default-threads-eating-no-stack" id="id5">Experiment #1: 100 default threads, eating no stack</a></p></li>
+<li><p><a class="reference internal" href="#experiment-2-100-default-threads-eating-up-stack" id="id6">Experiment #2: 100 default threads, eating up stack</a></p></li>
+<li><p><a class="reference internal" href="#experiment-3-100-threads-with-limited-stack" id="id7">Experiment #3: 100 threads with limited stack</a></p></li>
+<li><p><a class="reference internal" href="#experiment-4-more-threads-than-my-system-could-take-eat-no-stack" id="id8">Experiment #4: more threads than my system could take (eat no stack)</a></p></li>
+<li><p><a class="reference internal" href="#experiment-5-more-threads-than-my-system-could-take-eat-stack" id="id9">Experiment #5: more threads than my system could take (eat stack)</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#how-does-this-work" id="id11">How does this work?</a></p></li>
-<li><p><a class="reference internal" href="#id1" id="id12">Conclusion</a></p>
+<li><p><a class="reference internal" href="#how-does-this-work" id="id10">How does this work?</a></p></li>
+<li><p><a class="reference internal" href="#id1" id="id11">Conclusion</a></p>
 <ul>
-<li><p><a class="reference internal" href="#realtime-is-different" id="id13">Realtime is different</a></p></li>
-</ul>
-</li>
+<li><p><a class="reference internal" href="#realtime-is-different" id="id12">Realtime is different</a></p></li>
 </ul>
 </li>
 </ul>
@@ -236,7 +261,7 @@ how Linux does memory management. And that screenplay even backs my
 instinctive “Can’t be!” defense. It’s these late night experiments
 that I’m trying to share in this post.</p>
 <div class="section" id="process-stack-management">
-<h2><a class="toc-backref" href="#id3">Process Stack Management</a><a class="headerlink" href="#process-stack-management" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id2">Process Stack Management</a><a class="headerlink" href="#process-stack-management" title="Permalink to this headline">¶</a></h2>
 <p>First off, lets keep out multithreading and examine the stack behavior
 of a plain old process. The following program grows the stack up to a
 user supplied limit. Normally stack growth is done by calling
@@ -364,7 +389,7 @@ PID: <span class="m">25018</span>
 </pre></div>
 </div>
 <div class="section" id="conclusion">
-<h3><a class="toc-backref" href="#id4">Conclusion</a><a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id3">Conclusion</a><a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h3>
 <p>The stack of a process starts small and grows on demand, magically, up
 to a limit. The logic is built in to the OS, which makes sense because
 it does not make sense to have a process without a stack. The
@@ -373,7 +398,7 @@ memory under the hood, and we don’t want to bother.</p>
 </div>
 </div>
 <div class="section" id="thread-pthread-stack-management">
-<h2><a class="toc-backref" href="#id5">Thread (<code class="docutils literal notranslate"><span class="pre">pthread</span></code>) Stack Management</a><a class="headerlink" href="#thread-pthread-stack-management" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id4">Thread (<code class="docutils literal notranslate"><span class="pre">pthread</span></code>) Stack Management</a><a class="headerlink" href="#thread-pthread-stack-management" title="Permalink to this headline">¶</a></h2>
 <p>Now for thread stacks. The story is a bit different here - POSIX
 threads have an attribute “stack size”. It can be explicitly set using
 <code class="docutils literal notranslate"><span class="pre">pthread_attr_setstacksize()</span></code>, or left default which is 2MB or the
@@ -458,7 +483,7 @@ then shut up and sit. It looks as follows.</p>
 </pre></div>
 </div>
 <div class="section" id="experiment-1-100-default-threads-eating-no-stack">
-<h3><a class="toc-backref" href="#id6">Experiment #1: 100 default threads, eating no stack</a><a class="headerlink" href="#experiment-1-100-default-threads-eating-no-stack" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id5">Experiment #1: 100 default threads, eating no stack</a><a class="headerlink" href="#experiment-1-100-default-threads-eating-no-stack" title="Permalink to this headline">¶</a></h3>
 <p>Let’s create a hundred threads with default stack size, each eating
 100 bytes of stack.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ ./thread-stack <span class="m">100</span> <span class="m">0</span> <span class="m">100</span>
@@ -485,7 +510,7 @@ report swapped memory, so we cannot count on it very much.</p>
 carry on with the experiments.</p>
 </div>
 <div class="section" id="experiment-2-100-default-threads-eating-up-stack">
-<h3><a class="toc-backref" href="#id7">Experiment #2: 100 default threads, eating up stack</a><a class="headerlink" href="#experiment-2-100-default-threads-eating-up-stack" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id6">Experiment #2: 100 default threads, eating up stack</a><a class="headerlink" href="#experiment-2-100-default-threads-eating-up-stack" title="Permalink to this headline">¶</a></h3>
 <p>The first experiment created 100 threads with default stack size 8MB,
 and consumed almost nothing of the stacks. Lets eat up the stacks and
 see what <code class="docutils literal notranslate"><span class="pre">ps</span></code> reports this time.</p>
@@ -503,7 +528,7 @@ last time around. Apparently <code class="docutils literal notranslate"><span cl
 system where no swap is configured.</p>
 </div>
 <div class="section" id="experiment-3-100-threads-with-limited-stack">
-<h3><a class="toc-backref" href="#id8">Experiment #3: 100 threads with limited stack</a><a class="headerlink" href="#experiment-3-100-threads-with-limited-stack" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id7">Experiment #3: 100 threads with limited stack</a><a class="headerlink" href="#experiment-3-100-threads-with-limited-stack" title="Permalink to this headline">¶</a></h3>
 <p>See what effect a stack limit has.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ ./thread-stack <span class="m">100</span> <span class="m">4096</span> <span class="m">10</span>
 PID: <span class="m">1026</span>
@@ -530,7 +555,7 @@ we don’t eat up too much memory.</p>
 overflows and hard to find bugs?</p>
 </div>
 <div class="section" id="experiment-4-more-threads-than-my-system-could-take-eat-no-stack">
-<h3><a class="toc-backref" href="#id9">Experiment #4: more threads than my system could take (eat no stack)</a><a class="headerlink" href="#experiment-4-more-threads-than-my-system-could-take-eat-no-stack" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id8">Experiment #4: more threads than my system could take (eat no stack)</a><a class="headerlink" href="#experiment-4-more-threads-than-my-system-could-take-eat-no-stack" title="Permalink to this headline">¶</a></h3>
 <p>Now a definitive take: I have 64 bit address space, 4G of physical
 RAM, and no swap configured. So, I could create no more than 512
 threads with 8MB stack size each - 512*8MB == 4G. Let’s try that out
@@ -552,7 +577,7 @@ to the process. I don’t have that many pages, so it seems like I
 misunderstand. <code class="docutils literal notranslate"><span class="pre">RSS</span></code> seems to be definitive about the size.</p>
 </div>
 <div class="section" id="experiment-5-more-threads-than-my-system-could-take-eat-stack">
-<h3><a class="toc-backref" href="#id10">Experiment #5: more threads than my system could take (eat stack)</a><a class="headerlink" href="#experiment-5-more-threads-than-my-system-could-take-eat-stack" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id9">Experiment #5: more threads than my system could take (eat stack)</a><a class="headerlink" href="#experiment-5-more-threads-than-my-system-could-take-eat-stack" title="Permalink to this headline">¶</a></h3>
 <p>Obviously the system permits its processes to “overcommit”
 memory. Others still get their share. Nobody complained during
 experiment #4, music kept playing without noticeable stutter. Now lets
@@ -600,7 +625,7 @@ leak.</p>
 </div>
 </div>
 <div class="section" id="how-does-this-work">
-<h2><a class="toc-backref" href="#id11">How does this work?</a><a class="headerlink" href="#how-does-this-work" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id10">How does this work?</a><a class="headerlink" href="#how-does-this-work" title="Permalink to this headline">¶</a></h2>
 <p>First, have a look at the way the Pthread library sets up a
 thread. This is best done with <code class="docutils literal notranslate"><span class="pre">strace</span></code>. The system call to watch
 out for is <code class="docutils literal notranslate"><span class="pre">clone()</span></code>. <code class="docutils literal notranslate"><span class="pre">clone()</span></code> is used to create both processes
@@ -714,7 +739,7 @@ this need not be.</p></li>
 </ul>
 </div>
 <div class="section" id="id1">
-<h2><a class="toc-backref" href="#id12">Conclusion</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id11">Conclusion</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>There’s no reason to panic when <code class="docutils literal notranslate"><span class="pre">ps</span></code> reports large numbers. It’s
 just not easy to find out how much memory a process actually
 consumes. By understanding the information the <code class="docutils literal notranslate"><span class="pre">/proc</span></code> filesystem
@@ -734,7 +759,7 @@ out. <code class="docutils literal notranslate"><span class="pre">Documentation/
 source code gives a thorough explanation of the <code class="docutils literal notranslate"><span class="pre">smaps</span></code> entries, and
 much more.</p>
 <div class="section" id="realtime-is-different">
-<h3><a class="toc-backref" href="#id13">Realtime is different</a><a class="headerlink" href="#realtime-is-different" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id12">Realtime is different</a><a class="headerlink" href="#realtime-is-different" title="Permalink to this headline">¶</a></h3>
 <p><em>On demand</em> memory allocation is counter productive in a realtime
 scenario as it can delay execution substantially. To overcome this
 situation, one needs to make sure memory is actually available
@@ -767,9 +792,9 @@ never be 100% sure, and I’d be glad to learn.</p>
 <div class="section">
   <span style="float: left;">
   
-  Previous: 
+  
   <a href="../../2011/01/saving-solid-state-disk-life--gentoo.html">
-    
+    <i class="fa fa-arrow-circle-left"></i>
     Saving Solid State Disk Life (Gentoo)
   </a>
   
@@ -777,10 +802,10 @@ never be 100% sure, and I’d be glad to learn.</p>
   <span>&nbsp;</span>
   <span style="float: right;">
   
-  Next: 
+  
   <a href="../../2020/02/fedora-kernel-build.html">
     Patching and Building the Fedora Kernel
-    
+    <i class="fa fa-arrow-circle-right"></i>
   </a>
   
   </span>

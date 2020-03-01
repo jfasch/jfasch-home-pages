@@ -37,6 +37,10 @@
     <link rel="search" title="Search" href="../../../search.html" />
    
   
+  <link rel="alternate" type="application/atom+xml"  href="../../../blog/atom.xml" title="Jörg Faschingbauer">
+  
+  
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
   
   <style type="text/css">
     ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
@@ -85,12 +89,14 @@
 
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
+    
             
             
               
             
             
-              <ul>
+              <p class="caption"><span class="caption-text">Content</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../courses/index.html">Schulungen</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../courses/linux/010-linux-basics.html">Linux Basics: Eine Einführung Anhand von Beispielen</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../courses/linux/020-sysprog-basics.html">Systemprogrammierung: Einführung</a></li>
@@ -109,6 +115,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../courses/programming-misc/010-bash.html">Shell Scripting mit der Bourne Again Shell (Bash)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../courses/programming-misc/020-make.html">GNU-Make: Eine Einführung</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../courses/programming-misc/030-svn.html">Subversion: Eine Einführung</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../courses/records/index.html">Bisher Gehaltene</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../courses/records/2020-01-10/index.html">10.1.2020 Graz: IPC in Linux</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../courses/records/2020-01-10/Proposal.html">Proposal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../courses/records/2020-01-10/Screenplay.html">Screenplay</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../about/index.html">Über mich</a><ul>
@@ -117,12 +131,28 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../about/projects-de.html">Eine Liste meiner bisherigen Projekte</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../index.html">Blog Posts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../TODO.html">To Do</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Blog Posts</a></li>
 </ul>
 
             
           
+
+<!--
+    <p class="caption">
+      <span class="caption-text">Blog</span>
+    </p>
+    <ul>
+      <li class="toctree-l1">
+	<a class="reference internal" href="../../index.html">blah</a>
+      </li>
+    </ul>
+-->
+
+
         </div>
       </div>
     </nav>
@@ -184,30 +214,25 @@
            <div itemprop="articleBody">
             
   <div class="section" id="patching-and-building-the-fedora-kernel">
-<h1><a class="toc-backref" href="#id3">Patching and Building the Fedora Kernel</a><a class="headerlink" href="#patching-and-building-the-fedora-kernel" title="Permalink to this headline">¶</a></h1>
-<div class="contents topic" id="contents">
-<p class="topic-title first">Contents</p>
+<h1>Patching and Building the Fedora Kernel<a class="headerlink" href="#patching-and-building-the-fedora-kernel" title="Permalink to this headline">¶</a></h1>
+<p>It’s not easy to get up to date information on how to create a custom
+kernel on Fedora. There’s plenty of information out there, but most of
+it is outdated and only halfway true.</p>
+<p>Here’s what I was able to find out by combining non-outdated
+information into a working procedure. It goes as follows.</p>
+<div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#patching-and-building-the-fedora-kernel" id="id3">Patching and Building the Fedora Kernel</a></p>
-<ul>
-<li><p><a class="reference internal" href="#why" id="id4">Why?</a></p></li>
-<li><p><a class="reference internal" href="#building-a-fedora-kernel" id="id5">Building a Fedora Kernel</a></p></li>
-<li><p><a class="reference internal" href="#try-42" id="id6">Try 42</a></p></li>
-<li><p><a class="reference internal" href="#try-43" id="id7">Try 43</a></p>
-<ul>
-<li><p><a class="reference internal" href="#kernel-rpm-spec" id="id8">kernel rpm/spec</a></p></li>
-<li><p><a class="reference internal" href="#make-patch" id="id9">make patch</a></p></li>
-<li><p><a class="reference internal" href="#apply-patch" id="id10">apply patch</a></p></li>
-<li><p><a class="reference internal" href="#build" id="id11">build</a></p></li>
-</ul>
-</li>
-<li><p><a class="reference internal" href="#certificate-things-gosh" id="id12">Certificate Things Gosh</a></p></li>
-</ul>
-</li>
+<li><p><a class="reference internal" href="#why" id="id5">Why?</a></p></li>
+<li><p><a class="reference internal" href="#find-kernel-source-git-fix-it-and-create-patch" id="id6">Find Kernel Source (Git), Fix It, and Create Patch</a></p></li>
+<li><p><a class="reference internal" href="#prepare-the-rpm-build" id="id7">Prepare the RPM Build</a></p></li>
+<li><p><a class="reference internal" href="#download-and-install-source-rpm-for-crashing-kernel" id="id8">Download and Install Source RPM For Crashing Kernel</a></p></li>
+<li><p><a class="reference internal" href="#apply-the-patch" id="id9">Apply the Patch</a></p></li>
+<li><p><a class="reference internal" href="#build-the-kernel-rpms" id="id10">Build the Kernel RPMs</a></p></li>
+<li><p><a class="reference internal" href="#install-kernel" id="id11">Install Kernel</a></p></li>
 </ul>
 </div>
 <div class="section" id="why">
-<h2><a class="toc-backref" href="#id4">Why?</a><a class="headerlink" href="#why" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">Why?</a><a class="headerlink" href="#why" title="Permalink to this headline">¶</a></h2>
 <p>Tracking down a bug on my new USB-C/Thunderbolt-only laptop where an
 external HDMI monitor is plugged via an adapter.</p>
 <ul class="simple">
@@ -216,8 +241,8 @@ external HDMI monitor is plugged via an adapter.</p>
 <li><p>Wait a few seconds</p></li>
 <li><p>Watch kernel go up in flames</p></li>
 </ul>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">The Oops</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">The Oops</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Feb 26 13:58:08 zen kernel: BUG: kernel NULL pointer dereference, address: 0000000000000080
 Feb 26 13:58:08 zen kernel: #PF: supervisor read access in kernel mode
 Feb 26 13:58:08 zen kernel: #PF: error_code(0x0000) - not-present page
@@ -275,9 +300,9 @@ deferenced in <code class="docutils literal notranslate"><span class="pre">ucsi_
 <p>A look at the offending source code shows that the fix must be
 easy. The only pointer that is being accessed is <code class="docutils literal notranslate"><span class="pre">dp</span></code>, and that
 pointer is not checked for NULL-ness.</p>
-<div class="literal-block-wrapper docutils container" id="id2">
+<div class="literal-block-wrapper docutils container" id="id4">
 <div class="code-block-caption"><span class="caption-text">drivers/usb/typec/ucsi/displayport.c (taken from Linus
-<code class="docutils literal notranslate"><span class="pre">master</span></code>)</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<code class="docutils literal notranslate"><span class="pre">master</span></code>)</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
 <div class="highlight-c notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -325,129 +350,178 @@ appear to be multiple issues, not just one.</p>
 <p>I’ll focus on mine: patch, build, report, and help with
 testing. First, see how kernels are built in Fedora.</p>
 </div>
-<div class="section" id="building-a-fedora-kernel">
-<h2><a class="toc-backref" href="#id5">Building a Fedora Kernel</a><a class="headerlink" href="#building-a-fedora-kernel" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="find-kernel-source-git-fix-it-and-create-patch">
+<h2><a class="toc-backref" href="#id6">Find Kernel Source (Git), Fix It, and Create Patch</a><a class="headerlink" href="#find-kernel-source-git-fix-it-and-create-patch" title="Permalink to this headline">¶</a></h2>
+<div class="sidebar">
+<p class="sidebar-title">Link</p>
+<p><a class="reference external" href="https://fedoraproject.org/wiki/Building_a_custom_kernel#Building_a_kernel_from_the_exploded_git_trees">Fedora Wiki: “Exploded Git Trees”</a></p>
+</div>
+<p>Fedora has a Git repository at <code class="docutils literal notranslate"><span class="pre">kernel.org</span></code> where they apply their
+own patches on top of the vanilla kernel. Clone that, and create a
+development branch. (I am on Fedora 31, so I’m basing the branch on
+that.)</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ git clone git://git.kernel.org/pub/scm/linux/kernel/git/jwboyer/fedora.git
+$ git checkout -b jfasch-fix remotes/origin/f31
+</pre></div>
+</div>
+<p>Fix <code class="docutils literal notranslate"><span class="pre">drivers/usb/typec/ucsi/displayport.c</span></code> as sketched above, and
+commit.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ git commit -am <span class="s1">&#39;fix RIP:ucsi_displayport_remove_partner()&#39;</span>
+</pre></div>
+</div>
+<p>The remainder of the procedure will build the kernel RPM. A kernel RPM
+build works by applying a set of patches on top of the base vanilla
+kernel <a class="footnote-reference brackets" href="#exploded-tree" id="id1">1</a>, so we create a patch for later use.</p>
+<p>I made only one commit for which I want to create a patch. Find out
+the revision that this patch is based upon; it is one revision before
+the <code class="docutils literal notranslate"><span class="pre">HEAD</span></code>.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ git show --quiet HEAD~1
+commit 4382f76bc8ef9fce5e7e96d4cdb0c073564ad249 <span class="o">(</span>tag: kernel-5.5.6-201.fc31, origin/f31<span class="o">)</span>
+Author: Josh Boyer &lt;jwboyer@fedoraproject.org&gt;
+Date:   Mon Feb <span class="m">24</span> <span class="m">23</span>:09:20 <span class="m">2020</span> +0000
+
+    kernel-5.5.6-201.fc31 configs
+</pre></div>
+</div>
+<p>Create the patch which we will pick up later,</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ git format-patch -o /tmp 4382f76bc8ef9fce5e7e96d4cdb0c073564ad249
+/tmp/0001-fix-RIP-ucsi_displayport_remove_partner.patch
+</pre></div>
+</div>
+</div>
+<div class="section" id="prepare-the-rpm-build">
+<h2><a class="toc-backref" href="#id7">Prepare the RPM Build</a><a class="headerlink" href="#prepare-the-rpm-build" title="Permalink to this headline">¶</a></h2>
+<div class="sidebar">
+<p class="sidebar-title">Link</p>
+<p><a class="reference external" href="https://fedoraproject.org/wiki/Building_a_custom_kernel/Source_RPM#Prepare_Build_Files">Building a custom kernel/Source RPM</a></p>
+</div>
+<div class="contents local topic" id="id2">
 <ul class="simple">
-<li><p>(<a class="reference external" href="https://fedoraproject.org/wiki/Building_a_custom_kernel">https://fedoraproject.org/wiki/Building_a_custom_kernel</a>)</p></li>
-<li><p>better this one?
-<a class="reference external" href="https://docs.fedoraproject.org/en-US/quick-docs/kernel/build-custom-kernel/">https://docs.fedoraproject.org/en-US/quick-docs/kernel/build-custom-kernel/</a></p></li>
+<li><p><a class="reference internal" href="#install-prerequisites" id="id12">Install Prerequisites</a></p></li>
+<li><p><a class="reference internal" href="#setup-rpmbuild-directory" id="id13">Setup <code class="docutils literal notranslate"><span class="pre">rpmbuild</span></code> Directory</a></p></li>
 </ul>
 </div>
-<div class="section" id="try-42">
-<h2><a class="toc-backref" href="#id6">Try 42</a><a class="headerlink" href="#try-42" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt>or better yet, this one? (Laura Abbott)</dt><dd><p><a class="reference external" href="https://fedoramagazine.org/building-fedora-kernel/">https://fedoramagazine.org/building-fedora-kernel/</a></p>
-</dd>
-</dl>
-<p>$ fedpkg clone -a kernel</p>
-<p>fatal: the remote end hung up unexpectedly27 MiB | 1.09 MiB/s</p>
-<p>retried, worked</p>
-<p>being at 31,</p>
-<p>$ cd kernel/
-$ git checkout origin/f31</p>
-<p>fedpkg local</p>
-<p>coffee</p>
-<p>done -&gt; pollution …</p>
-<p>$ ls -l ./kernel-5.5.fc33/
-total 305616
--rw-r–r–.  1 jfasch jfasch        31 Feb 27 08:00 debugfiles.list
--rw-r–r–.  1 jfasch jfasch    174194 Feb 27 08:00 debugfiles.list.dirs.sed
--rw-r–r–.  1 jfasch jfasch         0 Feb 27 08:00 debuginfodebug.list
--rw-r–r–.  1 jfasch jfasch    449975 Feb 27 08:00 debuginfo.list
--rw-r–r–.  1 jfasch jfasch         0 Feb 27 07:55 debuglinks.list
--rw-r–r–.  1 jfasch jfasch 311626830 Feb 27 07:59 debugsources.list
--rw-r–r–.  1 jfasch jfasch    307123 Feb 27 07:59 elfbins.list
--rw-r–r–.  1 jfasch jfasch         0 Feb 27 08:00 ignored-debuginfo.list
--rw-r–r–.  1 jfasch jfasch    208992 Feb 27 07:55 kernel-core.list
--rw-r–r–.  1 jfasch jfasch        16 Feb 27 07:51 kernel-ldsoconf.list
--rw-r–r–.  1 jfasch jfasch    154089 Feb 27 07:55 kernel-modules.list
-drwxr-xr-x. 26 jfasch jfasch      4096 Feb 27 07:51 linux-5.6.0-0.rc3.git1.1.fc33.x86_64
-drwxr-xr-x. 24 jfasch jfasch      4096 Jan 27 01:23 vanilla-5.5
-drwxr-xr-x. 25 jfasch jfasch      4096 Feb 27 05:58 vanilla-5.6-rc3-git1</p>
-<p>$ ls -l ./kernel-5.5.fc33/linux-5.6.0-0.rc3.git1.1.fc33.x86_64/</p>
-<p>looks even more polluted, guess that is where kernel build took place
-(in-source). copy away, to produce patch/diff.</p>
-<p>cp -r ./kernel-5.5.fc33/linux-5.6.0-0.rc3.git1.1.fc33.x86_64/ /somewhere/else/</p>
-<p>fix as above (jjj local ref):</p>
-<p>emacs /somewhere/else/linux-5.6.0-0.rc3.git1.1.fc33.x86_64/drivers/usb/typec/ucsi/displayport.c</p>
-<p>patch …</p>
-<p><a class="reference external" href="https://fedoraproject.org/wiki/Kernel/Spec#Individual_patches">https://fedoraproject.org/wiki/Kernel/Spec#Individual_patches</a></p>
-<p>jjjj</p>
-<p>diff -ur ./kernel-5.5.fc33/linux-5.6.0-0.rc3.git1.1.fc33.x86_64 /somewhere/else/linux-5.6.0-0.rc3.git1.1.fc33.x86_64/ &gt; ./RIP-ucsi_displayport_remove_partner.patch</p>
-<p>add to patch list in kernel.spec</p>
-<p>rebuild:</p>
-<p>fedpkg local</p>
-<p>-&gt; error failed apply patch</p>
+<div class="section" id="install-prerequisites">
+<h3><a class="toc-backref" href="#id12">Install Prerequisites</a><a class="headerlink" href="#install-prerequisites" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo dnf install rpmdevtools koji
+</pre></div>
 </div>
-<div class="section" id="try-43">
-<h2><a class="toc-backref" href="#id7">Try 43</a><a class="headerlink" href="#try-43" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="https://fedoraproject.org/wiki/Building_a_custom_kernel/Source_RPM">https://fedoraproject.org/wiki/Building_a_custom_kernel/Source_RPM</a></p>
-<p>$ rpmdev-setuptree</p>
-<p>effect: empty structure</p>
-<p>$ tree ~/rpmbuild/
+</div>
+<div class="section" id="setup-rpmbuild-directory">
+<h3><a class="toc-backref" href="#id13">Setup <code class="docutils literal notranslate"><span class="pre">rpmbuild</span></code> Directory</a><a class="headerlink" href="#setup-rpmbuild-directory" title="Permalink to this headline">¶</a></h3>
+<p>Setup an empty RPM tree. This will simply create a directory
+<code class="docutils literal notranslate"><span class="pre">rpmbuild</span></code> skeleton tree in the home directory.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ rpmdev-setuptree
+$ tree ~/rpmbuild/
 /home/jfasch/rpmbuild/
 ├── BUILD
 ├── RPMS
 ├── SOURCES
 ├── SPECS
-└── SRPMS</p>
-<div class="section" id="kernel-rpm-spec">
-<h3><a class="toc-backref" href="#id8">kernel rpm/spec</a><a class="headerlink" href="#kernel-rpm-spec" title="Permalink to this headline">¶</a></h3>
-<p>which? -&gt; ls -l /boot -&gt; vmlinuz-5.4.13-201.fc31.x86_64 -&gt; 5.4.13-201.fc31</p>
-<p>$ koji download-build –arch=src kernel-5.4.13-201.fc31</p>
-<p>-&gt; kernel-5.4.13-201.fc31.src.rpm</p>
-<p>$ rpm -Uvh kernel-5.4.13-201.fc31.src.rpm</p>
-<p>effect: source rpm placed into ~/rpmbuild</p>
-<p>$ tree ~/rpmbuild/
+└── SRPMS
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="download-and-install-source-rpm-for-crashing-kernel">
+<h2><a class="toc-backref" href="#id8">Download and Install Source RPM For Crashing Kernel</a><a class="headerlink" href="#download-and-install-source-rpm-for-crashing-kernel" title="Permalink to this headline">¶</a></h2>
+<p>Find out the version of the crashing kernel (the one that is currently
+running),</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ uname -r
+<span class="m">5</span>.4.13-201.local.fc31.x86_64
+</pre></div>
+</div>
+<p>Download the corresponding source RPM from their build engine,</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ koji download-build --arch<span class="o">=</span>src kernel-5.4.13-201.fc31
+$ ls -l *.rpm
+kernel-5.4.13-201.fc31.src.rpm
+</pre></div>
+</div>
+<p>Install the RPM. This will fill the <code class="docutils literal notranslate"><span class="pre">~/rpmbuild/</span></code> skeleton with the
+kenrel build instructions.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ rpm -ivh kernel-5.4.13-201.fc31.src.rpm
+$ tree ~/rpmbuild/
 /home/jfasch/rpmbuild/
 ├── BUILD
 ├── RPMS
 ├── SOURCES
-│   ├── 0001-crypto-ccp-Release-all-allocated-memory-if-sha-type-.patch
-│   ├── 0001-Drop-that-for-now.patch
-… (blah) …
+│   ├── <span class="m">0001</span>-crypto-ccp-Release-all-allocated-memory-if-sha-type-.patch
+│   ├── <span class="m">0001</span>-Drop-that-for-now.patch
+... <span class="o">(</span>blah<span class="o">)</span> ...
 ├── SPECS
 │   └── kernel.spec
-└── SRPMS</p>
+└── SRPMS
+</pre></div>
 </div>
-<div class="section" id="make-patch">
-<h3><a class="toc-backref" href="#id9">make patch</a><a class="headerlink" href="#make-patch" title="Permalink to this headline">¶</a></h3>
-<p><a class="reference external" href="https://fedoraproject.org/wiki/Building_a_custom_kernel#Building_a_kernel_from_the_exploded_git_trees">https://fedoraproject.org/wiki/Building_a_custom_kernel#Building_a_kernel_from_the_exploded_git_trees</a></p>
-<p>$ git clone git://git.kernel.org/pub/scm/linux/kernel/git/jwboyer/fedora.git
-$ git checkout -b jfasch-fix remotes/origin/f31</p>
-<p>fix drivers/usb/typec/ucsi/displayport.c</p>
-<p>$ git commit -am ‘fix RIP:ucsi_displayport_remove_partner()’</p>
-<p>use git log to find out the previous revision -&gt;
-4382f76bc8ef9fce5e7e96d4cdb0c073564ad249</p>
-<p>$ git format-patch -o /tmp 4382f76bc8ef9fce5e7e96d4cdb0c073564ad249
-/tmp/0001-fix-RIP-ucsi_displayport_remove_partner.patch</p>
 </div>
-<div class="section" id="apply-patch">
-<h3><a class="toc-backref" href="#id10">apply patch</a><a class="headerlink" href="#apply-patch" title="Permalink to this headline">¶</a></h3>
-<p>$ cp /tmp/0001-fix-RIP-ucsi_displayport_remove_partner.patch ~/rpmbuild/SOURCES/RIP-ucsi_displayport_remove_partner.patch</p>
-<p>$ cd ~/rpmbuild/SPECS/</p>
+<div class="section" id="apply-the-patch">
+<h2><a class="toc-backref" href="#id9">Apply the Patch</a><a class="headerlink" href="#apply-the-patch" title="Permalink to this headline">¶</a></h2>
+<p>Copy the patch from above into the build tree, where the other patches
+are,</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ cp /tmp/0001-fix-RIP-ucsi_displayport_remove_partner.patch <span class="se">\</span>
+    ~/rpmbuild/SOURCES/RIP-ucsi_displayport_remove_partner.patch
+</pre></div>
+</div>
+<p>Edit the build specification, <code class="docutils literal notranslate"><span class="pre">~/rpmbuild/SPECS/kernel.spec</span></code>, to</p>
 <ul class="simple">
-<li><p>uncomment buildid</p></li>
-<li><p>add patch</p></li>
+<li><p>contain a descriptive version</p></li>
+<li><p>apply the patch</p></li>
 </ul>
-<p>literalinclude spec diff</p>
+<div class="highlight-udiff notranslate"><div class="highlight"><pre><span></span><span class="gd">--- /home/jfasch/work/homepage/blog/2020/02/kernel.spec.orig</span>
+<span class="gi">+++ /home/jfasch/work/homepage/blog/2020/02/kernel.spec</span>
+<span class="gu">@@ -53,7 +53,7 @@</span>
+ %global zipsed -e &#39;s/\.ko$/\.ko.xz/&#39;
+ %endif
+ 
+<span class="gd">-# define buildid .local</span>
+<span class="gi">+%define buildid .jfasch</span>
+ 
+ %if 0%{?fedora}
+ %define primary_target fedora
+<span class="gu">@@ -825,6 +825,7 @@</span>
+ 
+ # ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
+ Patch601: alsa-5.6.patch
+<span class="gi">+Patch999: RIP-ucsi_displayport_remove_partner.patch</span>
+ 
+ # END OF PATCH DEFINITIONS
+ 
+</pre></div>
 </div>
-<div class="section" id="build">
-<h3><a class="toc-backref" href="#id11">build</a><a class="headerlink" href="#build" title="Permalink to this headline">¶</a></h3>
-<p>$ rpmbuild -bb –target=x86_64 kernel.spec</p>
 </div>
+<div class="section" id="build-the-kernel-rpms">
+<h2><a class="toc-backref" href="#id10">Build the Kernel RPMs</a><a class="headerlink" href="#build-the-kernel-rpms" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> ~/rpmbuild/SPECS/
+$ rpmbuild -bb --target<span class="o">=</span>x86_64 kernel.spec
+... roedel ...
+</pre></div>
 </div>
-<div class="section" id="certificate-things-gosh">
-<h2><a class="toc-backref" href="#id12">Certificate Things Gosh</a><a class="headerlink" href="#certificate-things-gosh" title="Permalink to this headline">¶</a></h2>
-<p># echo jfasch &gt;&gt; /etc/pesign/users
-# /usr/libexec/pesign/pesign-authorize</p>
-<dl class="simple">
-<dt>$ openssl req -new -x509 -newkey rsa:2048 -keyout “key.pem” </dt><dd><p>-outform DER -out jfasch.der -nodes -days 36500 -subj “/CN=jfasch/”</p>
+<p>Before doing this, make sure the following is available:</p>
+<ul class="simple">
+<li><p>Enough RAM</p></li>
+<li><p>Enough disk</p></li>
+<li><p>Patience, coffee, or something else to do</p></li>
+</ul>
+</div>
+<div class="section" id="install-kernel">
+<h2><a class="toc-backref" href="#id11">Install Kernel</a><a class="headerlink" href="#install-kernel" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo rpm -ivh --oldpackage <span class="se">\</span>
+   ~/rpmbuild/RPMS/x86_64/kernel-core-5.4.13-201.jfasch.fc31.x86_64.rpm <span class="se">\</span>
+   ~/rpmbuild/RPMS/x86_64/kernel-modules-5.4.13-201.jfasch.fc31.x86_64.rpm
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The kernel is not signed, obviously, so you might have to disable
+Secure Boot in your UEFI.</p>
+</div>
+<p class="rubric">Footnotes</p>
+<dl class="footnote brackets">
+<dt class="label" id="exploded-tree"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Yes, the patches are created from the Git
+repository we are working with.</p>
 </dd>
 </dl>
-<p># mokutil –import jfasch.der
-(remember password I had to give)</p>
-<p>$ openssl pkcs12 -export -out jfasch.p12 -inkey jfasch.pem -in jfasch.der</p>
 </div>
 </div>
 
@@ -459,9 +533,9 @@ $ git checkout -b jfasch-fix remotes/origin/f31</p>
 <div class="section">
   <span style="float: left;">
   
-  Previous: 
+  
   <a href="../../2012/04/Why-ps-sucks.html">
-    
+    <i class="fa fa-arrow-circle-left"></i>
     “Why ps Sucks” or “Counting Memory Consumption”
   </a>
   
