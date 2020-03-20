@@ -1,0 +1,478 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Porting to Linux (There’s Always A Better Way) &#8212; Jörg Faschingbauer 0.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/jf.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  
+  <link rel="alternate" type="application/atom+xml"  href="../../../blog/atom.xml" title="Jörg Faschingbauer">
+  
+  
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  
+  <style type="text/css">
+    ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
+    ul.ablog-archive li {float: left; margin-right: 5px; font-size: 80%}
+    ul.postlist a {font-style: italic;}
+    ul.postlist-style-disc {list-style-type: disc;}
+    ul.postlist-style-none {list-style-type: none;}
+    ul.postlist-style-circle {list-style-type: circle;}
+  </style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="../../../_static/logo.jpg" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Schulungen</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../trainings/index.html">Kursangebot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../trainings/booking.html">Buchung, Kursablauf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../trainings/material/index.html">Unterlagen &amp; Download</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../trainings/records/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../about/site/index.html">This Site</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="porting-to-linux-there-s-always-a-better-way">
+<h1>Porting to Linux (There’s Always A Better Way)<a class="headerlink" href="#porting-to-linux-there-s-always-a-better-way" title="Permalink to this headline">¶</a></h1>
+<div class="sidebar">
+<p class="sidebar-title">Contents</p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#processes-are-threads" id="id1">Processes are Threads</a></p></li>
+<li><p><a class="reference internal" href="#signals-aren-t-messages" id="id2">Signals Aren’t Messages</a></p></li>
+<li><p><a class="reference internal" href="#message-queues-aren-t-message-queues" id="id3">Message Queues aren’t Message Queues</a></p></li>
+<li><p><a class="reference internal" href="#semaphores-and-mutexes" id="id4">Semaphores and Mutexes</a></p></li>
+<li><p><a class="reference internal" href="#timers" id="id5">Timers</a></p></li>
+<li><p><a class="reference internal" href="#polling" id="id6">Polling</a></p></li>
+<li><p><a class="reference internal" href="#event-dispatching" id="id7">Event Dispatching</a></p></li>
+<li><p><a class="reference internal" href="#interrupts" id="id8">Interrupts</a></p></li>
+<li><p><a class="reference internal" href="#realtime" id="id9">Realtime</a></p></li>
+</ul>
+</div>
+</div>
+<p>Over the past months I met a couple of people who are relatively new
+to Linux. For one, I’ve been to Germany doing courses on Linux -
+naturally the audience in such a course is new to Linux. For another,
+I have one and a half customers here in Austria who are mainly doing
+microcontroller work and who don’t have a clue of Linux.</p>
+<p>Many of these people have code which they have written and maintained
+over a long time, and which has a value. The code runs happily on bare
+metal, or on a minimal OS like Segger embOS, Enea OSE, VxWorks, or
+even Windows CE. No way rewriting it just because of Linux.</p>
+<p>Well, there’s no need to. It’s just not trivial to choose the right
+mechanisms. Linux (and Unix in general) offers so many choices to mess
+things up right from the beginning. And it’s quite likely that things
+are in fact messed up, which is what I learned from the people I met.</p>
+<p>“Good Old Device Firmware” is quite limited in what it can use.</p>
+<ul class="simple">
+<li><p>It is a statically linked blob of executable code.</p></li>
+<li><p>It operates in a single address space (there’s generally no idea
+what an address space is, so there is only one).</p></li>
+<li><p>It has interrupts hammering on it.</p></li>
+<li><p>If there is an OS, then chances are that there are multiple
+processes that are scheduled by the OS. Often processes communicate
+by dumping messages into each other’s message queues.</p></li>
+<li><p>Locking mechanisms. In the presence of interrupts you need to
+disable them if need be. If processes are used, there are generally
+semaphores available in one or more flavors.</p></li>
+<li><p>It’s these simple concepts where the confusion starts. For example,
+in Linux/Unix a process is probably not what you want - you rather
+want a thread instead. When you search for the term “message queue”
+you will find <em>several</em> mechanisms, <em>none of which</em> are what you
+want. You’ll notice sooner or later that you chose the wrong
+concept, but it’s maybe too late to revert - causing your Linux port
+to fail over the years. (In my opinion it’s never too late to
+revert, but that’s a different kind of story.)</p></li>
+</ul>
+<p>In the remainder I’ll try to give a list of recipes for porting to
+Linux. I hope that it will help you speed up the porting project, by
+avoiding severe mistakes right at the beginning. The list cannot be
+complete - it’s just a blog post after all. But I do hope it will give
+you a bigger picture than you already have, and that it provides you
+with the starting points for your own research (which you will have to
+do unless you want to hire me as a consultant :-).</p>
+<div class="section" id="processes-are-threads">
+<h2><a class="toc-backref" href="#id1">Processes are Threads</a><a class="headerlink" href="#processes-are-threads" title="Permalink to this headline">¶</a></h2>
+<p>In the embedded OS world, you use the word “process” to refer to an
+entity that is scheduled by the OS. There is no such thing as separate
+address spaces and memory protection in such systems (these OS’s are
+initially designed for cheap MMU-less processors).</p>
+<p>So, what people generally want is <em>threads</em>. <em>Processes</em> in Unix refer
+to address space separation and memory protection, so don’t get misled
+only by the term. The Unix way of multithreading is POSIX threads
+(pthreads for short). On Linux, <code class="docutils literal notranslate"><span class="pre">man</span> <span class="pre">pthreads</span></code> will tell you
+more. Better yet, buy yourself a copy of a <a class="reference external" href="http://oreilly.com/catalog/9781565921153">PThreads Programming</a> book. Read that book
+twice. Threading has lots of pitfalls, and it is crucial to understand
+these. (I have seen people create five threads to solve a simple
+data-acquisition-and-network-communication problem where they didn’t
+know what a mutex was.)</p>
+</div>
+<div class="section" id="signals-aren-t-messages">
+<h2><a class="toc-backref" href="#id2">Signals Aren’t Messages</a><a class="headerlink" href="#signals-aren-t-messages" title="Permalink to this headline">¶</a></h2>
+<p>Don’t use Unix signals for communication. They have very few in common
+with what’s called a <em>signal</em> in RTOSs. (In the RTOS world, <em>signals</em>
+are often called <em>messages</em>.)</p>
+<div class="sidebar">
+<p class="sidebar-title">References</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../trainings/material/sysprog/signals-slides.html"><span class="doc">Slide material: UNIX signals</span></a></p></li>
+<li><p><a class="reference internal" href="../../../trainings/material/sysprog/signals-screenplay.html"><span class="doc">Demo code: UNIX signals</span></a></p></li>
+</ul>
+</div>
+<p>In Unix, signals are commonly used to tear down a process (<em>not</em> a
+thread), giving it a chance to perform proper cleanup before
+exit. There are other uses of signals as well, such as notification of
+memory protection violation (the dreaded “segmentation fault”) and
+other programming errors.</p>
+<p>The problem with signal handling is that signals arrive in a special
+context which you probably know as “interrupt context” in your
+OS. Consequently, your options are very limited in a signal
+handler. You cannot use most of the functions that are available from
+the C runtime library!</p>
+<p>If you still feel that you need to use signals, then perform the
+following steps.</p>
+<ul class="simple">
+<li><p>Think twice. Why do you need signals? There’s probably a better way.</p></li>
+<li><p>Read <code class="docutils literal notranslate"><span class="pre">man</span> <span class="pre">-s</span> <span class="pre">7</span> <span class="pre">signal</span></code> for more. <strong>Pay special attention to the
+section about async-signal-safe functions</strong> (note that none of the
+<code class="docutils literal notranslate"><span class="pre">pthread_</span></code> functions appears in the list).</p></li>
+<li><p>Try to defer processing from the signal handler into the regular
+course of your application. For example, you can use the “self pipe”
+trick (Google sure knows about it.)</p></li>
+<li><p>Forget about asynchronous signal delivery and use one of the``
+sigwait``, <code class="docutils literal notranslate"><span class="pre">sigwaitinfo</span></code>, and <code class="docutils literal notranslate"><span class="pre">sigtimedwait</span></code> system calls. This
+way you suspend the execution of one thread until a signal is
+caught, thus turning signal handling into a <em>synchronous</em>
+approach. You’d have to dedicate an entire thread to signal handling
+though.</p></li>
+<li><p>An alternative way of synchronous signal handling is to use the new
+<code class="docutils literal notranslate"><span class="pre">signalfd</span></code> system call. Its semantics are the same as
+<code class="docutils literal notranslate"><span class="pre">sigwaitinfo</span></code>, only you use a file descriptor as an “event
+source”. You can embed this file descriptor among other event
+sources in an event driven application, using <code class="docutils literal notranslate"><span class="pre">select</span></code>, <code class="docutils literal notranslate"><span class="pre">poll</span></code>,
+or <code class="docutils literal notranslate"><span class="pre">epoll</span></code>. See below for more.</p></li>
+</ul>
+</div>
+<div class="section" id="message-queues-aren-t-message-queues">
+<h2><a class="toc-backref" href="#id3">Message Queues aren’t Message Queues</a><a class="headerlink" href="#message-queues-aren-t-message-queues" title="Permalink to this headline">¶</a></h2>
+<div class="sidebar">
+<p class="sidebar-title">References</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../trainings/material/sysprog/ipc-slides.html"><span class="doc">Slide material: POSIX message queues</span></a></p></li>
+<li><p><a class="reference internal" href="../../../trainings/material/sysprog/ipc-screenplay.html"><span class="doc">Demo code: POSIX message queues</span></a></p></li>
+</ul>
+</div>
+<p>Chances are that the threads (err, processes) of your OS communicate
+via messages queues over which messages (err, signals) are sent. A
+naive Google search (“Linux message queues”) will lead you to POSIX
+and System V message queues, both of which are inter process
+communication (IPC) mechanisms. This is probably not what you want, as
+your messages need not be transferred across different address
+spaces. Intra process message queues are normally built on top of
+pthread primitives. You can find a sample such implementation <a class="reference external" href="http://jf-linuxtools.git.sourceforge.net/git/gitweb.cgi?p=jf-linuxtools/jf-linuxtools;a=blob;f=pthread/base/message-queue.h">here</a>.</p>
+</div>
+<div class="section" id="semaphores-and-mutexes">
+<h2><a class="toc-backref" href="#id4">Semaphores and Mutexes</a><a class="headerlink" href="#semaphores-and-mutexes" title="Permalink to this headline">¶</a></h2>
+<div class="sidebar">
+<p class="sidebar-title">References</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../trainings/material/sysprog/ipc-slides.html"><span class="doc">Slide material: POSIX semaphores</span></a></p></li>
+<li><p><a class="reference internal" href="../../../trainings/material/sysprog/ipc-screenplay.html"><span class="doc">Demo code: POSIX semaphores</span></a></p></li>
+</ul>
+</div>
+<p>Many of those OSs out there have semaphores as the one and only
+synchronisation mechanism. Linux has semaphores - System V and POSIX
+style. Again these are probably not what you want. You are likely to
+initialize your semaphores with a count of one and use it as a <em>binary
+semaphore</em>. This is what a pthread mutex is for instead.</p>
+<p>See <code class="docutils literal notranslate"><span class="pre">man</span> <span class="pre">pthread_mutex_init</span></code> for more.</p>
+<p>Confusing note for those porting from Windows: A <em>critical section</em> is
+the region that is protected by a mutex, although a
+<code class="docutils literal notranslate"><span class="pre">CRITICAL_SECTION</span></code> is the closest Windows pendant to a mutex.</p>
+</div>
+<div class="section" id="timers">
+<h2><a class="toc-backref" href="#id5">Timers</a><a class="headerlink" href="#timers" title="Permalink to this headline">¶</a></h2>
+<p>Timers are hard, not only on Linux.</p>
+<p>In most embedded OSs, timers expire as interrupts which are then
+handled by the application. Sometimes there is the possibility to let
+the OS send you a message (err, signal) on timer expiration.</p>
+<p>There are multiple APIs for timers, most of which (<code class="docutils literal notranslate"><span class="pre">setitimer</span></code>,
+<code class="docutils literal notranslate"><span class="pre">timer_create</span></code>) require you to use signals (Unix signals this
+time) - see above for the drawbacks to this approach. Unfortunately a
+straightforward Google search will lead you to these APIs.</p>
+<p>An alternative is to simply defer the execution of a thread for a
+specified amount of time, using <code class="docutils literal notranslate"><span class="pre">nanosleep</span></code>. Another alternative is
+to use <code class="docutils literal notranslate"><span class="pre">timerfd_create</span></code> and friends in conjunction with <code class="docutils literal notranslate"><span class="pre">select</span></code>
+or <code class="docutils literal notranslate"><span class="pre">poll</span></code>, and embed timers into an event driven application. (See
+below for event loops based on file descriptors. See <a class="reference external" href="http://jf-linuxtools.git.sourceforge.net/git/gitweb.cgi?p=jf-linuxtools/jf-linuxtools;a=blob;f=linux-events/events/timer.h">here</a>
+for a sample implementation of such a thing.)</p>
+<p>You can always build your own structures around whatever timer
+mechanism and emulate the behavior of your OS on Linux. This might
+require quite a bit of understanding of Linux programming, though.</p>
+</div>
+<div class="section" id="polling">
+<h2><a class="toc-backref" href="#id6">Polling</a><a class="headerlink" href="#polling" title="Permalink to this headline">¶</a></h2>
+<p>Polling for something to happen is generally the most stupid thing to
+do, not only on Linux. The are cases (screwed hardware for example)
+where there is no other way, but otherwise there’s always a better
+way.</p>
+<p>I have seen people set a flag in one process (err, thread), and poll
+for it every millisecond from another thread. I know, a millisecond is
+an eternity in nowadays’ processors - but I can imagine that there are
+more flags of that sort being polled for, in a moderately complex
+program. After all, it’s <em>events</em> that these flags communicate. Some
+OSs have an “event flag” mechanism which tries to achieve exactly
+that, albeit a bit more intelligently - for example without the need
+for polling, and without losing events through race conditions.</p>
+<p>There’s a big wealth of mechanisms in Linux to communicate events. Use
+message queues (see above), for example. Build your own “event flag”
+mechanism by using PThreads primitives (but not before you have read
+the book).</p>
+</div>
+<div class="section" id="event-dispatching">
+<h2><a class="toc-backref" href="#id7">Event Dispatching</a><a class="headerlink" href="#event-dispatching" title="Permalink to this headline">¶</a></h2>
+<p>On Unix, <em>everything is a file</em>. Entire disks are represented as
+files, partitions are, network sockets are, arbitrary devices are (for
+example, serial/RS232 lines). Regular files are, naturally. On Linux,
+even timers and Unix signals can be represented as files, as I
+mentioned previously. Every open file is represented as a &lt;i&gt;file
+descriptor&lt;/i&gt;. File descriptors can be read from and written to,
+using the <code class="docutils literal notranslate"><span class="pre">read</span></code> and <code class="docutils literal notranslate"><span class="pre">write</span></code> system calls, regardless of their
+type.</p>
+<p>For people who are new to Unix, this may come as a surprise: you can
+read from a serial line as if it were a network connection, and you
+can read from a network connection as if it were a regular
+file. (Anyone tried that on Windows?)</p>
+<p>This fact alone is something you can take advantage of in your porting
+project.</p>
+<p>Now what has this got to do with <em>event dispatching</em>? Consider the
+following types of <em>events</em> that regularly happen on an OS:</p>
+<ul class="simple">
+<li><p>Network connection has data to be read.</p></li>
+<li><p>Network connection can be written to without blocking (or, “local
+TCP buffer just got emptied” or so).</p></li>
+<li><p>Same with serial IO (open <code class="docutils literal notranslate"><span class="pre">/dev/ttyS0</span></code> or so just like a regular
+file), as with any kind of stream connection.</p></li>
+<li><p>A timer has expired.</p></li>
+<li><p>A signal has arrived.</p></li>
+<li><p>An arbitrary event happened (check out the <code class="docutils literal notranslate"><span class="pre">eventfd</span></code> system call;
+I didn’t mention it).</p></li>
+<li><p>Even USB events are delivered via files. (It’s just a bit more
+complicated because USB is a bit more complicated; there’s <a class="reference external" href="http://www.libusb.org/">libusb</a> there to handle this.).</p></li>
+<li><p>Most drivers for hardware devices deliver the device interrupts as
+events through file descriptors (you open <code class="docutils literal notranslate"><span class="pre">/dev/blah</span></code> just like a
+regular file), nicely telling you “Hey, I’ve got to tell you
+something!”.</p></li>
+</ul>
+<p>There is a set of system calls that are used to wait for events on
+<em>multiple</em> file descriptor, namely <code class="docutils literal notranslate"><span class="pre">select</span></code>,`` poll``, and
+<code class="docutils literal notranslate"><span class="pre">epoll</span></code>. Note that these system call put the calling process (err,
+thread) to sleep until something happens - the name <code class="docutils literal notranslate"><span class="pre">poll</span></code> has
+nothing to do with polling as we know it.</p>
+<p>So, depending on your application, you might find it relatively easy
+to use either of these system calls. Build a bit of an infrastructure
+around it, like registering and unregistering callbacks, and you will
+be able to comfortably use these extremely exciting mechanisms. (Or
+take <a class="reference external" href="http://jf-linuxtools.git.sourceforge.net/git/gitweb.cgi?p=jf-linuxtools/jf-linuxtools;a=blob;f=events/dispatcher.h">my own infrastructure</a>. Or
+take anybody else’s, mine’s not the only - it’s just the best.)</p>
+<p>One last note: look at the desktop environment of your choice. It’s
+made up of a hundred or so processes (no, not threads). Under Gnome,
+which is what I use, there’s a process called`` gnome-panel``, for
+example. Try out <code class="docutils literal notranslate"><span class="pre">strace</span> <span class="pre">-p</span> <span class="pre">&amp;lt;pid</span> <span class="pre">of</span> <span class="pre">gnome-panel&amp;gt;</span></code>, direct the
+mouse over the panel, and see what happens: <code class="docutils literal notranslate"><span class="pre">poll</span></code> all over.</p>
+</div>
+<div class="section" id="interrupts">
+<h2><a class="toc-backref" href="#id8">Interrupts</a><a class="headerlink" href="#interrupts" title="Permalink to this headline">¶</a></h2>
+<p>One of the primary goals of an OS is to shield you from
+hardware. There a clear separation between <em>user space</em> and <em>kernel
+space</em>. User space uses system calls to talk to the kernel. No
+interrupts in user space. Basta. (Don’t even think about using
+signals!)</p>
+<p>If you have hardware that nobody else has, then chances are you will
+have to deal with it yourself and write a driver for it. That’s about
+the only case where you’ll get in touch with interrupts and have to
+learn kernel programming. But this is a completely different story,
+and a different world. Definitely fun.</p>
+<p>Nevertheless, I suggest you stay away from kernel programming just
+because it is fun. Debugging is much harder there. A buggy user space
+program crashes, possibly leaving you with a core dump that you can
+examine with a debugger (well, GDB). Everything else will remain
+running. A buggy kernel crashes, leaving nothing running. This is what
+<em>I</em> call hard.</p>
+<p>On Linux, there are a couple of hardware interfaces exported to
+userspace. I already mentioned <a class="reference external" href="http://www.libusb.org/">userspace USB</a>. There is a similar thing to implement USB
+<em>devices</em> in user space, called <a class="reference external" href="http://www.linux-usb.org/gadget">GadgetFS</a>.</p>
+<p>For others, look inside the kernel documentation, part of the kernel
+source, in the <code class="docutils literal notranslate"><span class="pre">Documentation/</span></code> directory. (Usually, the kernel
+source is installed in <code class="docutils literal notranslate"><span class="pre">/usr/src/linux/</span></code>.) Or simply ask Google.</p>
+<p>For example, check out the userspace I2C and SPI interfaces described
+in <code class="docutils literal notranslate"><span class="pre">Documentation/i2c/dev-interface</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Documentation/spi/spidev</span></code>.</p>
+</div>
+<div class="section" id="realtime">
+<h2><a class="toc-backref" href="#id9">Realtime</a><a class="headerlink" href="#realtime" title="Permalink to this headline">¶</a></h2>
+<p>Well, realtime … what’s that? To put it bluntly, Linux is realtime
+capable.</p>
+<p>By default, Linux schedules processes (“scheduled entities”, so to
+say - threads as well as processes) <em>in a fair way</em>. This is, everyone
+gets its fair share of CPU resources. As such, there are no guarantees
+given as to when a process is scheduled, and whether its deadlines are
+met.</p>
+<p><strong>However:</strong></p>
+<p>You can make any process realtime-scheduled, by calling
+<code class="docutils literal notranslate"><span class="pre">sched_setscheduler()</span></code>. You can make threads realtime-scheduled,
+selectively, by creating them with the appropriate attributes (see
+<code class="docutils literal notranslate"><span class="pre">pthread_attr_setschedparam()</span></code>, and read the book :-).</p>
+<p>Realtime-processes are scheduled <em>immediately</em> when they become
+runnable (unless a higher priority process is runnable as well, of
+course). And by immediate I mean immediate - and that’s what <em>I</em> call
+realtime. No fairness involved anymore, definitely not nice
+anymore. And therefore potentially harmful.</p>
+<p>Basically, there’s two realtime scheduling policies to choose from:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SCHED_FIFO</span></code>. The process runs until it puts itself to sleep
+(waiting for something to happen), or until it is interrupted by a
+process which has an even higher priority.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SCHED_RR</span></code>. Processes in the same priority level alternate in a
+round robin manner, with very short timeslices. As with
+<code class="docutils literal notranslate"><span class="pre">SCHED_FIFO</span></code>, they are interrupted by higher priority processes.</p></li>
+</ul>
+<p>Check out the man pages, and read the book. No joke. Doing realtime
+scheduling is crying for trouble. Even more so if code is involved
+where you don’t know 100% exactly what it does. It might go into an
+infinite loop, at best. At worst, it will trigger race conditions only
+under certain circumstances, or bring up deadlock
+situations. Naturally, this kind of errors does not show up during
+in-house testing where you are able to inspect and fix them, but
+rather months later, at your customer’s site.</p>
+<p>That’s it been for now. I could possibly add a couple more items to
+this list, right now. Deployment comes to mind (What’s a firmware
+image in Linux? Will I be minimal? Do I use <a class="reference external" href="http://busybox.net/">BusyBox</a> and <a class="reference external" href="http://www.uclibc.org/">uClibc</a>?),
+build issues (Shared libraries? Static? What, how, why?). I could add
+another couple more items if I you give me a minute.</p>
+<p>If you have read through this list, you’ll see what I mean: take care
+to choose the right mechanisms. Don’t start coding immediately because
+there’s no time left in the project. Thinking twice and investigating
+will save you from spending even more time later in the project. (But
+what am I telling you?)</p>
+</div>
+</div>
+
+  <div class="section">
+  
+    
+
+
+<div class="section">
+  <span style="float: left;">
+  
+  
+  <a href="../../2010/07/beagleboard-how-to-repair-nand-also-known-as-40w.html">
+    <i class="fa fa-arrow-circle-left"></i>
+    Beagleboard: How to Repair NAND (also known as 40W)
+  </a>
+  
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right;">
+  
+  
+  <a href="saving-solid-state-disk-life--gentoo.html">
+    Saving Solid State Disk Life (Gentoo)
+    <i class="fa fa-arrow-circle-right"></i>
+  </a>
+  
+  </span>
+</div>
+
+  
+  
+  </div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2020, Jörg Faschingbauer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/blog/2011/01/porting-to-linux-there-s-always-a-better-way.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
