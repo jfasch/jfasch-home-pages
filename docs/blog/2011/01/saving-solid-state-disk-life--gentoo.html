@@ -212,7 +212,7 @@ partition for the purpose of hibernating, which I don’t configure in
 <code class="docutils literal notranslate"><span class="pre">/etc/fstab</span></code>.</p>
 <p>I usually suspend to RAM when at home, and when I move to the living
 room or board a train to Germany then I hibernate like so,</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># sync &amp;&amp; swapon /dev/sda1 &amp;&amp; echo disk &gt; /sys/power/state &amp;&amp; swapoff /dev/sda1</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span> sync <span class="o">&amp;&amp;</span> swapon /dev/sda1 <span class="o">&amp;&amp;</span> <span class="nb">echo</span> disk &gt; /sys/power/state <span class="o">&amp;&amp;</span> swapoff /dev/sda1
 </pre></div>
 </div>
 </div>
@@ -230,8 +230,8 @@ to compile the packages before installation. I have plenty of RAM
 openoffice rant.</p></li>
 </ul>
 <p>All that needs to be done is add two entries to <code class="docutils literal notranslate"><span class="pre">/etc/fstab</span></code>:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>portage-tmpfs /var/tmp/portage tmpfs rw <span class="m">0</span> <span class="m">0</span>
-tmp-tmpfs     /tmp             tmpfs rw <span class="m">0</span> <span class="m">0</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">portage-tmpfs /var/tmp/portage tmpfs rw 0 0</span>
+<span class="go">tmp-tmpfs     /tmp             tmpfs rw 0 0</span>
 </pre></div>
 </div>
 <p>You might want to set <code class="docutils literal notranslate"><span class="pre">TMPDIR=/tmp</span></code> explicitly, to have GCC write
@@ -245,15 +245,15 @@ default, so in my case this is 2G in each instance.</p>
 I tried to install openoffice. That piece of crap requires 6G of disk
 space for compilation! Ok, I take it I have to make an exception which
 reads like so,</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># # (plug my USB throwaway 1TB disk)</span>
-<span class="c1"># mount /dev/sdc1 /mnt/disk</span>
-<span class="c1"># mkdir /mnt/disk/tmp-portage</span>
-<span class="c1"># mount --bind /mnt/disk/tmp-portage /var/tmp/portage</span>
-<span class="c1"># emerge openoffice</span>
-<span class="c1"># # (wait a day or two)</span>
-<span class="c1"># rm -rf /mnt/disk/tmp-portage</span>
-<span class="c1"># umount /var/tmp/portage</span>
-<span class="c1"># umount /mnt/disk</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span> <span class="c1"># (plug my USB throwaway 1TB disk)</span>
+<span class="gp">#</span> mount /dev/sdc1 /mnt/disk
+<span class="gp">#</span> mkdir /mnt/disk/tmp-portage
+<span class="gp">#</span> mount --bind /mnt/disk/tmp-portage /var/tmp/portage
+<span class="gp">#</span> emerge openoffice
+<span class="gp">#</span> <span class="c1"># (wait a day or two)</span>
+<span class="gp">#</span> rm -rf /mnt/disk/tmp-portage
+<span class="gp">#</span> umount /var/tmp/portage
+<span class="gp">#</span> umount /mnt/disk
 </pre></div>
 </div>
 </div>
@@ -274,42 +274,42 @@ more in that directory.</p></li>
 <h3>Mountpoint for messages<a class="headerlink" href="#mountpoint-for-messages" title="Permalink to this headline">¶</a></h3>
 <p>I create a dedicated directory as a mountpoint, moving the
 <code class="docutils literal notranslate"><span class="pre">messages</span></code> one level deeper,</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># rm /var/log/messages</span>
-<span class="c1"># mkdir /var/log/messages</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span> rm /var/log/messages
+<span class="gp">#</span> mkdir /var/log/messages
 </pre></div>
 </div>
 <p>Mount a <code class="docutils literal notranslate"><span class="pre">tmpfs</span></code> there, using <code class="docutils literal notranslate"><span class="pre">/etc/fstab</span></code>,</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>messages-tmp  /var/log/messages tmpfs rw <span class="m">0</span> <span class="m">0</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">messages-tmp  /var/log/messages tmpfs rw 0 0</span>
 </pre></div>
 </div>
 <p>At this point you use <code class="docutils literal notranslate"><span class="pre">mount</span> <span class="pre">-a</span></code> to immediately create the
 mount. Next, tell <code class="docutils literal notranslate"><span class="pre">syslog-ng</span></code> about it. In
 <code class="docutils literal notranslate"><span class="pre">/etc/syslog-ng/syslog-ng.conf</span></code> write,</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
-destination messages <span class="o">{</span> file<span class="o">(</span><span class="s2">&quot;/var/log/messages/messages&quot;</span><span class="o">)</span><span class="p">;</span> <span class="o">}</span><span class="p">;</span>
-<span class="c1"># ...</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span> ...
+<span class="go">destination messages { file(&quot;/var/log/messages/messages&quot;); };</span>
+<span class="gp">#</span> ...
 </pre></div>
 </div>
 </div>
 <div class="section" id="logrotate">
 <h3>Logrotate<a class="headerlink" href="#logrotate" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># emerge app-admin/logrotate</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span> emerge app-admin/logrotate
 </pre></div>
 </div>
 <p>Make sure <code class="docutils literal notranslate"><span class="pre">cron</span></code> is running (<code class="docutils literal notranslate"><span class="pre">rc-status|grep</span> <span class="pre">cron</span></code>, he runs <code class="docutils literal notranslate"><span class="pre">logrotate</span></code>). <code class="docutils literal notranslate"><span class="pre">syslog-ng</span></code> already comes with a <code class="docutils literal notranslate"><span class="pre">logrotate</span></code> configuration file, <code class="docutils literal notranslate"><span class="pre">/etc/logrotate.d/syslog-ng</span></code>. Tune this to our needs (rotate the file when its size exceeds 20M, keeping one compressed copy).</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>/var/log/messages/messages <span class="o">{</span>
-     compress
-     compresscmd /bin/bzip2
-     compressoptions -9
-     compressext .bz2
-     size 20M
-     rotate <span class="m">1</span>
-     missingok
-     sharedscripts
-     postrotate
-         /etc/init.d/syslog-ng reload &gt; /dev/null <span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="o">||</span> <span class="nb">true</span>
-     endscript
-<span class="o">}</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">/var/log/messages/messages {</span>
+<span class="go">     compress</span>
+<span class="go">     compresscmd /bin/bzip2</span>
+<span class="go">     compressoptions -9</span>
+<span class="go">     compressext .bz2</span>
+<span class="go">     size 20M</span>
+<span class="go">     rotate 1</span>
+<span class="go">     missingok</span>
+<span class="go">     sharedscripts</span>
+<span class="go">     postrotate</span>
+<span class="go">         /etc/init.d/syslog-ng reload &gt; /dev/null 2&gt;&amp;1 || true</span>
+<span class="go">     endscript</span>
+<span class="go">}</span>
 </pre></div>
 </div>
 </div>
@@ -317,7 +317,7 @@ destination messages <span class="o">{</span> file<span class="o">(</span><span 
 <div class="section" id="kernel-i-o-scheduler">
 <h2><a class="toc-backref" href="#id5">Kernel I/O Scheduler</a><a class="headerlink" href="#kernel-i-o-scheduler" title="Permalink to this headline">¶</a></h2>
 <p>The kernel uses an algorithm called an I/O scheduler to optimize disk access. It does this by collecting read and write requests at adjacent disk locations. This is not necessary with SSDs as there are no disks and no heads. I switch off the scheduler for <code class="docutils literal notranslate"><span class="pre">sda</span></code> (which is the SSD), and keep the default scheduler (<code class="docutils literal notranslate"><span class="pre">cfq</span></code>) for USB disks I use to plug on occasion (for example if there’s an openoffice update).&lt;/p&gt;&lt;p&gt;In <code class="docutils literal notranslate"><span class="pre">/etc/conf.d/local.start</span></code> I write,</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span> noop &gt; /sys/block/sda/queue/scheduler
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span> <span class="nb">echo</span> noop &gt; /sys/block/sda/queue/scheduler
 </pre></div>
 </div>
 </div>
@@ -326,12 +326,12 @@ destination messages <span class="o">{</span> file<span class="o">(</span><span 
 <p>I am a big believer in out-of-source builds. The kernel build system
 is also capable of it, and I use to build the kernel in <code class="docutils literal notranslate"><span class="pre">/tmp</span></code> like
 so.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># mkdir /tmp/kernel-build</span>
-<span class="c1"># cp /boot/linux-2.6.36-gentoo-r5/.config /tmp/kernel-build</span>
-<span class="c1"># make -C /usr/src/linux O=/tmp/kernel-build oldconfig</span>
-<span class="c1"># make -C /usr/src/linux O=/tmp/kernel-build menuconfig</span>
-<span class="c1"># make -C /usr/src/linux O=/tmp/kernel-build all</span>
-<span class="c1"># ...</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span> mkdir /tmp/kernel-build
+<span class="gp">#</span> cp /boot/linux-2.6.36-gentoo-r5/.config /tmp/kernel-build
+<span class="gp">#</span> make -C /usr/src/linux <span class="nv">O</span><span class="o">=</span>/tmp/kernel-build oldconfig
+<span class="gp">#</span> make -C /usr/src/linux <span class="nv">O</span><span class="o">=</span>/tmp/kernel-build menuconfig
+<span class="gp">#</span> make -C /usr/src/linux <span class="nv">O</span><span class="o">=</span>/tmp/kernel-build all
+<span class="gp">#</span> ...
 </pre></div>
 </div>
 <p>Don’t forget to save away the <code class="docutils literal notranslate"><span class="pre">.config</span></code> file, as it will be gone

@@ -174,7 +174,7 @@
 </div>
 </div>
 <p>It happened again. Friends of mine have an alias,</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">alias</span> <span class="nv">faschingbauer</span><span class="o">=</span><span class="s2">&quot;rm -rf ~&quot;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">alias faschingbauer=&quot;rm -rf ~&quot;</span>
 </pre></div>
 </div>
 <p>in their <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code> for a couple of years now, and now I created a
@@ -188,7 +188,7 @@ flash.</p>
 <p>It happened to me that, during finding out the correct arguments of
 U-Boot’s <code class="docutils literal notranslate"><span class="pre">nand</span> <span class="pre">erase</span></code> command, I hit the
 return key early - expecting that a sole</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nand erase
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nand erase</span>
 </pre></div>
 </div>
 <p>would give me further instructions. U-Boot took it literally though
@@ -269,8 +269,8 @@ script referred to by the <a class="reference external" href="http://code.google
 took care to annotate as much as possible in order to understand the
 steps.</p>
 <p>First off, we initialize MMC/SD.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>OMAP3 beagleboard.org <span class="c1"># mmc init</span>
-mmc1 is available
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">OMAP3 beagleboard.org # mmc init</span>
+<span class="go">mmc1 is available</span>
 </pre></div>
 </div>
 <p>To understand where the numbers in the remainder instructions come
@@ -287,13 +287,13 @@ it starts at offset 0 (where the OMAP’s boot ROM expects it) and is
 <p>The boot ROM relies on hardware to manage error correction code (ECC),
 as described in the <a class="reference external" href="http://download.micron.com/pdf/technotes/nand/tn2916.pdf">tech note</a>, so we
 select it.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>OMAP3 beagleboard.org <span class="c1"># nandecc hw</span>
-HW ECC selected
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">OMAP3 beagleboard.org # nandecc hw</span>
+<span class="go">HW ECC selected</span>
 
-OMAP3 beagleboard.org <span class="c1"># nand erase 0 80000</span>
-NAND erase: device <span class="m">0</span> offset 0x0, size 0x80000
-Erasing at 0x60000 -- <span class="m">100</span>% complete.
-OK
+<span class="go">OMAP3 beagleboard.org # nand erase 0 80000</span>
+<span class="go">NAND erase: device 0 offset 0x0, size 0x80000</span>
+<span class="go">Erasing at 0x60000 -- 100% complete.</span>
+<span class="go">OK</span>
 </pre></div>
 </div>
 <p>According to the <a class="reference external" href="http://download.micron.com/pdf/technotes/nand/tn2916.pdf">tech note</a> again,
@@ -305,25 +305,25 @@ image into these four blocks. Again, the erase block size is
 determined by looking in <code class="docutils literal notranslate"><span class="pre">board-omap3beagle.c</span></code> - 128K = 0x20000.</p>
 <p>Read the image into memory, and write it out 4 times, in the first
 four erase blocks of the partition.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>OMAP3 beagleboard.org <span class="c1"># fatload mmc 0 80200000 x-load.bin.ift</span>
-reading x-load.bin.ift
-<span class="m">20392</span> bytes <span class="nb">read</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">OMAP3 beagleboard.org # fatload mmc 0 80200000 x-load.bin.ift</span>
+<span class="go">reading x-load.bin.ift</span>
+<span class="go">20392 bytes read</span>
 
-OMAP3 beagleboard.org <span class="c1"># nand write 80200000 0 20000</span>
-NAND write: device <span class="m">0</span> offset 0x0, size 0x20000
-<span class="m">131072</span> bytes written: OK
+<span class="go">OMAP3 beagleboard.org # nand write 80200000 0 20000</span>
+<span class="go">NAND write: device 0 offset 0x0, size 0x20000</span>
+<span class="go">131072 bytes written: OK</span>
 
-OMAP3 beagleboard.org <span class="c1"># nand write 80200000 20000 20000</span>
-NAND write: device <span class="m">0</span> offset 0x20000, size 0x20000
-<span class="m">131072</span> bytes written: OK
+<span class="go">OMAP3 beagleboard.org # nand write 80200000 20000 20000</span>
+<span class="go">NAND write: device 0 offset 0x20000, size 0x20000</span>
+<span class="go">131072 bytes written: OK</span>
 
-OMAP3 beagleboard.org <span class="c1"># nand write 80200000 40000 20000</span>
-NAND write: device <span class="m">0</span> offset 0x40000, size 0x20000
-<span class="m">131072</span> bytes written: OK
+<span class="go">OMAP3 beagleboard.org # nand write 80200000 40000 20000</span>
+<span class="go">NAND write: device 0 offset 0x40000, size 0x20000</span>
+<span class="go">131072 bytes written: OK</span>
 
-OMAP3 beagleboard.org <span class="c1"># nand write 80200000 60000 20000</span>
-NAND write: device <span class="m">0</span> offset 0x60000, size 0x20000
-<span class="m">131072</span> bytes written: OK
+<span class="go">OMAP3 beagleboard.org # nand write 80200000 60000 20000</span>
+<span class="go">NAND write: device 0 offset 0x60000, size 0x20000</span>
+<span class="go">131072 bytes written: OK</span>
 </pre></div>
 </div>
 </div>
@@ -331,36 +331,36 @@ NAND write: device <span class="m">0</span> offset 0x60000, size 0x20000
 <h2><a class="toc-backref" href="#id6">Writing U-Boot to NAND</a><a class="headerlink" href="#writing-u-boot-to-nand" title="Permalink to this headline">¶</a></h2>
 <p>Can’t find which ECC incarnation the X-Loader uses, software seems to
 be the choice (sounds like the do-nothing-and-cross-fingers approach).</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>OMAP3 beagleboard.org <span class="c1"># nandecc sw</span>
-SW ECC selected
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">OMAP3 beagleboard.org # nandecc sw</span>
+<span class="go">SW ECC selected</span>
 </pre></div>
 </div>
 <p>According to the kernel sources, U-Boot’s partition starts at offset
 0x80000 and is 15*128K=0x1e0000 bytes long.</p>
 <p>Erase NAND, load U-Boot from card, write it to the partition.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>OMAP3 beagleboard.org <span class="c1"># nand erase 80000 1e0000</span>
-NAND erase: device <span class="m">0</span> offset 0x80000, size 0x1e0000
-Erasing at 0x240000 -- <span class="m">100</span>% complete.
-OK
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">OMAP3 beagleboard.org # nand erase 80000 1e0000</span>
+<span class="go">NAND erase: device 0 offset 0x80000, size 0x1e0000</span>
+<span class="go">Erasing at 0x240000 -- 100% complete.</span>
+<span class="go">OK</span>
 
-OMAP3 beagleboard.org <span class="c1"># fatload mmc 0 80200000 u-boot.bin</span>
-reading u-boot.bin
-<span class="m">275928</span> bytes <span class="nb">read</span>
+<span class="go">OMAP3 beagleboard.org # fatload mmc 0 80200000 u-boot.bin</span>
+<span class="go">reading u-boot.bin</span>
+<span class="go">275928 bytes read</span>
 
-OMAP3 beagleboard.org <span class="c1"># nand write 80200000 80000 1e0000</span>
-NAND write: device <span class="m">0</span> offset 0x80000, size 0x1e0000
-<span class="m">1966080</span> bytes written: OK
+<span class="go">OMAP3 beagleboard.org # nand write 80200000 80000 1e0000</span>
+<span class="go">NAND write: device 0 offset 0x80000, size 0x1e0000</span>
+<span class="go">1966080 bytes written: OK</span>
 </pre></div>
 </div>
 <p>That’s it. You are now able to boot without the card, up to the U-Boot
 prompt.</p>
 <p>Take care when you flash the kernel. In case you don’t know the
 correct <code class="docutils literal notranslate"><span class="pre">nand</span> <span class="pre">erase</span></code> parameters, write</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>OMAP3 beagleboard.org <span class="c1"># help nand</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">OMAP3 beagleboard.org # help nand</span>
 </pre></div>
 </div>
 <p>instead of <code class="docutils literal notranslate"><span class="pre">nand</span> <span class="pre">erase</span></code>. I suggest you type</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>OMAP3 beagleboard.org <span class="c1"># nand erase 280000 400000</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">OMAP3 beagleboard.org # nand erase 280000 400000</span>
 </pre></div>
 </div>
 <p>just like the kernel source says for the kernel partition.</p>
