@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Code: Python: Generators &#8212; Jörg Faschingbauer</title>
+    <title>Code: C++: Global Objects Initialization &#8212; Jörg Faschingbauer</title>
     <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/jf-alabaster.css" />
@@ -16,8 +16,8 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="Code: Sysprog: POSIX IPC" href="../sysprog-ipc-code/index.html" />
-    <link rel="prev" title="Code: C++: Ownership/RAII" href="../c++-ownership-raii-code/index.html" />
+    <link rel="next" title="Code: C++: Ownership/RAII" href="../c++-ownership-raii-code/index.html" />
+    <link rel="prev" title="Code: C++: Dynamic Memory" href="../c++-dynamic-memory-code/index.html" />
   
    
   <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
@@ -91,9 +91,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../unittest-gtest-mock-screenplay.html">Screenplay: Unittest: GTest Mocks</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../c++-class-intro-code/index.html">Code: C++: Basic Class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../c++-dynamic-memory-code/index.html">Code: C++: Dynamic Memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../c++-global-initialization-code/index.html">Code: C++: Global Objects Initialization</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Code: C++: Global Objects Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../c++-ownership-raii-code/index.html">Code: C++: Ownership/RAII</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Code: Python: Generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python-generators-code/index.html">Code: Python: Generators</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../sysprog-ipc-code/index.html">Code: Sysprog: POSIX IPC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../sysprog-signals-code/index.html">Code: Sysprog: Signals</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../unittest-gtest-basics-code/index.html">Code: Unittest: GTest Basics</a></li>
@@ -126,21 +126,65 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="code-python-generators">
-<h1>Code: Python: Generators<a class="headerlink" href="#code-python-generators" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="code-c-global-objects-initialization">
+<h1>Code: C++: Global Objects Initialization<a class="headerlink" href="#code-c-global-objects-initialization" title="Permalink to this headline">¶</a></h1>
 <div class="admonition-todo admonition" id="id1">
 <p class="admonition-title">Todo</p>
 <p>Use this file to further describe what’s there</p>
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>.
-├── 10-fibo-list-nolimit.py
-├── 20-fibo-list-limit.py
-├── 30-fibo-embedded-print.py
-├── 40-fibo-generator.py
-├── index.rst
-└── movie.py
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">ADD_EXECUTABLE</span><span class="p">(</span><span class="s">01-global</span> <span class="s">01-global.cc</span><span class="p">)</span>
+<span class="nb">ADD_EXECUTABLE</span><span class="p">(</span><span class="s">10-same-file</span> <span class="s">10-same-file.cc</span><span class="p">)</span>
 
-0 directories, 6 files
+<span class="c"># ------------------------------------</span>
+<span class="c"># link files with no init dependencies</span>
+<span class="c"># ------------------------------------</span>
+<span class="nb">ADD_EXECUTABLE</span><span class="p">(</span><span class="s">20-different-files</span>
+
+  <span class="s">20-different-files.cc</span> 
+  <span class="s">20-thing1.cc</span> 
+  <span class="s">20-thing2.cc</span>
+<span class="p">)</span>
+
+<span class="c"># same as above, but reversed link order</span>
+<span class="nb">ADD_EXECUTABLE</span><span class="p">(</span><span class="s">20-different-files-reversed</span> 
+  <span class="s">20-different-files.cc</span>
+  <span class="s">20-thing2.cc</span>
+  <span class="s">20-thing1.cc</span>
+<span class="p">)</span>
+
+<span class="c"># -----------------------------------</span>
+<span class="c"># link files *with* init dependencies</span>
+<span class="c"># -----------------------------------</span>
+<span class="nb">ADD_EXECUTABLE</span><span class="p">(</span><span class="s">30-different-files-bug</span>
+
+  <span class="s">30-different-files-bug.cc</span>
+  <span class="s">30-thing1.cc</span>
+  <span class="s">30-thing2.cc</span>
+<span class="p">)</span>
+
+<span class="c"># same as above, but reversed link order</span>
+<span class="nb">ADD_EXECUTABLE</span><span class="p">(</span><span class="s">30-different-files-bug-reversed</span>
+
+  <span class="s">30-different-files-bug.cc</span>
+  <span class="s">30-thing2.cc</span>
+  <span class="s">30-thing1.cc</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>.
+├── 01-global.cc
+├── 10-same-file.cc
+├── 20-different-files.cc
+├── 20-thing1.cc
+├── 20-thing2.cc
+├── 30-different-files-bug.cc
+├── 30-thing1.cc
+├── 30-thing2.cc
+├── CMakeLists.txt
+├── index.rst
+└── thing.h
+
+0 directories, 11 files
 </pre></div>
 </div>
 </div>
@@ -164,7 +208,7 @@
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="../../../../_sources/trainings/material/soup/python-generators-code/index.rst.txt"
+      <a href="../../../../_sources/trainings/material/soup/c++-global-initialization-code/index.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
