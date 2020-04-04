@@ -1,0 +1,248 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Systemprogrammierung: Virtuelles Memory, IPC, Shared Libraries &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/jf-alabaster.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Systemprogrammierung: Embedded Linux/Hardwareanbindung" href="sysprog-embedded.html" />
+    <link rel="prev" title="Systemprogrammierung: Multithreading" href="sysprog-multithreading.html" />
+  
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  
+  <link rel="alternate" type="application/atom+xml"  href="../../blog/atom.xml" title="Jörg Faschingbauer">
+  
+  
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  
+  <style type="text/css">
+    ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
+    ul.ablog-archive li {float: left; margin-right: 5px; font-size: 80%}
+    ul.postlist a {font-style: italic;}
+    ul.postlist-style-disc {list-style-type: disc;}
+    ul.postlist-style-none {list-style-type: none;}
+    ul.postlist-style-circle {list-style-type: circle;}
+  </style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Kursangebot</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="linux-basics.html">Linux Basics: Eine Einführung Anhand von Beispielen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sysprog-basics.html">Systemprogrammierung: Einführung</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sysprog-network.html">Systemprogrammierung: Netzwerk</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sysprog-multithreading.html">Systemprogrammierung: Multithreading</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Systemprogrammierung: Virtuelles Memory, IPC, Shared Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sysprog-embedded.html">Systemprogrammierung: Embedded Linux/Hardwareanbindung</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kernel-programming-basics.html">Kernelprogrammierung: Einführung</a></li>
+<li class="toctree-l2"><a class="reference internal" href="raspi-hands-on.html">Eine Woche mit dem Raspberry Pi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kettner-lfs-descr.html">Linux from Scratch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c.html">C: Einführung</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c-refresher.html">C: Auffrischung</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c-advanced.html">C für Fortgeschrittene</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cxx.html">C++: Einführung und Überblick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python-basics.html">Python Grundlagen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python-advanced.html">Python für Fortgeschrittene</a></li>
+<li class="toctree-l2"><a class="reference internal" href="make.html">GNU-Make</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cmake.html">CMake</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bash.html">Shell Scripting mit der Bourne Again Shell (Bash)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="svn.html">Subversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unittests.html">Unittesting und Test Driven Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="design-patterns.html">Design Patterns</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../booking.html">Buchung, Kursablauf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../material/index.html">Unterlagen &amp; Download</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/site/index.html">This Site</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="systemprogrammierung-virtuelles-memory-ipc-shared-libraries">
+<h1>Systemprogrammierung: Virtuelles Memory, IPC, Shared Libraries<a class="headerlink" href="#systemprogrammierung-virtuelles-memory-ipc-shared-libraries" title="Permalink to this headline">¶</a></h1>
+<div class="sidebar">
+<p class="sidebar-title">Kursdaten</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Anfrage</p></td>
+<td><p><a class="reference external" href="mailto:training&#37;&#52;&#48;faschingbauer&#46;co&#46;at">training<span>&#64;</span>faschingbauer<span>&#46;</span>co<span>&#46;</span>at</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Dauer</p></td>
+<td><p>2 Tage</p></td>
+</tr>
+<tr class="row-odd"><td><p>PDF Slides</p></td>
+<td><p><a class="reference download internal" download="" href="../../_downloads/92843b79eebd535a6e9921e3d72228a9/020-linux-sysprog--en.pdf"><code class="xref download docutils literal notranslate"><span class="pre">sysprog</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>S5 Slides</p></td>
+<td><p><a class="reference internal" href="../material/soup/sysprog-signals-slides.html"><span class="doc">Signals</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>S5 Slides</p></td>
+<td><p><a class="reference internal" href="../material/soup/sysprog-ipc-slides.html"><span class="doc">IPC</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Live Hacking</p></td>
+<td><p><a class="reference internal" href="../material/soup/sysprog-signals-screenplay.html"><span class="doc">Signals</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Live Hacking</p></td>
+<td><p><a class="reference internal" href="../material/soup/sysprog-ipc-screenplay.html"><span class="doc">IPC</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Will man in Tiefen des Systems steigen, die dem Alltagsprogrammierer
+normalerweise verborgen bleiben, ist dieser Kurs genau der
+Richtige. Linux und Unix bieten an der Basis eine Vielzahl von
+Schnittstellen, die es ermöglichen, hochperformante Anwendungen zu
+schreiben. Hier wird ein Überblick gegeben.</p>
+<div class="section" id="kursinhalt">
+<h2>Kursinhalt<a class="headerlink" href="#kursinhalt" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Virtuelles Memory</strong>. Speicherverwaltung in modernen
+Bertriebssystemen basiert auf sogenanntem <em>virtuellen Memory</em>. Zum
+Beispiel bleibt dem Benutzer verborgen, dass unter Umständen
+Speicherbereiche seiner Programme auf die Festplatte ausgelagert
+werden (Swap), oder dass der Code von zwei Instanzen desselben
+Programmes nur einmal im Hauptspeicher liegt.</p>
+<ul>
+<li><p><em>Memory Mappings</em>: Grundlagen</p></li>
+<li><p><em>Sichtbarkeit</em>: “Private” vs. “Shared”</p></li>
+<li><p><em>Speicherzugriff</em>: Schutzmechanismen</p></li>
+<li><p><em>Assoziierte System Calls</em>: mmap, mlock, mlockall, …</p></li>
+<li><p><em>Realtime-Aspekte</em></p></li>
+</ul>
+</li>
+<li><p><strong>POSIX IPC</strong>. Netzwerk-Kommunikation mittels Sockets ist nur <em>ein</em>
+Mittel, Prozesse miteinander kommunizieren zu lassen. <em>IPC</em> (Inter
+Process Communication) ist eine Sammlung weiterer Mechanismen, auf
+die hier eingegangen wird.</p>
+<ul>
+<li><p><em>Shared Memory</em></p></li>
+<li><p><em>Semaphoren</em></p></li>
+<li><p><em>Message Queues</em></p></li>
+</ul>
+</li>
+<li><p><strong>Neue, Linux-spezifische Systemcalls</strong>. Gewisse Mechanismen in Unix
+sind steinalt und haben bis heute überlebt, obwohl es keineswegs
+einfach ist, sie fehlerfrei zu benutzen - man denke an Signale und
+Timer. Linux führt die Unix-Tradition “Everything is a File”
+konsequent weiter und verpasst genau diesen Mechanismen ein
+alternatives Interface, das genau auf diesem Prinzip beruht.</p>
+<ul>
+<li><p><em>Signal Handling</em>: <code class="docutils literal notranslate"><span class="pre">signalfd</span></code></p></li>
+<li><p><em>Timer</em>: <code class="docutils literal notranslate"><span class="pre">timerfd_create</span></code></p></li>
+<li><p><em>Events</em>: <code class="docutils literal notranslate"><span class="pre">eventfd</span></code></p></li>
+</ul>
+</li>
+<li><p><strong>Shared Libraries</strong>. Dynamisch ladbare Libraries sind ein
+mächtiges, wenngleich kompliziertes, Werkzeug, um Flexibilität,
+Ressourcenschonung, und einen wasserdichten Upgradepfad zu
+erreichen.</p>
+<ul>
+<li><p><em>ELF</em>: “Executable and Linkable Format”</p></li>
+<li><p><em>Automatisches/implizites Laden</em>: Linux Loader</p></li>
+<li><p><em>Explizites Laden</em> mit <code class="docutils literal notranslate"><span class="pre">dlopen()</span></code>: “Loading Scopes” etc.</p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="empfohlene-vorkenntnisse">
+<h2>Empfohlene Vorkenntnisse<a class="headerlink" href="#empfohlene-vorkenntnisse" title="Permalink to this headline">¶</a></h2>
+<p>Solide Kenntnisse in C werden vorausgesetzt, genau wie eine
+Grundkenntnis des Systems (vgl. <a class="reference internal" href="sysprog-basics.html"><span class="doc">Einführungskurs</span></a>).</p>
+</div>
+</div>
+
+  <div class="section">
+  
+  
+  </div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2020, Jörg Faschingbauer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/trainings/repertoire/sysprog-fortgeschrittenes.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

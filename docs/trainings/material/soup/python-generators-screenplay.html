@@ -1,0 +1,312 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" /><meta content="This live-hacking screenplay is a guide for myself to repeatably, didactically, demonstrate what Python generators are" name="description" />
+<meta content="python, schulung, training, programming" name="keywords" />
+
+    <title>Screenplay: Python: Generators &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/jf-alabaster.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Screenplay: Sysprog: POSIX IPC" href="sysprog-ipc-screenplay.html" />
+    <link rel="prev" title="Screenplay: C++: STL Containers (Intro)" href="c++-stl-container-intro-screenplay.html" />
+  
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  
+  <link rel="alternate" type="application/atom+xml"  href="../../../blog/atom.xml" title="Jörg Faschingbauer">
+  
+  
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  
+  <style type="text/css">
+    ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
+    ul.ablog-archive li {float: left; margin-right: 5px; font-size: 80%}
+    ul.postlist a {font-style: italic;}
+    ul.postlist-style-disc {list-style-type: disc;}
+    ul.postlist-style-none {list-style-type: none;}
+    ul.postlist-style-circle {list-style-type: circle;}
+  </style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Kursangebot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../booking.html">Buchung, Kursablauf</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">The Entire Soup</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="c++-class-intro-screenplay.html">Screenplay: C++: Basic Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="c++-dynamic-memory-screenplay.html">Screenplay: C++: Dynamic Memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="c++-exercises-screenplay.html">Screenplay: C++: Exercise Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="c++-global-initialization-screenplay.html">Screenplay: C++: Global Objects Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="c++-ownership-raii-screenplay.html">Screenplay: C++: Ownership/RAII</a></li>
+<li class="toctree-l3"><a class="reference internal" href="c++-smart-pointers-screenplay.html">Screenplay: C++: Smart Pointers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="c++-stl-container-intro-screenplay.html">Screenplay: C++: STL Containers (Intro)</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Screenplay: Python: Generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sysprog-ipc-screenplay.html">Screenplay: Sysprog: POSIX IPC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sysprog-signals-screenplay.html">Screenplay: Sysprog: Signals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unittest-gtest-basics-screenplay.html">Screenplay: Unittest: GTest Basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unittest-gtest-cmake-screenplay.html">Screenplay: Unittest: GTest and CMake</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unittest-gtest-fixture-screenplay.html">Screenplay: Unittest: GTest Fixtures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unittest-gtest-mock-screenplay.html">Screenplay: Unittest: GTest Mocks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="c++-class-intro-code/index.html">Code: C++: Basic Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="c++-class-templates-code/index.html">Code: C++: Class Templates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="c++-dynamic-memory-code/index.html">Code: C++: Dynamic Memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="c++-exercises-code/index.html">Code: C++: Basic Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="c++-global-initialization-code/index.html">Code: C++: Global Objects Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="c++-inheritance-virtual-code/index.html">Code: C++: Inheritance, Interfaces, <code class="docutils literal notranslate"><span class="pre">virtual</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c++-lambda-code/index.html">Code: C++: Lambda</a></li>
+<li class="toctree-l3"><a class="reference internal" href="c++-ownership-raii-code/index.html">Code: C++: Ownership/RAII</a></li>
+<li class="toctree-l3"><a class="reference internal" href="c++-smart-pointers-code/index.html">Code: C++: Basic Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="c++-stl-container-intro-code/index.html">Code: C++: STL Containers (Intro)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="c++-templates-vs-interfaces-code/index.html">Code: C++: Templates vs. Interfaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-generators-code/index.html">Code: Python: Generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sysprog-ipc-code/index.html">Code: Sysprog: POSIX IPC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sysprog-signals-code/index.html">Code: Sysprog: Signals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unittest-gtest-basics-code/index.html">Code: Unittest: GTest Basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unittest-gtest-fixture-code/index.html">Code: Unittest: GTest Fixtures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unittest-gtest-mock-code/index.html">Code: Unittest: GTest Mocks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sysprog-ipc-slides.html">Slides: Sysprog: POSIX IPC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sysprog-signals-slides.html">Slides: Sysprog: Signals</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../about/site/index.html">This Site</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="screenplay-python-generators">
+<h1>Screenplay: Python: Generators<a class="headerlink" href="#screenplay-python-generators" title="Permalink to this headline">¶</a></h1>
+<div class="sidebar">
+<p class="sidebar-title">Contents</p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#fibonacci-numbers-naive-list" id="id5">Fibonacci Numbers: Naive List</a></p></li>
+<li><p><a class="reference internal" href="#fibonacci-numbers-naive-list-limited" id="id6">Fibonacci Numbers: Naive List, Limited</a></p></li>
+<li><p><a class="reference internal" href="#sideway-infinity-by-not-using-functions" id="id7">Sideway: Infinity by Not Using Functions</a></p></li>
+<li><p><a class="reference internal" href="#fibonacci-numbers-function-producing-infinite-sequence" id="id8">Fibonacci Numbers: Function Producing Infinite Sequence</a></p></li>
+<li><p><a class="reference internal" href="#common-pattern-turn-list-into-generated-items" id="id9">Common Pattern: Turn List into Generated Items</a></p></li>
+</ul>
+</div>
+<p><strong>Code</strong>: <a class="reference internal" href="python-generators-code/index.html"><span class="doc">Code: Python: Generators</span></a></p>
+</div>
+<div class="section" id="fibonacci-numbers-naive-list">
+<h2><a class="toc-backref" href="#id5">Fibonacci Numbers: Naive List</a><a class="headerlink" href="#fibonacci-numbers-naive-list" title="Permalink to this headline">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../_downloads/33a2a35ec405a928fdb9c95df92cc9db/10-fibo-list-nolimit.py"><code class="xref download docutils literal notranslate"><span class="pre">python-generators-code/10-fibo-list-nolimit.py</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
+
+<span class="k">def</span> <span class="nf">fibonacci</span><span class="p">():</span>
+    <span class="n">fibo_numbers</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">previous</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">current</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="nb">next</span> <span class="o">=</span> <span class="n">previous</span> <span class="o">+</span> <span class="n">current</span>
+        <span class="n">fibo_numbers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">next</span><span class="p">)</span>
+        <span class="n">previous</span><span class="p">,</span> <span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="p">,</span> <span class="nb">next</span>
+        
+    <span class="k">return</span> <span class="n">fibo_numbers</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">fibonacci</span><span class="p">():</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><p>watch OS become overly jerky, until process is OOM-killed</p></li>
+<li><p>well, there’s need for a limit</p></li>
+</ul>
+</div>
+<div class="section" id="fibonacci-numbers-naive-list-limited">
+<h2><a class="toc-backref" href="#id6">Fibonacci Numbers: Naive List, Limited</a><a class="headerlink" href="#fibonacci-numbers-naive-list-limited" title="Permalink to this headline">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../_downloads/f029326b491034bc394d0215878aed94/20-fibo-list-limit.py"><code class="xref download docutils literal notranslate"><span class="pre">python-generators-code/20-fibo-list-limit.py</span></code></a></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
+
+<span class="k">def</span> <span class="nf">fibonacci</span><span class="p">(</span><span class="n">max_numbers</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">fibo_numbers</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">previous</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">current</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">fibo_numbers</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">max_numbers</span><span class="p">:</span>
+        <span class="nb">next</span> <span class="o">=</span> <span class="n">previous</span> <span class="o">+</span> <span class="n">current</span>
+        <span class="n">fibo_numbers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">next</span><span class="p">)</span>
+        <span class="n">previous</span><span class="p">,</span> <span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="p">,</span> <span class="nb">next</span>
+        
+    <span class="k">return</span> <span class="n">fibo_numbers</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">fibonacci</span><span class="p">():</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="sideway-infinity-by-not-using-functions">
+<h2><a class="toc-backref" href="#id7">Sideway: Infinity by Not Using Functions</a><a class="headerlink" href="#sideway-infinity-by-not-using-functions" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Still not satisfactory</p></li>
+<li><p>Want infinity</p></li>
+<li><p>Can be done, by embedding the using code (<code class="docutils literal notranslate"><span class="pre">print()</span></code>) into the
+Fibonacci generation.</p></li>
+<li><p>not so modular though</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../_downloads/04db94c279fe43a69a0caf7d0f276cdb/30-fibo-embedded-print.py"><code class="xref download docutils literal notranslate"><span class="pre">python-generators-code/30-fibo-embedded-print.py</span></code></a></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
+
+<span class="n">previous</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">current</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="nb">next</span> <span class="o">=</span> <span class="n">previous</span> <span class="o">+</span> <span class="n">current</span>
+    <span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">)</span>
+    <span class="n">previous</span><span class="p">,</span> <span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="p">,</span> <span class="nb">next</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="fibonacci-numbers-function-producing-infinite-sequence">
+<h2><a class="toc-backref" href="#id8">Fibonacci Numbers: Function Producing Infinite Sequence</a><a class="headerlink" href="#fibonacci-numbers-function-producing-infinite-sequence" title="Permalink to this headline">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../_downloads/d6667ac83a4f89d5030eb8d2326d8996/40-fibo-generator.py"><code class="xref download docutils literal notranslate"><span class="pre">python-generators-code/40-fibo-generator.py</span></code></a></span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
+
+<span class="k">def</span> <span class="nf">fibonacci</span><span class="p">():</span>
+    <span class="n">previous</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">current</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="nb">next</span> <span class="o">=</span> <span class="n">previous</span> <span class="o">+</span> <span class="n">current</span>
+        <span class="k">yield</span> <span class="nb">next</span>
+        <span class="n">previous</span><span class="p">,</span> <span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="p">,</span> <span class="nb">next</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">fibonacci</span><span class="p">():</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="common-pattern-turn-list-into-generated-items">
+<h2><a class="toc-backref" href="#id9">Common Pattern: Turn List into Generated Items</a><a class="headerlink" href="#common-pattern-turn-list-into-generated-items" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>correct infinity can save a few lines</p></li>
+</ul>
+<div class="highlight-udiff notranslate"><div class="highlight"><pre><span></span><span class="gd">--- /home/jfasch/work/jfasch-home-gessmann/trainings/material/soup/python-generators-code/10-fibo-list-nolimit.py</span>
+<span class="gi">+++ /home/jfasch/work/jfasch-home-gessmann/trainings/material/soup/python-generators-code/40-fibo-generator.py</span>
+<span class="gu">@@ -1,16 +1,12 @@</span>
+ #!/usr/bin/python
+ 
+ def fibonacci():
+<span class="gd">-    fibo_numbers = []</span>
+<span class="gd">-</span>
+     previous = 1
+     current = 1
+     while True:
+         next = previous + current
+<span class="gd">-        fibo_numbers.append(next)</span>
+<span class="gi">+        yield next</span>
+         previous, current = current, next
+<span class="gd">-        </span>
+<span class="gd">-    return fibo_numbers</span>
+ 
+ if __name__ == &#39;__main__&#39;:
+     for num in fibonacci():
+</pre></div>
+</div>
+</div>
+</div>
+
+  <div class="section">
+  
+  
+  </div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2020, Jörg Faschingbauer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/trainings/material/soup/python-generators-screenplay.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
