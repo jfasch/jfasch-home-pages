@@ -1,0 +1,482 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Slides: Sysprog: POSIX IPC &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/jf-alabaster.css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="canonical" href="https://www.faschingbauer.co.at/trainings/material/soup/sysprog_ipc/slides.html" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Screenplay: Sysprog: POSIX IPC" href="screenplay.html" />
+    <link rel="prev" title="Sysprog: POSIX IPC" href="topic.html" />
+  
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  
+  <link rel="alternate" type="application/atom+xml"  href="../../../../blog/atom.xml" title="Jörg Faschingbauer">
+  
+  
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  
+  <style type="text/css">
+    ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
+    ul.ablog-archive li {float: left; margin-right: 5px; font-size: 80%}
+    ul.postlist a {font-style: italic;}
+    ul.postlist-style-disc {list-style-type: disc;}
+    ul.postlist-style-none {list-style-type: none;}
+    ul.postlist-style-circle {list-style-type: circle;}
+  </style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../index.html">
+    <img class="logo" src="../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../booking.html">Buchung, Kursablauf</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">The Entire Soup</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../cxx_class_intro/topic.html">C++: Class (Introduction)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_class_templates/topic.html">C++: Class Templates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_dynamic_memory/topic.html">C++: Dynamic Memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_exercises/topic.html">C++: Exercises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_global_initialization/topic.html">C++: Global Objects Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_inheritance_virtual/topic.html">C++: Inheritance, Interfaces, <code class="docutils literal notranslate"><span class="pre">virtual</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_lambda/topic.html">C++: Lambda</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_ownership_raii/topic.html">C++: Ownership/RAII</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_smart_pointers/topic.html">C++: Smart Pointers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_stl_container_intro/topic.html">C++: STL Containers (Intro)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_templates_vs_interfaces/topic.html">C++: Templates vs. Interfaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0110_blahblah/topic.html">Python: Blahblah</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0120_helloworld/topic.html">Python: Hello World</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0130_syntax_etc/topic.html">Python: Syntax etc.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0140_variables/topic.html">Python: Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0150_datatypes_overview/topic.html">Python: Datatypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0150_datatypes_overview_compound/topic.html">Python: Compound Datatypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0160_boolean/topic.html">Python: Boolean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0170_if/topic.html">Python: The <code class="docutils literal notranslate"><span class="pre">if</span></code> Statement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0190_exercises/topic.html">Python: Exercises: Basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0193_while/topic.html">Python: <code class="docutils literal notranslate"><span class="pre">while</span></code> Loops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0195_exercises/topic.html">Python: Exercises: While Loop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0200_sequential_types/topic.html">Python: Sequential Datatypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0210_indexing_slicing/topic.html">Python: Indexing and Slicing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0220_for/topic.html">Python: <code class="docutils literal notranslate"><span class="pre">for</span></code> Loops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0225_range/topic.html">Python: The <code class="docutils literal notranslate"><span class="pre">range</span></code> Function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0250_refs_flat_deep_copy/topic.html">Python: References, (Im)mutability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0270_functions/topic.html">Python: Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_yield_fibo/topic.html">Python: The Yield Statement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sysprog_events/topic.html">Sysprog: Events</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="topic.html">Sysprog: POSIX IPC</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Slides: Sysprog: POSIX IPC</a></li>
+<li class="toctree-l4"><a class="reference internal" href="screenplay.html">Screenplay: Sysprog: POSIX IPC</a></li>
+<li class="toctree-l4"><a class="reference internal" href="code/index.html">Code: Sysprog: POSIX IPC</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../sysprog_signals/topic.html">Sysprog: Signals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../unittest_gtest_basics/topic.html">Unittest: GTest Basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../unittest_gtest_cmake/topic.html">Unittest: GTest and CMake</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../unittest_gtest_fixture/topic.html">Unittest: GTest Fixtures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../list.html">Generated Topic List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exercises.html">Übungen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../about/site/index.html">This Site</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="slides-sysprog-posix-ipc">
+<h1>Slides: Sysprog: POSIX IPC<a class="headerlink" href="#slides-sysprog-posix-ipc" title="Permalink to this headline">¶</a></h1>
+<div class="sidebar">
+<p class="sidebar-title">Slideshow</p>
+<p><a class="reference download internal" download="" href="../../../../_downloads/7c48dcc4d4a278a5e2336a51bce2a0ae/slides.s5.html"><code class="xref download docutils literal notranslate"><span class="pre">slides.s5.html</span></code></a></p>
+</div>
+<ul class="simple">
+<li><p><strong>Unix IPC:</strong> mechanisms to communicate between unrelated* processes</p>
+<ul>
+<li><p>Semaphores</p></li>
+<li><p>Shared memory</p></li>
+<li><p>Message queues</p></li>
+<li><p><em>No sockets</em></p></li>
+</ul>
+</li>
+</ul>
+<div class="section" id="history-two-ipc-variants">
+<h2>History: Two IPC Variants<a class="headerlink" href="#history-two-ipc-variants" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><strong>System V IPC</strong></p>
+<ul>
+<li><p>Cumbersome, unnecessarily complex API</p></li>
+<li><p>Older -&gt; more portable between Unixen</p></li>
+</ul>
+</li>
+<li><p><strong>POSIX IPC</strong></p>
+<ul>
+<li><p>Easy to use</p></li>
+<li><p>Much of it implemented in userspace (through memory mapped files)</p></li>
+<li><p>Optional feature in POSIX (fully supported in Linux though)</p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="object-names">
+<h2>Object Names<a class="headerlink" href="#object-names" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Communication between unrelated processes</strong></p>
+<ul>
+<li><p><em>Related</em>: none is a descendant of the other (<code class="docutils literal notranslate"><span class="pre">fork()</span></code>)</p></li>
+<li><p>Cannot <em>inherit</em> object</p></li>
+<li><p>Must be able to <em>locate</em> them</p></li>
+</ul>
+</li>
+<li><p><strong>System-wide visibility via names</strong></p>
+<ul>
+<li><p>Just like files</p></li>
+<li><p>In fact, most IPC mechanisms <em>are</em> files (at least in Linux)</p></li>
+<li><p>Consistently with leading slash: <code class="docutils literal notranslate"><span class="pre">/some-object-name</span></code></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="file-semantics">
+<h2>File Semantics<a class="headerlink" href="#file-semantics" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Objects look just like files</strong>. For example,</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">shm_open()</span></code>, using the same flags as good ol’ <code class="docutils literal notranslate"><span class="pre">open()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shm_unlink()</span></code> to remove a shared memory segment, just like good
+ol’ <code class="docutils literal notranslate"><span class="pre">unlink()</span></code> removes a file.</p></li>
+</ul>
+</li>
+<li><p><strong>Handles are reference counted</strong></p>
+<ul>
+<li><p>Shared memory: <code class="docutils literal notranslate"><span class="pre">int</span></code> - a true file descriptor</p></li>
+<li><p>Message queue: <code class="docutils literal notranslate"><span class="pre">mqd_t</span></code> (typedef <code class="docutils literal notranslate"><span class="pre">int</span></code>)</p></li>
+<li><p>Incremented across <code class="docutils literal notranslate"><span class="pre">fork()</span></code>, <code class="docutils literal notranslate"><span class="pre">dup()</span></code> etc.</p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="message-queues">
+<h2>Message Queues<a class="headerlink" href="#message-queues" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Message queue parameters</strong></p>
+<ul>
+<li><p>Maximum number of messages</p></li>
+<li><p>Maximum size of a single message</p></li>
+<li><p><em>Realtime guarantees</em></p></li>
+</ul>
+</li>
+<li><p><strong>Message priorities</strong></p>
+<ul>
+<li><p>Messages are sent with a priority</p></li>
+<li><p>Higher prioritized messages overtake lower prioritized messages</p></li>
+</ul>
+</li>
+</ul>
+<p><a class="reference external" href="http://man7.org/linux/man-pages/man7/mq_overview.7.html">man -s 7 mq_overview</a></p>
+</div>
+<div class="section" id="open-create-mq-open">
+<h2>Open/Create: <code class="docutils literal notranslate"><span class="pre">mq_open()</span></code><a class="headerlink" href="#open-create-mq-open" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">mqd_t</span> <span class="nf">mq_open</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="kt">int</span> <span class="n">oflag</span><span class="p">);</span>
+<span class="n">mqd_t</span> <span class="nf">mq_open</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="kt">int</span> <span class="n">oflag</span><span class="p">,</span> <span class="kt">mode_t</span> <span class="n">mode</span><span class="p">,</span> <span class="k">struct</span> <span class="n">mq_attr</span> <span class="o">*</span><span class="n">attr</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Attributes (<code class="docutils literal notranslate"><span class="pre">attr</span></code>)</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">mq_flags</span></code>: nonblocking?</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mq_maxmsg</span></code>: length</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mq_msgsize</span></code>: width</p></li>
+</ul>
+</li>
+</ul>
+<p><a class="reference external" href="http://man7.org/linux/man-pages/man2/mq_open.2.html">man -s 3 mq_open</a></p>
+</div>
+<div class="section" id="sending-receiving-mq-send-mq-receive">
+<h2>Sending/Receiving: <code class="docutils literal notranslate"><span class="pre">mq_send()</span></code>, <code class="docutils literal notranslate"><span class="pre">mq_receive()</span></code><a class="headerlink" href="#sending-receiving-mq-send-mq-receive" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">mq_send</span><span class="p">(</span><span class="n">mqd_t</span> <span class="n">mqdes</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">msg_ptr</span><span class="p">,</span>
+            <span class="kt">size_t</span> <span class="n">msg_len</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">msg_prio</span><span class="p">);</span>
+<span class="kt">ssize_t</span> <span class="nf">mq_receive</span><span class="p">(</span><span class="n">mqd_t</span> <span class="n">mqdes</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">msg_ptr</span><span class="p">,</span>
+            <span class="kt">size_t</span> <span class="n">msg_len</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="o">*</span><span class="n">msg_prio</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Higher with higher priority are faster</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">msg_len</span></code> must not exceed configured queue width</p></li>
+<li><p>Same as <code class="docutils literal notranslate"><span class="pre">write()</span></code>/<code class="docutils literal notranslate"><span class="pre">send()</span></code> otherwise</p></li>
+</ul>
+<p><a class="reference external" href="http://man7.org/linux/man-pages/man3/mq_receive.3.html">man -s 3 mq_receive</a></p>
+<p><a class="reference external" href="http://man7.org/linux/man-pages/man3/mq_send.3.html">man -s 3 mq_send</a></p>
+</div>
+<div class="section" id="closing-removing-mq-close-mq-unlink">
+<h2>Closing/Removing: <code class="docutils literal notranslate"><span class="pre">mq_close()</span></code>, <code class="docutils literal notranslate"><span class="pre">mq_unlink()</span></code><a class="headerlink" href="#closing-removing-mq-close-mq-unlink" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">mq_close</span><span class="p">(</span><span class="n">mqd_t</span> <span class="n">mqdes</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">mq_unlink</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Boring …</p></li>
+<li><p>Analogy: <code class="docutils literal notranslate"><span class="pre">close()</span></code> and <code class="docutils literal notranslate"><span class="pre">unlink()</span></code>.</p></li>
+</ul>
+<p><a class="reference external" href="http://man7.org/linux/man-pages/man3/mq_close.3.html">man -s 3 mq_close</a></p>
+<p><a class="reference external" href="http://man7.org/linux/man-pages/man3/mq_unlink.3.html">man -s 3 mq_unlink</a></p>
+</div>
+<div class="section" id="notification-mq-notify">
+<h2>Notification: <code class="docutils literal notranslate"><span class="pre">mq_notify()</span></code><a class="headerlink" href="#notification-mq-notify" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">mq_notify</span><span class="p">(</span><span class="n">mqd_t</span> <span class="n">mqdes</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">sigevent</span> <span class="o">*</span><span class="n">sevp</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><strong>Obscure feature …</strong></p>
+<ul class="simple">
+<li><p>Only shown because of its obscurity</p></li>
+<li><p>Specification <em>predates</em> that of event loops</p></li>
+<li><p>Guess what … <strong>SIGNALS</strong></p></li>
+<li><p>Please read yourself and be disturbed!</p></li>
+</ul>
+<p><a class="reference external" href="http://man7.org/linux/man-pages/man3/mq_notify.3.html">man -s 3 mq_notify</a></p>
+</div>
+<div class="section" id="message-queues-are-files">
+<h2>Message Queues are Files<a class="headerlink" href="#message-queues-are-files" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Obvious implementation:</strong> files</p>
+<ul>
+<li><p>… provided there’s OS infrastructure</p></li>
+<li><p>Message queues are implemented as files</p></li>
+<li><p>Virtual filesystem - <code class="docutils literal notranslate"><span class="pre">mqueue</span></code></p></li>
+</ul>
+</li>
+</ul>
+<p>Notifications can be received more elegantly - <code class="docutils literal notranslate"><span class="pre">select()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">poll()</span></code>, <code class="docutils literal notranslate"><span class="pre">epoll</span></code>!</p>
+</div>
+<div class="section" id="message-queue-filesystem-mqueue">
+<h2>Message Queue Filesystem: <code class="docutils literal notranslate"><span class="pre">mqueue</span></code><a class="headerlink" href="#message-queue-filesystem-mqueue" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Message queues visible as files:</strong> the <em>mqueue</em> filesystem</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span> mount -t mqueue blah /mnt/mqueue
+<span class="gp">#</span> ls -l /mnt/mqueue/my-queue
+<span class="go">-rw------- ... /mnt/mqueue/my-queue</span>
+<span class="gp">#</span> cat /mnt/mqueue/my-queue
+<span class="go">QSIZE:0          NOTIFY:0     SIGNO:0     NOTIFY_PID:0</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="semaphores">
+<h2>Semaphores<a class="headerlink" href="#semaphores" title="Permalink to this headline">¶</a></h2>
+<p><strong>Communication and synchronization device</strong></p>
+<ul class="simple">
+<li><p>Bag of N elements</p></li>
+<li><p>N items can be consumed without waiting</p></li>
+<li><p>(N+1)st consumer has to wait until an item is goiven back</p></li>
+</ul>
+<p><strong>Creation parameter</strong></p>
+<ul class="simple">
+<li><p>Initial value N</p></li>
+</ul>
+<p><a class="reference external" href="http://man7.org/linux/man-pages/man7/sem_overview.7.html">man -s 7 sem_overview</a></p>
+</div>
+<div class="section" id="open-create-sem-open">
+<h2>Open/Create: <code class="docutils literal notranslate"><span class="pre">sem_open()</span></code><a class="headerlink" href="#open-create-sem-open" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">sem_t</span> <span class="o">*</span><span class="nf">sem_open</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="kt">int</span> <span class="n">oflag</span><span class="p">);</span>
+<span class="n">sem_t</span> <span class="o">*</span><span class="nf">sem_open</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="kt">int</span> <span class="n">oflag</span><span class="p">,</span>
+                <span class="kt">mode_t</span> <span class="n">mode</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">value</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Again: file semantics</p></li>
+<li><p>Like <code class="docutils literal notranslate"><span class="pre">open()</span></code>, to calling “signatures”</p>
+<ul>
+<li><p><em>create</em></p></li>
+<li><p><em>open</em></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: initial value N (creation only)</p></li>
+</ul>
+<p><a class="reference external" href="https://linux.die.net/man/3/sem_open">man -s 3 sem_open</a></p>
+</div>
+<div class="section" id="communication-sem-wait-sem-post">
+<h2>Communication: <code class="docutils literal notranslate"><span class="pre">sem_wait()</span></code>, <code class="docutils literal notranslate"><span class="pre">sem_post()</span></code><a class="headerlink" href="#communication-sem-wait-sem-post" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">sem_wait</span><span class="p">(</span><span class="n">sem_t</span> <span class="o">*</span><span class="n">sem</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">sem_trywait</span><span class="p">(</span><span class="n">sem_t</span> <span class="o">*</span><span class="n">sem</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">sem_timedwait</span><span class="p">(</span><span class="n">sem_t</span> <span class="o">*</span><span class="n">sem</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">timespec</span> <span class="o">*</span><span class="n">abs_timeout</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">sem_post</span><span class="p">(</span><span class="n">sem_t</span> <span class="o">*</span><span class="n">sem</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><em>wait</em>: consume element; blocks if count is zero</p></li>
+<li><p><em>post</em>: give element back</p></li>
+</ul>
+<p><a class="reference external" href="http://man7.org/linux/man-pages/man3/sem_wait.3.html">man -s 3 sem_wait</a></p>
+<p><a class="reference external" href="http://man7.org/linux/man-pages/man3/sem_post.3.html">man -s 3 sem_post</a></p>
+</div>
+<div class="section" id="closing-removing-sem-close-sem-unlink">
+<h2>Closing/Removing: <code class="docutils literal notranslate"><span class="pre">sem_close(),</span> <span class="pre">``sem_unlink()</span></code><a class="headerlink" href="#closing-removing-sem-close-sem-unlink" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">sem_close</span><span class="p">(</span><span class="n">sem_t</span> <span class="o">*</span><span class="n">sem</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">sem_unlink</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Boring (again) …</p></li>
+<li><p>Analogy: <code class="docutils literal notranslate"><span class="pre">close()</span></code> and <code class="docutils literal notranslate"><span class="pre">unlink()</span></code>.</p></li>
+</ul>
+<p><a class="reference external" href="http://man7.org/linux/man-pages/man3/sem_close.3.html">man -s 3 sem_close</a></p>
+<p><a class="reference external" href="http://man7.org/linux/man-pages/man3/sem_unlink.3.html">man -s 3 sem_unlink</a></p>
+</div>
+<div class="section" id="semaphores-are-files">
+<h2>Semaphores are Files<a class="headerlink" href="#semaphores-are-files" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ls -l /dev/shm/
+<span class="go">total 1604</span>
+<span class="go">-rw------- ... sem.my-semaphore</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">/dev/shm</span></code> is a <code class="docutils literal notranslate"><span class="pre">tmpfs</span></code> instance</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sem.my-semaphore</span></code> is a <em>regulare file</em> in it</p>
+<ul>
+<li><p>Contains a flat structure, the semaphore</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sem_t</span></code> encapsulates open file descriptor and <code class="docutils literal notranslate"><span class="pre">void*</span></code> (the
+mapped memory)</p></li>
+</ul>
+</div>
+<div class="section" id="shared-memory-1">
+<h2>Shared Memory (1)<a class="headerlink" href="#shared-memory-1" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">shm_open</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="kt">int</span> <span class="n">oflag</span><span class="p">,</span> <span class="kt">mode_t</span> <span class="n">mode</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">shm_unlink</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><strong>POSIX shared memory</strong> is almost non-existing …</p>
+<ul class="simple">
+<li><p>Small wrapper around existing system calls</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shm_open()</span></code> only dictates the object name (<code class="docutils literal notranslate"><span class="pre">/some-name</span></code>)</p>
+<ul>
+<li><p>Explicitly returns a file descriptor</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shm_close()</span></code> does not exist. Use <code class="docutils literal notranslate"><span class="pre">close()</span></code>.</p></li>
+</ul>
+<p><a class="reference external" href="http://man7.org/linux/man-pages/man7/shm_overview.7.html">man -s 7 shm_overview</a></p>
+</div>
+<div class="section" id="shared-memory-2">
+<h2>Shared Memory (2)<a class="headerlink" href="#shared-memory-2" title="Permalink to this headline">¶</a></h2>
+<p><strong>Workflow</strong></p>
+<ul class="simple">
+<li><p>After creating (<code class="docutils literal notranslate"><span class="pre">shm_open()</span></code>), size is zero</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ftruncate()</span></code>, to adjust the size</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mmap()</span></code>, to create the mapping</p></li>
+</ul>
+<p>As simple as it can get!</p>
+</div>
+<div class="section" id="exercise-posix-message-queues">
+<h2>Exercise: POSIX Message Queues<a class="headerlink" href="#exercise-posix-message-queues" title="Permalink to this headline">¶</a></h2>
+<p><strong>Add a POSIX message queue to our server like follows</strong></p>
+<ul class="simple">
+<li><p>The client (to be written) opens an existing message queue,
+sends a message, and closes the queue afterwards.</p></li>
+<li><p>The server</p>
+<ul>
+<li><p>creates the message queue in the startup phase</p></li>
+<li><p>receives (file descriptor based) notifications in the main loop,
+and reads and outputs messages just like the others</p></li>
+<li><p>closes and removes the queue in the shutdown phase</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+  <div class="section">
+  
+  
+  </div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2020, Jörg Faschingbauer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.0+/efc1c5ef0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../../_sources/trainings/material/soup/sysprog_ipc/slides.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

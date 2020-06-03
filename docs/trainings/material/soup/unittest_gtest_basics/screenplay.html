@@ -1,0 +1,683 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Screenplay: Unittest: GTest Basics &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/jf-alabaster.css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="canonical" href="https://www.faschingbauer.co.at/trainings/material/soup/unittest_gtest_basics/screenplay.html" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Code: Unittest: GTest Basics" href="code/index.html" />
+    <link rel="prev" title="Unittest: GTest Basics" href="topic.html" />
+  
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  
+  <link rel="alternate" type="application/atom+xml"  href="../../../../blog/atom.xml" title="Jörg Faschingbauer">
+  
+  
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  
+  <style type="text/css">
+    ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
+    ul.ablog-archive li {float: left; margin-right: 5px; font-size: 80%}
+    ul.postlist a {font-style: italic;}
+    ul.postlist-style-disc {list-style-type: disc;}
+    ul.postlist-style-none {list-style-type: none;}
+    ul.postlist-style-circle {list-style-type: circle;}
+  </style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../index.html">
+    <img class="logo" src="../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../booking.html">Buchung, Kursablauf</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">The Entire Soup</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../cxx_class_intro/topic.html">C++: Class (Introduction)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_class_templates/topic.html">C++: Class Templates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_dynamic_memory/topic.html">C++: Dynamic Memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_exercises/topic.html">C++: Exercises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_global_initialization/topic.html">C++: Global Objects Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_inheritance_virtual/topic.html">C++: Inheritance, Interfaces, <code class="docutils literal notranslate"><span class="pre">virtual</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_lambda/topic.html">C++: Lambda</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_ownership_raii/topic.html">C++: Ownership/RAII</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_smart_pointers/topic.html">C++: Smart Pointers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_stl_container_intro/topic.html">C++: STL Containers (Intro)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_templates_vs_interfaces/topic.html">C++: Templates vs. Interfaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0110_blahblah/topic.html">Python: Blahblah</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0120_helloworld/topic.html">Python: Hello World</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0130_syntax_etc/topic.html">Python: Syntax etc.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0140_variables/topic.html">Python: Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0150_datatypes_overview/topic.html">Python: Datatypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0150_datatypes_overview_compound/topic.html">Python: Compound Datatypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0160_boolean/topic.html">Python: Boolean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0170_if/topic.html">Python: The <code class="docutils literal notranslate"><span class="pre">if</span></code> Statement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0190_exercises/topic.html">Python: Exercises: Basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0193_while/topic.html">Python: <code class="docutils literal notranslate"><span class="pre">while</span></code> Loops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0195_exercises/topic.html">Python: Exercises: While Loop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0200_sequential_types/topic.html">Python: Sequential Datatypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0210_indexing_slicing/topic.html">Python: Indexing and Slicing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0220_for/topic.html">Python: <code class="docutils literal notranslate"><span class="pre">for</span></code> Loops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0225_range/topic.html">Python: The <code class="docutils literal notranslate"><span class="pre">range</span></code> Function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0250_refs_flat_deep_copy/topic.html">Python: References, (Im)mutability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0270_functions/topic.html">Python: Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_yield_fibo/topic.html">Python: The Yield Statement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sysprog_events/topic.html">Sysprog: Events</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sysprog_ipc/topic.html">Sysprog: POSIX IPC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sysprog_signals/topic.html">Sysprog: Signals</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="topic.html">Unittest: GTest Basics</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Screenplay: Unittest: GTest Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="code/index.html">Code: Unittest: GTest Basics</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../unittest_gtest_cmake/topic.html">Unittest: GTest and CMake</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../unittest_gtest_fixture/topic.html">Unittest: GTest Fixtures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../list.html">Generated Topic List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exercises.html">Übungen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../about/site/index.html">This Site</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="screenplay-unittest-gtest-basics">
+<h1>Screenplay: Unittest: GTest Basics<a class="headerlink" href="#screenplay-unittest-gtest-basics" title="Permalink to this headline">¶</a></h1>
+<div class="sidebar">
+<p class="sidebar-title">Contents</p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#before-we-start" id="id12">Before We Start</a></p>
+<ul>
+<li><p><a class="reference internal" href="#installation" id="id13">Installation</a></p></li>
+<li><p><a class="reference internal" href="#documentation" id="id14">Documentation</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#simplest-test-no-test" id="id15">Simplest Test: No Test</a></p></li>
+<li><p><a class="reference internal" href="#next-simplest-single-file" id="id16">Next Simplest: Single File</a></p></li>
+<li><p><a class="reference internal" href="#executing-tests-selectively" id="id17">Executing Tests Selectively</a></p></li>
+<li><p><a class="reference internal" href="#fatal-failure" id="id18">Fatal Failure</a></p>
+<ul>
+<li><p><a class="reference internal" href="#fail" id="id19"><code class="docutils literal notranslate"><span class="pre">FAIL()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#assert" id="id20"><code class="docutils literal notranslate"><span class="pre">ASSERT_*()</span></code></a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#non-fatal-failure" id="id21">Non-Fatal Failure</a></p></li>
+<li><p><a class="reference internal" href="#custom-message-output" id="id22">Custom Message Output</a></p></li>
+<li><p><a class="reference internal" href="#last-not-least-structure" id="id23">Last Not Least: Structure</a></p>
+<ul>
+<li><p><a class="reference internal" href="#test-cases-and-suites" id="id24">Test Cases and Suites</a></p></li>
+<li><p><a class="reference internal" href="#runner" id="id25">Runner</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<p><strong>Code</strong>: <a class="reference internal" href="code/index.html"><span class="doc">Code: Unittest: GTest Basics</span></a></p>
+</div>
+<div class="section" id="before-we-start">
+<h2><a class="toc-backref" href="#id12">Before We Start</a><a class="headerlink" href="#before-we-start" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="installation">
+<h3><a class="toc-backref" href="#id13">Installation</a><a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h3>
+<p><strong>Fedora</strong>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span> dnf install gtest-devel
+<span class="gp">#</span> dnf install gmock-devel
+</pre></div>
+</div>
+<p><strong>Debian/Ubuntu</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span> apt-get install libgtest-dev
+<span class="gp">#</span> apt-get install google-mock
+</pre></div>
+</div>
+</div>
+<div class="section" id="documentation">
+<h3><a class="toc-backref" href="#id14">Documentation</a><a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/google/googletest">Googletest</a></p>
+<ul>
+<li><p><a class="reference external" href="https://github.com/google/googletest/blob/master/googletest/docs/primer.md">Primer</a></p></li>
+<li><p><a class="reference external" href="https://github.com/google/googletest/blob/master/googletest/docs/advanced.md">Advanced</a></p></li>
+<li><p><a class="reference external" href="https://github.com/google/googletest/blob/master/googlemock/docs/for_dummies.md">gMock for Dummies</a></p></li>
+<li><p><a class="reference external" href="https://github.com/google/googletest/blob/master/googlemock/docs/cook_book.md">Cookbook</a></p></li>
+</ul>
+</li>
+</ul>
+<img alt="../../../../_images/book-tdd.jpg" class="align-center" src="../../../../_images/book-tdd.jpg" />
+</div>
+</div>
+<div class="section" id="simplest-test-no-test">
+<span id="gtest-basics-simple"></span><h2><a class="toc-backref" href="#id15">Simplest Test: No Test</a><a class="headerlink" href="#simplest-test-no-test" title="Permalink to this headline">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../_downloads/161fded63883b18e16ea396da999fc01/simple.cc"><code class="xref download docutils literal notranslate"><span class="pre">code/simple.cc</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">testing</span><span class="o">::</span><span class="n">InitGoogleTest</span><span class="p">(</span><span class="o">&amp;</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">RUN_ALL_TESTS</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Compile and run:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> g++ simple.cc -o simple -lgtest
+<span class="gp">$</span> ./simple
+<span class="go">[==========] Running 0 tests from 0 test cases.</span>
+<span class="go">[==========] 0 tests from 0 test cases ran. (0 ms total)</span>
+<span class="go">[  PASSED  ] 0 tests.</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="next-simplest-single-file">
+<h2><a class="toc-backref" href="#id16">Next Simplest: Single File</a><a class="headerlink" href="#next-simplest-single-file" title="Permalink to this headline">¶</a></h2>
+<p>Aha, so <code class="docutils literal notranslate"><span class="pre">RUN_ALL_TESTS()</span></code> runs all tests. There only have to be
+tests there, so add two <em>suites</em>.</p>
+<p><strong>Discussion</strong>:</p>
+<ul class="simple">
+<li><p>Test structure, suites</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../_downloads/44393a77dda2dd2ac9b0490f3ab9a129/self-contained.cc"><code class="xref download docutils literal notranslate"><span class="pre">code/self-contained.cc</span></code></a></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">OneSuite</span><span class="p">,</span> <span class="n">Test1</span><span class="p">)</span> <span class="p">{}</span>
+<span class="n">TEST</span><span class="p">(</span><span class="n">OneSuite</span><span class="p">,</span> <span class="n">Test2</span><span class="p">)</span> <span class="p">{}</span>
+<span class="n">TEST</span><span class="p">(</span><span class="n">AnotherSuite</span><span class="p">,</span> <span class="n">Test1</span><span class="p">)</span> <span class="p">{}</span>
+<span class="n">TEST</span><span class="p">(</span><span class="n">AnotherSuite</span><span class="p">,</span> <span class="n">Test2</span><span class="p">)</span> <span class="p">{}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">testing</span><span class="o">::</span><span class="n">InitGoogleTest</span><span class="p">(</span><span class="o">&amp;</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nf">RUN_ALL_TESTS</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Compile and run:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> g++ self-contained.cc -o self-contained -lgtest
+<span class="gp">$</span> ./self-contained
+<span class="go">[==========] Running 2 tests from 1 test case.</span>
+<span class="go">[----------] Global test environment set-up.</span>
+<span class="go">[----------] 2 tests from Suite</span>
+<span class="go">[ RUN      ] Suite.Test1</span>
+<span class="go">[       OK ] Suite.Test1 (0 ms)</span>
+<span class="go">[ RUN      ] Suite.Test2</span>
+<span class="go">[       OK ] Suite.Test2 (0 ms)</span>
+<span class="go">[----------] 2 tests from Suite (0 ms total)</span>
+
+<span class="go">[----------] Global test environment tear-down</span>
+<span class="go">[==========] 2 tests from 1 test case ran. (1 ms total)</span>
+<span class="go">[  PASSED  ] 2 tests.</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="executing-tests-selectively">
+<h2><a class="toc-backref" href="#id17">Executing Tests Selectively</a><a class="headerlink" href="#executing-tests-selectively" title="Permalink to this headline">¶</a></h2>
+<p>Most important: RTFM</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ./self-contained --help
+<span class="go">...</span>
+<span class="go">  --gtest_filter=POSTIVE_PATTERNS[-NEGATIVE_PATTERNS]</span>
+<span class="go">      Run only the tests whose name matches one of the positive patterns but</span>
+<span class="go">      none of the negative patterns. &#39;?&#39; matches any single character; &#39;*&#39;</span>
+<span class="go">      matches any substring; &#39;:&#39; separates two patterns.</span>
+<span class="go">...</span>
+</pre></div>
+</div>
+<p>Running the program executes all tests that are there, which might be
+many.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ./self-contained --gtest_list_tests
+<span class="go">OneSuite.</span>
+<span class="go">  Test1</span>
+<span class="go">  Test2</span>
+<span class="go">AnotherSuite.</span>
+<span class="go">  Test1</span>
+<span class="go">  Test2</span>
+</pre></div>
+</div>
+<p>Want to run only <code class="docutils literal notranslate"><span class="pre">OneSuite.Test2</span></code>,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ./self-contained --gtest_filter<span class="o">=</span><span class="s1">&#39;OneSuite.Test1&#39;</span>
+<span class="go">Note: Google Test filter = OneSuite.Test1</span>
+<span class="go">[==========] Running 1 test from 1 test case.</span>
+<span class="go">[----------] Global test environment set-up.</span>
+<span class="go">[----------] 1 test from OneSuite</span>
+<span class="go">[ RUN      ] OneSuite.Test1</span>
+<span class="go">[       OK ] OneSuite.Test1 (0 ms)</span>
+<span class="go">[----------] 1 test from OneSuite (0 ms total)</span>
+
+<span class="go">[----------] Global test environment tear-down</span>
+<span class="go">[==========] 1 test from 1 test case ran. (0 ms total)</span>
+<span class="go">[  PASSED  ] 1 test.</span>
+</pre></div>
+</div>
+<p>Filter is actually a <em>shell glob</em>,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ./self-contained --gtest_filter<span class="o">=</span><span class="s1">&#39;OneSuite*&#39;</span>
+<span class="go">Note: Google Test filter = OneSuite*</span>
+<span class="go">[==========] Running 2 tests from 1 test case.</span>
+<span class="go">[----------] Global test environment set-up.</span>
+<span class="go">[----------] 2 tests from OneSuite</span>
+<span class="go">[ RUN      ] OneSuite.Test1</span>
+<span class="go">[       OK ] OneSuite.Test1 (0 ms)</span>
+<span class="go">[ RUN      ] OneSuite.Test2</span>
+<span class="go">[       OK ] OneSuite.Test2 (0 ms)</span>
+<span class="go">[----------] 2 tests from OneSuite (0 ms total)</span>
+
+<span class="go">[----------] Global test environment tear-down</span>
+<span class="go">[==========] 2 tests from 1 test case ran. (0 ms total)</span>
+<span class="go">[  PASSED  ] 2 tests.</span>
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ ./self-contained --gtest_filter<span class="o">=</span><span class="s1">&#39;*.Test1&#39;</span>
+...
+</pre></div>
+</div>
+</div>
+<div class="section" id="fatal-failure">
+<h2><a class="toc-backref" href="#id18">Fatal Failure</a><a class="headerlink" href="#fatal-failure" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="fail">
+<h3><a class="toc-backref" href="#id19"><code class="docutils literal notranslate"><span class="pre">FAIL()</span></code></a><a class="headerlink" href="#fail" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">FAIL()</span></code> is definitely <em>fatal</em>, in that the test stops immediately
+in it.</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../_downloads/938dc82a5af520ff58d02477d3b09e94/fail.cc"><code class="xref download docutils literal notranslate"><span class="pre">code/fail.cc</span></code></a></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">FailDemo</span><span class="p">,</span> <span class="n">FailIsFatal</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">FAIL</span><span class="p">();</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;succeeded&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">testing</span><span class="o">::</span><span class="n">InitGoogleTest</span><span class="p">(</span><span class="o">&amp;</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nf">RUN_ALL_TESTS</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Compile and run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ g++ fail.cc -o fail -lgtest
+$ ./fail
+<span class="o">[==========]</span> Running <span class="m">1</span> <span class="nb">test</span> from <span class="m">1</span> <span class="nb">test</span> <span class="k">case</span>.
+<span class="o">[</span>----------<span class="o">]</span> Global <span class="nb">test</span> environment set-up.
+<span class="o">[</span>----------<span class="o">]</span> <span class="m">1</span> <span class="nb">test</span> from FailDemo
+<span class="o">[</span> RUN      <span class="o">]</span> FailDemo.FailIsFatal
+fail.cc:6: Failure
+Failed
+<span class="o">[</span>  FAILED  <span class="o">]</span> FailDemo.FailIsFatal <span class="o">(</span><span class="m">1</span> ms<span class="o">)</span>
+<span class="o">[</span>----------<span class="o">]</span> <span class="m">1</span> <span class="nb">test</span> from FailDemo <span class="o">(</span><span class="m">1</span> ms total<span class="o">)</span>
+
+<span class="o">[</span>----------<span class="o">]</span> Global <span class="nb">test</span> environment tear-down
+<span class="o">[==========]</span> <span class="m">1</span> <span class="nb">test</span> from <span class="m">1</span> <span class="nb">test</span> <span class="k">case</span> ran. <span class="o">(</span><span class="m">1</span> ms total<span class="o">)</span>
+<span class="o">[</span>  PASSED  <span class="o">]</span> <span class="m">0</span> tests.
+<span class="o">[</span>  FAILED  <span class="o">]</span> <span class="m">1</span> test, listed below:
+<span class="o">[</span>  FAILED  <span class="o">]</span> FailDemo.FailIsFatal
+</pre></div>
+</div>
+<p><strong>Discussion</strong></p>
+<ul class="simple">
+<li><p>We do not see the output after <code class="docutils literal notranslate"><span class="pre">FAIL()</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="assert">
+<h3><a class="toc-backref" href="#id20"><code class="docutils literal notranslate"><span class="pre">ASSERT_*()</span></code></a><a class="headerlink" href="#assert" title="Permalink to this headline">¶</a></h3>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../_downloads/4a22202583847e38849f676cffac0002/assert.cc"><code class="xref download docutils literal notranslate"><span class="pre">code/assert.cc</span></code></a></span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">AssertDemo</span><span class="p">,</span> <span class="n">AssertIsFatal</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="sc">&#39;X&#39;</span> <span class="o">==</span> <span class="sc">&#39;U&#39;</span><span class="p">);</span>
+    <span class="n">ASSERT_EQ</span><span class="p">(</span><span class="sc">&#39;X&#39;</span><span class="p">,</span> <span class="sc">&#39;U&#39;</span><span class="p">);</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;succeeded&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">testing</span><span class="o">::</span><span class="n">InitGoogleTest</span><span class="p">(</span><span class="o">&amp;</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nf">RUN_ALL_TESTS</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Compile and run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ g++ assert.cc -o assert -lgtest
+$ ./assert
+<span class="o">[==========]</span> Running <span class="m">1</span> <span class="nb">test</span> from <span class="m">1</span> <span class="nb">test</span> <span class="k">case</span>.
+<span class="o">[</span>----------<span class="o">]</span> Global <span class="nb">test</span> environment set-up.
+<span class="o">[</span>----------<span class="o">]</span> <span class="m">1</span> <span class="nb">test</span> from AssertDemo
+<span class="o">[</span> RUN      <span class="o">]</span> AssertDemo.AssertIsFatal
+assert.cc:6: Failure
+Value of: <span class="s1">&#39;X&#39;</span> <span class="o">==</span> <span class="s1">&#39;U&#39;</span>
+  Actual: <span class="nb">false</span>
+Expected: <span class="nb">true</span>
+<span class="o">[</span>  FAILED  <span class="o">]</span> AssertDemo.AssertIsFatal <span class="o">(</span><span class="m">1</span> ms<span class="o">)</span>
+<span class="o">[</span>----------<span class="o">]</span> <span class="m">1</span> <span class="nb">test</span> from AssertDemo <span class="o">(</span><span class="m">1</span> ms total<span class="o">)</span>
+
+<span class="o">[</span>----------<span class="o">]</span> Global <span class="nb">test</span> environment tear-down
+<span class="o">[==========]</span> <span class="m">1</span> <span class="nb">test</span> from <span class="m">1</span> <span class="nb">test</span> <span class="k">case</span> ran. <span class="o">(</span><span class="m">1</span> ms total<span class="o">)</span>
+<span class="o">[</span>  PASSED  <span class="o">]</span> <span class="m">0</span> tests.
+<span class="o">[</span>  FAILED  <span class="o">]</span> <span class="m">1</span> test, listed below:
+<span class="o">[</span>  FAILED  <span class="o">]</span> AssertDemo.AssertIsFatal
+
+ <span class="m">1</span> FAILED TEST
+</pre></div>
+</div>
+<p><strong>Discussion</strong>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">assert.cc</span></code> has two assertions to mean the same thing</p></li>
+<li><p>We see only one failure reported</p></li>
+<li><p>The second isn’t executed because the first fails</p></li>
+<li><p>This is the essence in the term <em>fatal</em>: <em>stop immediately</em></p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="non-fatal-failure">
+<h2><a class="toc-backref" href="#id21">Non-Fatal Failure</a><a class="headerlink" href="#non-fatal-failure" title="Permalink to this headline">¶</a></h2>
+<p>Instead of using <code class="docutils literal notranslate"><span class="pre">ASSERT_*()</span></code> like above, use <code class="docutils literal notranslate"><span class="pre">EXPECT_*()</span></code> .</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../_downloads/475f8dc9a37810325a272f8050ee36ea/expect.cc"><code class="xref download docutils literal notranslate"><span class="pre">code/expect.cc</span></code></a></span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">ExpectDemo</span><span class="p">,</span> <span class="n">ExpectIsNonFatal</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">EXPECT_TRUE</span><span class="p">(</span><span class="sc">&#39;X&#39;</span> <span class="o">==</span> <span class="sc">&#39;U&#39;</span><span class="p">);</span>
+    <span class="n">EXPECT_EQ</span><span class="p">(</span><span class="sc">&#39;X&#39;</span><span class="p">,</span> <span class="sc">&#39;U&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">testing</span><span class="o">::</span><span class="n">InitGoogleTest</span><span class="p">(</span><span class="o">&amp;</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nf">RUN_ALL_TESTS</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Compile and run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ g++ expect.cc -o expect -lgtest
+$ ./expect
+<span class="o">[==========]</span> Running <span class="m">1</span> <span class="nb">test</span> from <span class="m">1</span> <span class="nb">test</span> <span class="k">case</span>.
+<span class="o">[</span>----------<span class="o">]</span> Global <span class="nb">test</span> environment set-up.
+<span class="o">[</span>----------<span class="o">]</span> <span class="m">1</span> <span class="nb">test</span> from ExpectDemo
+<span class="o">[</span> RUN      <span class="o">]</span> ExpectDemo.ExpectIsNonFatal
+expect.cc:5: Failure
+Value of: <span class="s1">&#39;X&#39;</span> <span class="o">==</span> <span class="s1">&#39;U&#39;</span>
+  Actual: <span class="nb">false</span>
+Expected: <span class="nb">true</span>
+expect.cc:6: Failure
+Expected equality of these values:
+  <span class="s1">&#39;X&#39;</span>
+    Which is: <span class="s1">&#39;X&#39;</span> <span class="o">(</span><span class="m">88</span>, 0x58<span class="o">)</span>
+  <span class="s1">&#39;U&#39;</span>
+    Which is: <span class="s1">&#39;U&#39;</span> <span class="o">(</span><span class="m">85</span>, 0x55<span class="o">)</span>
+<span class="o">[</span>  FAILED  <span class="o">]</span> ExpectDemo.ExpectIsNonFatal <span class="o">(</span><span class="m">0</span> ms<span class="o">)</span>
+<span class="o">[</span>----------<span class="o">]</span> <span class="m">1</span> <span class="nb">test</span> from ExpectDemo <span class="o">(</span><span class="m">1</span> ms total<span class="o">)</span>
+
+<span class="o">[</span>----------<span class="o">]</span> Global <span class="nb">test</span> environment tear-down
+<span class="o">[==========]</span> <span class="m">1</span> <span class="nb">test</span> from <span class="m">1</span> <span class="nb">test</span> <span class="k">case</span> ran. <span class="o">(</span><span class="m">1</span> ms total<span class="o">)</span>
+<span class="o">[</span>  PASSED  <span class="o">]</span> <span class="m">0</span> tests.
+<span class="o">[</span>  FAILED  <span class="o">]</span> <span class="m">1</span> test, listed below:
+<span class="o">[</span>  FAILED  <span class="o">]</span> ExpectDemo.ExpectIsNonFatal
+
+ <span class="m">1</span> FAILED TEST
+</pre></div>
+</div>
+<p><strong>Discussion</strong></p>
+<ul class="simple">
+<li><p>We see two failures reported</p></li>
+<li><p>Both <code class="docutils literal notranslate"><span class="pre">EXPECT_()</span></code> are evaluated</p></li>
+<li><p>Test continues to run</p></li>
+<li><p>Reported as <em>failed</em> nonetheless</p></li>
+</ul>
+</div>
+<div class="section" id="custom-message-output">
+<h2><a class="toc-backref" href="#id22">Custom Message Output</a><a class="headerlink" href="#custom-message-output" title="Permalink to this headline">¶</a></h2>
+<p>All test macros support <code class="docutils literal notranslate"><span class="pre">&lt;&lt;</span></code> <code class="docutils literal notranslate"><span class="pre">ostream</span></code> operators.</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../_downloads/7c518b03e2be86d9f66eff49c802f62c/fail-with-message.cc"><code class="xref download docutils literal notranslate"><span class="pre">code/fail-with-message.cc</span></code></a></span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">FailDemo</span><span class="p">,</span> <span class="n">FailIsFatal</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">FAIL</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;argh, this is fatal&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">testing</span><span class="o">::</span><span class="n">InitGoogleTest</span><span class="p">(</span><span class="o">&amp;</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nf">RUN_ALL_TESTS</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="last-not-least-structure">
+<h2><a class="toc-backref" href="#id23">Last Not Least: Structure</a><a class="headerlink" href="#last-not-least-structure" title="Permalink to this headline">¶</a></h2>
+<p><strong>Discussion</strong></p>
+<ul class="simple">
+<li><p>Hm. This way programs become rather large.</p></li>
+<li><p>Running every single one is cumbersome and error prone.</p>
+<ul>
+<li><p>“Lost Tests Syndrome”</p></li>
+</ul>
+</li>
+<li><p>Could use preprocessor to include tests :-) but no</p></li>
+</ul>
+<p><strong>Plan</strong></p>
+<ul class="simple">
+<li><p>Externalize tests into separate <code class="docutils literal notranslate"><span class="pre">.cc</span></code> files.</p></li>
+<li><p>Link them together into a single <em>Test Runner</em></p></li>
+</ul>
+<div class="section" id="test-cases-and-suites">
+<h3><a class="toc-backref" href="#id24">Test Cases and Suites</a><a class="headerlink" href="#test-cases-and-suites" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Copy what we have down into a <code class="docutils literal notranslate"><span class="pre">tests/</span></code> subdirectory (for example,
+to have a structure)</p></li>
+<li><p>Small standalone fragments, waiting to be aggregated.</p></li>
+<li><p>Do nothing on their own</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../_downloads/120e7a844faa7865e2aa5611ca83e867/self-contained.cc"><code class="xref download docutils literal notranslate"><span class="pre">code/tests/self-contained.cc</span></code></a></span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">OneSuite</span><span class="p">,</span> <span class="n">Test1</span><span class="p">)</span> <span class="p">{}</span>
+<span class="n">TEST</span><span class="p">(</span><span class="n">OneSuite</span><span class="p">,</span> <span class="n">Test2</span><span class="p">)</span> <span class="p">{}</span>
+<span class="n">TEST</span><span class="p">(</span><span class="n">AnotherSuite</span><span class="p">,</span> <span class="n">Test1</span><span class="p">)</span> <span class="p">{}</span>
+<span class="n">TEST</span><span class="p">(</span><span class="n">AnotherSuite</span><span class="p">,</span> <span class="n">Test2</span><span class="p">)</span> <span class="p">{}</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../_downloads/02ce8aa8e145ed0cf75113d9f174d65b/fail.cc"><code class="xref download docutils literal notranslate"><span class="pre">code/tests/fail.cc</span></code></a></span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">FailDemo</span><span class="p">,</span> <span class="n">FailIsFatal</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">FAIL</span><span class="p">();</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;succeeded&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../_downloads/f04459ae43b60142ef3947046df8ba64/assert.cc"><code class="xref download docutils literal notranslate"><span class="pre">code/tests/assert.cc</span></code></a></span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">AssertDemo</span><span class="p">,</span> <span class="n">AssertIsFatal</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="sc">&#39;X&#39;</span> <span class="o">==</span> <span class="sc">&#39;U&#39;</span><span class="p">);</span>
+    <span class="n">ASSERT_EQ</span><span class="p">(</span><span class="sc">&#39;X&#39;</span><span class="p">,</span> <span class="sc">&#39;U&#39;</span><span class="p">);</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;succeeded&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../_downloads/58b1c2fc298643da8b66da5212e0b737/expect.cc"><code class="xref download docutils literal notranslate"><span class="pre">code/tests/expect.cc</span></code></a></span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">ExpectDemo</span><span class="p">,</span> <span class="n">ExpectIsNonFatal</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">EXPECT_TRUE</span><span class="p">(</span><span class="sc">&#39;X&#39;</span> <span class="o">==</span> <span class="sc">&#39;U&#39;</span><span class="p">);</span>
+    <span class="n">EXPECT_EQ</span><span class="p">(</span><span class="sc">&#39;X&#39;</span><span class="p">,</span> <span class="sc">&#39;U&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="runner">
+<h3><a class="toc-backref" href="#id25">Runner</a><a class="headerlink" href="#runner" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Aggregate them into a test-runner executable</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../_downloads/2477cbd631d25d6f6dbe6c60b09cc1ab/run-tests.cc"><code class="xref download docutils literal notranslate"><span class="pre">code/run-tests.cc</span></code></a></span><a class="headerlink" href="#id11" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">testing</span><span class="o">::</span><span class="n">InitGoogleTest</span><span class="p">(</span><span class="o">&amp;</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">RUN_ALL_TESTS</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><p>The main executable does not reference the tests in any way</p></li>
+<li><p>It just runs what’s there</p></li>
+<li><p>This is the same as <a class="reference internal" href="#gtest-basics-simple"><span class="std std-ref">Simplest Test: No Test</span></a></p></li>
+</ul>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ g++ run-tests.cc -o run-tests -lgtest
+$ ./run-tests
+<span class="o">[==========]</span> Running <span class="m">0</span> tests from <span class="m">0</span> <span class="nb">test</span> cases.
+<span class="o">[==========]</span> <span class="m">0</span> tests from <span class="m">0</span> <span class="nb">test</span> cases ran. <span class="o">(</span><span class="m">0</span> ms total<span class="o">)</span>
+<span class="o">[</span>  PASSED  <span class="o">]</span> <span class="m">0</span> tests.
+</pre></div>
+</div>
+<p><strong>Discussion</strong></p>
+<ul class="simple">
+<li><p>Magic behind the scenes: remember how <code class="docutils literal notranslate"><span class="pre">RUN_ALL_TESTS()</span></code> picked up
+test cases that were there?</p></li>
+<li><p>Global list of test cases where test cases enter themselves; <em>how
+does that work</em>?</p></li>
+<li><p>(Anyway …)</p></li>
+<li><p><strong>Question</strong>: <em>So how does this list build up?</em></p></li>
+<li><p><strong>Answer</strong>: <em>link the tests!</em></p></li>
+</ul>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ g++ run-tests.cc tests/*.cc -o run-tests -lgtest
+$ ./run-tests
+<span class="o">[==========]</span> Running <span class="m">7</span> tests from <span class="m">5</span> <span class="nb">test</span> cases.
+... rödel ...
+<span class="o">[==========]</span> <span class="m">7</span> tests from <span class="m">5</span> <span class="nb">test</span> cases ran. <span class="o">(</span><span class="m">0</span> ms total<span class="o">)</span>
+<span class="o">[</span>  PASSED  <span class="o">]</span> <span class="m">4</span> tests.
+<span class="o">[</span>  FAILED  <span class="o">]</span> <span class="m">3</span> tests, listed below:
+<span class="o">[</span>  FAILED  <span class="o">]</span> AssertDemo.AssertIsFatal
+<span class="o">[</span>  FAILED  <span class="o">]</span> ExpectDemo.ExpectIsNonFatal
+<span class="o">[</span>  FAILED  <span class="o">]</span> FailDemo.FailIsFatal
+
+ <span class="m">3</span> FAILED TESTS
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+  <div class="section">
+  
+  
+  </div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2020, Jörg Faschingbauer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.0+/efc1c5ef0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../../_sources/trainings/material/soup/unittest_gtest_basics/screenplay.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
