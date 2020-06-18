@@ -1,0 +1,562 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python: XML: ElementTree (etree) &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/jf-alabaster.css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="canonical" href="https://www.faschingbauer.co.at/trainings/material/soup/python_5550_xml_etree/topic.html" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Python: The unittest Module" href="../python_5600_unittest/topic.html" />
+    <link rel="prev" title="Python: DBAPI 2: PostgreSQL" href="../python_5520_dbapi2_postgres/topic.html" />
+  
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  
+  <link rel="alternate" type="application/atom+xml"  href="../../../../blog/atom.xml" title="Jörg Faschingbauer">
+  
+  
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  
+  <style type="text/css">
+    ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
+    ul.ablog-archive li {float: left; margin-right: 5px; font-size: 80%}
+    ul.postlist a {font-style: italic;}
+    ul.postlist-style-disc {list-style-type: disc;}
+    ul.postlist-style-none {list-style-type: none;}
+    ul.postlist-style-circle {list-style-type: circle;}
+  </style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../index.html">
+    <img class="logo" src="../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../booking.html">Buchung, Kursablauf</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">The Entire Soup</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../cxx_class_intro/topic.html">C++: Class (Introduction)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_class_templates/topic.html">C++: Class Templates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_dynamic_memory/topic.html">C++: Dynamic Memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_exercises/topic.html">C++: Exercises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_global_initialization/topic.html">C++: Global Objects Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_inheritance_virtual/topic.html">C++: Inheritance, Interfaces, <code class="docutils literal notranslate"><span class="pre">virtual</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_lambda/topic.html">C++: Lambda</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_ownership_raii/topic.html">C++: Ownership/RAII</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_smart_pointers/topic.html">C++: Smart Pointers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_stl_container_intro/topic.html">C++: STL Containers (Intro)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_templates_vs_interfaces/topic.html">C++: Templates vs. Interfaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0110_blahblah/topic.html">Python: Blahblah</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0120_helloworld/topic.html">Python: Hello World</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0130_syntax_etc/topic.html">Python: Syntax etc.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0140_variables/topic.html">Python: Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0150_datatypes_overview/topic.html">Python: Datatypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0150_datatypes_overview_compound/topic.html">Python: Compound Datatypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0160_boolean/topic.html">Python: Boolean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0170_if/topic.html">Python: The <code class="docutils literal notranslate"><span class="pre">if</span></code> Statement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0190_exercises/topic.html">Python: Exercises: Basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0193_while/topic.html">Python: <code class="docutils literal notranslate"><span class="pre">while</span></code> Loops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0195_exercises/topic.html">Python: Exercises: While Loop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0200_sequential_types/topic.html">Python: Sequential Datatypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0210_indexing_slicing/topic.html">Python: Indexing and Slicing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0220_for/topic.html">Python: <code class="docutils literal notranslate"><span class="pre">for</span></code> Loops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0225_range/topic.html">Python: The <code class="docutils literal notranslate"><span class="pre">range</span></code> Function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0250_refs_flat_deep_copy/topic.html">Python: References, (Im)mutability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0270_functions/topic.html">Python: Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0275_exercises/topic.html">Python: Exercises: Lists, Loops, Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0300_strings/topic.html">Python: More About Strings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0310_strings_formatting/topic.html">Python: String Formatting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0320_strings_methods/topic.html">Python: Miscellaneous String Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0330_strings_encoding/topic.html">Python: Strings and Encoding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0350_exercises/topic.html">Python: Exercises: Strings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0400_lists/topic.html">Python: More on Lists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0450_dictionaries/topic.html">Python: More on Dictionaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0460_sets/topic.html">Python: More on Sets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0500_files/topic.html">Python: File I/O</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0510_exercises_strings_and_files/topic.html">Python: Exercises: Strings, Files, …</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_1000_function_objects/topic.html">Python: Function Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_1010_generators_yield/topic.html">Python: Iteration and Generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_1011_generators_yield_exercise/topic.html">Python: Exercise: Generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_1050_oo/topic.html">Python: Object Oriented Programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_1100_exceptions/topic.html">Python: Exception Handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_1200_modules/topic.html">Python: Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_5500_dbapi2/topic.html">Python: DBAPI 2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_5510_dbapi2_sqlite3/topic.html">Python: DBAPI 2: <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_5520_dbapi2_postgres/topic.html">Python: DBAPI 2: PostgreSQL</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Python: XML: ElementTree (<code class="docutils literal notranslate"><span class="pre">etree</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_5600_unittest/topic.html">Python: The <code class="docutils literal notranslate"><span class="pre">unittest</span></code> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_yield_fibo/topic.html">Python: The Yield Statement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sysprog_events/topic.html">Sysprog: Events</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sysprog_ipc/topic.html">Sysprog: POSIX IPC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sysprog_signals/topic.html">Sysprog: Signals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../unittest_gtest_basics/topic.html">Unittest: GTest Basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../unittest_gtest_cmake/topic.html">Unittest: GTest and CMake</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../unittest_gtest_fixture/topic.html">Unittest: GTest Fixtures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../list.html">Generated Topic List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exercises.html">Übungen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../about/site/index.html">This Site</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="python-xml-elementtree-etree">
+<h1>Python: XML: ElementTree (<code class="docutils literal notranslate"><span class="pre">etree</span></code>)<a class="headerlink" href="#python-xml-elementtree-etree" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#sax-and-dom" id="id5">SAX and DOM</a></p></li>
+<li><p><a class="reference internal" href="#elementtree" id="id6">ElementTree</a></p></li>
+<li><p><a class="reference internal" href="#a-very-simple-document" id="id7">A Very Simple Document</a></p></li>
+<li><p><a class="reference internal" href="#attributes" id="id8">Attributes</a></p></li>
+<li><p><a class="reference internal" href="#text-1" id="id9">Text (1)</a></p></li>
+<li><p><a class="reference internal" href="#text-2" id="id10">Text (2)</a></p></li>
+<li><p><a class="reference internal" href="#writing-xml-documents" id="id11">Writing XML Documents</a></p></li>
+<li><p><a class="reference internal" href="#reading-xml-documents" id="id12">Reading XML Documents</a></p></li>
+</ul>
+</div>
+<svg width="744pt" height="548pt"
+ viewBox="0.00 0.00 744.49 548.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 544)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-544 740.49,-544 740.49,4 -4,4"/>
+<!-- python_0150_datatypes_overview -->
+<g id="node1" class="node">
+<title>python_0150_datatypes_overview</title>
+<g id="a_node1"><a xlink:href="../python_0150_datatypes_overview/topic.html" xlink:title="Python: Datatypes">
+<ellipse fill="none" stroke="black" cx="466.49" cy="-90" rx="96.68" ry="18"/>
+<text text-anchor="middle" x="466.49" y="-86.3" font-family="Times,serif" font-size="14.00">Python: Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_0140_variables -->
+<g id="node8" class="node">
+<title>python_0140_variables</title>
+<g id="a_node8"><a xlink:href="../python_0140_variables/topic.html" xlink:title="Python: Variables">
+<ellipse fill="none" stroke="black" cx="643.49" cy="-18" rx="92.08" ry="18"/>
+<text text-anchor="middle" x="643.49" y="-14.3" font-family="Times,serif" font-size="14.00">Python: Variables</text>
+</a>
+</g>
+</g>
+<!-- python_0150_datatypes_overview&#45;&gt;python_0140_variables -->
+<g id="edge1" class="edge">
+<title>python_0150_datatypes_overview&#45;&gt;python_0140_variables</title>
+<path fill="none" stroke="black" d="M505.77,-73.46C532.1,-63.05 566.95,-49.27 595,-38.17"/>
+<polygon fill="black" stroke="black" points="596.61,-41.3 604.62,-34.37 594.03,-34.79 596.61,-41.3"/>
+</g>
+<!-- python_0200_sequential_types -->
+<g id="node2" class="node">
+<title>python_0200_sequential_types</title>
+<g id="a_node2"><a xlink:href="../python_0200_sequential_types/topic.html" xlink:title="Python: Sequential Datatypes">
+<ellipse fill="none" stroke="black" cx="149.49" cy="-162" rx="149.47" ry="18"/>
+<text text-anchor="middle" x="149.49" y="-158.3" font-family="Times,serif" font-size="14.00">Python: Sequential Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_0200_sequential_types&#45;&gt;python_0150_datatypes_overview -->
+<g id="edge2" class="edge">
+<title>python_0200_sequential_types&#45;&gt;python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M217.88,-145.9C270.72,-134.23 343.56,-118.15 396.73,-106.4"/>
+<polygon fill="black" stroke="black" points="397.75,-109.76 406.76,-104.19 396.24,-102.93 397.75,-109.76"/>
+</g>
+<!-- python_1050_oo -->
+<g id="node3" class="node">
+<title>python_1050_oo</title>
+<g id="a_node3"><a xlink:href="../python_1050_oo/topic.html" xlink:title="Python: Object Oriented Programming">
+<ellipse fill="none" stroke="black" cx="457.49" cy="-378" rx="190.37" ry="18"/>
+<text text-anchor="middle" x="457.49" y="-374.3" font-family="Times,serif" font-size="14.00">Python: Object Oriented Programming</text>
+</a>
+</g>
+</g>
+<!-- python_0450_dictionaries -->
+<g id="node6" class="node">
+<title>python_0450_dictionaries</title>
+<g id="a_node6"><a xlink:href="../python_0450_dictionaries/topic.html" xlink:title="Python: More on Dictionaries">
+<ellipse fill="none" stroke="black" cx="353.49" cy="-306" rx="146.77" ry="18"/>
+<text text-anchor="middle" x="353.49" y="-302.3" font-family="Times,serif" font-size="14.00">Python: More on Dictionaries</text>
+</a>
+</g>
+</g>
+<!-- python_1050_oo&#45;&gt;python_0450_dictionaries -->
+<g id="edge3" class="edge">
+<title>python_1050_oo&#45;&gt;python_0450_dictionaries</title>
+<path fill="none" stroke="black" d="M432.31,-360.05C418.64,-350.85 401.57,-339.36 386.81,-329.43"/>
+<polygon fill="black" stroke="black" points="388.68,-326.47 378.43,-323.79 384.77,-332.28 388.68,-326.47"/>
+</g>
+<!-- python_0270_functions -->
+<g id="node10" class="node">
+<title>python_0270_functions</title>
+<g id="a_node10"><a xlink:href="../python_0270_functions/topic.html" xlink:title="Python: Functions">
+<ellipse fill="none" stroke="black" cx="613.49" cy="-306" rx="94.78" ry="18"/>
+<text text-anchor="middle" x="613.49" y="-302.3" font-family="Times,serif" font-size="14.00">Python: Functions</text>
+</a>
+</g>
+</g>
+<!-- python_1050_oo&#45;&gt;python_0270_functions -->
+<g id="edge4" class="edge">
+<title>python_1050_oo&#45;&gt;python_0270_functions</title>
+<path fill="none" stroke="black" d="M494.85,-360.23C517.11,-350.24 545.5,-337.51 568.93,-326.99"/>
+<polygon fill="black" stroke="black" points="570.61,-330.08 578.3,-322.79 567.74,-323.69 570.61,-330.08"/>
+</g>
+<!-- python_5550_xml_etree -->
+<g id="node4" class="node">
+<title>python_5550_xml_etree</title>
+<ellipse fill="none" stroke="black" cx="239.49" cy="-522" rx="170.87" ry="18"/>
+<text text-anchor="middle" x="239.49" y="-518.3" font-family="Times,serif" font-size="14.00">Python: XML: ElementTree (etree)</text>
+</g>
+<!-- python_0220_for -->
+<g id="node5" class="node">
+<title>python_0220_for</title>
+<g id="a_node5"><a xlink:href="../python_0220_for/topic.html" xlink:title="Python: for Loops">
+<ellipse fill="none" stroke="black" cx="178.49" cy="-234" rx="92.88" ry="18"/>
+<text text-anchor="middle" x="178.49" y="-230.3" font-family="Times,serif" font-size="14.00">Python: for Loops</text>
+</a>
+</g>
+</g>
+<!-- python_5550_xml_etree&#45;&gt;python_0220_for -->
+<g id="edge6" class="edge">
+<title>python_5550_xml_etree&#45;&gt;python_0220_for</title>
+<path fill="none" stroke="black" d="M235.85,-503.97C225.66,-456.19 196.75,-320.62 184.3,-262.27"/>
+<polygon fill="black" stroke="black" points="187.69,-261.36 182.18,-252.31 180.84,-262.82 187.69,-261.36"/>
+</g>
+<!-- python_5550_xml_etree&#45;&gt;python_0450_dictionaries -->
+<g id="edge7" class="edge">
+<title>python_5550_xml_etree&#45;&gt;python_0450_dictionaries</title>
+<path fill="none" stroke="black" d="M236.76,-503.77C232.73,-472.31 228.59,-404.68 258.49,-360 267.71,-346.22 281.77,-335.66 296.28,-327.73"/>
+<polygon fill="black" stroke="black" points="298,-330.78 305.33,-323.13 294.83,-324.54 298,-330.78"/>
+</g>
+<!-- python_1200_modules -->
+<g id="node7" class="node">
+<title>python_1200_modules</title>
+<g id="a_node7"><a xlink:href="../python_1200_modules/topic.html" xlink:title="Python: Modules">
+<ellipse fill="none" stroke="black" cx="566.49" cy="-450" rx="89.08" ry="18"/>
+<text text-anchor="middle" x="566.49" y="-446.3" font-family="Times,serif" font-size="14.00">Python: Modules</text>
+</a>
+</g>
+</g>
+<!-- python_5550_xml_etree&#45;&gt;python_1200_modules -->
+<g id="edge5" class="edge">
+<title>python_5550_xml_etree&#45;&gt;python_1200_modules</title>
+<path fill="none" stroke="black" d="M311.25,-505.64C366.73,-493.76 443.06,-477.42 497.77,-465.71"/>
+<polygon fill="black" stroke="black" points="498.67,-469.1 507.72,-463.58 497.21,-462.25 498.67,-469.1"/>
+</g>
+<!-- python_0220_for&#45;&gt;python_0200_sequential_types -->
+<g id="edge8" class="edge">
+<title>python_0220_for&#45;&gt;python_0200_sequential_types</title>
+<path fill="none" stroke="black" d="M171.32,-215.7C168.05,-207.81 164.11,-198.3 160.48,-189.55"/>
+<polygon fill="black" stroke="black" points="163.63,-188 156.57,-180.1 157.17,-190.68 163.63,-188"/>
+</g>
+<!-- python_0450_dictionaries&#45;&gt;python_0220_for -->
+<g id="edge10" class="edge">
+<title>python_0450_dictionaries&#45;&gt;python_0220_for</title>
+<path fill="none" stroke="black" d="M312.46,-288.59C286.81,-278.33 253.67,-265.07 226.76,-254.31"/>
+<polygon fill="black" stroke="black" points="227.74,-250.93 217.16,-250.47 225.14,-257.43 227.74,-250.93"/>
+</g>
+<!-- python_0150_datatypes_overview_compound -->
+<g id="node9" class="node">
+<title>python_0150_datatypes_overview_compound</title>
+<g id="a_node9"><a xlink:href="../python_0150_datatypes_overview_compound/topic.html" xlink:title="Python: Compound Datatypes">
+<ellipse fill="none" stroke="black" cx="466.49" cy="-162" rx="149.47" ry="18"/>
+<text text-anchor="middle" x="466.49" y="-158.3" font-family="Times,serif" font-size="14.00">Python: Compound Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_0450_dictionaries&#45;&gt;python_0150_datatypes_overview_compound -->
+<g id="edge9" class="edge">
+<title>python_0450_dictionaries&#45;&gt;python_0150_datatypes_overview_compound</title>
+<path fill="none" stroke="black" d="M367.12,-287.87C386.88,-263.03 423.64,-216.85 446.48,-188.14"/>
+<polygon fill="black" stroke="black" points="449.32,-190.19 452.81,-180.19 443.84,-185.83 449.32,-190.19"/>
+</g>
+<!-- python_1200_modules&#45;&gt;python_1050_oo -->
+<g id="edge12" class="edge">
+<title>python_1200_modules&#45;&gt;python_1050_oo</title>
+<path fill="none" stroke="black" d="M540.93,-432.59C526.49,-423.31 508.23,-411.59 492.47,-401.47"/>
+<polygon fill="black" stroke="black" points="494.33,-398.5 484.02,-396.04 490.54,-404.39 494.33,-398.5"/>
+</g>
+<!-- python_1200_modules&#45;&gt;python_0140_variables -->
+<g id="edge13" class="edge">
+<title>python_1200_modules&#45;&gt;python_0140_variables</title>
+<path fill="none" stroke="black" d="M610.27,-434.18C660.64,-414.03 736.49,-372.76 736.49,-307 736.49,-307 736.49,-307 736.49,-161 736.49,-113.05 698.92,-68.69 671.54,-42.73"/>
+<polygon fill="black" stroke="black" points="673.85,-40.1 664.13,-35.91 669.11,-45.25 673.85,-40.1"/>
+</g>
+<!-- python_1200_modules&#45;&gt;python_0270_functions -->
+<g id="edge11" class="edge">
+<title>python_1200_modules&#45;&gt;python_0270_functions</title>
+<path fill="none" stroke="black" d="M610.31,-434.29C627.92,-425.98 646.41,-413.63 656.49,-396 668.6,-374.81 653.98,-349.7 638.6,-331.56"/>
+<polygon fill="black" stroke="black" points="640.86,-328.84 631.57,-323.76 635.66,-333.53 640.86,-328.84"/>
+</g>
+<!-- python_0150_datatypes_overview_compound&#45;&gt;python_0150_datatypes_overview -->
+<g id="edge14" class="edge">
+<title>python_0150_datatypes_overview_compound&#45;&gt;python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M466.49,-143.7C466.49,-135.98 466.49,-126.71 466.49,-118.11"/>
+<polygon fill="black" stroke="black" points="469.99,-118.1 466.49,-108.1 462.99,-118.1 469.99,-118.1"/>
+</g>
+<!-- python_0270_functions&#45;&gt;python_0140_variables -->
+<g id="edge15" class="edge">
+<title>python_0270_functions&#45;&gt;python_0140_variables</title>
+<path fill="none" stroke="black" d="M615.27,-287.97C620.28,-240.19 634.51,-104.62 640.63,-46.27"/>
+<polygon fill="black" stroke="black" points="644.11,-46.62 641.67,-36.31 637.15,-45.89 644.11,-46.62"/>
+</g>
+</g>
+</svg>
+<div class="section" id="sax-and-dom">
+<h2><a class="toc-backref" href="#id5">SAX and DOM</a><a class="headerlink" href="#sax-and-dom" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-left">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>SAX</strong></p>
+<ul class="simple">
+<li><p>Event-driven (elements start and end)</p></li>
+<li><p>Commonly used to parse long streams of structured data</p></li>
+<li><p>“De-facto” standard</p></li>
+<li><p>Available in multiple languages</p></li>
+<li><p>Python: <code class="docutils literal notranslate"><span class="pre">xml.sax</span></code></p></li>
+</ul>
+</td>
+<td><p><strong>DOM</strong>: “Document Object Model”</p>
+<ul class="simple">
+<li><p>Document available as a <em>tree</em></p></li>
+<li><p>Programmatically navigable as a tree</p></li>
+<li><p>Relatively comfortable</p></li>
+<li><p>Python: <code class="docutils literal notranslate"><span class="pre">xml.dom</span></code></p></li>
+<li><p>Problems</p>
+<ul>
+<li><p>Only <em>relatively</em> comfortable</p></li>
+<li><p>Not Pythonic enough</p></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="elementtree">
+<h2><a class="toc-backref" href="#id6">ElementTree</a><a class="headerlink" href="#elementtree" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">xml.etree</span></code>: Python specific ⟶ <em>absolutely</em></dt><dd><p>comfortable</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>Seamless integration in Python (⟶ iteration)</p></li>
+<li><p>A document is a tree, and trees are lists of lists</p></li>
+<li><p>XML attributes represented as dictionaries</p></li>
+</ul>
+<p>⟶ simple!</p>
+</div>
+<div class="section" id="a-very-simple-document">
+<h2><a class="toc-backref" href="#id7">A Very Simple Document</a><a class="headerlink" href="#a-very-simple-document" title="Permalink to this headline">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Python code</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">import</span> <span class="n">Element</span>
+<span class="n">element</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">)</span>
+<span class="n">child</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="s2">&quot;child&quot;</span><span class="p">)</span>
+<span class="n">element</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Or alternatively …</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">element</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">)</span>
+<span class="n">SubElement</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="s2">&quot;child&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">XML</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;root&gt;</span>
+  <span class="nt">&lt;child</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/root&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="attributes">
+<h2><a class="toc-backref" href="#id8">Attributes</a><a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>XML elements have attributes</p></li>
+<li><p>Python’s XML elements have the <code class="docutils literal notranslate"><span class="pre">attrib</span></code> dictionary</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">element</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">)</span>
+<span class="n">child</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="s2">&quot;child&quot;</span><span class="p">)</span>
+<span class="n">child</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;15&#39;</span>
+<span class="n">child</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="s2">&quot;child&quot;</span><span class="p">)</span>
+<span class="n">child</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;17&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;root&gt;</span>
+  <span class="nt">&lt;child</span> <span class="na">age=</span><span class="s">&quot;15&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;child</span> <span class="na">age=</span><span class="s">&quot;17&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/root&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="text-1">
+<h2><a class="toc-backref" href="#id9">Text (1)</a><a class="headerlink" href="#text-1" title="Permalink to this headline">¶</a></h2>
+<p>In XML documents, free text is permitted …</p>
+<ul class="simple">
+<li><p>Inside one element</p></li>
+<li><p>After one element, but before the start of another element</p></li>
+</ul>
+<p>Accordingly, Python elements have members …</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">element.text</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">element.tail</span></code></p></li>
+<li><p>No text ⟶ <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="text-2">
+<h2><a class="toc-backref" href="#id10">Text (2)</a><a class="headerlink" href="#text-2" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">element</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">)</span>
+<span class="n">child</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="s2">&quot;child&quot;</span><span class="p">)</span>
+<span class="n">child</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;Text&#39;</span>
+<span class="n">child</span><span class="o">.</span><span class="n">tail</span> <span class="o">=</span> <span class="s1">&#39;Tail&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;root&gt;&lt;child&gt;</span>Text<span class="nt">&lt;/child&gt;</span>Tail<span class="nt">&lt;/root&gt;</span>
+</pre></div>
+</div>
+<p><em>Careful with indentation</em></p>
+<ul class="simple">
+<li><p>Whitespace, linefeed etc. is text, no matter what</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">str.strip()</span></code> may be helpful</p></li>
+</ul>
+</div>
+<div class="section" id="writing-xml-documents">
+<h2><a class="toc-backref" href="#id11">Writing XML Documents</a><a class="headerlink" href="#writing-xml-documents" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>We have created <code class="docutils literal notranslate"><span class="pre">Element</span></code> objects</p></li>
+<li><p>Added child elements</p></li>
+<li><p>Now how do we create XML?</p></li>
+<li><p>Wrap into <code class="docutils literal notranslate"><span class="pre">ElementTree</span></code> - a helper</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">import</span> <span class="n">ElementTree</span>
+<span class="n">tree</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+<span class="n">tree</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span> <span class="c1"># oder file(..., &#39;w&#39;)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Output is very tight</p></li>
+<li><p>Text is preserved as-is</p></li>
+<li><p>Pretty output would be incorrect</p>
+<ul>
+<li><p>Linefeed and indentation is <em>text</em></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="reading-xml-documents">
+<h2><a class="toc-backref" href="#id12">Reading XML Documents</a><a class="headerlink" href="#reading-xml-documents" title="Permalink to this headline">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">This is simple …</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">import</span> <span class="n">parse</span>
+
+<span class="n">tree</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">():</span>
+    <span class="n">age</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;age&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">age</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="n">age</span>
+    <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="n">child</span><span class="o">.</span><span class="n">text</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+  <div class="section">
+  
+  
+  </div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2020, Jörg Faschingbauer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../../_sources/trainings/material/soup/python_5550_xml_etree/topic.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

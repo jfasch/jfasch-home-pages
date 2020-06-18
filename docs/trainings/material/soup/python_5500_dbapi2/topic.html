@@ -1,0 +1,529 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python: DBAPI 2 &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/jf-alabaster.css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="canonical" href="https://www.faschingbauer.co.at/trainings/material/soup/python_5500_dbapi2/topic.html" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Python: DBAPI 2: sqlite3" href="../python_5510_dbapi2_sqlite3/topic.html" />
+    <link rel="prev" title="Python: Modules" href="../python_1200_modules/topic.html" />
+  
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  
+  <link rel="alternate" type="application/atom+xml"  href="../../../../blog/atom.xml" title="Jörg Faschingbauer">
+  
+  
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  
+  <style type="text/css">
+    ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
+    ul.ablog-archive li {float: left; margin-right: 5px; font-size: 80%}
+    ul.postlist a {font-style: italic;}
+    ul.postlist-style-disc {list-style-type: disc;}
+    ul.postlist-style-none {list-style-type: none;}
+    ul.postlist-style-circle {list-style-type: circle;}
+  </style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../index.html">
+    <img class="logo" src="../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../booking.html">Buchung, Kursablauf</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">The Entire Soup</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../cxx_class_intro/topic.html">C++: Class (Introduction)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_class_templates/topic.html">C++: Class Templates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_dynamic_memory/topic.html">C++: Dynamic Memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_exercises/topic.html">C++: Exercises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_global_initialization/topic.html">C++: Global Objects Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_inheritance_virtual/topic.html">C++: Inheritance, Interfaces, <code class="docutils literal notranslate"><span class="pre">virtual</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_lambda/topic.html">C++: Lambda</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_ownership_raii/topic.html">C++: Ownership/RAII</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_smart_pointers/topic.html">C++: Smart Pointers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_stl_container_intro/topic.html">C++: STL Containers (Intro)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx_templates_vs_interfaces/topic.html">C++: Templates vs. Interfaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0110_blahblah/topic.html">Python: Blahblah</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0120_helloworld/topic.html">Python: Hello World</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0130_syntax_etc/topic.html">Python: Syntax etc.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0140_variables/topic.html">Python: Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0150_datatypes_overview/topic.html">Python: Datatypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0150_datatypes_overview_compound/topic.html">Python: Compound Datatypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0160_boolean/topic.html">Python: Boolean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0170_if/topic.html">Python: The <code class="docutils literal notranslate"><span class="pre">if</span></code> Statement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0190_exercises/topic.html">Python: Exercises: Basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0193_while/topic.html">Python: <code class="docutils literal notranslate"><span class="pre">while</span></code> Loops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0195_exercises/topic.html">Python: Exercises: While Loop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0200_sequential_types/topic.html">Python: Sequential Datatypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0210_indexing_slicing/topic.html">Python: Indexing and Slicing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0220_for/topic.html">Python: <code class="docutils literal notranslate"><span class="pre">for</span></code> Loops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0225_range/topic.html">Python: The <code class="docutils literal notranslate"><span class="pre">range</span></code> Function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0250_refs_flat_deep_copy/topic.html">Python: References, (Im)mutability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0270_functions/topic.html">Python: Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0275_exercises/topic.html">Python: Exercises: Lists, Loops, Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0300_strings/topic.html">Python: More About Strings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0310_strings_formatting/topic.html">Python: String Formatting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0320_strings_methods/topic.html">Python: Miscellaneous String Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0330_strings_encoding/topic.html">Python: Strings and Encoding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0350_exercises/topic.html">Python: Exercises: Strings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0400_lists/topic.html">Python: More on Lists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0450_dictionaries/topic.html">Python: More on Dictionaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0460_sets/topic.html">Python: More on Sets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0500_files/topic.html">Python: File I/O</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_0510_exercises_strings_and_files/topic.html">Python: Exercises: Strings, Files, …</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_1000_function_objects/topic.html">Python: Function Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_1010_generators_yield/topic.html">Python: Iteration and Generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_1011_generators_yield_exercise/topic.html">Python: Exercise: Generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_1050_oo/topic.html">Python: Object Oriented Programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_1100_exceptions/topic.html">Python: Exception Handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_1200_modules/topic.html">Python: Modules</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Python: DBAPI 2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_5510_dbapi2_sqlite3/topic.html">Python: DBAPI 2: <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_5520_dbapi2_postgres/topic.html">Python: DBAPI 2: PostgreSQL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_5550_xml_etree/topic.html">Python: XML: ElementTree (<code class="docutils literal notranslate"><span class="pre">etree</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_5600_unittest/topic.html">Python: The <code class="docutils literal notranslate"><span class="pre">unittest</span></code> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python_yield_fibo/topic.html">Python: The Yield Statement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sysprog_events/topic.html">Sysprog: Events</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sysprog_ipc/topic.html">Sysprog: POSIX IPC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sysprog_signals/topic.html">Sysprog: Signals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../unittest_gtest_basics/topic.html">Unittest: GTest Basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../unittest_gtest_cmake/topic.html">Unittest: GTest and CMake</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../unittest_gtest_fixture/topic.html">Unittest: GTest Fixtures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../list.html">Generated Topic List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exercises.html">Übungen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../about/site/index.html">This Site</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="python-dbapi-2">
+<h1>Python: DBAPI 2<a class="headerlink" href="#python-dbapi-2" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#database-interfaces" id="id1">Database Interfaces</a></p></li>
+<li><p><a class="reference internal" href="#dbapi-2-0" id="id2">DBAPI 2.0</a></p></li>
+<li><p><a class="reference internal" href="#caveat-transaction-lifetime" id="id3">Caveat: Transaction Lifetime</a></p></li>
+<li><p><a class="reference internal" href="#caveat-isolation" id="id4">Caveat: Isolation</a></p></li>
+</ul>
+</div>
+<svg width="927pt" height="548pt"
+ viewBox="0.00 0.00 927.49 548.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 544)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-544 923.49,-544 923.49,4 -4,4"/>
+<!-- python_0150_datatypes_overview -->
+<g id="node1" class="node">
+<title>python_0150_datatypes_overview</title>
+<g id="a_node1"><a xlink:href="../python_0150_datatypes_overview/topic.html" xlink:title="Python: Datatypes">
+<ellipse fill="none" stroke="black" cx="383" cy="-90" rx="96.68" ry="18"/>
+<text text-anchor="middle" x="383" y="-86.3" font-family="Times,serif" font-size="14.00">Python: Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_0140_variables -->
+<g id="node8" class="node">
+<title>python_0140_variables</title>
+<g id="a_node8"><a xlink:href="../python_0140_variables/topic.html" xlink:title="Python: Variables">
+<ellipse fill="none" stroke="black" cx="123" cy="-18" rx="92.08" ry="18"/>
+<text text-anchor="middle" x="123" y="-14.3" font-family="Times,serif" font-size="14.00">Python: Variables</text>
+</a>
+</g>
+</g>
+<!-- python_0150_datatypes_overview&#45;&gt;python_0140_variables -->
+<g id="edge1" class="edge">
+<title>python_0150_datatypes_overview&#45;&gt;python_0140_variables</title>
+<path fill="none" stroke="black" d="M330.39,-74.83C288.31,-63.51 229.23,-47.6 184.89,-35.66"/>
+<polygon fill="black" stroke="black" points="185.66,-32.25 175.09,-33.02 183.84,-39 185.66,-32.25"/>
+</g>
+<!-- python_0200_sequential_types -->
+<g id="node2" class="node">
+<title>python_0200_sequential_types</title>
+<g id="a_node2"><a xlink:href="../python_0200_sequential_types/topic.html" xlink:title="Python: Sequential Datatypes">
+<ellipse fill="none" stroke="black" cx="721" cy="-162" rx="149.47" ry="18"/>
+<text text-anchor="middle" x="721" y="-158.3" font-family="Times,serif" font-size="14.00">Python: Sequential Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_0200_sequential_types&#45;&gt;python_0150_datatypes_overview -->
+<g id="edge2" class="edge">
+<title>python_0200_sequential_types&#45;&gt;python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M649.32,-146.15C592.19,-134.32 512.56,-117.83 455.28,-105.97"/>
+<polygon fill="black" stroke="black" points="455.71,-102.48 445.21,-103.88 454.29,-109.34 455.71,-102.48"/>
+</g>
+<!-- python_1050_oo -->
+<g id="node3" class="node">
+<title>python_1050_oo</title>
+<g id="a_node3"><a xlink:href="../python_1050_oo/topic.html" xlink:title="Python: Object Oriented Programming">
+<ellipse fill="none" stroke="black" cx="340" cy="-378" rx="190.37" ry="18"/>
+<text text-anchor="middle" x="340" y="-374.3" font-family="Times,serif" font-size="14.00">Python: Object Oriented Programming</text>
+</a>
+</g>
+</g>
+<!-- python_0450_dictionaries -->
+<g id="node6" class="node">
+<title>python_0450_dictionaries</title>
+<g id="a_node6"><a xlink:href="../python_0450_dictionaries/topic.html" xlink:title="Python: More on Dictionaries">
+<ellipse fill="none" stroke="black" cx="383" cy="-306" rx="146.77" ry="18"/>
+<text text-anchor="middle" x="383" y="-302.3" font-family="Times,serif" font-size="14.00">Python: More on Dictionaries</text>
+</a>
+</g>
+</g>
+<!-- python_1050_oo&#45;&gt;python_0450_dictionaries -->
+<g id="edge3" class="edge">
+<title>python_1050_oo&#45;&gt;python_0450_dictionaries</title>
+<path fill="none" stroke="black" d="M350.63,-359.7C355.63,-351.56 361.69,-341.69 367.21,-332.7"/>
+<polygon fill="black" stroke="black" points="370.24,-334.46 372.49,-324.1 364.28,-330.79 370.24,-334.46"/>
+</g>
+<!-- python_0270_functions -->
+<g id="node11" class="node">
+<title>python_0270_functions</title>
+<g id="a_node11"><a xlink:href="../python_0270_functions/topic.html" xlink:title="Python: Functions">
+<ellipse fill="none" stroke="black" cx="123" cy="-306" rx="94.78" ry="18"/>
+<text text-anchor="middle" x="123" y="-302.3" font-family="Times,serif" font-size="14.00">Python: Functions</text>
+</a>
+</g>
+</g>
+<!-- python_1050_oo&#45;&gt;python_0270_functions -->
+<g id="edge4" class="edge">
+<title>python_1050_oo&#45;&gt;python_0270_functions</title>
+<path fill="none" stroke="black" d="M289.12,-360.59C256.06,-349.92 212.94,-336.01 178.91,-325.04"/>
+<polygon fill="black" stroke="black" points="179.71,-321.62 169.12,-321.88 177.56,-328.28 179.71,-321.62"/>
+</g>
+<!-- python_5500_dbapi2 -->
+<g id="node4" class="node">
+<title>python_5500_dbapi2</title>
+<ellipse fill="none" stroke="black" cx="558" cy="-522" rx="88.28" ry="18"/>
+<text text-anchor="middle" x="558" y="-518.3" font-family="Times,serif" font-size="14.00">Python: DBAPI 2</text>
+</g>
+<!-- python_0220_for -->
+<g id="node5" class="node">
+<title>python_0220_for</title>
+<g id="a_node5"><a xlink:href="../python_0220_for/topic.html" xlink:title="Python: for Loops">
+<ellipse fill="none" stroke="black" cx="596" cy="-234" rx="92.88" ry="18"/>
+<text text-anchor="middle" x="596" y="-230.3" font-family="Times,serif" font-size="14.00">Python: for Loops</text>
+</a>
+</g>
+</g>
+<!-- python_5500_dbapi2&#45;&gt;python_0220_for -->
+<g id="edge6" class="edge">
+<title>python_5500_dbapi2&#45;&gt;python_0220_for</title>
+<path fill="none" stroke="black" d="M559.86,-503.58C563.07,-474.02 569.96,-412.16 577,-360 581.55,-326.31 587.55,-287.63 591.58,-262.33"/>
+<polygon fill="black" stroke="black" points="595.05,-262.79 593.17,-252.36 588.14,-261.69 595.05,-262.79"/>
+</g>
+<!-- python_1200_modules -->
+<g id="node7" class="node">
+<title>python_1200_modules</title>
+<g id="a_node7"><a xlink:href="../python_1200_modules/topic.html" xlink:title="Python: Modules">
+<ellipse fill="none" stroke="black" cx="231" cy="-450" rx="89.08" ry="18"/>
+<text text-anchor="middle" x="231" y="-446.3" font-family="Times,serif" font-size="14.00">Python: Modules</text>
+</a>
+</g>
+</g>
+<!-- python_5500_dbapi2&#45;&gt;python_1200_modules -->
+<g id="edge5" class="edge">
+<title>python_5500_dbapi2&#45;&gt;python_1200_modules</title>
+<path fill="none" stroke="black" d="M499.54,-508.49C443.53,-496.5 359.01,-478.4 299.79,-465.73"/>
+<polygon fill="black" stroke="black" points="300.29,-462.25 289.78,-463.58 298.83,-469.1 300.29,-462.25"/>
+</g>
+<!-- python_1010_generators_yield -->
+<g id="node9" class="node">
+<title>python_1010_generators_yield</title>
+<g id="a_node9"><a xlink:href="../python_1010_generators_yield/topic.html" xlink:title="Python: Iteration and Generators">
+<ellipse fill="none" stroke="black" cx="751" cy="-378" rx="165.17" ry="18"/>
+<text text-anchor="middle" x="751" y="-374.3" font-family="Times,serif" font-size="14.00">Python: Iteration and Generators</text>
+</a>
+</g>
+</g>
+<!-- python_5500_dbapi2&#45;&gt;python_1010_generators_yield -->
+<g id="edge7" class="edge">
+<title>python_5500_dbapi2&#45;&gt;python_1010_generators_yield</title>
+<path fill="none" stroke="black" d="M580.52,-504.43C614.91,-479.13 680.62,-430.78 719.66,-402.06"/>
+<polygon fill="black" stroke="black" points="722.05,-404.65 728.03,-395.9 717.9,-399.01 722.05,-404.65"/>
+</g>
+<!-- python_0220_for&#45;&gt;python_0200_sequential_types -->
+<g id="edge8" class="edge">
+<title>python_0220_for&#45;&gt;python_0200_sequential_types</title>
+<path fill="none" stroke="black" d="M624.99,-216.76C641.97,-207.25 663.64,-195.12 682.1,-184.79"/>
+<polygon fill="black" stroke="black" points="683.85,-187.82 690.86,-179.88 680.43,-181.71 683.85,-187.82"/>
+</g>
+<!-- python_0450_dictionaries&#45;&gt;python_0220_for -->
+<g id="edge10" class="edge">
+<title>python_0450_dictionaries&#45;&gt;python_0220_for</title>
+<path fill="none" stroke="black" d="M431.87,-288.94C464.51,-278.21 507.49,-264.09 541.28,-252.98"/>
+<polygon fill="black" stroke="black" points="542.59,-256.24 550.99,-249.79 540.4,-249.59 542.59,-256.24"/>
+</g>
+<!-- python_0150_datatypes_overview_compound -->
+<g id="node10" class="node">
+<title>python_0150_datatypes_overview_compound</title>
+<g id="a_node10"><a xlink:href="../python_0150_datatypes_overview_compound/topic.html" xlink:title="Python: Compound Datatypes">
+<ellipse fill="none" stroke="black" cx="383" cy="-162" rx="149.47" ry="18"/>
+<text text-anchor="middle" x="383" y="-158.3" font-family="Times,serif" font-size="14.00">Python: Compound Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_0450_dictionaries&#45;&gt;python_0150_datatypes_overview_compound -->
+<g id="edge9" class="edge">
+<title>python_0450_dictionaries&#45;&gt;python_0150_datatypes_overview_compound</title>
+<path fill="none" stroke="black" d="M383,-287.87C383,-263.67 383,-219.21 383,-190.39"/>
+<polygon fill="black" stroke="black" points="386.5,-190.19 383,-180.19 379.5,-190.19 386.5,-190.19"/>
+</g>
+<!-- python_1200_modules&#45;&gt;python_1050_oo -->
+<g id="edge12" class="edge">
+<title>python_1200_modules&#45;&gt;python_1050_oo</title>
+<path fill="none" stroke="black" d="M256.56,-432.59C271,-423.31 289.26,-411.59 305.01,-401.47"/>
+<polygon fill="black" stroke="black" points="306.94,-404.39 313.47,-396.04 303.16,-398.5 306.94,-404.39"/>
+</g>
+<!-- python_1200_modules&#45;&gt;python_0140_variables -->
+<g id="edge13" class="edge">
+<title>python_1200_modules&#45;&gt;python_0140_variables</title>
+<path fill="none" stroke="black" d="M165.73,-437.74C97.42,-421.76 0,-385.26 0,-307 0,-307 0,-307 0,-161 0,-108.01 49.54,-65.08 85.75,-40.79"/>
+<polygon fill="black" stroke="black" points="87.69,-43.7 94.16,-35.31 83.87,-37.83 87.69,-43.7"/>
+</g>
+<!-- python_1200_modules&#45;&gt;python_0270_functions -->
+<g id="edge11" class="edge">
+<title>python_1200_modules&#45;&gt;python_0270_functions</title>
+<path fill="none" stroke="black" d="M190.18,-433.93C172.49,-425.4 153.1,-412.98 141,-396 128.17,-377.99 124,-353 122.84,-334.09"/>
+<polygon fill="black" stroke="black" points="126.34,-333.88 122.47,-324.02 119.34,-334.14 126.34,-333.88"/>
+</g>
+<!-- python_1010_generators_yield&#45;&gt;python_0200_sequential_types -->
+<g id="edge15" class="edge">
+<title>python_1010_generators_yield&#45;&gt;python_0200_sequential_types</title>
+<path fill="none" stroke="black" d="M854.46,-363.91C877.28,-355.99 898.84,-343.53 913,-324 922.39,-311.05 920.63,-302.07 913,-288 884.77,-235.93 824.42,-202.14 778.87,-182.99"/>
+<polygon fill="black" stroke="black" points="779.97,-179.66 769.39,-179.12 777.32,-186.14 779.97,-179.66"/>
+</g>
+<!-- python_1010_generators_yield&#45;&gt;python_0220_for -->
+<g id="edge14" class="edge">
+<title>python_1010_generators_yield&#45;&gt;python_0220_for</title>
+<path fill="none" stroke="black" d="M675.08,-361.99C652.87,-354.11 630.43,-342.15 615,-324 600.49,-306.94 596.22,-281.49 595.31,-262.16"/>
+<polygon fill="black" stroke="black" points="598.8,-262.08 595.1,-252.15 591.81,-262.22 598.8,-262.08"/>
+</g>
+<!-- python_1010_generators_yield&#45;&gt;python_0270_functions -->
+<g id="edge17" class="edge">
+<title>python_1010_generators_yield&#45;&gt;python_0270_functions</title>
+<path fill="none" stroke="black" d="M624.49,-366.39C518.2,-356.95 362.41,-341.9 227,-324 218.43,-322.87 209.49,-321.57 200.6,-320.22"/>
+<polygon fill="black" stroke="black" points="201.02,-316.74 190.6,-318.67 199.95,-323.66 201.02,-316.74"/>
+</g>
+<!-- python_0225_range -->
+<g id="node12" class="node">
+<title>python_0225_range</title>
+<g id="a_node12"><a xlink:href="../python_0225_range/topic.html" xlink:title="Python: The range Function">
+<ellipse fill="none" stroke="black" cx="764" cy="-306" rx="139.98" ry="18"/>
+<text text-anchor="middle" x="764" y="-302.3" font-family="Times,serif" font-size="14.00">Python: The range Function</text>
+</a>
+</g>
+</g>
+<!-- python_1010_generators_yield&#45;&gt;python_0225_range -->
+<g id="edge16" class="edge">
+<title>python_1010_generators_yield&#45;&gt;python_0225_range</title>
+<path fill="none" stroke="black" d="M754.21,-359.7C755.65,-351.98 757.37,-342.71 758.96,-334.11"/>
+<polygon fill="black" stroke="black" points="762.44,-334.58 760.82,-324.1 755.56,-333.3 762.44,-334.58"/>
+</g>
+<!-- python_0150_datatypes_overview_compound&#45;&gt;python_0150_datatypes_overview -->
+<g id="edge18" class="edge">
+<title>python_0150_datatypes_overview_compound&#45;&gt;python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M383,-143.7C383,-135.98 383,-126.71 383,-118.11"/>
+<polygon fill="black" stroke="black" points="386.5,-118.1 383,-108.1 379.5,-118.1 386.5,-118.1"/>
+</g>
+<!-- python_0270_functions&#45;&gt;python_0140_variables -->
+<g id="edge19" class="edge">
+<title>python_0270_functions&#45;&gt;python_0140_variables</title>
+<path fill="none" stroke="black" d="M123,-287.97C123,-240.29 123,-105.18 123,-46.63"/>
+<polygon fill="black" stroke="black" points="126.5,-46.31 123,-36.31 119.5,-46.31 126.5,-46.31"/>
+</g>
+<!-- python_0225_range&#45;&gt;python_0200_sequential_types -->
+<g id="edge20" class="edge">
+<title>python_0225_range&#45;&gt;python_0200_sequential_types</title>
+<path fill="none" stroke="black" d="M758.81,-287.87C751.45,-263.56 737.9,-218.82 729.18,-190.01"/>
+<polygon fill="black" stroke="black" points="732.45,-188.75 726.21,-180.19 725.75,-190.77 732.45,-188.75"/>
+</g>
+<!-- python_0225_range&#45;&gt;python_0220_for -->
+<g id="edge21" class="edge">
+<title>python_0225_range&#45;&gt;python_0220_for</title>
+<path fill="none" stroke="black" d="M724.61,-288.59C700.19,-278.41 668.68,-265.28 642.96,-254.57"/>
+<polygon fill="black" stroke="black" points="643.99,-251.2 633.41,-250.59 641.3,-257.67 643.99,-251.2"/>
+</g>
+</g>
+</svg>
+<div class="section" id="database-interfaces">
+<h2><a class="toc-backref" href="#id1">Database Interfaces</a><a class="headerlink" href="#database-interfaces" title="Permalink to this headline">¶</a></h2>
+<p>There are as many database interfaces for Python as there are
+databases …</p>
+<table class="docutils align-left">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>SQL</strong>:</p>
+<ul class="simple">
+<li><p>ODBC (generic)</p></li>
+<li><p>ADO (generic)</p></li>
+<li><p>MySQL</p></li>
+<li><p>Oracle</p></li>
+<li><p>PostgreSQL</p></li>
+<li><p>Informix</p></li>
+<li><p>SQLite</p></li>
+<li><p>…</p></li>
+</ul>
+</td>
+<td><p><strong>Others</strong>:</p>
+<ul class="simple">
+<li><p>BerkeleyDB</p></li>
+<li><p>MongoDB</p></li>
+<li><p>…</p></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>⟶ People want a common interface</p>
+</div>
+<div class="section" id="dbapi-2-0">
+<h2><a class="toc-backref" href="#id2">DBAPI 2.0</a><a class="headerlink" href="#dbapi-2-0" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Programming interface for SQL databases</p></li>
+<li><p>In fact only a <em>recommendation</em> for database interface authors</p>
+<ul>
+<li><p>… but there’s the BDFL</p></li>
+</ul>
+</li>
+</ul>
+<p>Defines what a database interface has to have …</p>
+<ul class="simple">
+<li><p><em>Connection</em>: initial point of all database operations</p></li>
+<li><p><em>Cursor</em>: context of a database operation. More than one cursor
+possible.</p></li>
+<li><p><em>Data types</em>: e.g. <code class="docutils literal notranslate"><span class="pre">sqlite3.Date(1966,6,19)</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="caveat-transaction-lifetime">
+<h2><a class="toc-backref" href="#id3">Caveat: Transaction Lifetime</a><a class="headerlink" href="#caveat-transaction-lifetime" title="Permalink to this headline">¶</a></h2>
+<p>DBAPI module use the underlying database’s “native interface”
+⟶ <em>transaction semantics is not portable across
+different databases</em></p>
+<p><strong>Neutral (DBAPI 2.0) Definition</strong></p>
+<ul class="simple">
+<li><p>One connection has <em>at most one</em> transaction ⟶
+transaction lifetime dictated by connection</p></li>
+<li><p>Once a cursor is created, a transaction is started</p></li>
+<li><p>The connection methods <code class="docutils literal notranslate"><span class="pre">commit()</span></code> and <code class="docutils literal notranslate"><span class="pre">rollback()</span></code> close a
+transaction</p></li>
+<li><p>A cursor’s <code class="docutils literal notranslate"><span class="pre">.execute()</span></code> method creates a transaction if one does
+not exist</p></li>
+<li><p>Deleting a connection triggers a transaction’s <code class="docutils literal notranslate"><span class="pre">rollback()</span></code> method</p>
+<ul>
+<li><p>⟶ <em>Don’t forget</em> <code class="docutils literal notranslate"><span class="pre">connection.commit()</span></code>!</p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="caveat-isolation">
+<h2><a class="toc-backref" href="#id4">Caveat: Isolation</a><a class="headerlink" href="#caveat-isolation" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Modifications on different cursors of the same connection are
+generally visible to each other</p></li>
+<li><p>Not all databases implement strong isolation among different
+<em>connections</em></p></li>
+<li><p><em>Isolation level</em> settings are specific to database implementations</p></li>
+</ul>
+</div>
+</div>
+
+  <div class="section">
+  
+  
+  </div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2020, Jörg Faschingbauer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../../_sources/trainings/material/soup/python_5500_dbapi2/topic.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
