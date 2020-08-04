@@ -1,0 +1,157 @@
+.. meta::
+   :description: Using a Raspberry Pi and PCA9685 PWM controller to
+                 operate a brushless motor
+   :keywords: linux, raspberry, raspberry pi, pwm, brushless, drone,
+              car, rc, electronic speed controller, esc
+
+.. jf-topic:: draft.hardware.brushless_motor
+   :dependencies: draft.hardware.pwm
+
+Controlling a Brushless Motor With Raspberry Pi
+===============================================
+
+.. contents::
+   :local:
+
+There is quite a bit of information out there on the Internet about
+how to talk to an *Electronic Speed Controller* (ESC - the thing that
+actually controls the motor). Those pages explain the topic in the
+context of microcontroller programming, or even in the context of a
+ready-made flight/drone firmware that is put onto Arduinos.
+
+The focus of this topic is to control a brushless motor from an
+automation point of view. Imagine an autonomous vehicle that grabs
+boxes from a storage rack. It has several motors, and a small computer
+(a Raspberry Pi for example) that controls the motors based on what it
+is told over, say, an internet connection. The vehicle might also do
+image recognition, which is why choosing something more powerful than
+an Arduino might be a good idea.
+
+Setup
+-----
+
+jjj fritzing rpi + pca + esc + motor
+
+Electronic Speed Controller (ESC)
+---------------------------------
+
+Watch the video below to learn how brushless motors work, and what the
+job of an ESC is. That video also explains briefly what Pulse Width
+Modulation (PWM) is; see :doc:`here <pwm>` for more.
+
+.. youtube extension is crap (still uses urlparse); embed it manually
+.. .. youtube:: uOQk8SJso6Q
+
+.. raw:: html
+
+   <iframe width="560" 
+           height="315" 
+	   src="https://www.youtube.com/embed/uOQk8SJso6Q" 
+	   frameborder="0" 
+	   allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+	   allowfullscreen>
+   </iframe>
+
+This topic is about speed controllers that use PWM as "command
+protocol". While using PWM as a protocol sounds like a poor
+architectural decision - to say the least - such controllers are the
+most common, and I believe they are also cheapest, which is why one
+such - `Quicrun 16BL30 <https://www.hobbywing.com/goods.php?id=356>`__
+(:download:`Datasheet <QuicRunWP10BL30-10BL60-8BL150.pdf>`) - was
+chosen for this little prototype project.
+
+Why An External PWM Controller?
+-------------------------------
+
+While it is possible to drive a PWM signal on a GPIO pin from software
+that runs on the CPU, this is not generally a good idea. This is
+especially true for mission critical applications such as motor
+control, where harm could be done to people and/or money.
+
+Linux is much more complex than any bare-metal OS that is usually used
+for such applications. It has a network stack that operates in the
+background, and a filesystem and block IO layer, and maybe a graphics
+stack, other software such as remote login programs, a webserver, and
+much more.
+
+Driving a PWM signal at a millisecond frequency would mean that the
+PWM software would have to compete with a possibly unknown number of
+other processes in the system - leading to glitches and hard-to-detect
+errors. While Linux, as deployed on the Raspberry, has real-time
+capabilities that try to give wakeup guarantees, this is a best-effort
+approach. Turning Linux into a realtime OS that gives hard guarantees
+`is no fun <https://rt.wiki.kernel.org/index.php/Main_Page>`__.
+
+Attaching a PCA9685 PWM controller is really simple, and to use it
+from Linux is even simpler, so this approach was chosen.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Draft Material
+--------------
+
+Information Sources
+...................
+
+* PCA9685 (PWM controller)
+
+  * In motor driver context; using wiringPi:
+    https://www.raspberry-pi-geek.de/ausgaben/rpg/2016/06/i-2-c-workshop-teil-11-pwm-modul-pca9685/
+  * Datasheet https://www.nxp.com/docs/en/data-sheet/PCA9685.pdf
+
+* Quicrun 16BL30
+
+  * https://www.hobbywing.com/goods.php?id=356
+  * "Datasheet":
+    https://www.hobbywing.com/products/enpdf/QuicRunWP10BL30-10BL60-8BL150.pdf
+
+Motor Controller
+................
+
+* How Brushless Motor and ESC Work and How To Control them using
+  Arduino: https://www.youtube.com/watch?v=uOQk8SJso6Q
+
+  * Arming: at the time of powering the ESC, the signal (duty cycle I
+    believe) must be <= 1ms. Confirmation beep.
+
+
+* https://www.roboternetz.de/community/threads/29582-Brushless-Regler-ansteuern
+
+  Pinout
+  
+  * red +5V
+  * black GND
+  * yellow PWM
+  
+  Control
+  
+  * duty < 1ms backward
+  * duty > 1ms forward
+
+* Crappy Python program
+  https://www.instructables.com/id/Driving-an-ESCBrushless-Motor-Using-Raspberry-Pi/
+
+Links
+.....
+
+* https://rn-wissen.de/wiki/index.php/Servos
+* https://www.mikrocontroller.net/articles/Brushless-Controller_f%C3%BCr_Modellbaumotoren
+
+Calibration
+
+https://ardupilot.org/plane/docs/guide-esc-calibration.html
+
+
