@@ -1,0 +1,301 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decorators (incomplete) &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/jf-alabaster.css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/draft/decorators.html" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Closures" href="closures/topic.html" />
+    <link rel="prev" title="Positional and Keyword Arguments (Livehacking Screenplay)" href="starargs/screenplay.html" />
+  
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  
+  <link rel="alternate" type="application/atom+xml"  href="../../../../blog/atom.xml" title="Jörg Faschingbauer">
+  
+  
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  
+  <style type="text/css">
+    ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
+    ul.ablog-archive li {float: left; margin-right: 5px; font-size: 80%}
+    ul.postlist a {font-style: italic;}
+    ul.postlist-style-disc {list-style-type: disc;}
+    ul.postlist-style-none {list-style-type: none;}
+    ul.postlist-style-circle {list-style-type: circle;}
+  </style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../index.html">
+    <img class="logo" src="../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../python/python.html">Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx/cxx.html">C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../hardware/index.html">Hardware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sysprog/sysprog.html">Systems Programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../unittest/unittest.html">Unit Testing</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">Drafts</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ai.html">Artificial Intelligence</a></li>
+<li class="toctree-l4"><a class="reference internal" href="venv/topic.html">Virtual Environments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pip/topic.html">Python Package Index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="duck-typing.html">Duck Typing vs. Strong Typing (incomplete)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="context_manager.html">Context Managers (incomplete)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="special_methods.html">Special Methods, Operator Overloading (incomplete)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="starargs/topic.html">Positional and Keyword Arguments</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Decorators (incomplete)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="closures/topic.html">Closures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="import.html">The <code class="docutils literal notranslate"><span class="pre">import</span></code> Statement (incomplete)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mysql.html">MySQL Python Binding</a></li>
+<li class="toctree-l4"><a class="reference internal" href="installation.html">Python Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../list.html">Generated Topic List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../about/site/index.html">This Site</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="decorators-incomplete">
+<h1>Decorators (incomplete)<a class="headerlink" href="#decorators-incomplete" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#todo" id="id1">TODO</a></p></li>
+</ul>
+</div>
+<div class="section" id="todo">
+<h2><a class="toc-backref" href="#id1">TODO</a><a class="headerlink" href="#todo" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.youtube.com/watch?v=FsAPt_9Bf3U">Decorators Tutorial</a>: <strong>Corey Schafer</strong>
+on decorators and closures.</p></li>
+<li><p><a class="reference external" href="https://www.youtube.com/watch?v=FsAPt_9Bf3U">Python Tutorial: Decorators - Dynamically Alter The Functionality
+Of Your Functions</a>. Ein etwas
+fortgeschritteneres Thema, wieder von <strong>Corey Schafer</strong>.</p></li>
+<li><p>functools.wraps (better explain that with decorators?)</p></li>
+</ul>
+<svg width="407pt" height="442pt"
+ viewBox="0.00 0.00 406.53 442.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 438)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-438 402.53,-438 402.53,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_drafts</title>
+<path fill="none" stroke="black" d="M20,-277C20,-277 377,-277 377,-277 383,-277 389,-283 389,-289 389,-289 389,-414 389,-414 389,-420 383,-426 377,-426 377,-426 20,-426 20,-426 14,-426 8,-420 8,-414 8,-414 8,-289 8,-289 8,-283 14,-277 20,-277"/>
+<text text-anchor="middle" x="198.5" y="-410.8" font-family="Times,serif" font-size="14.00">Drafts</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_python</title>
+<path fill="none" stroke="black" d="M189,-8C189,-8 307,-8 307,-8 313,-8 319,-14 319,-20 319,-20 319,-257 319,-257 319,-263 313,-269 307,-269 307,-269 189,-269 189,-269 183,-269 177,-263 177,-257 177,-257 177,-20 177,-20 177,-14 183,-8 189,-8"/>
+<text text-anchor="middle" x="248" y="-253.8" font-family="Times,serif" font-size="14.00">Python</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_python_basics</title>
+<path fill="none" stroke="black" d="M197,-16C197,-16 299,-16 299,-16 305,-16 311,-22 311,-28 311,-28 311,-226 311,-226 311,-232 305,-238 299,-238 299,-238 197,-238 197,-238 191,-238 185,-232 185,-226 185,-226 185,-28 185,-28 185,-22 191,-16 197,-16"/>
+<text text-anchor="middle" x="248" y="-222.8" font-family="Times,serif" font-size="14.00">Basics</text>
+</g>
+<!-- drafts_closures -->
+<g id="node1" class="node">
+<title>drafts_closures</title>
+<g id="a_node1"><a xlink:href="closures/topic.html" xlink:title="Closures">
+<path fill="#dcdcdc" stroke="black" d="M28.5,-285.5C28.5,-285.5 83.5,-285.5 83.5,-285.5 89.5,-285.5 95.5,-291.5 95.5,-297.5 95.5,-297.5 95.5,-309.5 95.5,-309.5 95.5,-315.5 89.5,-321.5 83.5,-321.5 83.5,-321.5 28.5,-321.5 28.5,-321.5 22.5,-321.5 16.5,-315.5 16.5,-309.5 16.5,-309.5 16.5,-297.5 16.5,-297.5 16.5,-291.5 22.5,-285.5 28.5,-285.5"/>
+<text text-anchor="middle" x="56" y="-299.8" font-family="Times,serif" font-size="14.00">Closures</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0270_functions -->
+<g id="node6" class="node">
+<title>python_basics_python_0270_functions</title>
+<g id="a_node6"><a xlink:href="../python/python_0270_functions/topic.html" xlink:title="Functions">
+<path fill="#dcdcdc" stroke="black" d="M215.5,-170.5C215.5,-170.5 278.5,-170.5 278.5,-170.5 284.5,-170.5 290.5,-176.5 290.5,-182.5 290.5,-182.5 290.5,-194.5 290.5,-194.5 290.5,-200.5 284.5,-206.5 278.5,-206.5 278.5,-206.5 215.5,-206.5 215.5,-206.5 209.5,-206.5 203.5,-200.5 203.5,-194.5 203.5,-194.5 203.5,-182.5 203.5,-182.5 203.5,-176.5 209.5,-170.5 215.5,-170.5"/>
+<text text-anchor="middle" x="247" y="-184.8" font-family="Times,serif" font-size="14.00">Functions</text>
+</a>
+</g>
+</g>
+<!-- drafts_closures&#45;&gt;python_basics_python_0270_functions -->
+<g id="edge1" class="edge">
+<title>drafts_closures&#45;&gt;python_basics_python_0270_functions</title>
+<path fill="none" stroke="black" d="M85.01,-285.34C118.2,-265.7 172.66,-233.48 209.16,-211.89"/>
+<polygon fill="black" stroke="black" points="211.21,-214.74 218.03,-206.64 207.64,-208.72 211.21,-214.74"/>
+</g>
+<!-- drafts_starargs -->
+<g id="node2" class="node">
+<title>drafts_starargs</title>
+<g id="a_node2"><a xlink:href="starargs/topic.html" xlink:title="Positional and Keyword Arguments">
+<path fill="#dcdcdc" stroke="black" d="M125.5,-285.5C125.5,-285.5 368.5,-285.5 368.5,-285.5 374.5,-285.5 380.5,-291.5 380.5,-297.5 380.5,-297.5 380.5,-309.5 380.5,-309.5 380.5,-315.5 374.5,-321.5 368.5,-321.5 368.5,-321.5 125.5,-321.5 125.5,-321.5 119.5,-321.5 113.5,-315.5 113.5,-309.5 113.5,-309.5 113.5,-297.5 113.5,-297.5 113.5,-291.5 119.5,-285.5 125.5,-285.5"/>
+<text text-anchor="middle" x="247" y="-299.8" font-family="Times,serif" font-size="14.00">Positional and Keyword Arguments</text>
+</a>
+</g>
+</g>
+<!-- drafts_starargs&#45;&gt;python_basics_python_0270_functions -->
+<g id="edge2" class="edge">
+<title>drafts_starargs&#45;&gt;python_basics_python_0270_functions</title>
+<path fill="none" stroke="black" d="M247,-285.34C247,-267.17 247,-238.22 247,-216.89"/>
+<polygon fill="black" stroke="black" points="250.5,-216.82 247,-206.82 243.5,-216.82 250.5,-216.82"/>
+</g>
+<!-- drafts_decorators -->
+<g id="node3" class="node">
+<title>drafts_decorators</title>
+<path fill="#dcdcdc" stroke="black" stroke-width="3" d="M164.5,-358.5C164.5,-358.5 329.5,-358.5 329.5,-358.5 335.5,-358.5 341.5,-364.5 341.5,-370.5 341.5,-370.5 341.5,-382.5 341.5,-382.5 341.5,-388.5 335.5,-394.5 329.5,-394.5 329.5,-394.5 164.5,-394.5 164.5,-394.5 158.5,-394.5 152.5,-388.5 152.5,-382.5 152.5,-382.5 152.5,-370.5 152.5,-370.5 152.5,-364.5 158.5,-358.5 164.5,-358.5"/>
+<text text-anchor="middle" x="247" y="-372.8" font-family="Times,serif" font-size="14.00">Decorators (incomplete)</text>
+</g>
+<!-- drafts_decorators&#45;&gt;drafts_closures -->
+<g id="edge4" class="edge">
+<title>drafts_decorators&#45;&gt;drafts_closures</title>
+<path fill="none" stroke="black" d="M201.25,-358.49C172.3,-347.73 134.88,-333.82 105.27,-322.82"/>
+<polygon fill="black" stroke="black" points="106.15,-319.41 95.56,-319.2 103.71,-325.97 106.15,-319.41"/>
+</g>
+<!-- drafts_decorators&#45;&gt;drafts_starargs -->
+<g id="edge5" class="edge">
+<title>drafts_decorators&#45;&gt;drafts_starargs</title>
+<path fill="none" stroke="black" d="M247,-358.31C247,-350.29 247,-340.55 247,-331.57"/>
+<polygon fill="black" stroke="black" points="250.5,-331.53 247,-321.53 243.5,-331.53 250.5,-331.53"/>
+</g>
+<!-- drafts_decorators&#45;&gt;python_basics_python_0270_functions -->
+<g id="edge3" class="edge">
+<title>drafts_decorators&#45;&gt;python_basics_python_0270_functions</title>
+<path fill="none" stroke="black" d="M341.54,-358.36C360.57,-350.44 378.29,-338.88 390,-322 421.93,-275.96 352.76,-234.05 299.89,-210.19"/>
+<polygon fill="black" stroke="black" points="301.13,-206.91 290.57,-206.09 298.31,-213.32 301.13,-206.91"/>
+</g>
+<!-- python_basics_python_0140_variables -->
+<g id="node4" class="node">
+<title>python_basics_python_0140_variables</title>
+<g id="a_node4"><a xlink:href="../python/python_0140_variables/topic.html" xlink:title="Variables">
+<path fill="#dcdcdc" stroke="black" d="M216.5,-24.5C216.5,-24.5 275.5,-24.5 275.5,-24.5 281.5,-24.5 287.5,-30.5 287.5,-36.5 287.5,-36.5 287.5,-48.5 287.5,-48.5 287.5,-54.5 281.5,-60.5 275.5,-60.5 275.5,-60.5 216.5,-60.5 216.5,-60.5 210.5,-60.5 204.5,-54.5 204.5,-48.5 204.5,-48.5 204.5,-36.5 204.5,-36.5 204.5,-30.5 210.5,-24.5 216.5,-24.5"/>
+<text text-anchor="middle" x="246" y="-38.8" font-family="Times,serif" font-size="14.00">Variables</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0150_datatypes_overview -->
+<g id="node5" class="node">
+<title>python_basics_python_0150_datatypes_overview</title>
+<g id="a_node5"><a xlink:href="../python/python_0150_datatypes_overview/topic.html" xlink:title="Datatypes">
+<path fill="#dcdcdc" stroke="black" d="M225.5,-97.5C225.5,-97.5 290.5,-97.5 290.5,-97.5 296.5,-97.5 302.5,-103.5 302.5,-109.5 302.5,-109.5 302.5,-121.5 302.5,-121.5 302.5,-127.5 296.5,-133.5 290.5,-133.5 290.5,-133.5 225.5,-133.5 225.5,-133.5 219.5,-133.5 213.5,-127.5 213.5,-121.5 213.5,-121.5 213.5,-109.5 213.5,-109.5 213.5,-103.5 219.5,-97.5 225.5,-97.5"/>
+<text text-anchor="middle" x="258" y="-111.8" font-family="Times,serif" font-size="14.00">Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0150_datatypes_overview&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge6" class="edge">
+<title>python_basics_python_0150_datatypes_overview&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M255.1,-97.31C253.74,-89.29 252.09,-79.55 250.58,-70.57"/>
+<polygon fill="black" stroke="black" points="254,-69.81 248.88,-60.53 247.09,-70.97 254,-69.81"/>
+</g>
+<!-- python_basics_python_0270_functions&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge7" class="edge">
+<title>python_basics_python_0270_functions&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M228.39,-170.06C219.47,-160.4 209.71,-147.62 205,-134 199.63,-118.46 199.72,-112.57 205,-97 208.53,-86.59 214.99,-76.61 221.76,-68.15"/>
+<polygon fill="black" stroke="black" points="224.43,-70.42 228.26,-60.54 219.1,-65.88 224.43,-70.42"/>
+</g>
+<!-- python_basics_python_0270_functions&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge8" class="edge">
+<title>python_basics_python_0270_functions&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M249.66,-170.31C250.91,-162.29 252.42,-152.55 253.81,-143.57"/>
+<polygon fill="black" stroke="black" points="257.29,-143.95 255.36,-133.53 250.37,-142.88 257.29,-143.95"/>
+</g>
+</g>
+</svg>
+</div>
+</div>
+
+  <div class="section">
+  
+  
+  </div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2020, Jörg Faschingbauer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../../_sources/trainings/material/soup/draft/decorators.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
