@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Closures (Slideshow) &#8212; Jörg Faschingbauer</title>
+    <title>Context Managers (Slideshow) &#8212; Jörg Faschingbauer</title>
     <link rel="stylesheet" href="../../../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
@@ -18,11 +18,11 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/draft/closures/slides.html" />
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/draft/context_manager/slides.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
-    <link rel="next" title="Closures (Livehacking Screenplay)" href="screenplay.html" />
-    <link rel="prev" title="Closures" href="topic.html" />
+    <link rel="next" title="Context Managers (Livehacking Tutorial)" href="screenplay.html" />
+    <link rel="prev" title="Context Managers (the with Statement) (incomplete)" href="topic.html" />
   
    
   <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
@@ -92,15 +92,15 @@
 <li class="toctree-l4"><a class="reference internal" href="../venv/topic.html">Virtual Environments</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../pip/topic.html">Python Package Index</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../duck-typing.html">Duck Typing vs. Strong Typing (<em>incomplete</em>)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../context_manager/topic.html">Context Managers (the <code class="docutils literal notranslate"><span class="pre">with</span></code> Statement) (<em>incomplete</em>)</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="topic.html">Context Managers (the <code class="docutils literal notranslate"><span class="pre">with</span></code> Statement) (<em>incomplete</em>)</a><ul class="current">
+<li class="toctree-l5 current"><a class="current reference internal" href="#">Context Managers (Slideshow)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="screenplay.html">Context Managers (Livehacking Tutorial)</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="../special_methods.html">Special Methods, Operator Overloading (<em>incomplete</em>)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../starargs/topic.html">Positional and Keyword Arguments</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../decorators/topic.html">Decorators</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="topic.html">Closures</a><ul class="current">
-<li class="toctree-l5 current"><a class="current reference internal" href="#">Closures (Slideshow)</a></li>
-<li class="toctree-l5"><a class="reference internal" href="screenplay.html">Closures (Livehacking Screenplay)</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../closures/topic.html">Closures</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../import.html">The <code class="docutils literal notranslate"><span class="pre">import</span></code> Statement (incomplete)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../mysql.html">MySQL Python Binding</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../installation.html">Python Installation</a></li>
@@ -138,46 +138,29 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="closures-slideshow">
-<h1>Closures (Slideshow)<a class="headerlink" href="#closures-slideshow" title="Permalink to this headline">¶</a></h1>
-<div class="contents local topic" id="contents">
+  <div class="section" id="context-managers-slideshow">
+<h1>Context Managers (Slideshow)<a class="headerlink" href="#context-managers-slideshow" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="problem">
+<h2>Problem<a class="headerlink" href="#problem" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="#history" id="id1">History</a></p></li>
-<li><p><a class="reference internal" href="#today" id="id2">Today</a></p></li>
+<li><p>Resource cleanup</p></li>
+<li><p>Python is <em>garbage collected</em></p></li>
+<li><p>Cleanup does happen but nobody can say when ⟶ not
+<em>deterministic</em></p></li>
 </ul>
 </div>
-<div class="section" id="history">
-<h2><a class="toc-backref" href="#id1">History</a><a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference external" href="https://en.wikipedia.org/wiki/Closure_(computer_programming)">Wikipedia</a></p></li>
-<li><p>“A record storing a function together with an environment”</p>
-<ul>
-<li><p>That is pretty much it!</p></li>
-</ul>
-</li>
-<li><p>Dates back to early functional languages</p>
-<ul>
-<li><p>LISP</p></li>
-<li><p>Scheme</p></li>
-</ul>
-</li>
-</ul>
+<div class="section" id="solution-the-with-statement">
+<h2>Solution: The <code class="docutils literal notranslate"><span class="pre">with</span></code> Statement<a class="headerlink" href="#solution-the-with-statement" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/etc/passwd&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="o">...</span> <span class="n">use</span> <span class="n">f</span> <span class="o">...</span>
+</pre></div>
 </div>
-<div class="section" id="today">
-<h2><a class="toc-backref" href="#id2">Today</a><a class="headerlink" href="#today" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Also available in modern languages</p>
-<ul>
-<li><p>Javascript</p></li>
-<li><p>C++: explicit capturing in <em>lambdas</em></p></li>
-<li><p>C#</p></li>
-</ul>
-</li>
-<li><p>Definitely not unique to Python</p>
-<ul>
-<li><p>Although Wikipedia start out with Python examples</p></li>
-</ul>
-</li>
+<li><p>Interpreter “talks to” user-supplied code</p></li>
+<li><p>Much like the <em>iterator protocol</em></p></li>
+<li><p>Many creative uses</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">contextlib</span></code>: pool of creativity,
+<a class="reference external" href="https://docs.python.org/3/library/contextlib.html">https://docs.python.org/3/library/contextlib.html</a></p></li>
 </ul>
 </div>
 </div>
@@ -201,7 +184,7 @@
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="../../../../../_sources/trainings/material/soup/draft/closures/slides.rst.txt"
+      <a href="../../../../../_sources/trainings/material/soup/draft/context_manager/slides.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
