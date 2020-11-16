@@ -1,0 +1,559 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-Means &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" href="../../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/python/draft/k-means.html" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="Virtual Environments" href="venv/topic.html" />
+    <link rel="prev" title="Weather History Dataset" href="linear-regression/history_data.html" />
+  
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  
+  <link rel="alternate" type="application/atom+xml"  href="../../../../../blog/atom.xml" title="Jörg Faschingbauer">
+  
+  
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  
+  <style type="text/css">
+    ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
+    ul.ablog-archive li {float: left; margin-right: 5px; font-size: 80%}
+    ul.postlist a {font-style: italic;}
+    ul.postlist-style-disc {list-style-type: disc;}
+    ul.postlist-style-none {list-style-type: none;}
+    ul.postlist-style-circle {list-style-type: circle;}
+  </style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../index.html">
+    <img class="logo" src="../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">Python</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../python-basics.html">Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python-swdev.html">Software Development</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python-db.html">Databases</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../fullgraph.html">Python Topics: Directed Acyclic Graph</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html">Python Drafts</a><ul class="current">
+<li class="toctree-l5 current"><a class="reference internal" href="ai.html">Machine Learning, Artificial Intelligence</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="machine-learning-intro.html">Machine Learning: Concepts and Terminology</a></li>
+<li class="toctree-l6"><a class="reference internal" href="linear-regression/topic.html">Linear Regression</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">K-Means</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="venv/topic.html">Virtual Environments</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pip/topic.html">Python Package Index</a></li>
+<li class="toctree-l5"><a class="reference internal" href="duck-typing.html">Duck Typing vs. Strong Typing (<em>incomplete</em>)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="context_manager/topic.html">Context Managers (the <code class="docutils literal notranslate"><span class="pre">with</span></code> Statement) (<em>incomplete</em>)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="special_methods.html">Special Methods, Operator Overloading (<em>incomplete</em>)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="starargs/topic.html">Positional and Keyword Arguments</a></li>
+<li class="toctree-l5"><a class="reference internal" href="decorators/topic.html">Decorators</a></li>
+<li class="toctree-l5"><a class="reference internal" href="closures/topic.html">Closures</a></li>
+<li class="toctree-l5"><a class="reference internal" href="import.html">The <code class="docutils literal notranslate"><span class="pre">import</span></code> Statement (incomplete)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="mysql.html">MySQL Python Binding</a></li>
+<li class="toctree-l5"><a class="reference internal" href="installation.html">Python Installation</a></li>
+<li class="toctree-l5"><a class="reference internal" href="vscode.html">Visual Studio Code for Python Programming</a></li>
+<li class="toctree-l5"><a class="reference internal" href="encoding.html">Encoding (<em>incomplete</em>)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="exceptions.html">Exception Handling (<em>incomplete</em>)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="iteration-generation/topic.html">Iteration and Generation</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0110_blahblah/topic.html">Blahblah</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0120_helloworld/topic.html">Hello World</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0130_syntax_etc/topic.html">Syntax etc.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0140_variables/topic.html">Variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0150_datatypes_overview/topic.html">Datatypes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0150_datatypes_overview_compound/topic.html">Compound Datatypes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0160_boolean/topic.html">Boolean</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0170_if/topic.html">The <code class="docutils literal notranslate"><span class="pre">if</span></code> Statement</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0190_exercises/topic.html">Exercises: Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0193_while/topic.html"><code class="docutils literal notranslate"><span class="pre">while</span></code> Loops</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0195_exercises/topic.html">Exercises: While Loop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0200_sequential_types/topic.html">Sequential Datatypes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0210_indexing_slicing/topic.html">Indexing and Slicing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0220_for/topic.html"><code class="docutils literal notranslate"><span class="pre">for</span></code> Loops</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0225_range/topic.html">The <code class="docutils literal notranslate"><span class="pre">range</span></code> Function</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0250_refs_flat_deep_copy/topic.html">References, (Im)mutability</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0270_functions/topic.html">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0275_exercises/topic.html">Exercises: Lists, Loops, Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0300_strings/topic.html">More About Strings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0310_strings_formatting/topic.html">String Formatting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0320_strings_methods/topic.html">Miscellaneous String Methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0330_strings_encoding/topic.html">Strings and Encoding</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0350_exercises/topic.html">Exercises: Strings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0400_lists/topic.html">More on Lists</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0450_dictionaries/topic.html">More on Dictionaries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0460_sets/topic.html">More on Sets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0500_files/topic.html">File I/O</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_0510_exercises_strings_and_files/topic.html">Exercises: Strings, Files, …</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_1000_function_objects/topic.html">Function Objects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_1010_generators_yield/topic.html">Iteration and Generators</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_1011_generators_yield_exercise/topic.html">Exercise: Generators</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_1050_oo/topic.html">Object Oriented Programming</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_1100_exceptions/topic.html">Exception Handling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_1200_modules/topic.html">Modules and Packages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_5500_dbapi2/topic.html">DBAPI 2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_5510_dbapi2_sqlite3/topic.html">DBAPI 2: <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_5520_dbapi2_postgres/topic.html">DBAPI 2: PostgreSQL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_5550_xml_etree/topic.html">XML: ElementTree (<code class="docutils literal notranslate"><span class="pre">etree</span></code>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python_5600_unittest/topic.html">The <code class="docutils literal notranslate"><span class="pre">unittest</span></code> Module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx/cxx.html">C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../hardware/index.html">Hardware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../sysprog/sysprog.html">Systems Programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../unittest/unittest.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../kernel/index.html">Kernel Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../list.html">Generated Topic List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../about/site/index.html">This Site</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="k-means">
+<h1>K-Means<a class="headerlink" href="#k-means" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#topic-overview" id="id1">Topic Overview</a></p></li>
+<li><p><a class="reference internal" href="#artifacts" id="id2">Artifacts</a></p></li>
+<li><p><a class="reference internal" href="#topic-dependencies" id="id3">Topic Dependencies</a></p></li>
+</ul>
+</div>
+<div class="section" id="topic-overview">
+<h2><a class="toc-backref" href="#id1">Topic Overview</a><a class="headerlink" href="#topic-overview" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/K-means_clustering">K-Means</a> is a
+popular <em>clustering</em> algorithm. Clustering algorithms fall into the
+category <em>unsupervised learning</em>. As such, K-Means sorts input data
+into a parameterizable set of clusters.</p>
+<p>This topic is a wrapper around training material that originates from
+an <a class="reference internal" href="../../../../log/detail/2019-11-12/index.html"><span class="doc">inhouse training given to a company</span></a> specializing in spectral
+image analysis; the hard- and software they create is used to classify
+chunks of material running by on a conveyor belt. The topic artifacts
+might contain terminology from their problem domain (a lot of MATLAB
+stuff).</p>
+<p>The problem is demonstrated not by dealing with spectral images with
+256 planes, but by color-reducing this PNG image</p>
+<img alt="../../../../../_images/veggie.png" src="../../../../../_images/veggie.png" />
+<p>to this</p>
+<img alt="../../../../../_images/veggie-reduced.png" src="../../../../../_images/veggie-reduced.png" />
+</div>
+<div class="section" id="artifacts">
+<h2><a class="toc-backref" href="#id2">Artifacts</a><a class="headerlink" href="#artifacts" title="Permalink to this headline">¶</a></h2>
+<p>Like <a class="reference internal" href="linear-regression/topic.html"><span class="doc">Linear Regression</span></a>, this topic consists of</p>
+<ul class="simple">
+<li><p>A <a class="reference internal" href="../../../../log/detail/2019-11-12/code/BigPlan.html"><span class="doc">Jupyter Notebook</span></a> (download:
+<a class="reference download internal" download="" href="../../../../../_downloads/5db47bbe2ebd1a322ffe3119db35ddb1/BigPlan.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">/trainings/log/detail/2019-11-12/code/BigPlan.ipynb</span></code></a>)</p></li>
+<li><p>A corresponding Python program (download:
+<a class="reference download internal" download="" href="../../../../../_downloads/8ed4df5d4be3c4584f95df5840fc85ca/color-reduce.py"><code class="xref download docutils literal notranslate"><span class="pre">/trainings/log/detail/2019-11-12/code/color-reduce.py</span></code></a>)</p></li>
+<li><p>Input data, in the form of a PNG (download:
+<a class="reference download internal" download="" href="../../../../../_downloads/819c2046229f59b6b7c77264f67161c3/veggie.png"><code class="xref download docutils literal notranslate"><span class="pre">/trainings/log/detail/2019-11-12/code/veggie.png</span></code></a>)</p></li>
+</ul>
+</div>
+<div class="section" id="topic-dependencies">
+<h2><a class="toc-backref" href="#id3">Topic Dependencies</a><a class="headerlink" href="#topic-dependencies" title="Permalink to this headline">¶</a></h2>
+<svg width="750pt" height="983pt"
+ viewBox="0.00 0.00 750.00 983.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 979)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-979 746,-979 746,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_python</title>
+<path fill="none" stroke="black" d="M20,-8C20,-8 722,-8 722,-8 728,-8 734,-14 734,-20 734,-20 734,-955 734,-955 734,-961 728,-967 722,-967 722,-967 20,-967 20,-967 14,-967 8,-961 8,-955 8,-955 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="371" y="-951.8" font-family="Times,serif" font-size="14.00">Python</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_python_basics</title>
+<path fill="none" stroke="black" d="M294,-16C294,-16 658,-16 658,-16 664,-16 670,-22 670,-28 670,-28 670,-367 670,-367 670,-373 664,-379 658,-379 658,-379 294,-379 294,-379 288,-379 282,-373 282,-367 282,-367 282,-28 282,-28 282,-22 288,-16 294,-16"/>
+<text text-anchor="middle" x="476" y="-363.8" font-family="Times,serif" font-size="14.00">Basics</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_python_drafts</title>
+<path fill="none" stroke="black" d="M28,-542C28,-542 714,-542 714,-542 720,-542 726,-548 726,-554 726,-554 726,-924 726,-924 726,-930 720,-936 714,-936 714,-936 28,-936 28,-936 22,-936 16,-930 16,-924 16,-924 16,-554 16,-554 16,-548 22,-542 28,-542"/>
+<text text-anchor="middle" x="371" y="-920.8" font-family="Times,serif" font-size="14.00">Python Drafts</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_python_drafts_ai</title>
+<path fill="none" stroke="black" d="M36,-686C36,-686 476,-686 476,-686 482,-686 488,-692 488,-698 488,-698 488,-893 488,-893 488,-899 482,-905 476,-905 476,-905 36,-905 36,-905 30,-905 24,-899 24,-893 24,-893 24,-698 24,-698 24,-692 30,-686 36,-686"/>
+<text text-anchor="middle" x="256" y="-889.8" font-family="Times,serif" font-size="14.00">Machine Learning, Artificial Intelligence</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_python_swdev</title>
+<path fill="none" stroke="black" d="M344,-387C344,-387 638,-387 638,-387 644,-387 650,-393 650,-399 650,-399 650,-522 650,-522 650,-528 644,-534 638,-534 638,-534 344,-534 344,-534 338,-534 332,-528 332,-522 332,-522 332,-399 332,-399 332,-393 338,-387 344,-387"/>
+<text text-anchor="middle" x="491" y="-518.8" font-family="Times,serif" font-size="14.00">Software Development</text>
+</g>
+<!-- python_basics_python_0150_datatypes_overview_compound -->
+<g id="node1" class="node">
+<title>python_basics_python_0150_datatypes_overview_compound</title>
+<g id="a_node1"><a xlink:href="../python_0150_datatypes_overview_compound/topic.html" xlink:title="Compound Datatypes">
+<ellipse fill="#dcdcdc" stroke="black" cx="406" cy="-258" rx="110.48" ry="18"/>
+<text text-anchor="middle" x="406" y="-254.3" font-family="Times,serif" font-size="14.00">Compound Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0150_datatypes_overview -->
+<g id="node6" class="node">
+<title>python_basics_python_0150_datatypes_overview</title>
+<g id="a_node6"><a xlink:href="../python_0150_datatypes_overview/topic.html" xlink:title="Datatypes">
+<ellipse fill="#dcdcdc" stroke="black" cx="424" cy="-114" rx="57.69" ry="18"/>
+<text text-anchor="middle" x="424" y="-110.3" font-family="Times,serif" font-size="14.00">Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0150_datatypes_overview_compound&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge1" class="edge">
+<title>python_basics_python_0150_datatypes_overview_compound&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M408.31,-239.82C409.69,-229.45 411.47,-215.97 413,-204 415.65,-183.28 418.54,-159.84 420.7,-142.21"/>
+<polygon fill="black" stroke="black" points="424.2,-142.42 421.93,-132.07 417.25,-141.57 424.2,-142.42"/>
+</g>
+<!-- python_basics_python_0220_for -->
+<g id="node2" class="node">
+<title>python_basics_python_0220_for</title>
+<g id="a_node2"><a xlink:href="../python_0220_for/topic.html" xlink:title="for Loops">
+<ellipse fill="#dcdcdc" stroke="black" cx="588" cy="-258" rx="53.89" ry="18"/>
+<text text-anchor="middle" x="588" y="-254.3" font-family="Times,serif" font-size="14.00">for Loops</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0200_sequential_types -->
+<g id="node7" class="node">
+<title>python_basics_python_0200_sequential_types</title>
+<g id="a_node7"><a xlink:href="../python_0200_sequential_types/topic.html" xlink:title="Sequential Datatypes">
+<ellipse fill="#dcdcdc" stroke="black" cx="552" cy="-186" rx="110.48" ry="18"/>
+<text text-anchor="middle" x="552" y="-182.3" font-family="Times,serif" font-size="14.00">Sequential Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0220_for&#45;&gt;python_basics_python_0200_sequential_types -->
+<g id="edge2" class="edge">
+<title>python_basics_python_0220_for&#45;&gt;python_basics_python_0200_sequential_types</title>
+<path fill="none" stroke="black" d="M579.29,-240.05C575.15,-232.01 570.11,-222.2 565.49,-213.23"/>
+<polygon fill="black" stroke="black" points="568.57,-211.57 560.88,-204.28 562.35,-214.77 568.57,-211.57"/>
+</g>
+<!-- python_basics_python_0270_functions -->
+<g id="node3" class="node">
+<title>python_basics_python_0270_functions</title>
+<g id="a_node3"><a xlink:href="../python_0270_functions/topic.html" xlink:title="Functions">
+<ellipse fill="#dcdcdc" stroke="black" cx="347" cy="-186" rx="56.59" ry="18"/>
+<text text-anchor="middle" x="347" y="-182.3" font-family="Times,serif" font-size="14.00">Functions</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0140_variables -->
+<g id="node5" class="node">
+<title>python_basics_python_0140_variables</title>
+<g id="a_node5"><a xlink:href="../python_0140_variables/topic.html" xlink:title="Variables">
+<ellipse fill="#dcdcdc" stroke="black" cx="424" cy="-42" rx="53.89" ry="18"/>
+<text text-anchor="middle" x="424" y="-38.3" font-family="Times,serif" font-size="14.00">Variables</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0270_functions&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge4" class="edge">
+<title>python_basics_python_0270_functions&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M345.17,-167.76C343.99,-148.92 344.55,-118.43 357,-96 364.24,-82.96 376.13,-71.98 387.91,-63.46"/>
+<polygon fill="black" stroke="black" points="390.09,-66.21 396.39,-57.7 386.15,-60.42 390.09,-66.21"/>
+</g>
+<!-- python_basics_python_0270_functions&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge5" class="edge">
+<title>python_basics_python_0270_functions&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M364.86,-168.76C374.87,-159.66 387.52,-148.16 398.55,-138.13"/>
+<polygon fill="black" stroke="black" points="401.19,-140.46 406.24,-131.15 396.48,-135.28 401.19,-140.46"/>
+</g>
+<!-- python_basics_python_0450_dictionaries -->
+<g id="node4" class="node">
+<title>python_basics_python_0450_dictionaries</title>
+<g id="a_node4"><a xlink:href="../python_0450_dictionaries/topic.html" xlink:title="More on Dictionaries">
+<ellipse fill="#dcdcdc" stroke="black" cx="491" cy="-330" rx="108.58" ry="18"/>
+<text text-anchor="middle" x="491" y="-326.3" font-family="Times,serif" font-size="14.00">More on Dictionaries</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0150_datatypes_overview_compound -->
+<g id="edge6" class="edge">
+<title>python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0150_datatypes_overview_compound</title>
+<path fill="none" stroke="black" d="M470.42,-312.05C459.57,-303.11 446.08,-292.01 434.25,-282.27"/>
+<polygon fill="black" stroke="black" points="436.33,-279.44 426.39,-275.79 431.88,-284.85 436.33,-279.44"/>
+</g>
+<!-- python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0220_for -->
+<g id="edge7" class="edge">
+<title>python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0220_for</title>
+<path fill="none" stroke="black" d="M514.48,-312.05C527.57,-302.61 544.02,-290.74 558.03,-280.63"/>
+<polygon fill="black" stroke="black" points="560.33,-283.28 566.39,-274.59 556.24,-277.61 560.33,-283.28"/>
+</g>
+<!-- python_basics_python_0150_datatypes_overview&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge17" class="edge">
+<title>python_basics_python_0150_datatypes_overview&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M424,-95.7C424,-87.98 424,-78.71 424,-70.11"/>
+<polygon fill="black" stroke="black" points="427.5,-70.1 424,-60.1 420.5,-70.1 427.5,-70.1"/>
+</g>
+<!-- python_basics_python_0200_sequential_types&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge20" class="edge">
+<title>python_basics_python_0200_sequential_types&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M521.99,-168.59C503.62,-158.54 479.98,-145.62 460.53,-134.98"/>
+<polygon fill="black" stroke="black" points="462.09,-131.84 451.64,-130.11 458.73,-137.98 462.09,-131.84"/>
+</g>
+<!-- python_drafts_pip -->
+<g id="node8" class="node">
+<title>python_drafts_pip</title>
+<g id="a_node8"><a xlink:href="pip/topic.html" xlink:title="Python Package Index">
+<ellipse fill="#dcdcdc" stroke="black" cx="493" cy="-640" rx="113.18" ry="18"/>
+<text text-anchor="middle" x="493" y="-636.3" font-family="Times,serif" font-size="14.00">Python Package Index</text>
+</a>
+</g>
+</g>
+<!-- python_drafts_import -->
+<g id="node9" class="node">
+<title>python_drafts_import</title>
+<g id="a_node9"><a xlink:href="import.html" xlink:title="The import Statement (incomplete)">
+<ellipse fill="#dcdcdc" stroke="black" cx="526" cy="-568" rx="174.67" ry="18"/>
+<text text-anchor="middle" x="526" y="-564.3" font-family="Times,serif" font-size="14.00">The import Statement (incomplete)</text>
+</a>
+</g>
+</g>
+<!-- python_drafts_pip&#45;&gt;python_drafts_import -->
+<g id="edge3" class="edge">
+<title>python_drafts_pip&#45;&gt;python_drafts_import</title>
+<path fill="none" stroke="black" d="M501.16,-621.7C504.91,-613.73 509.45,-604.1 513.62,-595.26"/>
+<polygon fill="black" stroke="black" points="516.84,-596.64 517.94,-586.1 510.51,-593.66 516.84,-596.64"/>
+</g>
+<!-- python_swdev_python_1200_modules -->
+<g id="node14" class="node">
+<title>python_swdev_python_1200_modules</title>
+<g id="a_node14"><a xlink:href="../python_1200_modules/topic.html" xlink:title="Modules and Packages">
+<ellipse fill="#dcdcdc" stroke="black" cx="526" cy="-485" rx="116.18" ry="18"/>
+<text text-anchor="middle" x="526" y="-481.3" font-family="Times,serif" font-size="14.00">Modules and Packages</text>
+</a>
+</g>
+</g>
+<!-- python_drafts_import&#45;&gt;python_swdev_python_1200_modules -->
+<g id="edge14" class="edge">
+<title>python_drafts_import&#45;&gt;python_swdev_python_1200_modules</title>
+<path fill="none" stroke="black" d="M526,-549.82C526,-539.19 526,-525.31 526,-513.2"/>
+<polygon fill="black" stroke="black" points="529.5,-513.15 526,-503.15 522.5,-513.15 529.5,-513.15"/>
+</g>
+<!-- python_drafts_venv -->
+<g id="node10" class="node">
+<title>python_drafts_venv</title>
+<g id="a_node10"><a xlink:href="venv/topic.html" xlink:title="Virtual Environments">
+<ellipse fill="#dcdcdc" stroke="black" cx="608" cy="-712" rx="110.48" ry="18"/>
+<text text-anchor="middle" x="608" y="-708.3" font-family="Times,serif" font-size="14.00">Virtual Environments</text>
+</a>
+</g>
+</g>
+<!-- python_drafts_venv&#45;&gt;python_drafts_pip -->
+<g id="edge22" class="edge">
+<title>python_drafts_venv&#45;&gt;python_drafts_pip</title>
+<path fill="none" stroke="black" d="M580.75,-694.41C565.39,-685.06 546.01,-673.27 529.37,-663.14"/>
+<polygon fill="black" stroke="black" points="530.82,-659.92 520.46,-657.71 527.18,-665.9 530.82,-659.92"/>
+</g>
+<!-- python_drafts_venv&#45;&gt;python_drafts_import -->
+<g id="edge21" class="edge">
+<title>python_drafts_venv&#45;&gt;python_drafts_import</title>
+<path fill="none" stroke="black" d="M614.7,-694.03C621,-675.15 627.71,-644.37 615,-622 607.35,-608.53 594.77,-598.13 581.44,-590.25"/>
+<polygon fill="black" stroke="black" points="583.08,-587.16 572.63,-585.43 579.72,-593.3 583.08,-587.16"/>
+</g>
+<!-- python_drafts_ai_k_means -->
+<g id="node11" class="node">
+<title>python_drafts_ai_k_means</title>
+<ellipse fill="#dcdcdc" stroke="black" stroke-width="3" cx="381" cy="-856" rx="50.89" ry="18"/>
+<text text-anchor="middle" x="381" y="-852.3" font-family="Times,serif" font-size="14.00">K&#45;Means</text>
+</g>
+<!-- python_drafts_ai_k_means&#45;&gt;python_drafts_venv -->
+<g id="edge8" class="edge">
+<title>python_drafts_ai_k_means&#45;&gt;python_drafts_venv</title>
+<path fill="none" stroke="black" d="M410.8,-841.33C431.96,-831.26 460.8,-816.8 485,-802 518.39,-781.58 554.43,-754.91 578.81,-736.1"/>
+<polygon fill="black" stroke="black" points="581.17,-738.7 586.92,-729.8 576.88,-733.17 581.17,-738.7"/>
+</g>
+<!-- python_drafts_ai_machine_learning_intro -->
+<g id="node12" class="node">
+<title>python_drafts_ai_machine_learning_intro</title>
+<g id="a_node12"><a xlink:href="machine-learning-intro.html" xlink:title="Machine Learning: Concepts and Terminology">
+<ellipse fill="#dcdcdc" stroke="black" cx="256" cy="-712" rx="223.66" ry="18"/>
+<text text-anchor="middle" x="256" y="-708.3" font-family="Times,serif" font-size="14.00">Machine Learning: Concepts and Terminology</text>
+</a>
+</g>
+</g>
+<!-- python_drafts_ai_k_means&#45;&gt;python_drafts_ai_machine_learning_intro -->
+<g id="edge9" class="edge">
+<title>python_drafts_ai_k_means&#45;&gt;python_drafts_ai_machine_learning_intro</title>
+<path fill="none" stroke="black" d="M342.3,-844.27C320.04,-836.17 293.33,-822.8 277,-802 263.25,-784.49 258.26,-759.45 256.56,-740.39"/>
+<polygon fill="black" stroke="black" points="260.05,-739.99 255.91,-730.23 253.06,-740.43 260.05,-739.99"/>
+</g>
+<!-- python_drafts_ai_linear_regression -->
+<g id="node13" class="node">
+<title>python_drafts_ai_linear_regression</title>
+<g id="a_node13"><a xlink:href="linear-regression/topic.html" xlink:title="Linear Regression">
+<ellipse fill="#dcdcdc" stroke="black" cx="381" cy="-784" rx="94.78" ry="18"/>
+<text text-anchor="middle" x="381" y="-780.3" font-family="Times,serif" font-size="14.00">Linear Regression</text>
+</a>
+</g>
+</g>
+<!-- python_drafts_ai_k_means&#45;&gt;python_drafts_ai_linear_regression -->
+<g id="edge10" class="edge">
+<title>python_drafts_ai_k_means&#45;&gt;python_drafts_ai_linear_regression</title>
+<path fill="none" stroke="black" d="M381,-837.7C381,-829.98 381,-820.71 381,-812.11"/>
+<polygon fill="black" stroke="black" points="384.5,-812.1 381,-802.1 377.5,-812.1 384.5,-812.1"/>
+</g>
+<!-- python_drafts_ai_linear_regression&#45;&gt;python_drafts_venv -->
+<g id="edge15" class="edge">
+<title>python_drafts_ai_linear_regression&#45;&gt;python_drafts_venv</title>
+<path fill="none" stroke="black" d="M428.59,-768.33C463.67,-757.51 511.62,-742.72 549.12,-731.16"/>
+<polygon fill="black" stroke="black" points="550.38,-734.43 558.91,-728.14 548.32,-727.74 550.38,-734.43"/>
+</g>
+<!-- python_drafts_ai_linear_regression&#45;&gt;python_drafts_ai_machine_learning_intro -->
+<g id="edge16" class="edge">
+<title>python_drafts_ai_linear_regression&#45;&gt;python_drafts_ai_machine_learning_intro</title>
+<path fill="none" stroke="black" d="M352.01,-766.76C335.03,-757.25 313.36,-745.12 294.9,-734.79"/>
+<polygon fill="black" stroke="black" points="296.57,-731.71 286.14,-729.88 293.15,-737.82 296.57,-731.71"/>
+</g>
+<!-- python_swdev_python_1200_modules&#45;&gt;python_basics_python_0270_functions -->
+<g id="edge11" class="edge">
+<title>python_swdev_python_1200_modules&#45;&gt;python_basics_python_0270_functions</title>
+<path fill="none" stroke="black" d="M595.17,-470.48C616.72,-462.67 638.18,-450.36 651,-431 674.43,-395.61 678.46,-272.37 651,-240 619.23,-202.56 481.31,-212.76 433,-204 423.44,-202.27 413.3,-200.34 403.47,-198.43"/>
+<polygon fill="black" stroke="black" points="403.85,-194.93 393.37,-196.44 402.51,-201.8 403.85,-194.93"/>
+</g>
+<!-- python_swdev_python_1200_modules&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge12" class="edge">
+<title>python_swdev_python_1200_modules&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M598.05,-470.87C621.93,-463.07 646.57,-450.67 663,-431 691.95,-396.34 681,-376.16 681,-331 681,-331 681,-331 681,-185 681,-95.72 560.72,-62.14 484.73,-49.83"/>
+<polygon fill="black" stroke="black" points="485.19,-46.36 474.77,-48.3 484.13,-53.28 485.19,-46.36"/>
+</g>
+<!-- python_swdev_python_1050_oo -->
+<g id="node15" class="node">
+<title>python_swdev_python_1050_oo</title>
+<g id="a_node15"><a xlink:href="../python_1050_oo/topic.html" xlink:title="Object Oriented Programming">
+<ellipse fill="#dcdcdc" stroke="black" cx="491" cy="-413" rx="151.37" ry="18"/>
+<text text-anchor="middle" x="491" y="-409.3" font-family="Times,serif" font-size="14.00">Object Oriented Programming</text>
+</a>
+</g>
+</g>
+<!-- python_swdev_python_1200_modules&#45;&gt;python_swdev_python_1050_oo -->
+<g id="edge13" class="edge">
+<title>python_swdev_python_1200_modules&#45;&gt;python_swdev_python_1050_oo</title>
+<path fill="none" stroke="black" d="M517.35,-466.7C513.36,-458.73 508.55,-449.1 504.13,-440.26"/>
+<polygon fill="black" stroke="black" points="507.15,-438.48 499.55,-431.1 500.89,-441.61 507.15,-438.48"/>
+</g>
+<!-- python_swdev_python_1050_oo&#45;&gt;python_basics_python_0270_functions -->
+<g id="edge19" class="edge">
+<title>python_swdev_python_1050_oo&#45;&gt;python_basics_python_0270_functions</title>
+<path fill="none" stroke="black" d="M413.21,-397.45C399.17,-392.86 385.15,-386.85 373,-379 322.92,-346.62 307.33,-332.07 287,-276 281.55,-260.96 280.42,-254.59 287,-240 292.59,-227.6 302.67,-216.94 313,-208.5"/>
+<polygon fill="black" stroke="black" points="315.41,-211.06 321.24,-202.21 311.17,-205.49 315.41,-211.06"/>
+</g>
+<!-- python_swdev_python_1050_oo&#45;&gt;python_basics_python_0450_dictionaries -->
+<g id="edge18" class="edge">
+<title>python_swdev_python_1050_oo&#45;&gt;python_basics_python_0450_dictionaries</title>
+<path fill="none" stroke="black" d="M491,-394.82C491,-384.19 491,-370.31 491,-358.2"/>
+<polygon fill="black" stroke="black" points="494.5,-358.15 491,-348.15 487.5,-358.15 494.5,-358.15"/>
+</g>
+</g>
+</svg>
+</div>
+</div>
+
+  <div class="section">
+  
+  
+  </div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2020, Jörg Faschingbauer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../../../_sources/trainings/material/soup/python/draft/k-means.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
