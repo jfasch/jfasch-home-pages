@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fedora: Building External Kernel Modules (Screenplay) &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/kernel/fedora-module-build/screenplay.html" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="Generated Topic List" href="../../list.html" />
+    <link rel="prev" title="Fedora: Building External Kernel Modules" href="topic.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../index.html">
+    <img class="logo" src="../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../python/index.html">Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx/cxx.html">C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../hardware/index.html">Hardware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../sysprog/sysprog.html">Systems Programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../unittest/unittest.html">Unit Testing</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">Kernel Hacking</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../fedora-kernel-build/topic.html">Fedora: Building the Kernel</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="topic.html">Fedora: Building External Kernel Modules</a><ul class="current">
+<li class="toctree-l5 current"><a class="current reference internal" href="#">Fedora: Building External Kernel Modules (Screenplay)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../list.html">Generated Topic List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../about/site/index.html">This Site</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <div class="section" id="fedora-building-external-kernel-modules-screenplay">
+<h1>Fedora: Building External Kernel Modules (Screenplay)<a class="headerlink" href="#fedora-building-external-kernel-modules-screenplay" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="prerequisite-build-entire-kernel">
+<h2>Prerequisite: Build Entire Kernel<a class="headerlink" href="#prerequisite-build-entire-kernel" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>A kernel module is built against the kernel it will be loaded into</p></li>
+<li><p>The exact kernel version matters: there is no backward compatibility</p></li>
+<li><p>Kernel module uses symbols from the kernel</p>
+<ul>
+<li><p>Core kernel modules</p></li>
+<li><p>The kernel proper itself</p></li>
+</ul>
+</li>
+</ul>
+<p>This means that, as a prerequisite <a class="reference internal" href="../fedora-kernel-build/topic.html"><span class="doc">the entire target kernel needs to
+be built</span></a>.</p>
+<p>We used to <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">modules</span></code> in the past, so <code class="docutils literal notranslate"><span class="pre">Module.symvers</span></code> was
+created for the in-tree modules. However, nowadays the build
+complains,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">WARNING: modpost: Symbol info of vmlinux is missing. Unresolved symbol check will be entirely skipped.</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="https://lore.kernel.org/lkml/20200517094859.2376211-19-masahiroy&#64;kernel.org/">this message</a>
+for background; to us this means we need to build the entire kernel.</p>
+</div>
+<div class="section" id="build-modules">
+<h2>Build Modules<a class="headerlink" href="#build-modules" title="Permalink to this headline">¶</a></h2>
+<p>(See <a class="reference external" href="https://www.kernel.org/doc/html/latest/kbuild/modules.html">here</a> for
+the whole story.)</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nv">MODULE_SRC</span><span class="o">=</span>/home/jfasch/kernel-training/jf-kernel-course/drivers
+<span class="gp">$</span> <span class="nv">KERNEL_BUILD</span><span class="o">=</span>/home/jfasch/kernel-training/kernel-exploded-git-tree
+<span class="gp">$</span> <span class="nv">DEPLOYMENT</span><span class="o">=</span>/home/jfasch/kernel-training/deployment
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">cd</span> <span class="nv">$MODULE_SRC</span>
+<span class="gp">$</span> make -C <span class="nv">$KERNEL_BUILD</span> <span class="nv">M</span><span class="o">=</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="install-modules">
+<h2>Install Modules<a class="headerlink" href="#install-modules" title="Permalink to this headline">¶</a></h2>
+<p>You might want to copy the modules into one <em>deployment</em> location,
+especially if your external modules tree spans subdirectories.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> make -C <span class="nv">$KERNEL_BUILD</span> <span class="nv">M</span><span class="o">=</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span> <span class="nv">INSTALL_MOD_PATH</span><span class="o">=</span><span class="nv">$DEPLOYMENT</span> modules_install
+</pre></div>
+</div>
+</div>
+</div>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2020, Jörg Faschingbauer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../../../_sources/trainings/material/soup/kernel/fedora-module-build/screenplay.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
