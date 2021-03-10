@@ -112,7 +112,7 @@
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html">Kernel Hacking</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../cdev-auto/topic.html">Modern Character Devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../cdev-file-operations/topic.html">File Operations on Character Devices</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../cdev-first-functionality/topic.html">First Functionality</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cdev-first-functionality/topic.html">Exercise: First Functionality</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../cdev-manual/topic.html">Character Device Basics</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../cdev-multiple-devices/topic.html">Multiple Devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../cdev-refactoring/topic.html">Refactoring</a></li>
@@ -126,6 +126,7 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../iomemory/topic.html">IO Memory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../kmalloc/topic.html">Dynamic Memory: <code class="docutils literal notranslate"><span class="pre">kmalloc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../list/topic.html">Doubly Linked Lists</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../mutex/topic.html">Mutex (and RT Mutex)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../pci/topic.html">PCI</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../process-vs-atomic/topic.html">Process vs.Atomic Context</a></li>
@@ -177,7 +178,7 @@
 <li><p><a class="reference internal" href="#interrupt-facts" id="id5">Interrupt Facts</a></p></li>
 <li><p><a class="reference internal" href="#interrupt-service-routine" id="id6">Interrupt Service Routine</a></p></li>
 <li><p><a class="reference internal" href="#requesting-and-releasing-interrupts-1" id="id7">Requesting (and Releasing) Interrupts (1)</a></p></li>
-<li><p><a class="reference internal" href="#requesting-and-releasing-interrupts-2" id="id8">Requesting (and Releasing) Interrupts (2)</a></p></li>
+<li><p><a class="reference internal" href="#documentation" id="id8">Documentation</a></p></li>
 </ul>
 </div>
 <div class="sidebar">
@@ -265,12 +266,12 @@ target</p></li>
 <h2><a class="toc-backref" href="#id6">Interrupt Service Routine</a><a class="headerlink" href="#interrupt-service-routine" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/interrupt.h&gt;</span><span class="cp"></span>
 
-<span class="n">irqreturn_t</span> <span class="nf">irq_handler</span><span class="p">(</span><span class="kt">int</span> <span class="n">irq</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">userdata</span><span class="p">)</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+<span class="n">irqreturn_t</span> <span class="nf">irq_handler</span><span class="p">(</span><span class="kt">int</span> <span class="n">irq</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">cookie</span><span class="p">)</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
 </pre></div>
 </div>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">irq</span></code>: the interrupt number that is active</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">userdata</span></code>: set when requesting the IRQ</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cookie</span></code>: opque pointer, given as <code class="docutils literal notranslate"><span class="pre">cookie</span></code> when IRQ is requested</p></li>
 <li><p>Return value …</p></li>
 </ul>
 <p>** <code class="docutils literal notranslate"><span class="pre">irqreturn_t</span></code> values**</p>
@@ -278,12 +279,15 @@ target</p></li>
 <tbody>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">IRQ_NONE</span></code></p></td>
 <td><p>interrupt was not from this device or was not handled (shared interrupt?)</p></td>
+<td></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">IRQ_HANDLED</span></code></p></td>
 <td><p>interrupt was handled by this device</p></td>
+<td><p><em>important!</em> (Else line may remain active)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">IRQ_WAKE_THREAD</span></code></p></td>
 <td><p>handler requests to wake the handler thread (for threaded interrupts)</p></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -296,8 +300,12 @@ target</p></li>
 <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">free_irq</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">irq</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">cookie</span><span class="p">);</span>
 </pre></div>
 </div>
-<p><strong>``flags`` values</strong></p>
-<table class="colwidths-auto docutils align-left">
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">irq</span></code>: the requested interrupt line</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">handler</span></code>: interrupt handler to attach to <code class="docutils literal notranslate"><span class="pre">irq</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flags</span></code>: a <em>meaningful</em> combination of</p>
+<blockquote>
+<div><table class="colwidths-auto docutils align-left">
 <tbody>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">IRQF_SHARED</span></code></p></td>
 <td><p>Multiple interrupts shared on same line</p></td>
@@ -316,17 +324,19 @@ target</p></li>
 </tr>
 </tbody>
 </table>
-<ul class="simple">
-<li><p><em>Attention</em>: after successful call to <code class="docutils literal notranslate"><span class="pre">request_irq()</span></code> line is hot
-<em>immediately</em></p></li>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: shows up in <code class="docutils literal notranslate"><span class="pre">/proc/interrupts</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cookie</span></code>: echoed back into interrupt handler when called</p></li>
 </ul>
-</div>
-<div class="section" id="requesting-and-releasing-interrupts-2">
-<h2><a class="toc-backref" href="#id8">Requesting (and Releasing) Interrupts (2)</a><a class="headerlink" href="#requesting-and-releasing-interrupts-2" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Check <code class="docutils literal notranslate"><span class="pre">/proc/interrupts</span></code>!</p>
+<p>After successful call to <code class="docutils literal notranslate"><span class="pre">request_irq()</span></code> line is hot
+<em>immediately</em></p>
 </div>
+</div>
+<div class="section" id="documentation">
+<h2><a class="toc-backref" href="#id8">Documentation</a><a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
 <div class="sidebar">
 <p class="sidebar-title">Documentation</p>
 <table class="colwidths-auto docutils align-left">
