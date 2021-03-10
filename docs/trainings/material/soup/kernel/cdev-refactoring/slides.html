@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta content="Slide deck: a demo module to show how to maintain multiple devices (and get rid of global variable)" name="description" />
 <meta content="schulung, training, linux, kernel, module, container_of" name="keywords" />
 
-    <title>Refactoring (Slideshow) &#8212; Jörg Faschingbauer</title>
+    <title>Coding: Refactoring (Slideshow) &#8212; Jörg Faschingbauer</title>
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
@@ -27,8 +27,8 @@
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/kernel/cdev-refactoring/slides.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
-    <link rel="next" title="Refactoring (Screenplay)" href="screenplay.html" />
-    <link rel="prev" title="Refactoring" href="topic.html" /> 
+    <link rel="next" title="Coding: Refactoring (Screenplay)" href="screenplay.html" />
+    <link rel="prev" title="Coding: Refactoring" href="topic.html" /> 
    
   <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
   
@@ -114,22 +114,24 @@
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html">Kernel Hacking</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../cdev-auto/topic.html">Modern Character Devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../cdev-file-operations/topic.html">File Operations on Character Devices</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../cdev-first-functionality/topic.html">Exercise: First Functionality</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cdev-first-functionality/topic.html">Coding: First Functionality</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../cdev-manual/topic.html">Character Device Basics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../cdev-multiple-devices/topic.html">Multiple Devices</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="topic.html">Refactoring</a><ul class="current">
-<li class="toctree-l5 current"><a class="current reference internal" href="#">Refactoring (Slideshow)</a></li>
-<li class="toctree-l5"><a class="reference internal" href="screenplay.html">Refactoring (Screenplay)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cdev-multiple-devices/topic.html">Coding: Multiple Devices</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="topic.html">Coding: Refactoring</a><ul class="current">
+<li class="toctree-l5 current"><a class="current reference internal" href="#">Coding: Refactoring (Slideshow)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="screenplay.html">Coding: Refactoring (Screenplay)</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../dma/topic.html">DMA</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../fedora-kernel-build/topic.html">Fedora: Building the Kernel</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../fedora-module-build/topic.html">Fedora: Building External Kernel Modules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../hello-world/topic.html">Module Loading, Hello World</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../interrupt-coding/topic.html">Coding: Raspi GPIO Interrupts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../interrupt/topic.html">Interrupts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../iomemory/topic.html">IO Memory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../kmalloc/topic.html">Dynamic Memory: <code class="docutils literal notranslate"><span class="pre">kmalloc()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../list/topic.html">Doubly Linked Lists</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../mutex-coding/topic.html">Coding: Fix Race Condition</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../mutex/topic.html">Mutex (and RT Mutex)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../pci/topic.html">PCI</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../process-vs-atomic/topic.html">Process vs.Atomic Context</a></li>
@@ -170,13 +172,11 @@
           
 
           <div class="body" role="main">
-             <div class="section" id="refactoring-slideshow">
-<h1>Refactoring (Slideshow)<a class="headerlink" href="#refactoring-slideshow" title="Permalink to this headline">¶</a></h1>
+             <div class="section" id="coding-refactoring-slideshow">
+<h1>Coding: Refactoring (Slideshow)<a class="headerlink" href="#coding-refactoring-slideshow" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#what-s-bad" id="id1">What’s Bad?</a></p></li>
-<li><p><a class="reference internal" href="#device" id="id2">Device?</a></p></li>
-<li><p><a class="reference internal" href="#multiple-devices-preparation" id="id3">Multiple Devices? (Preparation)</a></p></li>
+<li><p><a class="reference internal" href="#what-s-bad" id="id3">What’s Bad?</a></p></li>
 </ul>
 </div>
 <div class="sidebar">
@@ -184,52 +184,65 @@
 <p><a class="reference external" href="https://github.com/jfasch/jf-kernel-course/tree/my_driver_cdev_refactoring/_morph">See Github</a></p>
 </div>
 <div class="section" id="what-s-bad">
-<h2><a class="toc-backref" href="#id1">What’s Bad?</a><a class="headerlink" href="#what-s-bad" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id3">What’s Bad?</a><a class="headerlink" href="#what-s-bad" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>We’re putting everything into a single file:</p>
 <ul class="simple">
-<li><p>Factor <code class="docutils literal notranslate"><span class="pre">my_event</span></code> and <code class="docutils literal notranslate"><span class="pre">my_event_list</span></code> out into separate file</p>
-<ul>
-<li><p>Drawing: module <em>frontend</em> has the “event engine” as <em>backend</em></p></li>
-<li><p>split apart, and show how to build a driver from multiple sources</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">my_event</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">my_event_list</span></code></p></li>
 </ul>
-</li>
-<li><p>Factor macros out into <code class="docutils literal notranslate"><span class="pre">misc.h</span></code> (and include that in the userspace
-programs)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">-Wswitch-enum</span></code></p></li>
-</ul>
+<p>Factor these out into separate files, <code class="docutils literal notranslate"><span class="pre">event.{h,c}</span></code>, and <em>use</em>
+those from the main driver file, <code class="docutils literal notranslate"><span class="pre">my_driver.c</span></code>
+<a class="footnote-reference brackets" href="#build-conflict" id="id1">1</a>.</p>
+<p>By the way, the <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> for a <code class="docutils literal notranslate"><span class="pre">module.ko</span></code> that is built from
+multiple files looks like so,</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">obj</span><span class="o">-</span><span class="n">m</span> <span class="o">+=</span> <span class="n">module</span><span class="p">.</span><span class="n">o</span>
+<span class="n">module</span><span class="o">-</span><span class="n">y</span> <span class="o">+=</span> <span class="n">file1</span><span class="p">.</span><span class="n">o</span> <span class="n">file2</span><span class="p">.</span><span class="n">o</span> <span class="n">file3</span><span class="p">.</span><span class="n">o</span>
+</pre></div>
 </div>
-<div class="section" id="device">
-<h2><a class="toc-backref" href="#id2">Device?</a><a class="headerlink" href="#device" title="Permalink to this headline">¶</a></h2>
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<p>jjj draw a sketch</p>
+</div>
+</li>
+<li><p>Factor macros out into <code class="docutils literal notranslate"><span class="pre">misc.h</span></code> (and include that in the
+userspace programs)</p></li>
+<li><p>Add the warning options <code class="docutils literal notranslate"><span class="pre">-Wswitch-enum</span></code> and <code class="docutils literal notranslate"><span class="pre">-Werror</span></code> (and
+<code class="docutils literal notranslate"><span class="pre">-Wall</span></code>) to the compiler commandline. This is done by adding the
+following line to the <code class="docutils literal notranslate"><span class="pre">Makefile</span></code>,</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">ccflags</span><span class="o">-</span><span class="n">y</span> <span class="o">+=</span> <span class="o">-</span><span class="n">Werror</span> <span class="o">-</span><span class="n">Wall</span> <span class="o">-</span><span class="n">Wswitch</span><span class="o">-</span><span class="k">enum</span>
+</pre></div>
+</div>
+</li>
+<li><p>Encapsulate global variables into <code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">my_device</span></code></p>
+<p>We currently only have a single device node, implemented by
+multiple distinct entities which are global variables in the driver
+code,</p>
 <ul class="simple">
-<li><p>Our device is made up of multiple distinct entities</p>
-<ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">my_event_list</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">cdev</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">device*</span></code></p></li>
 <li><p>…</p></li>
 </ul>
-</li>
-<li><p>Move those into <code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">my_device</span></code> methods:</p>
-<ul>
+<p>Create a separate file pair <code class="docutils literal notranslate"><span class="pre">device.{h,c}</span></code> that contains <code class="docutils literal notranslate"><span class="pre">struct</span>
+<span class="pre">my_device</span></code> to contain these variables, and make an instance of
+that type a single global device instead.</p>
+<p>Lets move the build-up and tear-down code into methods</p>
+<ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">my_device_init()</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">my_device_destroy()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">my_device_go_public()</span></code></p></li>
 </ul>
 </li>
-<li><p>Move all these into <code class="docutils literal notranslate"><span class="pre">device.{h,c}</span></code></p></li>
-</ul>
-</div>
-<div class="section" id="multiple-devices-preparation">
-<h2><a class="toc-backref" href="#id3">Multiple Devices? (Preparation)</a><a class="headerlink" href="#multiple-devices-preparation" title="Permalink to this headline">¶</a></h2>
-<p><strong>Motivation</strong>: PCI and USB drivers can maintain <em>multiple devices</em>
-(one driver for all devices of the same kind) ⟶ <em>list</em>
-of devices.</p>
-<ul class="simple">
-<li><p>Convert global <em>device</em> variable to a list. Initially having only
-one element.</p></li>
-<li><p>That one element is an <em>object</em> that is set into the <em>open file</em>
-(<code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">file</span></code>) in <code class="docutils literal notranslate"><span class="pre">open()</span></code></p></li>
-<li><p>… accessed by further calls through that structure.</p></li>
-</ul>
+</ol>
+<p class="rubric">Footnotes</p>
+<dl class="footnote brackets">
+<dt class="label" id="build-conflict"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Btw, we will have to rename <code class="docutils literal notranslate"><span class="pre">my_driver.c</span></code> (to
+<code class="docutils literal notranslate"><span class="pre">main.c</span></code> perhaps) because <code class="docutils literal notranslate"><span class="pre">my_driver.ko</span></code> has
+the same stem. Sadly, Kbuild does not warn us
+about this conflict.</p>
+</dd>
+</dl>
 </div>
 </div>
 
