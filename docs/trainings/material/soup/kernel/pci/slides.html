@@ -125,7 +125,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../iomemory/topic.html">IO Memory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../kmalloc/topic.html">Dynamic Memory: <code class="docutils literal notranslate"><span class="pre">kmalloc()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../list/topic.html">Doubly Linked Lists</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../mutex-coding/topic.html">Coding: Fix Race Condition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../mutex-coding/topic.html">Coding: Fix Race Condition (Mutex)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../mutex/topic.html">Mutex (and RT Mutex)</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="topic.html">PCI</a><ul class="current">
 <li class="toctree-l5 current"><a class="current reference internal" href="#">PCI (Slideshow)</a></li>
@@ -133,8 +133,10 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../process-vs-atomic/topic.html">Process vs.Atomic Context</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../raspi-kernel-build/topic.html">Raspberry Pi: Building the Kernel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../spinlock-coding/topic.html">Coding: Fix <em>Sleep While Atomic</em></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../spinlock/topic.html">Spinlock (vs. Mutex)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../stub-sysprog-dup/topic.html"><code class="docutils literal notranslate"><span class="pre">dup()</span></code>, <code class="docutils literal notranslate"><span class="pre">fork()</span></code>, and Reference Counting (Stub)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../time_timer-coding/topic.html">Coding: Timed Event</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../time_timer/topic.html">Timer Management</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../usermem/topic.html">Accessing Userspace Memory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../waitqueue/topic.html">Waiting for Something</a></li>
@@ -180,6 +182,7 @@
 <li><p><a class="reference internal" href="#the-probe-method-boilerplate" id="id5">The <code class="docutils literal notranslate"><span class="pre">probe()</span></code> Method: Boilerplate</a></p></li>
 <li><p><a class="reference internal" href="#the-probe-method-interrupt" id="id6">The <code class="docutils literal notranslate"><span class="pre">probe()</span></code> Method: Interrupt</a></p></li>
 <li><p><a class="reference internal" href="#the-probe-method-pci-resources-bars" id="id7">The <code class="docutils literal notranslate"><span class="pre">probe()</span></code> Method: PCI Resources (BARs)</a></p></li>
+<li><p><a class="reference internal" href="#dma-support-routines" id="id8">DMA Support Routines</a></p></li>
 </ul>
 </div>
 <p>See <a class="reference external" href="https://www.kernel.org/doc/html/latest/PCI/index.html">Linux Kernel Documentation</a> for
@@ -324,6 +327,7 @@ appear).</p>
 <li><p>Default: 32 bit (as per PCI spec)</p></li>
 </ul>
 </li>
+<li><p>jjj pci_set_consistent_dma_mask</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">pci_set_drvdata(pdev,</span> <span class="pre">context);</span></code></p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">void*</span> <span class="pre">context</span></code> is set in <code class="docutils literal notranslate"><span class="pre">pdev</span></code></p></li>
@@ -369,6 +373,17 @@ to not access it directly, but with <code class="docutils literal notranslate"><
 <li><p>Reverted (unmapped) in <code class="docutils literal notranslate"><span class="pre">remove()</span></code></p></li>
 </ul>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">pci_iounmap</span><span class="p">(</span><span class="n">pdev</span><span class="p">,</span> <span class="n">addr</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="dma-support-routines">
+<h2><a class="toc-backref" href="#id8">DMA Support Routines</a><a class="headerlink" href="#dma-support-routines" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">cpu_addr</span> <span class="o">=</span> <span class="n">pci_alloc_consistent</span><span class="p">(</span><span class="n">os_device</span><span class="o">-&gt;</span><span class="n">_os</span><span class="p">.</span><span class="n">pdev</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">dma_addr</span><span class="p">);</span>
+<span class="n">pci_free_consistent</span><span class="p">(</span><span class="n">os_device</span><span class="o">-&gt;</span><span class="n">_os</span><span class="p">.</span><span class="n">pdev</span><span class="p">,</span> <span class="n">self</span><span class="o">-&gt;</span><span class="n">_os</span><span class="p">.</span><span class="n">_size</span><span class="p">,</span>
+                    <span class="n">self</span><span class="o">-&gt;</span><span class="n">_os</span><span class="p">.</span><span class="n">_cpu_addr</span><span class="p">,</span> <span class="n">t_os_dma_addr__get_native</span><span class="p">(</span><span class="n">self</span><span class="o">-&gt;</span><span class="n">_os</span><span class="p">.</span><span class="n">_dma_addr</span><span class="p">));</span>
+
+<span class="n">error</span> <span class="o">=</span> <span class="n">pci_set_dma_mask</span><span class="p">(</span><span class="n">self</span><span class="o">-&gt;</span><span class="n">_os_device</span><span class="o">-&gt;</span><span class="n">_os</span><span class="p">.</span><span class="n">pdev</span><span class="p">,</span> <span class="n">DMA_BIT_MASK</span><span class="p">(</span><span class="mi">32</span><span class="p">));</span>
+<span class="n">error</span> <span class="o">=</span> <span class="n">pci_set_consistent_dma_mask</span><span class="p">(</span><span class="n">self</span><span class="o">-&gt;</span><span class="n">_os_device</span><span class="o">-&gt;</span><span class="n">_os</span><span class="p">.</span><span class="n">pdev</span><span class="p">,</span> <span class="n">DMA_BIT_MASK</span><span class="p">(</span><span class="mi">32</span><span class="p">));</span>
 </pre></div>
 </div>
 </div>
