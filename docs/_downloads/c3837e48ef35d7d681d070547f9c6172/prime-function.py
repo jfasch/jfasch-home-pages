@@ -1,26 +1,23 @@
 import sys
 
-def is_prime(n):
-    ... hier geschieht ein wunder
+def is_prime(number):
+    if number == 1:
+        return False
+    
+    for divisor in range(2, number):
+        if number % divisor == 0:
+            return False
+    else:
+        return True
 
-number = int(sys.argv[1])
-if is_prime(number):
-    print(number, 'is prime')
+n = int(sys.argv[1])
+if is_prime(n):
+    print(n, 'is prime')
 else:
-    print(number, 'is not prime')
+    print(n, 'is not prime')
     
 
 
 
 
 
-# if number == 1:
-#     print(number, 'is not prime')
-#     sys.exit(0)
-
-# for divisor in range(2, number):
-#     if number % divisor == 0:
-#         print(number, 'is not prime')
-#         break
-# else:
-#     print(number, 'is prime')
