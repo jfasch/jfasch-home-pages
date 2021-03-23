@@ -1,0 +1,559 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>https://www.faschingbauer.me</id>
+  <title>Jörg Faschingbauer - Posted in 2011</title>
+  <updated>2021-03-23T06:26:31.429429+00:00</updated>
+  <link href="https://www.faschingbauer.me"/>
+  <link href="https://www.faschingbauer.me/blog/2011/atom.xml"/>
+  <generator uri="https://ablog.readthedocs.org" version="0.10.12">ABlog</generator>
+  <entry>
+    <id>https://www.faschingbauer.me/blog/2011/01/porting-to-linux-there-s-always-a-better-way.html</id>
+    <title>Porting to Linux (There’s Always A Better Way)</title>
+    <updated>2011-01-07T00:00:00+01:00</updated>
+    <author>
+      <name>Jörg Faschingbauer</name>
+    </author>
+    <content type="html">&lt;div class="section" id="porting-to-linux-there-s-always-a-better-way"&gt;
+
+&lt;div class="sidebar"&gt;
+&lt;p class="sidebar-title"&gt;Contents&lt;/p&gt;
+&lt;div class="contents local topic" id="contents"&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#processes-are-threads" id="id1"&gt;Processes are Threads&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#signals-aren-t-messages" id="id2"&gt;Signals Aren’t Messages&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#message-queues-aren-t-message-queues" id="id3"&gt;Message Queues aren’t Message Queues&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#semaphores-and-mutexes" id="id4"&gt;Semaphores and Mutexes&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#timers" id="id5"&gt;Timers&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#polling" id="id6"&gt;Polling&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#event-dispatching" id="id7"&gt;Event Dispatching&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#interrupts" id="id8"&gt;Interrupts&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#realtime" id="id9"&gt;Realtime&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Over the past months I met a couple of people who are relatively new
+to Linux. For one, I’ve been to Germany doing courses on Linux -
+naturally the audience in such a course is new to Linux. For another,
+I have one and a half customers here in Austria who are mainly doing
+microcontroller work and who don’t have a clue of Linux.&lt;/p&gt;
+&lt;p&gt;Many of these people have code which they have written and maintained
+over a long time, and which has a value. The code runs happily on bare
+metal, or on a minimal OS like Segger embOS, Enea OSE, VxWorks, or
+even Windows CE. No way rewriting it just because of Linux.&lt;/p&gt;
+&lt;p&gt;Well, there’s no need to. It’s just not trivial to choose the right
+mechanisms. Linux (and Unix in general) offers so many choices to mess
+things up right from the beginning. And it’s quite likely that things
+are in fact messed up, which is what I learned from the people I met.&lt;/p&gt;
+&lt;p&gt;“Good Old Device Firmware” is quite limited in what it can use.&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;It is a statically linked blob of executable code.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;It operates in a single address space (there’s generally no idea
+what an address space is, so there is only one).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;It has interrupts hammering on it.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;If there is an OS, then chances are that there are multiple
+processes that are scheduled by the OS. Often processes communicate
+by dumping messages into each other’s message queues.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Locking mechanisms. In the presence of interrupts you need to
+disable them if need be. If processes are used, there are generally
+semaphores available in one or more flavors.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;It’s these simple concepts where the confusion starts. For example,
+in Linux/Unix a process is probably not what you want - you rather
+want a thread instead. When you search for the term “message queue”
+you will find &lt;em&gt;several&lt;/em&gt; mechanisms, &lt;em&gt;none of which&lt;/em&gt; are what you
+want. You’ll notice sooner or later that you chose the wrong
+concept, but it’s maybe too late to revert - causing your Linux port
+to fail over the years. (In my opinion it’s never too late to
+revert, but that’s a different kind of story.)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In the remainder I’ll try to give a list of recipes for porting to
+Linux. I hope that it will help you speed up the porting project, by
+avoiding severe mistakes right at the beginning. The list cannot be
+complete - it’s just a blog post after all. But I do hope it will give
+you a bigger picture than you already have, and that it provides you
+with the starting points for your own research (which you will have to
+do unless you want to hire me as a consultant :-).&lt;/p&gt;
+&lt;div class="section" id="processes-are-threads"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Processes are Threads&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;In the embedded OS world, you use the word “process” to refer to an
+entity that is scheduled by the OS. There is no such thing as separate
+address spaces and memory protection in such systems (these OS’s are
+initially designed for cheap MMU-less processors).&lt;/p&gt;
+&lt;p&gt;So, what people generally want is &lt;em&gt;threads&lt;/em&gt;. &lt;em&gt;Processes&lt;/em&gt; in Unix refer
+to address space separation and memory protection, so don’t get misled
+only by the term. The Unix way of multithreading is POSIX threads
+(pthreads for short). On Linux, &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;man&lt;/span&gt; &lt;span class="pre"&gt;pthreads&lt;/span&gt;&lt;/code&gt; will tell you
+more. Better yet, buy yourself a copy of a &lt;a class="reference external" href="http://oreilly.com/catalog/9781565921153"&gt;PThreads Programming&lt;/a&gt; book. Read that book
+twice. Threading has lots of pitfalls, and it is crucial to understand
+these. (I have seen people create five threads to solve a simple
+data-acquisition-and-network-communication problem where they didn’t
+know what a mutex was.)&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="signals-aren-t-messages"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id2"&gt;Signals Aren’t Messages&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Don’t use Unix signals for communication. They have very few in common
+with what’s called a &lt;em&gt;signal&lt;/em&gt; in RTOSs. (In the RTOS world, &lt;em&gt;signals&lt;/em&gt;
+are often called &lt;em&gt;messages&lt;/em&gt;.)&lt;/p&gt;
+&lt;div class="sidebar"&gt;
+&lt;p class="sidebar-title"&gt;References&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="../trainings/material/soup/sysprog/sysprog_signals/slides.html"&gt;&lt;span class="doc"&gt;Slide material: UNIX signals&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="../trainings/material/soup/sysprog/sysprog_signals/screenplay.html"&gt;&lt;span class="doc"&gt;Demo code: UNIX signals&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;p&gt;In Unix, signals are commonly used to tear down a process (&lt;em&gt;not&lt;/em&gt; a
+thread), giving it a chance to perform proper cleanup before
+exit. There are other uses of signals as well, such as notification of
+memory protection violation (the dreaded “segmentation fault”) and
+other programming errors.&lt;/p&gt;
+&lt;p&gt;The problem with signal handling is that signals arrive in a special
+context which you probably know as “interrupt context” in your
+OS. Consequently, your options are very limited in a signal
+handler. You cannot use most of the functions that are available from
+the C runtime library!&lt;/p&gt;
+&lt;p&gt;If you still feel that you need to use signals, then perform the
+following steps.&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Think twice. Why do you need signals? There’s probably a better way.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Read &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;man&lt;/span&gt; &lt;span class="pre"&gt;-s&lt;/span&gt; &lt;span class="pre"&gt;7&lt;/span&gt; &lt;span class="pre"&gt;signal&lt;/span&gt;&lt;/code&gt; for more. &lt;strong&gt;Pay special attention to the
+section about async-signal-safe functions&lt;/strong&gt; (note that none of the
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;pthread_&lt;/span&gt;&lt;/code&gt; functions appears in the list).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Try to defer processing from the signal handler into the regular
+course of your application. For example, you can use the “self pipe”
+trick (Google sure knows about it.)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Forget about asynchronous signal delivery and use one of the``
+sigwait``, &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;sigwaitinfo&lt;/span&gt;&lt;/code&gt;, and &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;sigtimedwait&lt;/span&gt;&lt;/code&gt; system calls. This
+way you suspend the execution of one thread until a signal is
+caught, thus turning signal handling into a &lt;em&gt;synchronous&lt;/em&gt;
+approach. You’d have to dedicate an entire thread to signal handling
+though.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;An alternative way of synchronous signal handling is to use the new
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;signalfd&lt;/span&gt;&lt;/code&gt; system call. Its semantics are the same as
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;sigwaitinfo&lt;/span&gt;&lt;/code&gt;, only you use a file descriptor as an “event
+source”. You can embed this file descriptor among other event
+sources in an event driven application, using &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;select&lt;/span&gt;&lt;/code&gt;, &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;poll&lt;/span&gt;&lt;/code&gt;,
+or &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;epoll&lt;/span&gt;&lt;/code&gt;. See below for more.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="section" id="message-queues-aren-t-message-queues"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id3"&gt;Message Queues aren’t Message Queues&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="sidebar"&gt;
+&lt;p class="sidebar-title"&gt;References&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="../trainings/material/soup/sysprog/sysprog_ipc/slides.html"&gt;&lt;span class="doc"&gt;Slide material: POSIX message queues&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="../trainings/material/soup/sysprog/sysprog_ipc/screenplay.html"&gt;&lt;span class="doc"&gt;Demo code: POSIX message queues&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;p&gt;Chances are that the threads (err, processes) of your OS communicate
+via messages queues over which messages (err, signals) are sent. A
+naive Google search (“Linux message queues”) will lead you to POSIX
+and System V message queues, both of which are inter process
+communication (IPC) mechanisms. This is probably not what you want, as
+your messages need not be transferred across different address
+spaces. Intra process message queues are normally built on top of
+pthread primitives. You can find a sample such implementation &lt;a class="reference external" href="http://jf-linuxtools.git.sourceforge.net/git/gitweb.cgi?p=jf-linuxtools/jf-linuxtools;a=blob;f=pthread/base/message-queue.h"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="semaphores-and-mutexes"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id4"&gt;Semaphores and Mutexes&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="sidebar"&gt;
+&lt;p class="sidebar-title"&gt;References&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="../trainings/material/soup/sysprog/sysprog_ipc/slides.html"&gt;&lt;span class="doc"&gt;Slide material: POSIX semaphores&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="../trainings/material/soup/sysprog/sysprog_ipc/screenplay.html"&gt;&lt;span class="doc"&gt;Demo code: POSIX semaphores&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;p&gt;Many of those OSs out there have semaphores as the one and only
+synchronisation mechanism. Linux has semaphores - System V and POSIX
+style. Again these are probably not what you want. You are likely to
+initialize your semaphores with a count of one and use it as a &lt;em&gt;binary
+semaphore&lt;/em&gt;. This is what a pthread mutex is for instead.&lt;/p&gt;
+&lt;p&gt;See &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;man&lt;/span&gt; &lt;span class="pre"&gt;pthread_mutex_init&lt;/span&gt;&lt;/code&gt; for more.&lt;/p&gt;
+&lt;p&gt;Confusing note for those porting from Windows: A &lt;em&gt;critical section&lt;/em&gt; is
+the region that is protected by a mutex, although a
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;CRITICAL_SECTION&lt;/span&gt;&lt;/code&gt; is the closest Windows pendant to a mutex.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="timers"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id5"&gt;Timers&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Timers are hard, not only on Linux.&lt;/p&gt;
+&lt;p&gt;In most embedded OSs, timers expire as interrupts which are then
+handled by the application. Sometimes there is the possibility to let
+the OS send you a message (err, signal) on timer expiration.&lt;/p&gt;
+&lt;p&gt;There are multiple APIs for timers, most of which (&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;setitimer&lt;/span&gt;&lt;/code&gt;,
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;timer_create&lt;/span&gt;&lt;/code&gt;) require you to use signals (Unix signals this
+time) - see above for the drawbacks to this approach. Unfortunately a
+straightforward Google search will lead you to these APIs.&lt;/p&gt;
+&lt;p&gt;An alternative is to simply defer the execution of a thread for a
+specified amount of time, using &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;nanosleep&lt;/span&gt;&lt;/code&gt;. Another alternative is
+to use &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;timerfd_create&lt;/span&gt;&lt;/code&gt; and friends in conjunction with &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;select&lt;/span&gt;&lt;/code&gt;
+or &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;poll&lt;/span&gt;&lt;/code&gt;, and embed timers into an event driven application. (See
+below for event loops based on file descriptors. See &lt;a class="reference external" href="http://jf-linuxtools.git.sourceforge.net/git/gitweb.cgi?p=jf-linuxtools/jf-linuxtools;a=blob;f=linux-events/events/timer.h"&gt;here&lt;/a&gt;
+for a sample implementation of such a thing.)&lt;/p&gt;
+&lt;p&gt;You can always build your own structures around whatever timer
+mechanism and emulate the behavior of your OS on Linux. This might
+require quite a bit of understanding of Linux programming, though.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="polling"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id6"&gt;Polling&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Polling for something to happen is generally the most stupid thing to
+do, not only on Linux. The are cases (screwed hardware for example)
+where there is no other way, but otherwise there’s always a better
+way.&lt;/p&gt;
+&lt;p&gt;I have seen people set a flag in one process (err, thread), and poll
+for it every millisecond from another thread. I know, a millisecond is
+an eternity in nowadays’ processors - but I can imagine that there are
+more flags of that sort being polled for, in a moderately complex
+program. After all, it’s &lt;em&gt;events&lt;/em&gt; that these flags communicate. Some
+OSs have an “event flag” mechanism which tries to achieve exactly
+that, albeit a bit more intelligently - for example without the need
+for polling, and without losing events through race conditions.&lt;/p&gt;
+&lt;p&gt;There’s a big wealth of mechanisms in Linux to communicate events. Use
+message queues (see above), for example. Build your own “event flag”
+mechanism by using PThreads primitives (but not before you have read
+the book).&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="event-dispatching"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id7"&gt;Event Dispatching&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;On Unix, &lt;em&gt;everything is a file&lt;/em&gt;. Entire disks are represented as
+files, partitions are, network sockets are, arbitrary devices are (for
+example, serial/UART lines). Regular files are, naturally. On Linux,
+even timers and Unix signals can be represented as files, as I
+mentioned previously. Every open file is represented as a &lt;em&gt;file
+descriptor&lt;/em&gt;. File descriptors can be read from and written to, using
+the &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;read&lt;/span&gt;&lt;/code&gt; and &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;write&lt;/span&gt;&lt;/code&gt; system calls, regardless of their type.&lt;/p&gt;
+&lt;p&gt;For people who are new to Unix, this may come as a surprise: you can
+read from a serial line as if it were a network connection, and you
+can read from a network connection as if it were a regular
+file. (Anyone tried that on Windows?)&lt;/p&gt;
+&lt;p&gt;This fact alone is something you can take advantage of in your porting
+project.&lt;/p&gt;
+&lt;p&gt;Now what has this got to do with &lt;em&gt;event dispatching&lt;/em&gt;? Consider the
+following types of &lt;em&gt;events&lt;/em&gt; that regularly happen on an OS:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Network connection has data to be read.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Network connection can be written to without blocking (or, “local
+TCP buffer just got emptied” or so).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Same with serial IO (open &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/dev/ttyS0&lt;/span&gt;&lt;/code&gt; or so just like a regular
+file), as with any kind of stream connection.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;A timer has expired.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;A signal has arrived.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;An arbitrary event happened (check out the &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;eventfd&lt;/span&gt;&lt;/code&gt; system call;
+I didn’t mention it).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Even USB events are delivered via files. (It’s just a bit more
+complicated because USB is a bit more complicated; there’s &lt;a class="reference external" href="http://www.libusb.org/"&gt;libusb&lt;/a&gt; there to handle this.).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Most drivers for hardware devices deliver the device interrupts as
+events through file descriptors (you open &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/dev/blah&lt;/span&gt;&lt;/code&gt; just like a
+regular file), nicely telling you “Hey, I’ve got to tell you
+something!”.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;There is a set of system calls that are used to wait for events on
+&lt;em&gt;multiple&lt;/em&gt; file descriptor, namely &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;select&lt;/span&gt;&lt;/code&gt;,`` poll``, and
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;epoll&lt;/span&gt;&lt;/code&gt;. Note that these system call put the calling process (err,
+thread) to sleep until something happens - the name &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;poll&lt;/span&gt;&lt;/code&gt; has
+nothing to do with polling as we know it.&lt;/p&gt;
+&lt;p&gt;So, depending on your application, you might find it relatively easy
+to use either of these system calls. Build a bit of an infrastructure
+around it, like registering and unregistering callbacks, and you will
+be able to comfortably use these extremely exciting mechanisms. (Or
+take &lt;a class="reference external" href="http://jf-linuxtools.git.sourceforge.net/git/gitweb.cgi?p=jf-linuxtools/jf-linuxtools;a=blob;f=events/dispatcher.h"&gt;my own infrastructure&lt;/a&gt;. Or
+take anybody else’s, mine’s not the only - it’s just the best.)&lt;/p&gt;
+&lt;p&gt;One last note: look at the desktop environment of your choice. It’s
+made up of a hundred or so processes (no, not threads). Under Gnome,
+which is what I use, there’s a process called`` gnome-panel``, for
+example. Try out &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;strace&lt;/span&gt; &lt;span class="pre"&gt;-p&lt;/span&gt; &lt;span class="pre"&gt;&amp;lt;pid&lt;/span&gt; &lt;span class="pre"&gt;of&lt;/span&gt; &lt;span class="pre"&gt;gnome-panel&amp;gt;;&lt;/span&gt;&lt;/code&gt;, direct the mouse
+over the panel, and see what happens: &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;poll&lt;/span&gt;&lt;/code&gt; all over.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="interrupts"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id8"&gt;Interrupts&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;One of the primary goals of an OS is to shield you from
+hardware. There a clear separation between &lt;em&gt;user space&lt;/em&gt; and &lt;em&gt;kernel
+space&lt;/em&gt;. User space uses system calls to talk to the kernel. No
+interrupts in user space. Basta. (Don’t even think about using
+signals!)&lt;/p&gt;
+&lt;p&gt;If you have hardware that nobody else has, then chances are you will
+have to deal with it yourself and write a driver for it. That’s about
+the only case where you’ll get in touch with interrupts and have to
+learn kernel programming. But this is a completely different story,
+and a different world. Definitely fun.&lt;/p&gt;
+&lt;p&gt;Nevertheless, I suggest you stay away from kernel programming just
+because it is fun. Debugging is much harder there. A buggy user space
+program crashes, possibly leaving you with a core dump that you can
+examine with a debugger (well, GDB). Everything else will remain
+running. A buggy kernel crashes, leaving nothing running. This is what
+&lt;em&gt;I&lt;/em&gt; call hard.&lt;/p&gt;
+&lt;p&gt;On Linux, there are a couple of hardware interfaces exported to
+userspace. I already mentioned &lt;a class="reference external" href="http://www.libusb.org/"&gt;userspace USB&lt;/a&gt;. There is a similar thing to implement USB
+&lt;em&gt;devices&lt;/em&gt; in user space, called &lt;a class="reference external" href="http://www.linux-usb.org/gadget"&gt;GadgetFS&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;For others, look inside the kernel documentation, part of the kernel
+source, in the &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;Documentation/&lt;/span&gt;&lt;/code&gt; directory. (Usually, the kernel
+source is installed in &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/usr/src/linux/&lt;/span&gt;&lt;/code&gt;.) Or simply ask Google.&lt;/p&gt;
+&lt;p&gt;For example, check out the userspace I2C and SPI interfaces described
+in &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;Documentation/i2c/dev-interface&lt;/span&gt;&lt;/code&gt; and
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;Documentation/spi/spidev&lt;/span&gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="realtime"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id9"&gt;Realtime&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Well, realtime … what’s that? To put it bluntly, Linux is realtime
+capable.&lt;/p&gt;
+&lt;p&gt;By default, Linux schedules processes (“scheduled entities”, so to
+say - threads as well as processes) &lt;em&gt;in a fair way&lt;/em&gt;. This is, everyone
+gets its fair share of CPU resources. As such, there are no guarantees
+given as to when a process is scheduled, and whether its deadlines are
+met.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;However:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;You can make any process realtime-scheduled, by calling
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;sched_setscheduler()&lt;/span&gt;&lt;/code&gt;. You can make threads realtime-scheduled,
+selectively, by creating them with the appropriate attributes (see
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;pthread_attr_setschedparam()&lt;/span&gt;&lt;/code&gt;, and read the book :-).&lt;/p&gt;
+&lt;p&gt;Realtime-processes are scheduled &lt;em&gt;immediately&lt;/em&gt; when they become
+runnable (unless a higher priority process is runnable as well, of
+course). And by immediate I mean immediate - and that’s what &lt;em&gt;I&lt;/em&gt; call
+realtime. No fairness involved anymore, definitely not nice
+anymore. And therefore potentially harmful.&lt;/p&gt;
+&lt;p&gt;Basically, there’s two realtime scheduling policies to choose from:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;SCHED_FIFO&lt;/span&gt;&lt;/code&gt;. The process runs until it puts itself to sleep
+(waiting for something to happen), or until it is interrupted by a
+process which has an even higher priority.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;SCHED_RR&lt;/span&gt;&lt;/code&gt;. Processes in the same priority level alternate in a
+round robin manner, with very short timeslices. As with
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;SCHED_FIFO&lt;/span&gt;&lt;/code&gt;, they are interrupted by higher priority processes.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Check out the man pages, and read the book. No joke. Doing realtime
+scheduling is crying for trouble. Even more so if code is involved
+where you don’t know 100% exactly what it does. It might go into an
+infinite loop, at best. At worst, it will trigger race conditions only
+under certain circumstances, or bring up deadlock
+situations. Naturally, this kind of errors does not show up during
+in-house testing where you are able to inspect and fix them, but
+rather months later, at your customer’s site.&lt;/p&gt;
+&lt;p&gt;That’s it been for now. I could possibly add a couple more items to
+this list, right now. Deployment comes to mind (What’s a firmware
+image in Linux? Will I be minimal? Do I use &lt;a class="reference external" href="http://busybox.net/"&gt;BusyBox&lt;/a&gt; and &lt;a class="reference external" href="http://www.uclibc.org/"&gt;uClibc&lt;/a&gt;?),
+build issues (Shared libraries? Static? What, how, why?). I could add
+another couple more items if I you give me a minute.&lt;/p&gt;
+&lt;p&gt;If you have read through this list, you’ll see what I mean: take care
+to choose the right mechanisms. Don’t start coding immediately because
+there’s no time left in the project. Thinking twice and investigating
+will save you from spending even more time later in the project. (But
+what am I telling you?)&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</content>
+    <link href="https://www.faschingbauer.me/blog/2011/01/porting-to-linux-there-s-always-a-better-way.html" rel="alternate"/>
+    <published>2011-01-07T00:00:00+01:00</published>
+  </entry>
+  <entry>
+    <id>https://www.faschingbauer.me/blog/2011/01/saving-solid-state-disk-life--gentoo.html</id>
+    <title>Saving Solid State Disk Life (Gentoo)</title>
+    <updated>2011-01-11T00:00:00+01:00</updated>
+    <author>
+      <name>Jörg Faschingbauer</name>
+    </author>
+    <content type="html">&lt;div class="section" id="saving-solid-state-disk-life-gentoo"&gt;
+
+&lt;div class="sidebar"&gt;
+&lt;p class="sidebar-title"&gt;Contents&lt;/p&gt;
+&lt;div class="contents local topic" id="contents"&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#rant" id="id1"&gt;Rant&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#no-swap" id="id2"&gt;No Swap&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#tmpfs-instances-here-and-there" id="id3"&gt;&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;tmpfs&lt;/span&gt;&lt;/code&gt; instances here and there&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#syslog-var-log-messages" id="id4"&gt;Syslog, &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/var/log/messages&lt;/span&gt;&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#kernel-i-o-scheduler" id="id5"&gt;Kernel I/O Scheduler&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#use-ram-for-the-kernel-build" id="id6"&gt;Use RAM for the Kernel Build&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#things-that-are-left" id="id7"&gt;Things that are left&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="rant"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Rant&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Today’s mechanical disks are optimized for writing one Excel sheet a
+day it seems. Holding the browser cache significantly decreases
+lifetime of a disk. Developing source code and compiling entire trees
+multiple times a day, plus updating a Gentoo install once a week is a
+recipe to kill a disk.&lt;/p&gt;
+&lt;p&gt;So I killed three (&lt;em&gt;three&lt;/em&gt;) mechanical disks last year.&lt;/p&gt;
+&lt;p&gt;I pretty much depend on these disks as I don’t like moving back and
+forth between the number one and the spare laptop three times in a
+row. (I’m self employed, and the volume of such undertakings is
+&lt;em&gt;indirectly&lt;/em&gt; proportional to the flow of money into my pocket.)&lt;/p&gt;
+&lt;p&gt;Which is why I decided to purchase a solid state disk. My choice was a
+Corsair Force Series 120. It has pretty good reviews on the Internet,
+especially for having received a firmware overhaul that reserves less
+space for the wear leveling management, thus leaving more of the space
+to the user.&lt;/p&gt;
+&lt;p&gt;I should have known better. Fresh firmware is not cool; it has never
+been. During the Gentoo install (no, I compile to RAM now, and &lt;em&gt;not&lt;/em&gt;
+to disk) there is a point where I reboot to switch away from the
+Ubuntu LiveCD boot, into the fresh Gentoo system. That was the time
+where the SSD has vanished - it was gone! No mention of it, nowhere.&lt;/p&gt;
+&lt;p&gt;Support request on the Corsair website, sent disk to their returns
+department in the Netherlands. After a few days received an email
+saying it would last unusually long as they had to cope with an
+unusual volume of returns. Looks like I am not alone. I bet they
+themselves write those SSD reviews you find on the Internet.&lt;/p&gt;
+&lt;p&gt;Anyway - after two more weeks of aggressive spare laptop harddisk
+treatment I am now the proud owner of a 120G SSD with even fresher
+firmware, and have set it up to a point where I can work with it. I
+describe below what I did to extend its life, and what’s still to be
+done. If you have recipes that target the same, please let me know.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="no-swap"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id2"&gt;No Swap&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;I have plenty of RAM (4G), and I run Linux, so there shouldn’t be any
+need to swap. Unfortunately hibernating does not work without swap
+(the kernel uses swap to write the state into). I configured one
+partition for the purpose of hibernating, which I don’t configure in
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/etc/fstab&lt;/span&gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;I usually suspend to RAM when at home, and when I move to the living
+room or board a train to Germany then I hibernate like so,&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;#&lt;/span&gt; sync &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; swapon /dev/sda1 &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="nb"&gt;echo&lt;/span&gt; disk &amp;gt; /sys/power/state &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; swapoff /dev/sda1
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="tmpfs-instances-here-and-there"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id3"&gt;&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;tmpfs&lt;/span&gt;&lt;/code&gt; instances here and there&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;The overall rule is, “You can read from a SSD as often as you want,
+but don’t write to it.”. With this in mind, I immediately identify two
+places where I write continuously, and which can be mitigated easily.&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/tmp&lt;/span&gt;&lt;/code&gt; is used by programs to hold small amounts of temporary data
+which is perfect for a &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;tmpfs&lt;/span&gt;&lt;/code&gt; instance.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/var/tmp/portage&lt;/span&gt;&lt;/code&gt; is used by portage (Gentoo’s package installer)
+to compile the packages before installation. I have plenty of RAM
+(4G), so why not use that for compilation. See below for an
+openoffice rant.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;All that needs to be done is add two entries to &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/etc/fstab&lt;/span&gt;&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="go"&gt;portage-tmpfs /var/tmp/portage tmpfs rw 0 0&lt;/span&gt;
+&lt;span class="go"&gt;tmp-tmpfs     /tmp             tmpfs rw 0 0&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;You might want to set &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;TMPDIR=/tmp&lt;/span&gt;&lt;/code&gt; explicitly, to have GCC write
+its temporary files there instead of in its current working
+directory. Create a dedicated file in &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/etc/env.d&lt;/span&gt;&lt;/code&gt;, and call
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;env-update&lt;/span&gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;I could limit the space on these by writing &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;rw,size=500m&lt;/span&gt;&lt;/code&gt; for
+example. Anyway, &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;tmpfs&lt;/span&gt;&lt;/code&gt; limits its size to be half the memory as a
+default, so in my case this is 2G in each instance.&lt;/p&gt;
+&lt;p&gt;I hit the limit on the &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/var/tmp/portage&lt;/span&gt;&lt;/code&gt; instance really soon, when
+I tried to install openoffice. That piece of crap requires 6G of disk
+space for compilation! Ok, I take it I have to make an exception which
+reads like so,&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;#&lt;/span&gt; &lt;span class="c1"&gt;# (plug my USB throwaway 1TB disk)&lt;/span&gt;
+&lt;span class="gp"&gt;#&lt;/span&gt; mount /dev/sdc1 /mnt/disk
+&lt;span class="gp"&gt;#&lt;/span&gt; mkdir /mnt/disk/tmp-portage
+&lt;span class="gp"&gt;#&lt;/span&gt; mount --bind /mnt/disk/tmp-portage /var/tmp/portage
+&lt;span class="gp"&gt;#&lt;/span&gt; emerge openoffice
+&lt;span class="gp"&gt;#&lt;/span&gt; &lt;span class="c1"&gt;# (wait a day or two)&lt;/span&gt;
+&lt;span class="gp"&gt;#&lt;/span&gt; rm -rf /mnt/disk/tmp-portage
+&lt;span class="gp"&gt;#&lt;/span&gt; umount /var/tmp/portage
+&lt;span class="gp"&gt;#&lt;/span&gt; umount /mnt/disk
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="syslog-var-log-messages"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id4"&gt;Syslog, &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/var/log/messages&lt;/span&gt;&lt;/code&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;I like to watch &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/var/log/messages&lt;/span&gt;&lt;/code&gt;, and in fact I have &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;tail&lt;/span&gt; &lt;span class="pre"&gt;-f&lt;/span&gt;
+&lt;span class="pre"&gt;/var/log/messages&lt;/span&gt;&lt;/code&gt; runnung in a dedicated terminal. I usually have no
+interest in keeping the logfile; the last time the kernel crashed was
+when I had put an offending debug message into &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;i2c-dev.c&lt;/span&gt;&lt;/code&gt; to trap a
+userspace error I had made. And that was on the Beagleboard.&lt;/p&gt;
+&lt;p&gt;So, &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/var/log/messages&lt;/span&gt;&lt;/code&gt; is another candidate for &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;tmpfs&lt;/span&gt;&lt;/code&gt;. Complications:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Restrict the file in size, which is best done by &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;logrotate&lt;/span&gt;&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Cannot use &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/var/log&lt;/span&gt;&lt;/code&gt; as mountpoint for the &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;tmpfs&lt;/span&gt;&lt;/code&gt;, as there’s
+more in that directory.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="section" id="mountpoint-for-messages"&gt;
+&lt;h3&gt;Mountpoint for messages&lt;/h3&gt;
+&lt;p&gt;I create a dedicated directory as a mountpoint, moving the
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;messages&lt;/span&gt;&lt;/code&gt; one level deeper,&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;#&lt;/span&gt; rm /var/log/messages
+&lt;span class="gp"&gt;#&lt;/span&gt; mkdir /var/log/messages
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Mount a &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;tmpfs&lt;/span&gt;&lt;/code&gt; there, using &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/etc/fstab&lt;/span&gt;&lt;/code&gt;,&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="go"&gt;messages-tmp  /var/log/messages tmpfs rw 0 0&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;At this point you use &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;mount&lt;/span&gt; &lt;span class="pre"&gt;-a&lt;/span&gt;&lt;/code&gt; to immediately create the
+mount. Next, tell &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;syslog-ng&lt;/span&gt;&lt;/code&gt; about it. In
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/etc/syslog-ng/syslog-ng.conf&lt;/span&gt;&lt;/code&gt; write,&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;#&lt;/span&gt; ...
+&lt;span class="go"&gt;destination messages { file(&amp;quot;/var/log/messages/messages&amp;quot;); };&lt;/span&gt;
+&lt;span class="gp"&gt;#&lt;/span&gt; ...
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="logrotate"&gt;
+&lt;h3&gt;Logrotate&lt;/h3&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;#&lt;/span&gt; emerge app-admin/logrotate
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Make sure &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;cron&lt;/span&gt;&lt;/code&gt; is running (&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;rc-status|grep&lt;/span&gt; &lt;span class="pre"&gt;cron&lt;/span&gt;&lt;/code&gt;, he runs &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;logrotate&lt;/span&gt;&lt;/code&gt;). &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;syslog-ng&lt;/span&gt;&lt;/code&gt; already comes with a &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;logrotate&lt;/span&gt;&lt;/code&gt; configuration file, &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/etc/logrotate.d/syslog-ng&lt;/span&gt;&lt;/code&gt;. Tune this to our needs (rotate the file when its size exceeds 20M, keeping one compressed copy).&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="go"&gt;/var/log/messages/messages {&lt;/span&gt;
+&lt;span class="go"&gt;     compress&lt;/span&gt;
+&lt;span class="go"&gt;     compresscmd /bin/bzip2&lt;/span&gt;
+&lt;span class="go"&gt;     compressoptions -9&lt;/span&gt;
+&lt;span class="go"&gt;     compressext .bz2&lt;/span&gt;
+&lt;span class="go"&gt;     size 20M&lt;/span&gt;
+&lt;span class="go"&gt;     rotate 1&lt;/span&gt;
+&lt;span class="go"&gt;     missingok&lt;/span&gt;
+&lt;span class="go"&gt;     sharedscripts&lt;/span&gt;
+&lt;span class="go"&gt;     postrotate&lt;/span&gt;
+&lt;span class="go"&gt;         /etc/init.d/syslog-ng reload &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 || true&lt;/span&gt;
+&lt;span class="go"&gt;     endscript&lt;/span&gt;
+&lt;span class="go"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="kernel-i-o-scheduler"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id5"&gt;Kernel I/O Scheduler&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;The kernel uses an algorithm called an I/O scheduler to optimize disk access. It does this by collecting read and write requests at adjacent disk locations. This is not necessary with SSDs as there are no disks and no heads. I switch off the scheduler for &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;sda&lt;/span&gt;&lt;/code&gt; (which is the SSD), and keep the default scheduler (&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;cfq&lt;/span&gt;&lt;/code&gt;) for USB disks I use to plug on occasion (for example if there’s an openoffice update).&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;In &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/etc/conf.d/local.start&lt;/span&gt;&lt;/code&gt; I write,&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;#&lt;/span&gt; &lt;span class="nb"&gt;echo&lt;/span&gt; noop &amp;gt; /sys/block/sda/queue/scheduler
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="use-ram-for-the-kernel-build"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id6"&gt;Use RAM for the Kernel Build&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;I am a big believer in out-of-source builds. The kernel build system
+is also capable of it, and I use to build the kernel in &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/tmp&lt;/span&gt;&lt;/code&gt; like
+so.&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;#&lt;/span&gt; mkdir /tmp/kernel-build
+&lt;span class="gp"&gt;#&lt;/span&gt; cp /boot/linux-2.6.36-gentoo-r5/.config /tmp/kernel-build
+&lt;span class="gp"&gt;#&lt;/span&gt; make -C /usr/src/linux &lt;span class="nv"&gt;O&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/tmp/kernel-build oldconfig
+&lt;span class="gp"&gt;#&lt;/span&gt; make -C /usr/src/linux &lt;span class="nv"&gt;O&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/tmp/kernel-build menuconfig
+&lt;span class="gp"&gt;#&lt;/span&gt; make -C /usr/src/linux &lt;span class="nv"&gt;O&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/tmp/kernel-build all
+&lt;span class="gp"&gt;#&lt;/span&gt; ...
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Don’t forget to save away the &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;.config&lt;/span&gt;&lt;/code&gt; file, as it will be gone
+after a reboot. I use to store it along with the kernel image in
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/boot/linux-2.6.36-gentoo-r5&lt;/span&gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="things-that-are-left"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id7"&gt;Things that are left&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;There are a couple of things that still need work.&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Xorg appears to have a hardcoded log location; I didn’t find a
+config option to have it write its &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;Xorg.0.log&lt;/span&gt;&lt;/code&gt; in a directory
+other than &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/var/log&lt;/span&gt;&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;There appears to be bug in portage; it does not respect the
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;EMERGE_LOG_DIR&lt;/span&gt;&lt;/code&gt; variable. Otherwise, I could redirect the files
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;emerge.log&lt;/span&gt;&lt;/code&gt; and &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;emerge-fetch.log&lt;/span&gt;&lt;/code&gt; out of &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/var/log&lt;/span&gt;&lt;/code&gt;, just
+like I do with &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/var/log/messages&lt;/span&gt;&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The fact remains that I build my own projects on disk. I have to
+solve that somehow; I am thinking of using &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;aufs&lt;/span&gt;&lt;/code&gt; or
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;unionfs-fuse&lt;/span&gt;&lt;/code&gt; to partly persist those. Some scripting around it
+maybe, to persist those parts of the build which are currently in
+ram. But this is another story, maybe I’ll write about it when I
+know what I want.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</content>
+    <link href="https://www.faschingbauer.me/blog/2011/01/saving-solid-state-disk-life--gentoo.html" rel="alternate"/>
+    <published>2011-01-11T00:00:00+01:00</published>
+  </entry>
+</feed>
