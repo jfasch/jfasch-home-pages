@@ -115,6 +115,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../Notebook.html#Iterable?">Iterable?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../Notebook.html#The-range()-Function">The <code class="docutils literal notranslate"><span class="pre">range()</span></code> Function</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../Notebook.html#Strings">Strings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../Notebook.html#datetime"><code class="docutils literal notranslate"><span class="pre">datetime</span></code></a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">Read a Cleaned-Up SAP Export</a></li>
 </ul>
 </li>
@@ -217,6 +218,25 @@
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/a0ba7c07921319d786fa1bfae26b935d/read-sauberes-text-file-solution.py"><code class="xref download docutils literal notranslate"><span class="pre">read-sauberes-text-file-solution.py</span></code></a></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="n">Record</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Record&#39;</span><span class="p">,</span> <span class="p">[</span>
+    <span class="s1">&#39;material&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;werk&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;lort&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;b&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;charge&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;s&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;sonderbestandsnummer&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;materialkurztext&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;typ&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;lagerplatz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;verfueg_bestand&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;bme&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;we_datum&#39;</span><span class="p">,</span>
+<span class="p">])</span>
 
 <span class="k">def</span> <span class="nf">read_sauberes_text_file</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
@@ -224,42 +244,20 @@
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
 
-        <span class="n">material</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-        <span class="n">werk</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="n">lort</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">b</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">charge</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">charge</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">charge</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">s</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">sonderbestandsnummer</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sonderbestandsnummer</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">sonderbestandsnummer</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">materialkurztext</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="n">typ</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="n">lagerplatz</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="n">verfueg_bestand</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="n">bme</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="n">we_datum</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">13</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-
-        <span class="n">record</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">material</span><span class="p">,</span>
-            <span class="n">werk</span><span class="p">,</span>
-            <span class="n">lort</span><span class="p">,</span>
-            <span class="n">b</span><span class="p">,</span>
-            <span class="n">charge</span><span class="p">,</span>
-            <span class="n">s</span><span class="p">,</span>
-            <span class="n">sonderbestandsnummer</span><span class="p">,</span>
-            <span class="n">materialkurztext</span><span class="p">,</span>
-            <span class="n">typ</span><span class="p">,</span>
-            <span class="n">lagerplatz</span><span class="p">,</span>
-            <span class="n">verfueg_bestand</span><span class="p">,</span>
-            <span class="n">bme</span><span class="p">,</span>
-            <span class="n">we_datum</span><span class="p">,</span>
+        <span class="n">record</span> <span class="o">=</span> <span class="n">Record</span><span class="p">(</span>
+            <span class="n">material</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()),</span>
+            <span class="n">werk</span><span class="o">=</span><span class="n">fields</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+            <span class="n">lort</span><span class="o">=</span><span class="n">fields</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+            <span class="n">b</span><span class="o">=</span><span class="n">fields</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">charge</span><span class="o">=</span><span class="n">fields</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">s</span><span class="o">=</span><span class="n">fields</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">sonderbestandsnummer</span><span class="o">=</span><span class="n">fields</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">materialkurztext</span><span class="o">=</span><span class="n">fields</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+            <span class="n">typ</span><span class="o">=</span><span class="n">fields</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+            <span class="n">lagerplatz</span><span class="o">=</span><span class="n">fields</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+            <span class="n">verfueg_bestand</span><span class="o">=</span><span class="n">fields</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+            <span class="n">bme</span><span class="o">=</span><span class="n">fields</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+            <span class="n">we_datum</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">13</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">.%m.%Y&#39;</span><span class="p">)</span>
         <span class="p">)</span>
         
         <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
@@ -268,20 +266,21 @@
 
 <span class="n">records</span> <span class="o">=</span> <span class="n">read_sauberes_text_file</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">records</span><span class="p">:</span>
+    <span class="c1">#pprint.pprint(r, indent=4)</span>
     <span class="nb">print</span><span class="p">(</span>
-        <span class="s1">&#39;Material:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-        <span class="s1">&#39;, Werk:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-        <span class="s1">&#39;, LOrt:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-        <span class="s1">&#39;, B:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
-        <span class="s1">&#39;, Charge:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
-        <span class="s1">&#39;, S:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
-        <span class="s1">&#39;, Sonderbestandsnummer:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span>
-        <span class="s1">&#39;, Materialkurztext:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
-        <span class="s1">&#39;, Typ:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span>
-        <span class="s1">&#39;, Lagerplatz:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="mi">9</span><span class="p">],</span>
-        <span class="s1">&#39;, Verfüg.Bestand:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span>
-        <span class="s1">&#39;, BME:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="mi">11</span><span class="p">],</span>
-        <span class="s1">&#39;, WE-Datum:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="mi">12</span><span class="p">],</span>
+        <span class="s1">&#39;Material:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">material</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Werk:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">werk</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;LOrt:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">lort</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;B:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Charge:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">charge</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;S:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Sonderbestandsnummer:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">sonderbestandsnummer</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Materialkurztext:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">materialkurztext</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Typ:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">typ</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Lagerplatz:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">lagerplatz</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Verfüg.Bestand:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">verfueg_bestand</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;BME:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">bme</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;WE-Datum:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">we_datum</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 </pre></div>
 </div>
