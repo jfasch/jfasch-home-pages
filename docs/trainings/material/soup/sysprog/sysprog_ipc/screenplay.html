@@ -4,12 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta content="This live-hacking screenplay is a guide for myself to repeatably, didactically, demonstrate how POSIX IPC (semaphores, shared memory, message queues) work on Linux" name="description" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta content="This live-hacking screenplay is a guide for myself to repeatably, didactically, demonstrate how POSIX IPC (semaphores, shared memory, message queues) work on Linux" name="description" />
 <meta content="linux, systemnah, schulung, training, programming, ipc, shared memory, semaphore, message queue" name="keywords" />
 
     <title>Screenplay: Sysprog: POSIX IPC &#8212; Jörg Faschingbauer</title>
-    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/jf-alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" />
@@ -28,46 +28,28 @@
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="Code: Sysprog: POSIX IPC" href="code/index.html" />
-    <link rel="prev" title="Slides: Sysprog: POSIX IPC" href="slides.html" /> 
+    <link rel="prev" title="Slides: Sysprog: POSIX IPC" href="slides.html" />
+  
    
   <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
   
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
- 
-<link
-  rel="alternate"
-  type="application/atom+xml"
-  href="../../../../../blog/atom.xml"
-  title="Jörg Faschingbauer"
-/>
- 
-<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
 
-<style type="text/css">
-  ul.ablog-archive {
-    list-style: none;
-    overflow: auto;
-    margin-left: 0px;
-  }
-  ul.ablog-archive li {
-    float: left;
-    margin-right: 5px;
-    font-size: 80%;
-  }
-  ul.postlist a {
-    font-style: italic;
-  }
-  ul.postlist-style-disc {
-    list-style-type: disc;
-  }
-  ul.postlist-style-none {
-    list-style-type: none;
-  }
-  ul.postlist-style-circle {
-    list-style-type: circle;
-  }
-</style>
+  
+  <link rel="alternate" type="application/atom+xml"  href="../../../../../blog/atom.xml" title="Jörg Faschingbauer">
+  
+  
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  
+  <style type="text/css">
+    ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
+    ul.ablog-archive li {float: left; margin-right: 5px; font-size: 80%}
+    ul.postlist a {font-style: italic;}
+    ul.postlist-style-disc {list-style-type: disc;}
+    ul.postlist-style-none {list-style-type: none;}
+    ul.postlist-style-circle {list-style-type: circle;}
+  </style>
 
   </head><body>
   <div class="document">
@@ -154,7 +136,8 @@
           
 
           <div class="body" role="main">
-             <div class="section" id="screenplay-sysprog-posix-ipc">
+            
+  <div class="section" id="screenplay-sysprog-posix-ipc">
 <h1>Screenplay: Sysprog: POSIX IPC<a class="headerlink" href="#screenplay-sysprog-posix-ipc" title="Permalink to this headline">¶</a></h1>
 <div class="sidebar">
 <p class="sidebar-title">Contents</p>
@@ -208,12 +191,12 @@ and only using memory access.</p></li>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
     <span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="s">&quot;/etc/passwd&quot;</span><span class="p">,</span> <span class="n">O_RDONLY</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">==</span> <span class="mi">-1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">perror</span><span class="p">(</span><span class="s">&quot;open&quot;</span><span class="p">);</span>
         <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
     <span class="p">}</span>
 
-    <span class="k">struct</span> <span class="nc">stat</span> <span class="n">stat</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">stat</span> <span class="n">stat</span><span class="p">;</span>
     <span class="kt">int</span> <span class="n">error</span> <span class="o">=</span> <span class="n">fstat</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">stat</span><span class="p">);</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">perror</span><span class="p">(</span><span class="s">&quot;fstat&quot;</span><span class="p">);</span>
@@ -229,7 +212,7 @@ and only using memory access.</p></li>
     <span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
 
     <span class="kt">ssize_t</span> <span class="n">nwritten</span> <span class="o">=</span> <span class="n">write</span><span class="p">(</span><span class="n">STDOUT_FILENO</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">stat</span><span class="p">.</span><span class="n">st_size</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">nwritten</span> <span class="o">==</span> <span class="mi">-1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">nwritten</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">perror</span><span class="p">(</span><span class="s">&quot;write&quot;</span><span class="p">);</span>
         <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
     <span class="p">}</span>
@@ -284,7 +267,7 @@ what semaphores are there for.)</p>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
     <span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">shm_open</span><span class="p">(</span><span class="s">&quot;mein-shared-dings&quot;</span><span class="p">,</span> <span class="n">O_CREAT</span><span class="o">|</span><span class="n">O_RDWR</span><span class="p">,</span> <span class="mo">0666</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">==</span> <span class="mi">-1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">perror</span><span class="p">(</span><span class="s">&quot;shm_open&quot;</span><span class="p">);</span>
         <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
     <span class="p">}</span>
@@ -342,7 +325,7 @@ write operations <em>copy-on-write</em>)</p></li>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
     <span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">shm_open</span><span class="p">(</span><span class="s">&quot;mein-shared-dings&quot;</span><span class="p">,</span> <span class="n">O_RDWR</span><span class="p">,</span> <span class="cm">/*mode unused without O_CREAT*/</span><span class="mi">0</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">==</span> <span class="mi">-1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">perror</span><span class="p">(</span><span class="s">&quot;shm_open&quot;</span><span class="p">);</span>
         <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
     <span class="p">}</span>
@@ -388,7 +371,7 @@ write operations <em>copy-on-write</em>)</p></li>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
     <span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">shm_open</span><span class="p">(</span><span class="s">&quot;mein-shared-dings&quot;</span><span class="p">,</span> <span class="n">O_RDONLY</span><span class="p">,</span> <span class="cm">/*mode unused without O_CREAT*/</span><span class="mi">0</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">==</span> <span class="mi">-1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">perror</span><span class="p">(</span><span class="s">&quot;shm_open&quot;</span><span class="p">);</span>
         <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
     <span class="p">}</span>
@@ -545,7 +528,7 @@ and datatypes. Alignment :-)</p></li>
     <span class="n">attr</span><span class="p">.</span><span class="n">mq_maxmsg</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
     <span class="n">attr</span><span class="p">.</span><span class="n">mq_msgsize</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">msg</span><span class="p">);</span>
     <span class="n">mqd_t</span> <span class="n">q</span> <span class="o">=</span> <span class="n">mq_open</span><span class="p">(</span><span class="s">&quot;/meine-queue&quot;</span><span class="p">,</span> <span class="n">O_CREAT</span><span class="o">|</span><span class="n">O_EXCL</span><span class="p">,</span> <span class="mo">0666</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">q</span> <span class="o">==</span> <span class="mi">-1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">q</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">perror</span><span class="p">(</span><span class="s">&quot;mq_open&quot;</span><span class="p">);</span>
         <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
     <span class="p">}</span>
@@ -574,7 +557,7 @@ and datatypes. Alignment :-)</p></li>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
     <span class="n">mqd_t</span> <span class="n">q</span> <span class="o">=</span> <span class="n">mq_open</span><span class="p">(</span><span class="s">&quot;/meine-queue&quot;</span><span class="p">,</span> <span class="n">O_WRONLY</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">q</span> <span class="o">==</span> <span class="mi">-1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">q</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">perror</span><span class="p">(</span><span class="s">&quot;mq_open&quot;</span><span class="p">);</span>
         <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
     <span class="p">}</span>
@@ -618,7 +601,7 @@ and datatypes. Alignment :-)</p></li>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
     <span class="n">mqd_t</span> <span class="n">q</span> <span class="o">=</span> <span class="n">mq_open</span><span class="p">(</span><span class="s">&quot;/meine-queue&quot;</span><span class="p">,</span> <span class="n">O_RDONLY</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">q</span> <span class="o">==</span> <span class="mi">-1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">q</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">perror</span><span class="p">(</span><span class="s">&quot;mq_open&quot;</span><span class="p">);</span>
         <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
     <span class="p">}</span>
@@ -626,7 +609,7 @@ and datatypes. Alignment :-)</p></li>
     <span class="n">msg</span> <span class="n">msg</span><span class="p">;</span>
     <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">prio</span><span class="p">;</span>
     <span class="kt">ssize_t</span> <span class="n">nread</span> <span class="o">=</span> <span class="n">mq_receive</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">msg</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">msg</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">prio</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">nread</span> <span class="o">==</span> <span class="mi">-1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">nread</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">perror</span><span class="p">(</span><span class="s">&quot;mq_receive&quot;</span><span class="p">);</span>
         <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
     <span class="p">}</span>
@@ -645,9 +628,10 @@ and datatypes. Alignment :-)</p></li>
 </div>
 </div>
 
-<div class="section">
-   
-</div>
+  <div class="section">
+  
+  
+  </div>
 
           </div>
           
@@ -659,7 +643,7 @@ and datatypes. Alignment :-)</p></li>
       &copy;2019-2021, Jörg Faschingbauer.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

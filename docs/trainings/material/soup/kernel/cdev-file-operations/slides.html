@@ -4,12 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta content="Slide deck: a demo module to show how struct file_operations is used on a character device" name="description" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta content="Slide deck: a demo module to show how struct file_operations is used on a character device" name="description" />
 <meta content="schulung, training, linux, kernel, module, character device, cdev, device_create, file_operations, hooks" name="keywords" />
 
     <title>File Operations on Character Devices (Slideshow) &#8212; Jörg Faschingbauer</title>
-    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/jf-alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" />
@@ -28,46 +28,28 @@
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="File Operations on Character Devices (Screenplay)" href="screenplay.html" />
-    <link rel="prev" title="File Operations on Character Devices" href="topic.html" /> 
+    <link rel="prev" title="File Operations on Character Devices" href="topic.html" />
+  
    
   <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
   
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
- 
-<link
-  rel="alternate"
-  type="application/atom+xml"
-  href="../../../../../blog/atom.xml"
-  title="Jörg Faschingbauer"
-/>
- 
-<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
 
-<style type="text/css">
-  ul.ablog-archive {
-    list-style: none;
-    overflow: auto;
-    margin-left: 0px;
-  }
-  ul.ablog-archive li {
-    float: left;
-    margin-right: 5px;
-    font-size: 80%;
-  }
-  ul.postlist a {
-    font-style: italic;
-  }
-  ul.postlist-style-disc {
-    list-style-type: disc;
-  }
-  ul.postlist-style-none {
-    list-style-type: none;
-  }
-  ul.postlist-style-circle {
-    list-style-type: circle;
-  }
-</style>
+  
+  <link rel="alternate" type="application/atom+xml"  href="../../../../../blog/atom.xml" title="Jörg Faschingbauer">
+  
+  
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  
+  <style type="text/css">
+    ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
+    ul.ablog-archive li {float: left; margin-right: 5px; font-size: 80%}
+    ul.postlist a {font-style: italic;}
+    ul.postlist-style-disc {list-style-type: disc;}
+    ul.postlist-style-none {list-style-type: none;}
+    ul.postlist-style-circle {list-style-type: circle;}
+  </style>
 
   </head><body>
   <div class="document">
@@ -178,7 +160,8 @@
           
 
           <div class="body" role="main">
-             <div class="section" id="file-operations-on-character-devices-slideshow">
+            
+  <div class="section" id="file-operations-on-character-devices-slideshow">
 <h1>File Operations on Character Devices (Slideshow)<a class="headerlink" href="#file-operations-on-character-devices-slideshow" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
@@ -207,12 +190,12 @@
 </ul>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">From &lt;linux/fs.h&gt;</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">file_operations</span> <span class="p">{</span>
-     <span class="k">struct</span> <span class="nc">module</span> <span class="o">*</span><span class="n">owner</span><span class="p">;</span>
-     <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">open</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">inode</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">file</span> <span class="o">*</span><span class="p">);</span>
-     <span class="kt">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">read</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">file</span> <span class="o">*</span><span class="p">,</span> <span class="kt">char</span> <span class="n">__user</span> <span class="o">*</span><span class="p">,</span> <span class="kt">size_t</span><span class="p">,</span> <span class="n">loff_t</span> <span class="o">*</span><span class="p">);</span>
-     <span class="kt">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">write</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">file</span> <span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">__user</span> <span class="o">*</span><span class="p">,</span> <span class="kt">size_t</span><span class="p">,</span> <span class="n">loff_t</span> <span class="o">*</span><span class="p">);</span>
-     <span class="kt">long</span> <span class="p">(</span><span class="o">*</span><span class="n">unlocked_ioctl</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">file</span> <span class="o">*</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span><span class="p">);</span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">file_operations</span> <span class="p">{</span>
+     <span class="k">struct</span> <span class="n">module</span> <span class="o">*</span><span class="n">owner</span><span class="p">;</span>
+     <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">open</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">);</span>
+     <span class="kt">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">read</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="kt">char</span> <span class="n">__user</span> <span class="o">*</span><span class="p">,</span> <span class="kt">size_t</span><span class="p">,</span> <span class="n">loff_t</span> <span class="o">*</span><span class="p">);</span>
+     <span class="kt">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">write</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">__user</span> <span class="o">*</span><span class="p">,</span> <span class="kt">size_t</span><span class="p">,</span> <span class="n">loff_t</span> <span class="o">*</span><span class="p">);</span>
+     <span class="kt">long</span> <span class="p">(</span><span class="o">*</span><span class="n">unlocked_ioctl</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span><span class="p">);</span>
      <span class="cm">/*...*/</span>
 <span class="p">};</span>
 </pre></div>
@@ -222,7 +205,7 @@
 <div class="code-block-caption"><span class="caption-text">Usage</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
 
-<span class="k">const</span> <span class="k">struct</span> <span class="nc">file_operations</span> <span class="n">my_ops</span> <span class="o">=</span> <span class="p">{</span>
+<span class="k">const</span> <span class="k">struct</span> <span class="n">file_operations</span> <span class="n">my_ops</span> <span class="o">=</span> <span class="p">{</span>
     <span class="p">.</span><span class="n">owner</span> <span class="o">=</span> <span class="n">THIS_MODULE</span><span class="p">,</span>
     <span class="p">.</span><span class="n">open</span> <span class="o">=</span> <span class="n">my_open</span><span class="p">,</span>
     <span class="p">.</span><span class="n">read</span> <span class="o">=</span> <span class="n">my_read</span><span class="p">,</span>
@@ -279,7 +262,7 @@
 </div>
 <div class="section" id="open-kernelspace">
 <h2><a class="toc-backref" href="#id9"><code class="docutils literal notranslate"><span class="pre">open()</span></code>: Kernelspace</a><a class="headerlink" href="#open-kernelspace" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">my_open</span><span class="p">(</span><span class="k">struct</span> <span class="nc">inode</span><span class="o">*</span> <span class="n">inode</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">file</span><span class="o">*</span> <span class="n">filp</span><span class="p">)</span> <span class="p">{...}</span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">my_open</span><span class="p">(</span><span class="k">struct</span> <span class="n">inode</span><span class="o">*</span> <span class="n">inode</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file</span><span class="o">*</span> <span class="n">filp</span><span class="p">)</span> <span class="p">{...}</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -320,8 +303,8 @@
 </div>
 <div class="section" id="ioctl-kernelspace">
 <h2><a class="toc-backref" href="#id11"><code class="docutils literal notranslate"><span class="pre">ioctl()</span></code>: Kernelspace</a><a class="headerlink" href="#ioctl-kernelspace" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">long</span> <span class="n">my_ioctl</span><span class="p">(</span>
-    <span class="k">struct</span> <span class="nc">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">long</span> <span class="nf">my_ioctl</span><span class="p">(</span>
+    <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span>
     <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">request</span><span class="p">,</span>
     <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">arg</span><span class="p">)</span> <span class="p">{...}</span>
 </pre></div>
@@ -393,9 +376,10 @@ between devices (so they say)</p></li>
 </div>
 </div>
 
-<div class="section">
-   
-</div>
+  <div class="section">
+  
+  
+  </div>
 
           </div>
           
@@ -407,7 +391,7 @@ between devices (so they say)</p></li>
       &copy;2019-2021, Jörg Faschingbauer.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
