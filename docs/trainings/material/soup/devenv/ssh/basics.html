@@ -1,0 +1,293 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<meta content="Slide material: SSH basics" name="description" />
+<meta content="linux, ssh, ssh-keygen, password authentication, authentication, training, key based authentication, remote login" name="keywords" />
+
+    <title>SSH: Basics &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/devenv/ssh/basics.html" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="Generated Topic Graph" href="../../graph.html" />
+    <link rel="prev" title="SSH" href="group.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../index.html">
+    <img class="logo" src="../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../python/group.html">Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx/group.html">C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../sysprog/group.html">Systems Programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../kernel/index.html">Kernel Hacking</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../group.html">Linux: Development Environment</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="group.html">SSH</a><ul class="current">
+<li class="toctree-l5 current"><a class="current reference internal" href="#">SSH: Basics</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="ssh-basics">
+<h1>SSH: Basics<a class="headerlink" href="#ssh-basics" title="Permalink to this headline">¶</a></h1>
+<section id="ssh-overview-1">
+<h2>SSH: Overview (1)<a class="headerlink" href="#ssh-overview-1" title="Permalink to this headline">¶</a></h2>
+<p><strong>Secure Shell</strong>: <em>secure</em> login to remote computers</p>
+<ul class="simple">
+<li><p><em>Unencrypted</em> protocols, like <code class="docutils literal notranslate"><span class="pre">rsh</span></code>, <code class="docutils literal notranslate"><span class="pre">rlogin</span></code>, <code class="docutils literal notranslate"><span class="pre">telnet</span></code>, …</p></li>
+<li><p>⟶ passwords readable on the wire</p></li>
+<li><p>⟶ NSA must have it a bit harder!</p></li>
+<li><p>⟶ SSH</p></li>
+</ul>
+</section>
+<section id="ssh-overview-2">
+<h2><a class="reference external" href="SSH:Overview">SSH:Overview</a> (2)<a class="headerlink" href="#ssh-overview-2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>SSH is a protocol (primarily, at least))</p></li>
+<li><p>Main task: authentication and encryption</p></li>
+<li><p>Main usage: <em>remote login</em></p></li>
+<li><p>Further usages</p>
+<ul>
+<li><p>Copy data over the wire (<code class="docutils literal notranslate"><span class="pre">scp</span></code>)</p></li>
+<li><p>File transfer (<code class="docutils literal notranslate"><span class="pre">sftp</span></code>). Also usable as a <em>network file system</em>
+(⟶ <code class="docutils literal notranslate"><span class="pre">sshfs</span></code>/FUSE)</p></li>
+<li><p>Port forwarding</p></li>
+<li><p>Tunneling (a.k.a VPN)</p></li>
+<li><p>…</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="ssh-login-1">
+<h2>SSH: Login (1)<a class="headerlink" href="#ssh-login-1" title="Permalink to this headline">¶</a></h2>
+<p><strong>Logging in as user texttt{jfasch}</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ssh jfasch@home.com
+</pre></div>
+</div>
+<p><strong>Logging in under the same username as local</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ssh home.com
+</pre></div>
+</div>
+<dl class="simple">
+<dt><strong>Logging in and executing a remote command</strong> (using one’s login</dt><dd><p>shell)**</p>
+</dd>
+</dl>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ssh jfasch@home.com ls -l<span class="o">}</span>
+<span class="gp">$ </span>ssh jfasch@home.com <span class="s1">&#39;ps -efl | grep sshd&#39;</span>    <span class="c1"># quoting necessary: &#39;|&#39; is a shell metacharacter</span>
+</pre></div>
+</div>
+</section>
+<section id="ssh-exit-status-stdin-stdout">
+<h2>SSH: Exit Status, <code class="docutils literal notranslate"><span class="pre">stdin</span></code>, <code class="docutils literal notranslate"><span class="pre">stdout</span></code><a class="headerlink" href="#ssh-exit-status-stdin-stdout" title="Permalink to this headline">¶</a></h2>
+<p><strong>Exit status of the remote command is propagated</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ssh jfasch@home.com rm -f /etc/passwd
+<span class="go">rm: unable to remove `/etc/passwd&#39;: Permission denied</span>
+<span class="gp">$ </span><span class="nb">echo</span> <span class="nv">$?</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+<p><strong>Standard Input, Output (und Error) are propageted, too</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="o">{</span> <span class="nb">echo</span> hallo<span class="p">;</span> <span class="nb">echo</span> hello<span class="p">;</span> <span class="o">}</span> <span class="p">|</span> <span class="se">\</span>
+  ssh jfasch@home.com cat <span class="p">|</span> <span class="se">\</span>
+  wc -l
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Only the middle part of the pipeline (<code class="docutils literal notranslate"><span class="pre">ssh</span> <span class="pre">cat</span></code>) runs on the
+remote computer</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wc</span> <span class="pre">-l</span></code> runs locally</p></li>
+</ul>
+</div>
+</section>
+<section id="ssh-public-key-authentication-1">
+<h2>SSH: Public Key Authentication (1)<a class="headerlink" href="#ssh-public-key-authentication-1" title="Permalink to this headline">¶</a></h2>
+<p>Password authentication is insecure:</p>
+<ul class="simple">
+<li><p>Man-in-the-Middle (MITM) attacks</p></li>
+<li><p>Brute force attacks to guess passwords</p></li>
+</ul>
+<p>… and uncomfortable: have to type password over and over</p>
+<ul class="simple">
+<li><p><em>Public key</em> deployed to server</p></li>
+<li><p><em>Private key</em> remains local, in one’s personal locked safe ideally</p></li>
+</ul>
+</section>
+<section id="ssh-public-key-authentication-2">
+<h2>SSH: Public Key Authentication (2)<a class="headerlink" href="#ssh-public-key-authentication-2" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ssh-keygen -t rsa
+<span class="go">Generating public/private rsa key pair.</span>
+<span class="go">...</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><em>Public key</em> <code class="docutils literal notranslate"><span class="pre">~/.ssh/id_rsa.pub</span></code> is deployed to the server: append
+it to <code class="docutils literal notranslate"><span class="pre">~/.ssh/authorized_keys</span></code>.</p></li>
+<li><p><em>Private key</em> <code class="docutils literal notranslate"><span class="pre">~/.ssh/id_rsa</span></code> remains local.</p></li>
+</ul>
+</section>
+<section id="ssh-public-key-authentication-3">
+<h2>SSH: Public Key Authentication (3)<a class="headerlink" href="#ssh-public-key-authentication-3" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><em>Passphrase</em> provides additional safeguard, should the private key
+get lost</p></li>
+<li><p>⟶ <em>Drawback</em>: login becomes interactive again
+(although on a different level)</p></li>
+<li><p>Omitting passphrase: answer prompt empty, twice</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ssh-agent</span></code>: managing passphrases</p>
+<ul>
+<li><p>Remembers passphrase in memory, <em>safely</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ssh</span></code> talks to agent when passphrase needed</p></li>
+</ul>
+</li>
+<li><p><em>Permissions</em> of <code class="docutils literal notranslate"><span class="pre">~/.ssh</span></code> - and contained files - are
+important. If permissions are too open (others could read
+credentials, other could write/modify), <code class="docutils literal notranslate"><span class="pre">ssh</span></code> will complain loudly
+and refuse to work.</p></li>
+</ul>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2021 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../_sources/trainings/material/soup/devenv/ssh/basics.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
