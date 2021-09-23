@@ -154,27 +154,28 @@
 <h1>OneWire Userspace Interface (using DS18B20)<a class="headerlink" href="#onewire-userspace-interface-using-ds18b20" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#overview" id="id2">Overview</a></p></li>
-<li><p><a class="reference internal" href="#w1-gpio-bitbanging-master" id="id3"><code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code>: Bitbanging (Master)</a></p></li>
-<li><p><a class="reference internal" href="#ds18b20-slave" id="id4">DS18B20 (Slave)</a></p></li>
-<li><p><a class="reference internal" href="#wiring" id="id5">Wiring</a></p></li>
-<li><p><a class="reference internal" href="#using-the-device" id="id6">Using the Device</a></p>
+<li><p><a class="reference internal" href="#overview" id="id3">Overview</a></p></li>
+<li><p><a class="reference internal" href="#w1-gpio-bitbanging-master" id="id4"><code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code>: Bitbanging (Master)</a></p></li>
+<li><p><a class="reference internal" href="#ds18b20-slave" id="id5">DS18B20 (Slave)</a></p></li>
+<li><p><a class="reference internal" href="#wiring" id="id6">Wiring</a></p></li>
+<li><p><a class="reference internal" href="#using-the-device" id="id7">Using the Device</a></p>
 <ul>
-<li><p><a class="reference internal" href="#as-a-generic-onewire-device" id="id7">As a Generic Onewire Device</a></p></li>
-<li><p><a class="reference internal" href="#as-a-hardware-monitoring-hwmon-device" id="id8">As a Hardware Monitoring (<code class="docutils literal notranslate"><span class="pre">hwmon</span></code>) Device</a></p></li>
+<li><p><a class="reference internal" href="#as-a-generic-onewire-device" id="id8">As a Generic Onewire Device</a></p></li>
+<li><p><a class="reference internal" href="#as-a-hardware-monitoring-hwmon-device" id="id9">As a Hardware Monitoring (<code class="docutils literal notranslate"><span class="pre">hwmon</span></code>) Device</a></p></li>
+<li><p><a class="reference internal" href="#lm-sensors" id="id10"><code class="docutils literal notranslate"><span class="pre">lm-sensors</span></code></a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#caveats" id="id9">Caveats</a></p>
+<li><p><a class="reference internal" href="#caveats" id="id11">Caveats</a></p>
 <ul>
-<li><p><a class="reference internal" href="#topology" id="id10">Topology</a></p></li>
-<li><p><a class="reference internal" href="#error-symptoms" id="id11">Error Symptoms</a></p></li>
+<li><p><a class="reference internal" href="#topology" id="id12">Topology</a></p></li>
+<li><p><a class="reference internal" href="#error-symptoms" id="id13">Error Symptoms</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#links" id="id12">Links</a></p></li>
+<li><p><a class="reference internal" href="#links" id="id14">Links</a></p></li>
 </ul>
 </div>
 <section id="overview">
-<h2><a class="toc-backref" href="#id2">Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id3">Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>This article shows how you use Linux to communicate with <a class="reference external" href="https://en.wikipedia.org/wiki/1-Wire">Onewire</a> devices. We use the</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code> bitbanging driver as the bus master.</p></li>
@@ -185,16 +186,12 @@ principles hold unmodified for other devices that run Linux (more
 handwork might be needed though - Pi’s <code class="docutils literal notranslate"><span class="pre">/boot/config.txt</span></code> is
 really cool).</p></li>
 </ul>
-<p>A <a class="reference external" href="https://en.wikipedia.org/wiki/1-Wire">Onewire</a> device has three
-wires attached to it: data, ground, and power. Data and ground are
-mandatory, obviously. Power is optional; if omitted, the device is
-said to be operated in <em>parasitic mode</em>.</p>
 </section>
 <section id="w1-gpio-bitbanging-master">
-<h2><a class="toc-backref" href="#id3"><code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code>: Bitbanging (Master)</a><a class="headerlink" href="#w1-gpio-bitbanging-master" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id4"><code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code>: Bitbanging (Master)</a><a class="headerlink" href="#w1-gpio-bitbanging-master" title="Permalink to this headline">¶</a></h2>
 <p>Lacking a hardware Onewire master (the Raspi does not have one
 built-in), we use a software implementation of the Onewire protocol -
-the <code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code> kernel driver. You dedicate one GPIO to act as the
+the <code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code> kernel driver. You configure one GPIO to act as the
 data line, and the kernel driver is then used to <a class="reference external" href="https://en.wikipedia.org/wiki/Bit_banging">bitbang</a> the Onewire protocol in
 and out of the CPU.</p>
 <p>Configuration is easy: say you want to use GPIO 21 as data line. In
@@ -209,7 +206,7 @@ the GPIO accordingly.</p>
 </div>
 </section>
 <section id="ds18b20-slave">
-<h2><a class="toc-backref" href="#id4">DS18B20 (Slave)</a><a class="headerlink" href="#ds18b20-slave" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">DS18B20 (Slave)</a><a class="headerlink" href="#ds18b20-slave" title="Permalink to this headline">¶</a></h2>
 <table class="docutils align-left">
 <colgroup>
 <col style="width: 50%" />
@@ -229,7 +226,11 @@ affordable, and really easy to deploy.</p></td>
 </table>
 </section>
 <section id="wiring">
-<h2><a class="toc-backref" href="#id5">Wiring</a><a class="headerlink" href="#wiring" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">Wiring</a><a class="headerlink" href="#wiring" title="Permalink to this headline">¶</a></h2>
+<p>A <a class="reference external" href="https://en.wikipedia.org/wiki/1-Wire">Onewire</a> device has three
+wires attached to it: data, ground, and power. Data and ground are
+mandatory, obviously. Power is optional; if omitted, the device is
+said to be operated in <em>parasitic mode</em>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Though not exatly necessary 😉, it makes sense to halt and
@@ -255,11 +256,11 @@ power off the Pi before connecting the sensor.</p>
 </table>
 </section>
 <section id="using-the-device">
-<h2><a class="toc-backref" href="#id6">Using the Device</a><a class="headerlink" href="#using-the-device" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id7">Using the Device</a><a class="headerlink" href="#using-the-device" title="Permalink to this headline">¶</a></h2>
 <p>In most if not all cases, Linux presents hardware as a set of regular
 files in <code class="docutils literal notranslate"><span class="pre">sysfs</span></code>.</p>
 <section id="as-a-generic-onewire-device">
-<h3><a class="toc-backref" href="#id7">As a Generic Onewire Device</a><a class="headerlink" href="#as-a-generic-onewire-device" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id8">As a Generic Onewire Device</a><a class="headerlink" href="#as-a-generic-onewire-device" title="Permalink to this headline">¶</a></h3>
 <p>Onewire masters automatically enumerate their buses, by definition -
 so our device should show up automatically in a dedicated directory
 <code class="docutils literal notranslate"><span class="pre">/sys/bus/w1/devices/&lt;manufacturer&gt;-&lt;device-address&gt;</span></code>. (If all is
@@ -293,11 +294,12 @@ temperature in milli-celsius (22750).</p>
 </div>
 </section>
 <section id="as-a-hardware-monitoring-hwmon-device">
-<h3><a class="toc-backref" href="#id8">As a Hardware Monitoring (<code class="docutils literal notranslate"><span class="pre">hwmon</span></code>) Device</a><a class="headerlink" href="#as-a-hardware-monitoring-hwmon-device" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id9">As a Hardware Monitoring (<code class="docutils literal notranslate"><span class="pre">hwmon</span></code>) Device</a><a class="headerlink" href="#as-a-hardware-monitoring-hwmon-device" title="Permalink to this headline">¶</a></h3>
 <p>A different aspect to our sensor, DS18B20, is that it is a temperature
-sensor. There is an entire framework inside the kernel, <code class="docutils literal notranslate"><span class="pre">hwmon</span></code>, to
-cover such devices - no matter if they are Onewire or I2C (or …)
-devices, or if they are reachable via a CPU internal bus.</p>
+sensor - independent of which hardware it is. There is an entire
+framework inside the kernel, <code class="docutils literal notranslate"><span class="pre">hwmon</span></code>, to cover such devices - no
+matter if they are Onewire or I2C (or …)  devices, or if they are
+reachable via a CPU internal bus.</p>
 <p>As such (a temperature sensor), the device appears under an
 alternative location in <code class="docutils literal notranslate"><span class="pre">sysfs</span></code>,</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -l /sys/class/hwmon/hwmon1/
@@ -333,11 +335,36 @@ use that to find the correct <code class="docutils literal notranslate"><span cl
 </ul>
 </div>
 </section>
+<section id="lm-sensors">
+<h3><a class="toc-backref" href="#id10"><code class="docutils literal notranslate"><span class="pre">lm-sensors</span></code></a><a class="headerlink" href="#lm-sensors" title="Permalink to this headline">¶</a></h3>
+<p>It is the <code class="docutils literal notranslate"><span class="pre">hwmon</span></code> hardware-independent sensor interface that the
+userspace <code class="docutils literal notranslate"><span class="pre">lm-sensors</span></code> framework builds upon. (<a class="reference external" href="https://github.com/lm-sensors/lm-sensors">Github</a>, <a class="reference external" href="https://en.wikipedia.org/wiki/Lm_sensors">Wikipedia</a>.)</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Installation (on the Raspi)</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>apt install lm-sensors
+</pre></div>
+</div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>sensors
+<span class="go">rpi_volt-isa-0000</span>
+<span class="go">Adapter: ISA adapter</span>
+<span class="go">in0:              N/A</span>
+
+<span class="go">cpu_thermal-virtual-0</span>
+<span class="go">Adapter: Virtual device</span>
+<span class="go">temp1:        +50.1°C</span>
+
+<span class="go">w1_slave_temp-virtual-0</span>
+<span class="go">Adapter: Virtual device</span>
+<span class="go">temp1:        +21.4°C</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="caveats">
-<h2><a class="toc-backref" href="#id9">Caveats</a><a class="headerlink" href="#caveats" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id11">Caveats</a><a class="headerlink" href="#caveats" title="Permalink to this headline">¶</a></h2>
 <section id="topology">
-<h3><a class="toc-backref" href="#id10">Topology</a><a class="headerlink" href="#topology" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id12">Topology</a><a class="headerlink" href="#topology" title="Permalink to this headline">¶</a></h3>
 <p>For stability, a Onewire setup should not exhibit a star
 topology. Rather, it is best to have a long line, with only short
 branches off of it where the sensors are attached.</p>
@@ -347,7 +374,7 @@ they define the terms <em>radious</em> and <em>weight</em>; it is definitely wor
 reading.</p>
 </section>
 <section id="error-symptoms">
-<h3><a class="toc-backref" href="#id11">Error Symptoms</a><a class="headerlink" href="#error-symptoms" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id13">Error Symptoms</a><a class="headerlink" href="#error-symptoms" title="Permalink to this headline">¶</a></h3>
 <ul>
 <li><p><strong>Devices disappear</strong>, and are replaced by ones that are named like
 <code class="docutils literal notranslate"><span class="pre">00-0c4000000000</span></code>. Here, <code class="docutils literal notranslate"><span class="pre">00</span></code> is the family which is completely
@@ -390,7 +417,7 @@ another tryout.</p>
 </section>
 </section>
 <section id="links">
-<h2><a class="toc-backref" href="#id12">Links</a><a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id14">Links</a><a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://www.kernel.org/doc/html/latest/w1/w1-generic.html">Kernel Onewire documentation</a></p></li>
 <li><p><a class="reference external" href="https://www.maximintegrated.com/en/products/DS18B20">DS18B20 datasheet</a></p></li>
