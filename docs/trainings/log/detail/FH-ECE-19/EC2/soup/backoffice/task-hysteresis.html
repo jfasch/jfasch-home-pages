@@ -1,0 +1,427 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>MQTT Hysteresis &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../../" id="documentation_options" src="../../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/log/detail/FH-ECE-19/EC2/soup/backoffice/task-hysteresis.html" />
+    <link rel="index" title="Index" href="../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../search.html" />
+    <link rel="next" title="Development Environment" href="../devenv/group.html" />
+    <link rel="prev" title="MQTT PID COntroller" href="task-pid-controller.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../../index.html">
+    <img class="logo" src="../../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../material/index.html">Unterlagen &amp; Download</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../index.html">Bisher Gehaltene</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../codex.html">Richtlinien zur Veröffentlichung von Kursmaterial</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../index.html">Details</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../../2021-XX-XX/index.html">Python Basics (Unplanned)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2021-08-31/index.html">Python Basics (2021-08-31 - 2021-09-01)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2021-08-23/index.html">Python Grundlagen (2021-08-23 - 2021-08-25)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2021-08-02/index.html">Programmierung Grundlagen, anhand von Python (2. und 3.8.2021)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2021-07-12/index.html">The C++ Programming Language (2021-07-12 - 2021-07-16)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2021-06-14/index.html">Programmieren mit C (2021-06-14 - 2021-06-18)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2021-05-25/index.html">Python Advanced (2021-05-25 - 2021-05-27)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2021-05-03/index.html">Python Grundlagen (2021-05-03 - 2021-05-05)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2021-04-12/index.html">Programmierung Grundlagen (12. und 13.4.2021)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2021-03-29/index.html">Linux Basics, Shell Scripting (2021-03-29)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2021-03-22/index.html">Python Basic and Advanced (22.3.2021 - 25.3.2021)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2021-03-15/index.html">2021-03-15</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2021-02-22/index.html">Python Basics (22.2.2021 - 24.2.2021)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2021-01-13/index.html">Programmierung Grundlagen (13. und 14.1.2021)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2021-03-08/index.html">Linux Kernel Driver Development Basics (14.12.2020)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2020-11-30/index.html">Linux Basics (30.11.2020 - 3.12.2020)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2020-11-23/index.html">Python Basics (23.11.2020 - 25.11.2020)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2020-11-03/index.html">Linux on Raspberry Pi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2020-10-19/index.html">Python Basic and Advanced (19.10.2020 - 22.10.2020)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2020-09-28/index.html">Python Basics (28.9.2020 - 30.9.2020)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2020-09-07/index.html">Python Advanced (7.9.2020 - 10.9.2020)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2020-05-18/index.html">Python Individualtraining (18.5.2020 - 19.5.2020)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2020-05-12/index.html">Python Grundlagen (13.5.2020 - 14.5.2020 bei einer Firma in Graz)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2020-03-30/index.html">C++ für Embedded C Programmierer (30.3.2020 - 3.4.2020 Baden Württemberg)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2020-01-10/index.html">IPC in Linux (10.1.2020 in Graz)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2019-11-12/index.html">Python (12.11.2019 - 14.11.2019 in Graz)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2019-10-28/index.html">Python Individualtraining (5 Tage, beginnend 28.10.2019)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2015-11-30/index.html">Kursnotizen: Linux Embedded 2015-11-30</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../2013-10-01/index.html">Qualivision, Zürich, 1.10.2013</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../../index.html">Embedded Computing 1+2, ECE 19</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../EC1/index.html">Embedded Computing 1 (ECE 19)</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html">Embedded Computing 2 (ECE 19)</a><ul class="current">
+<li class="toctree-l5 current"><a class="reference internal" href="../../project.html">Group Project</a><ul class="current">
+<li class="toctree-l6 current"><a class="reference internal" href="../group-ec2.html">Project Plan</a><ul class="current">
+<li class="toctree-l7"><a class="reference internal" href="../sensors/group.html">Sensors</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../switches/group.html">Switches</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../mqtt/group.html">MQTT</a></li>
+<li class="toctree-l7 current"><a class="reference internal" href="group.html">MQTT “Backoffice” Applications (MQTT <em>Subscribers</em>)</a><ul class="current">
+<li class="toctree-l8"><a class="reference internal" href="task-pid-controller.html">MQTT PID COntroller</a></li>
+<li class="toctree-l8 current"><a class="current reference internal" href="#">MQTT Hysteresis</a></li>
+</ul>
+</li>
+<li class="toctree-l7"><a class="reference internal" href="../devenv/group.html">Development Environment</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../../agenda-log.html">Agenda/Log</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../todo.html">Todo List</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="mqtt-hysteresis">
+<h1>MQTT Hysteresis<a class="headerlink" href="#mqtt-hysteresis" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#description" id="id1">Description</a></p></li>
+<li><p><a class="reference internal" href="#further-information" id="id2">Further Information</a></p></li>
+<li><p><a class="reference internal" href="#dependencies" id="id3">Dependencies</a></p></li>
+</ul>
+</div>
+<section id="description">
+<h2><a class="toc-backref" href="#id1">Description</a><a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>Implement a hysteresis class. The temperature measurements are
+received from a subscription of an MQTT topic.</p>
+<p>Instantiation parameters are:</p>
+<ul class="simple">
+<li><p>Lower bound</p></li>
+<li><p>Callback if temperature falls below lower bound</p></li>
+<li><p>Upper bound</p></li>
+<li><p>Callback if temperature rises above upper bound</p></li>
+</ul>
+</section>
+<section id="further-information">
+<h2><a class="toc-backref" href="#id2">Further Information</a><a class="headerlink" href="#further-information" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.wikipedia.org/wiki/Hysteresis">Wikipedia</a></p></li>
+</ul>
+</section>
+<section id="dependencies">
+<h2><a class="toc-backref" href="#id3">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<svg width="729pt" height="618pt"
+ viewBox="0.00 0.00 729.05 618.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 614)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-614 725.05,-614 725.05,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_ec2</title>
+<path fill="none" stroke="black" d="M43.05,-8C43.05,-8 701.05,-8 701.05,-8 707.05,-8 713.05,-14 713.05,-20 713.05,-20 713.05,-590 713.05,-590 713.05,-596 707.05,-602 701.05,-602 701.05,-602 43.05,-602 43.05,-602 37.05,-602 31.05,-596 31.05,-590 31.05,-590 31.05,-20 31.05,-20 31.05,-14 37.05,-8 43.05,-8"/>
+<text text-anchor="middle" x="372.05" y="-586.8" font-family="Times-Roman" font-size="14.00">Project Plan</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_ec2_sensors</title>
+<path fill="none" stroke="black" d="M373.05,-16C373.05,-16 657.05,-16 657.05,-16 663.05,-16 669.05,-22 669.05,-28 669.05,-28 669.05,-325 669.05,-325 669.05,-331 663.05,-337 657.05,-337 657.05,-337 373.05,-337 373.05,-337 367.05,-337 361.05,-331 361.05,-325 361.05,-325 361.05,-28 361.05,-28 361.05,-22 367.05,-16 373.05,-16"/>
+<text text-anchor="middle" x="515.05" y="-321.8" font-family="Times-Roman" font-size="14.00">Sensors</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_ec2_switches</title>
+<path fill="none" stroke="black" d="M63.05,-228C63.05,-228 329.05,-228 329.05,-228 335.05,-228 341.05,-234 341.05,-240 341.05,-240 341.05,-442 341.05,-442 341.05,-448 335.05,-454 329.05,-454 329.05,-454 63.05,-454 63.05,-454 57.05,-454 51.05,-448 51.05,-442 51.05,-442 51.05,-240 51.05,-240 51.05,-234 57.05,-228 63.05,-228"/>
+<text text-anchor="middle" x="196.05" y="-438.8" font-family="Times-Roman" font-size="14.00">Switches</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_ec2_backoffice</title>
+<path fill="none" stroke="black" d="M57.05,-462C57.05,-462 410.05,-462 410.05,-462 416.05,-462 422.05,-468 422.05,-474 422.05,-474 422.05,-559 422.05,-559 422.05,-565 416.05,-571 410.05,-571 410.05,-571 57.05,-571 57.05,-571 51.05,-571 45.05,-565 45.05,-559 45.05,-559 45.05,-474 45.05,-474 45.05,-468 51.05,-462 57.05,-462"/>
+<text text-anchor="middle" x="233.55" y="-555.8" font-family="Times-Roman" font-size="14.00">MQTT “Backoffice” Applications (MQTT Subscribers)</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_ec2_mqtt</title>
+<path fill="none" stroke="black" d="M361.05,-345C361.05,-345 693.05,-345 693.05,-345 699.05,-345 705.05,-351 705.05,-357 705.05,-357 705.05,-442 705.05,-442 705.05,-448 699.05,-454 693.05,-454 693.05,-454 361.05,-454 361.05,-454 355.05,-454 349.05,-448 349.05,-442 349.05,-442 349.05,-357 349.05,-357 349.05,-351 355.05,-345 361.05,-345"/>
+<text text-anchor="middle" x="527.05" y="-438.8" font-family="Times-Roman" font-size="14.00">MQTT</text>
+</g>
+<!-- ec2_sensors_task_prog_stdout -->
+<g id="node1" class="node">
+<title>ec2_sensors_task_prog_stdout</title>
+<g id="a_node1"><a xlink:href="../sensors/task-prog-stdout.html" xlink:title="{Program: Read Sensors, Write to stdout|responsible |{0.0% done|initial 0.0h|spent 0.0h}}">
+<path fill="#ffffff" stroke="black" d="M381.55,-236.5C381.55,-236.5 648.55,-236.5 648.55,-236.5 654.55,-236.5 660.55,-242.5 660.55,-248.5 660.55,-248.5 660.55,-293.5 660.55,-293.5 660.55,-299.5 654.55,-305.5 648.55,-305.5 648.55,-305.5 381.55,-305.5 381.55,-305.5 375.55,-305.5 369.55,-299.5 369.55,-293.5 369.55,-293.5 369.55,-248.5 369.55,-248.5 369.55,-242.5 375.55,-236.5 381.55,-236.5"/>
+<text text-anchor="middle" x="515.05" y="-290.3" font-family="Times-Roman" font-size="14.00">Program: Read Sensors, Write to stdout</text>
+<polyline fill="none" stroke="black" points="369.55,-282.5 660.55,-282.5 "/>
+<text text-anchor="middle" x="515.05" y="-267.3" font-family="Times-Roman" font-size="14.00">responsible</text>
+<polyline fill="none" stroke="black" points="369.55,-259.5 660.55,-259.5 "/>
+<text text-anchor="middle" x="418.05" y="-244.3" font-family="Times-Roman" font-size="14.00">0.0% done</text>
+<polyline fill="none" stroke="black" points="466.55,-236.5 466.55,-259.5 "/>
+<text text-anchor="middle" x="514.55" y="-244.3" font-family="Times-Roman" font-size="14.00">initial 0.0h</text>
+<polyline fill="none" stroke="black" points="562.55,-236.5 562.55,-259.5 "/>
+<text text-anchor="middle" x="611.55" y="-244.3" font-family="Times-Roman" font-size="14.00">spent 0.0h</text>
+</a>
+</g>
+</g>
+<!-- ec2_sensors_task_simu -->
+<g id="node2" class="node">
+<title>ec2_sensors_task_simu</title>
+<g id="a_node2"><a xlink:href="../sensors/task-simu.html" xlink:title="{Simulated/Dummy Thermometers|responsible |{0.0% done|initial 0.0h|spent 0.0h}}">
+<path fill="#ffffff" stroke="black" d="M390.05,-130.5C390.05,-130.5 640.05,-130.5 640.05,-130.5 646.05,-130.5 652.05,-136.5 652.05,-142.5 652.05,-142.5 652.05,-187.5 652.05,-187.5 652.05,-193.5 646.05,-199.5 640.05,-199.5 640.05,-199.5 390.05,-199.5 390.05,-199.5 384.05,-199.5 378.05,-193.5 378.05,-187.5 378.05,-187.5 378.05,-142.5 378.05,-142.5 378.05,-136.5 384.05,-130.5 390.05,-130.5"/>
+<text text-anchor="middle" x="515.05" y="-184.3" font-family="Times-Roman" font-size="14.00">Simulated/Dummy Thermometers</text>
+<polyline fill="none" stroke="black" points="378.05,-176.5 652.05,-176.5 "/>
+<text text-anchor="middle" x="515.05" y="-161.3" font-family="Times-Roman" font-size="14.00">responsible</text>
+<polyline fill="none" stroke="black" points="378.05,-153.5 652.05,-153.5 "/>
+<text text-anchor="middle" x="424.05" y="-138.3" font-family="Times-Roman" font-size="14.00">0.0% done</text>
+<polyline fill="none" stroke="black" points="470.05,-130.5 470.05,-153.5 "/>
+<text text-anchor="middle" x="515.05" y="-138.3" font-family="Times-Roman" font-size="14.00">initial 0.0h</text>
+<polyline fill="none" stroke="black" points="560.05,-130.5 560.05,-153.5 "/>
+<text text-anchor="middle" x="606.05" y="-138.3" font-family="Times-Roman" font-size="14.00">spent 0.0h</text>
+</a>
+</g>
+</g>
+<!-- ec2_sensors_task_prog_stdout&#45;&gt;ec2_sensors_task_simu -->
+<g id="edge1" class="edge">
+<title>ec2_sensors_task_prog_stdout&#45;&gt;ec2_sensors_task_simu</title>
+<path fill="none" stroke="black" d="M515.05,-236.23C515.05,-227.79 515.05,-218.62 515.05,-209.77"/>
+<polygon fill="black" stroke="black" points="518.55,-209.6 515.05,-199.6 511.55,-209.6 518.55,-209.6"/>
+</g>
+<!-- ec2_sensors_task_sensor_iface -->
+<g id="node3" class="node">
+<title>ec2_sensors_task_sensor_iface</title>
+<g id="a_node3"><a xlink:href="../sensors/task-sensor-iface.html" xlink:title="{Thermometer Interface Definition|responsible joerg.faschingbauer|{100.0% done|initial 0.0h|spent 0.0h}}">
+<path fill="#00ff00" stroke="black" d="M381.05,-24.5C381.05,-24.5 649.05,-24.5 649.05,-24.5 655.05,-24.5 661.05,-30.5 661.05,-36.5 661.05,-36.5 661.05,-81.5 661.05,-81.5 661.05,-87.5 655.05,-93.5 649.05,-93.5 649.05,-93.5 381.05,-93.5 381.05,-93.5 375.05,-93.5 369.05,-87.5 369.05,-81.5 369.05,-81.5 369.05,-36.5 369.05,-36.5 369.05,-30.5 375.05,-24.5 381.05,-24.5"/>
+<text text-anchor="middle" x="515.05" y="-78.3" font-family="Times-Roman" font-size="14.00">Thermometer Interface Definition</text>
+<polyline fill="none" stroke="black" points="369.05,-70.5 661.05,-70.5 "/>
+<text text-anchor="middle" x="515.05" y="-55.3" font-family="Times-Roman" font-size="14.00">responsible joerg.faschingbauer</text>
+<polyline fill="none" stroke="black" points="369.05,-47.5 661.05,-47.5 "/>
+<text text-anchor="middle" x="424.05" y="-32.3" font-family="Times-Roman" font-size="14.00">100.0% done</text>
+<polyline fill="none" stroke="black" points="479.05,-24.5 479.05,-47.5 "/>
+<text text-anchor="middle" x="524.05" y="-32.3" font-family="Times-Roman" font-size="14.00">initial 0.0h</text>
+<polyline fill="none" stroke="black" points="569.05,-24.5 569.05,-47.5 "/>
+<text text-anchor="middle" x="615.05" y="-32.3" font-family="Times-Roman" font-size="14.00">spent 0.0h</text>
+</a>
+</g>
+</g>
+<!-- ec2_sensors_task_simu&#45;&gt;ec2_sensors_task_sensor_iface -->
+<g id="edge2" class="edge">
+<title>ec2_sensors_task_simu&#45;&gt;ec2_sensors_task_sensor_iface</title>
+<path fill="none" stroke="black" d="M515.05,-130.23C515.05,-121.79 515.05,-112.62 515.05,-103.77"/>
+<polygon fill="black" stroke="black" points="518.55,-103.6 515.05,-93.6 511.55,-103.6 518.55,-103.6"/>
+</g>
+<!-- ec2_switches_task_switch_iface -->
+<g id="node4" class="node">
+<title>ec2_switches_task_switch_iface</title>
+<g id="a_node4"><a xlink:href="../switches/task-switch-iface.html" xlink:title="{Switch Interface Definition|responsible |{0.0% done|initial 0.0h|spent 0.0h}}">
+<path fill="#ffffff" stroke="black" d="M71.05,-236.5C71.05,-236.5 321.05,-236.5 321.05,-236.5 327.05,-236.5 333.05,-242.5 333.05,-248.5 333.05,-248.5 333.05,-293.5 333.05,-293.5 333.05,-299.5 327.05,-305.5 321.05,-305.5 321.05,-305.5 71.05,-305.5 71.05,-305.5 65.05,-305.5 59.05,-299.5 59.05,-293.5 59.05,-293.5 59.05,-248.5 59.05,-248.5 59.05,-242.5 65.05,-236.5 71.05,-236.5"/>
+<text text-anchor="middle" x="196.05" y="-290.3" font-family="Times-Roman" font-size="14.00">Switch Interface Definition</text>
+<polyline fill="none" stroke="black" points="59.05,-282.5 333.05,-282.5 "/>
+<text text-anchor="middle" x="196.05" y="-267.3" font-family="Times-Roman" font-size="14.00">responsible</text>
+<polyline fill="none" stroke="black" points="59.05,-259.5 333.05,-259.5 "/>
+<text text-anchor="middle" x="105.05" y="-244.3" font-family="Times-Roman" font-size="14.00">0.0% done</text>
+<polyline fill="none" stroke="black" points="151.05,-236.5 151.05,-259.5 "/>
+<text text-anchor="middle" x="196.05" y="-244.3" font-family="Times-Roman" font-size="14.00">initial 0.0h</text>
+<polyline fill="none" stroke="black" points="241.05,-236.5 241.05,-259.5 "/>
+<text text-anchor="middle" x="287.05" y="-244.3" font-family="Times-Roman" font-size="14.00">spent 0.0h</text>
+</a>
+</g>
+</g>
+<!-- ec2_switches_task_simu -->
+<g id="node5" class="node">
+<title>ec2_switches_task_simu</title>
+<g id="a_node5"><a xlink:href="../switches/task-simu.html" xlink:title="{Simulated/Dummy Switch|responsible |{0.0% done|initial 0.0h|spent 0.0h}}">
+<path fill="#ffffff" stroke="black" d="M71.05,-353.5C71.05,-353.5 321.05,-353.5 321.05,-353.5 327.05,-353.5 333.05,-359.5 333.05,-365.5 333.05,-365.5 333.05,-410.5 333.05,-410.5 333.05,-416.5 327.05,-422.5 321.05,-422.5 321.05,-422.5 71.05,-422.5 71.05,-422.5 65.05,-422.5 59.05,-416.5 59.05,-410.5 59.05,-410.5 59.05,-365.5 59.05,-365.5 59.05,-359.5 65.05,-353.5 71.05,-353.5"/>
+<text text-anchor="middle" x="196.05" y="-407.3" font-family="Times-Roman" font-size="14.00">Simulated/Dummy Switch</text>
+<polyline fill="none" stroke="black" points="59.05,-399.5 333.05,-399.5 "/>
+<text text-anchor="middle" x="196.05" y="-384.3" font-family="Times-Roman" font-size="14.00">responsible</text>
+<polyline fill="none" stroke="black" points="59.05,-376.5 333.05,-376.5 "/>
+<text text-anchor="middle" x="105.05" y="-361.3" font-family="Times-Roman" font-size="14.00">0.0% done</text>
+<polyline fill="none" stroke="black" points="151.05,-353.5 151.05,-376.5 "/>
+<text text-anchor="middle" x="196.05" y="-361.3" font-family="Times-Roman" font-size="14.00">initial 0.0h</text>
+<polyline fill="none" stroke="black" points="241.05,-353.5 241.05,-376.5 "/>
+<text text-anchor="middle" x="287.05" y="-361.3" font-family="Times-Roman" font-size="14.00">spent 0.0h</text>
+</a>
+</g>
+</g>
+<!-- ec2_switches_task_simu&#45;&gt;ec2_switches_task_switch_iface -->
+<g id="edge6" class="edge">
+<title>ec2_switches_task_simu&#45;&gt;ec2_switches_task_switch_iface</title>
+<path fill="none" stroke="black" d="M196.05,-353.43C196.05,-341.72 196.05,-328.41 196.05,-315.98"/>
+<polygon fill="black" stroke="black" points="199.55,-315.81 196.05,-305.81 192.55,-315.81 199.55,-315.81"/>
+</g>
+<!-- ec2_backoffice_task_hysteresis -->
+<g id="node6" class="node">
+<title>ec2_backoffice_task_hysteresis</title>
+<path fill="#ffffff" stroke="black" stroke-width="3" d="M71.05,-470.5C71.05,-470.5 321.05,-470.5 321.05,-470.5 327.05,-470.5 333.05,-476.5 333.05,-482.5 333.05,-482.5 333.05,-527.5 333.05,-527.5 333.05,-533.5 327.05,-539.5 321.05,-539.5 321.05,-539.5 71.05,-539.5 71.05,-539.5 65.05,-539.5 59.05,-533.5 59.05,-527.5 59.05,-527.5 59.05,-482.5 59.05,-482.5 59.05,-476.5 65.05,-470.5 71.05,-470.5"/>
+<text text-anchor="middle" x="196.05" y="-524.3" font-family="Times-Roman" font-size="14.00">MQTT Hysteresis</text>
+<polyline fill="none" stroke="black" stroke-width="3" points="59.05,-516.5 333.05,-516.5 "/>
+<text text-anchor="middle" x="196.05" y="-501.3" font-family="Times-Roman" font-size="14.00">responsible</text>
+<polyline fill="none" stroke="black" stroke-width="3" points="59.05,-493.5 333.05,-493.5 "/>
+<text text-anchor="middle" x="105.05" y="-478.3" font-family="Times-Roman" font-size="14.00">0.0% done</text>
+<polyline fill="none" stroke="black" stroke-width="3" points="151.05,-470.5 151.05,-493.5 "/>
+<text text-anchor="middle" x="196.05" y="-478.3" font-family="Times-Roman" font-size="14.00">initial 0.0h</text>
+<polyline fill="none" stroke="black" stroke-width="3" points="241.05,-470.5 241.05,-493.5 "/>
+<text text-anchor="middle" x="287.05" y="-478.3" font-family="Times-Roman" font-size="14.00">spent 0.0h</text>
+</g>
+<!-- ec2_backoffice_task_hysteresis&#45;&gt;ec2_sensors_task_simu -->
+<g id="edge4" class="edge">
+<title>ec2_backoffice_task_hysteresis&#45;&gt;ec2_sensors_task_simu</title>
+<path fill="none" stroke="black" d="M62.63,-470.42C56.78,-465.65 51.51,-460.2 47.05,-454 -11.6,-372.46 -19.14,-303.55 47.05,-228 68.21,-203.86 238.75,-186.04 367.91,-175.85"/>
+<polygon fill="black" stroke="black" points="368.22,-179.34 377.92,-175.07 367.67,-172.36 368.22,-179.34"/>
+</g>
+<!-- ec2_backoffice_task_hysteresis&#45;&gt;ec2_switches_task_simu -->
+<g id="edge5" class="edge">
+<title>ec2_backoffice_task_hysteresis&#45;&gt;ec2_switches_task_simu</title>
+<path fill="none" stroke="black" d="M196.05,-470.43C196.05,-458.72 196.05,-445.41 196.05,-432.98"/>
+<polygon fill="black" stroke="black" points="199.55,-432.81 196.05,-422.81 192.55,-432.81 199.55,-432.81"/>
+</g>
+<!-- ec2_mqtt_task_prog_publish -->
+<g id="node7" class="node">
+<title>ec2_mqtt_task_prog_publish</title>
+<g id="a_node7"><a xlink:href="../mqtt/task-prog-mqtt.html" xlink:title="{Program: Read Sensors, Publish to MQTT Topic|responsible |{0.0% done|initial 0.0h|spent 0.0h}}">
+<path fill="#ffffff" stroke="black" d="M369.55,-353.5C369.55,-353.5 684.55,-353.5 684.55,-353.5 690.55,-353.5 696.55,-359.5 696.55,-365.5 696.55,-365.5 696.55,-410.5 696.55,-410.5 696.55,-416.5 690.55,-422.5 684.55,-422.5 684.55,-422.5 369.55,-422.5 369.55,-422.5 363.55,-422.5 357.55,-416.5 357.55,-410.5 357.55,-410.5 357.55,-365.5 357.55,-365.5 357.55,-359.5 363.55,-353.5 369.55,-353.5"/>
+<text text-anchor="middle" x="527.05" y="-407.3" font-family="Times-Roman" font-size="14.00">Program: Read Sensors, Publish to MQTT Topic</text>
+<polyline fill="none" stroke="black" points="357.55,-399.5 696.55,-399.5 "/>
+<text text-anchor="middle" x="527.05" y="-384.3" font-family="Times-Roman" font-size="14.00">responsible</text>
+<polyline fill="none" stroke="black" points="357.55,-376.5 696.55,-376.5 "/>
+<text text-anchor="middle" x="414.05" y="-361.3" font-family="Times-Roman" font-size="14.00">0.0% done</text>
+<polyline fill="none" stroke="black" points="470.55,-353.5 470.55,-376.5 "/>
+<text text-anchor="middle" x="526.55" y="-361.3" font-family="Times-Roman" font-size="14.00">initial 0.0h</text>
+<polyline fill="none" stroke="black" points="582.55,-353.5 582.55,-376.5 "/>
+<text text-anchor="middle" x="639.55" y="-361.3" font-family="Times-Roman" font-size="14.00">spent 0.0h</text>
+</a>
+</g>
+</g>
+<!-- ec2_backoffice_task_hysteresis&#45;&gt;ec2_mqtt_task_prog_publish -->
+<g id="edge3" class="edge">
+<title>ec2_backoffice_task_hysteresis&#45;&gt;ec2_mqtt_task_prog_publish</title>
+<path fill="none" stroke="black" d="M297.13,-470.37C313.18,-464.95 329.58,-459.36 345.05,-454 370.89,-445.05 398.72,-435.21 424.66,-425.96"/>
+<polygon fill="black" stroke="black" points="425.88,-429.24 434.12,-422.58 423.52,-422.65 425.88,-429.24"/>
+</g>
+<!-- ec2_mqtt_task_prog_publish&#45;&gt;ec2_sensors_task_prog_stdout -->
+<g id="edge7" class="edge">
+<title>ec2_mqtt_task_prog_publish&#45;&gt;ec2_sensors_task_prog_stdout</title>
+<path fill="none" stroke="black" d="M523.55,-353.43C522.33,-341.72 520.94,-328.41 519.64,-315.98"/>
+<polygon fill="black" stroke="black" points="523.1,-315.4 518.58,-305.81 516.14,-316.12 523.1,-315.4"/>
+</g>
+</g>
+</svg>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2021 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../../_sources/trainings/log/detail/FH-ECE-19/EC2/soup/backoffice/task-hysteresis.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
