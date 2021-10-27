@@ -22,7 +22,7 @@
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/log/detail/FH-ECE-19/EC2/soup/sensors/task-ds18s20.html" />
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
-    <link rel="next" title="Temperature Sensor: LM73 (via i2c-dev Interface)" href="task-lm73-dev.html" />
+    <link rel="next" title="Temperature Sensor: LM73 (via i2c-dev)" href="task-lm73-dev.html" />
     <link rel="prev" title="Simulated/Dummy Thermometers" href="task-simu.html" /> 
    
   <link rel="stylesheet" href="../../../../../../../_static/custom.css" type="text/css" />
@@ -144,7 +144,7 @@
 <li class="toctree-l8"><a class="reference internal" href="task-prog-stdout.html">Program: Read Sensors, Write to <code class="docutils literal notranslate"><span class="pre">stdout</span></code></a></li>
 <li class="toctree-l8"><a class="reference internal" href="task-simu.html">Simulated/Dummy Thermometers</a></li>
 <li class="toctree-l8 current"><a class="current reference internal" href="#">Temperature Sensor: DS18S20</a></li>
-<li class="toctree-l8"><a class="reference internal" href="task-lm73-dev.html">Temperature Sensor: LM73 (via <code class="docutils literal notranslate"><span class="pre">i2c-dev</span></code> Interface)</a></li>
+<li class="toctree-l8"><a class="reference internal" href="task-lm73-dev.html">Temperature Sensor: LM73 (via <code class="docutils literal notranslate"><span class="pre">i2c-dev</span></code>)</a></li>
 <li class="toctree-l8"><a class="reference internal" href="task-lm73-hwmon.html">Temperature Sensor: LM73 (via <code class="docutils literal notranslate"><span class="pre">hwmon</span></code>)</a></li>
 <li class="toctree-l8"><a class="reference internal" href="task-arduino-proxy.html">Arduino/Raspberry Communication (Proxy Sensor)</a></li>
 </ul>
@@ -190,28 +190,47 @@
 <h1>Temperature Sensor: DS18S20<a class="headerlink" href="#temperature-sensor-ds18s20" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#description" id="id1">Description</a></p></li>
-<li><p><a class="reference internal" href="#further-information" id="id2">Further Information</a></p></li>
-<li><p><a class="reference internal" href="#dependencies" id="id3">Dependencies</a></p></li>
+<li><p><a class="reference internal" href="#description" id="id1">Description</a></p>
+<ul>
+<li><p><a class="reference internal" href="#complication-onewire-on-breadboard" id="id2">Complication: OneWire on Breadboard</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#further-information" id="id3">Further Information</a></p></li>
+<li><p><a class="reference internal" href="#dependencies" id="id4">Dependencies</a></p></li>
 </ul>
 </div>
 <section id="description">
 <h2><a class="toc-backref" href="#id1">Description</a><a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p>Write a Python class that implements the <code class="docutils literal notranslate"><span class="pre">Thermometer</span></code>
+<ul class="simple">
+<li><p>Write a Python class that implements the <code class="docutils literal notranslate"><span class="pre">Thermometer</span></code>
 <a class="reference internal" href="task-sensor-iface.html"><span class="doc">interface</span></a>, and sits on top of the <a class="reference external" href="https://www.maximintegrated.com/en/products/sensors/DS18S20.html">DS18S20</a>
-Onewire temperature sensor.</p>
+Onewire temperature sensor.</p></li>
+<li><p>Do all the necessary integration stuff (see
+<a class="reference internal" href="../../../../../../material/soup/linux/hardware/w1/topic.html"><span class="doc">Linux and OneWire (using DS18B20 Temperature Sensor as Slave)</span></a>)</p></li>
+<li><p>Document all that</p></li>
+</ul>
+<section id="complication-onewire-on-breadboard">
+<h3><a class="toc-backref" href="#id2">Complication: OneWire on Breadboard</a><a class="headerlink" href="#complication-onewire-on-breadboard" title="Permalink to this headline">¶</a></h3>
+<p>Start with the bitbanging OneWire driver, <code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code>, as described in
+<a class="reference internal" href="../../../../../../material/soup/linux/hardware/w1/topic.html"><span class="doc">Linux and OneWire (using DS18B20 Temperature Sensor as Slave)</span></a>.</p>
+<p>That method (OneWire master in software) is susceptible to signal
+noise and/or timing issues, so we have a second method at hand: attach
+a DS2482 OneWire master to the Raspberry’s I2C bus, and let that talk
+with our sensor. Again, described in
+<a class="reference internal" href="../../../../../../material/soup/linux/hardware/w1/topic.html"><span class="doc">Linux and OneWire (using DS18B20 Temperature Sensor as Slave)</span></a>.</p>
+</section>
 </section>
 <section id="further-information">
-<h2><a class="toc-backref" href="#id2">Further Information</a><a class="headerlink" href="#further-information" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id3">Further Information</a><a class="headerlink" href="#further-information" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="../../../../../../material/soup/linux/hardware/w1/topic.html"><span class="doc">Linux and OneWire (using DS18B20 Temperature Sensor as Slave)</span></a></p></li>
+<li><p>Topic: <a class="reference internal" href="../../../../../../material/soup/linux/hardware/w1/topic.html"><span class="doc">Linux and OneWire (using DS18B20 Temperature Sensor as Slave)</span></a></p></li>
 <li><p><a class="reference download internal" download="" href="../../../../../../../_downloads/5af521f3b0c7692566db65c778b978e2/DS18S20.pdf"><code class="xref download docutils literal notranslate"><span class="pre">Datasheet</span></code></a></p></li>
 <li><p><a class="reference external" href="https://www.kernel.org/doc/html/latest/w1/index.html">Onewire filesystem</a></p></li>
 <li><p><a class="reference external" href="https://www.maximintegrated.com/en/products/sensors/DS18S20.html">Analog Devices product page</a></p></li>
 </ul>
 </section>
 <section id="dependencies">
-<h2><a class="toc-backref" href="#id3">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id4">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
 <svg width="1414pt" height="281pt"
  viewBox="0.00 0.00 1414.00 281.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 277)">
@@ -248,59 +267,42 @@ Onewire temperature sensor.</p>
 </a>
 </g>
 </g>
-<!-- ec2_devenv_sphinx_intro -->
-<g id="node2" class="node">
-<title>ec2_devenv_sphinx_intro</title>
-<g id="a_node2"><a xlink:href="../devenv/task-sphinx-intro.html" xlink:title="{Sphinx Skeleton, Introduction|responsible joerg.faschingbauer|{0.0% done|initial 0.0h|spent 0.0h}}">
-<path fill="#ffffff" stroke="black" d="M746,-24.5C746,-24.5 996,-24.5 996,-24.5 1002,-24.5 1008,-30.5 1008,-36.5 1008,-36.5 1008,-81.5 1008,-81.5 1008,-87.5 1002,-93.5 996,-93.5 996,-93.5 746,-93.5 746,-93.5 740,-93.5 734,-87.5 734,-81.5 734,-81.5 734,-36.5 734,-36.5 734,-30.5 740,-24.5 746,-24.5"/>
-<text text-anchor="middle" x="871" y="-78.3" font-family="Times-Roman" font-size="14.00">Sphinx Skeleton, Introduction</text>
-<polyline fill="none" stroke="black" points="734,-70.5 1008,-70.5 "/>
-<text text-anchor="middle" x="871" y="-55.3" font-family="Times-Roman" font-size="14.00">responsible joerg.faschingbauer</text>
-<polyline fill="none" stroke="black" points="734,-47.5 1008,-47.5 "/>
-<text text-anchor="middle" x="780" y="-32.3" font-family="Times-Roman" font-size="14.00">0.0% done</text>
-<polyline fill="none" stroke="black" points="826,-24.5 826,-47.5 "/>
-<text text-anchor="middle" x="871" y="-32.3" font-family="Times-Roman" font-size="14.00">initial 0.0h</text>
-<polyline fill="none" stroke="black" points="916,-24.5 916,-47.5 "/>
-<text text-anchor="middle" x="962" y="-32.3" font-family="Times-Roman" font-size="14.00">spent 0.0h</text>
-</a>
-</g>
-</g>
 <!-- ec2_devenv_virtualbox -->
-<g id="node3" class="node">
+<g id="node2" class="node">
 <title>ec2_devenv_virtualbox</title>
-<g id="a_node3"><a xlink:href="../devenv/task-virtualbox.html" xlink:title="{VirtualBox (Working With Embedded Linux Devices)|responsible joerg.faschingbauer|{40.0% done|initial 0.0h|spent 0.0h}}">
-<path fill="#99ff99" stroke="black" d="M352,-24.5C352,-24.5 704,-24.5 704,-24.5 710,-24.5 716,-30.5 716,-36.5 716,-36.5 716,-81.5 716,-81.5 716,-87.5 710,-93.5 704,-93.5 704,-93.5 352,-93.5 352,-93.5 346,-93.5 340,-87.5 340,-81.5 340,-81.5 340,-36.5 340,-36.5 340,-30.5 346,-24.5 352,-24.5"/>
-<text text-anchor="middle" x="528" y="-78.3" font-family="Times-Roman" font-size="14.00">VirtualBox (Working With Embedded Linux Devices)</text>
-<polyline fill="none" stroke="black" points="340,-70.5 716,-70.5 "/>
-<text text-anchor="middle" x="528" y="-55.3" font-family="Times-Roman" font-size="14.00">responsible joerg.faschingbauer</text>
-<polyline fill="none" stroke="black" points="340,-47.5 716,-47.5 "/>
-<text text-anchor="middle" x="406" y="-32.3" font-family="Times-Roman" font-size="14.00">40.0% done</text>
-<polyline fill="none" stroke="black" points="472,-24.5 472,-47.5 "/>
-<text text-anchor="middle" x="532.5" y="-32.3" font-family="Times-Roman" font-size="14.00">initial 0.0h</text>
-<polyline fill="none" stroke="black" points="593,-24.5 593,-47.5 "/>
-<text text-anchor="middle" x="654.5" y="-32.3" font-family="Times-Roman" font-size="14.00">spent 0.0h</text>
+<g id="a_node2"><a xlink:href="../devenv/task-virtualbox.html" xlink:title="{VirtualBox (Working With Embedded Linux Devices)|responsible joerg.faschingbauer|{40.0% done|initial 0.0h|spent 0.0h}}">
+<path fill="#99ff99" stroke="black" d="M644,-24.5C644,-24.5 996,-24.5 996,-24.5 1002,-24.5 1008,-30.5 1008,-36.5 1008,-36.5 1008,-81.5 1008,-81.5 1008,-87.5 1002,-93.5 996,-93.5 996,-93.5 644,-93.5 644,-93.5 638,-93.5 632,-87.5 632,-81.5 632,-81.5 632,-36.5 632,-36.5 632,-30.5 638,-24.5 644,-24.5"/>
+<text text-anchor="middle" x="820" y="-78.3" font-family="Times-Roman" font-size="14.00">VirtualBox (Working With Embedded Linux Devices)</text>
+<polyline fill="none" stroke="black" points="632,-70.5 1008,-70.5 "/>
+<text text-anchor="middle" x="820" y="-55.3" font-family="Times-Roman" font-size="14.00">responsible joerg.faschingbauer</text>
+<polyline fill="none" stroke="black" points="632,-47.5 1008,-47.5 "/>
+<text text-anchor="middle" x="698" y="-32.3" font-family="Times-Roman" font-size="14.00">40.0% done</text>
+<polyline fill="none" stroke="black" points="764,-24.5 764,-47.5 "/>
+<text text-anchor="middle" x="824.5" y="-32.3" font-family="Times-Roman" font-size="14.00">initial 0.0h</text>
+<polyline fill="none" stroke="black" points="885,-24.5 885,-47.5 "/>
+<text text-anchor="middle" x="946.5" y="-32.3" font-family="Times-Roman" font-size="14.00">spent 0.0h</text>
 </a>
 </g>
 </g>
-<!-- ec2_sensors_task_sensor_iface -->
-<g id="node4" class="node">
-<title>ec2_sensors_task_sensor_iface</title>
-<g id="a_node4"><a xlink:href="task-sensor-iface.html" xlink:title="{Thermometer Interface Definition|responsible joerg.faschingbauer|{100.0% done|initial 0.0h|spent 0.0h}}">
-<path fill="#00ff00" stroke="black" d="M36,-24.5C36,-24.5 304,-24.5 304,-24.5 310,-24.5 316,-30.5 316,-36.5 316,-36.5 316,-81.5 316,-81.5 316,-87.5 310,-93.5 304,-93.5 304,-93.5 36,-93.5 36,-93.5 30,-93.5 24,-87.5 24,-81.5 24,-81.5 24,-36.5 24,-36.5 24,-30.5 30,-24.5 36,-24.5"/>
-<text text-anchor="middle" x="170" y="-78.3" font-family="Times-Roman" font-size="14.00">Thermometer Interface Definition</text>
-<polyline fill="none" stroke="black" points="24,-70.5 316,-70.5 "/>
-<text text-anchor="middle" x="170" y="-55.3" font-family="Times-Roman" font-size="14.00">responsible joerg.faschingbauer</text>
-<polyline fill="none" stroke="black" points="24,-47.5 316,-47.5 "/>
-<text text-anchor="middle" x="79" y="-32.3" font-family="Times-Roman" font-size="14.00">100.0% done</text>
-<polyline fill="none" stroke="black" points="134,-24.5 134,-47.5 "/>
-<text text-anchor="middle" x="179" y="-32.3" font-family="Times-Roman" font-size="14.00">initial 0.0h</text>
-<polyline fill="none" stroke="black" points="224,-24.5 224,-47.5 "/>
-<text text-anchor="middle" x="270" y="-32.3" font-family="Times-Roman" font-size="14.00">spent 0.0h</text>
+<!-- ec2_devenv_sphinx_intro -->
+<g id="node3" class="node">
+<title>ec2_devenv_sphinx_intro</title>
+<g id="a_node3"><a xlink:href="../devenv/task-sphinx-intro.html" xlink:title="{Sphinx Skeleton, Introduction|responsible joerg.faschingbauer|{0.0% done|initial 0.0h|spent 0.0h}}">
+<path fill="#ffffff" stroke="black" d="M352,-24.5C352,-24.5 602,-24.5 602,-24.5 608,-24.5 614,-30.5 614,-36.5 614,-36.5 614,-81.5 614,-81.5 614,-87.5 608,-93.5 602,-93.5 602,-93.5 352,-93.5 352,-93.5 346,-93.5 340,-87.5 340,-81.5 340,-81.5 340,-36.5 340,-36.5 340,-30.5 346,-24.5 352,-24.5"/>
+<text text-anchor="middle" x="477" y="-78.3" font-family="Times-Roman" font-size="14.00">Sphinx Skeleton, Introduction</text>
+<polyline fill="none" stroke="black" points="340,-70.5 614,-70.5 "/>
+<text text-anchor="middle" x="477" y="-55.3" font-family="Times-Roman" font-size="14.00">responsible joerg.faschingbauer</text>
+<polyline fill="none" stroke="black" points="340,-47.5 614,-47.5 "/>
+<text text-anchor="middle" x="386" y="-32.3" font-family="Times-Roman" font-size="14.00">0.0% done</text>
+<polyline fill="none" stroke="black" points="432,-24.5 432,-47.5 "/>
+<text text-anchor="middle" x="477" y="-32.3" font-family="Times-Roman" font-size="14.00">initial 0.0h</text>
+<polyline fill="none" stroke="black" points="522,-24.5 522,-47.5 "/>
+<text text-anchor="middle" x="568" y="-32.3" font-family="Times-Roman" font-size="14.00">spent 0.0h</text>
 </a>
 </g>
 </g>
 <!-- ec2_sensors_task_ds18s20 -->
-<g id="node5" class="node">
+<g id="node4" class="node">
 <title>ec2_sensors_task_ds18s20</title>
 <path fill="#ffffff" stroke="black" stroke-width="3" d="M54,-133.5C54,-133.5 304,-133.5 304,-133.5 310,-133.5 316,-139.5 316,-145.5 316,-145.5 316,-190.5 316,-190.5 316,-196.5 310,-202.5 304,-202.5 304,-202.5 54,-202.5 54,-202.5 48,-202.5 42,-196.5 42,-190.5 42,-190.5 42,-145.5 42,-145.5 42,-139.5 48,-133.5 54,-133.5"/>
 <text text-anchor="middle" x="179" y="-187.3" font-family="Times-Roman" font-size="14.00">Temperature Sensor: DS18S20</text>
@@ -319,17 +321,34 @@ Onewire temperature sensor.</p>
 <path fill="none" stroke="black" d="M316.38,-164.84C518.73,-160.86 886.97,-150.32 1017,-125 1049.27,-118.72 1083.53,-108.06 1113.79,-97.16"/>
 <polygon fill="black" stroke="black" points="1115.28,-100.35 1123.46,-93.62 1112.87,-93.77 1115.28,-100.35"/>
 </g>
-<!-- ec2_sensors_task_ds18s20&#45;&gt;ec2_devenv_sphinx_intro -->
-<g id="edge1" class="edge">
-<title>ec2_sensors_task_ds18s20&#45;&gt;ec2_devenv_sphinx_intro</title>
-<path fill="none" stroke="black" d="M316.22,-161.78C452.14,-155.65 650.46,-143.86 725,-125 749.94,-118.69 775.97,-108.42 799.02,-97.89"/>
-<polygon fill="black" stroke="black" points="800.79,-100.93 808.37,-93.54 797.83,-94.59 800.79,-100.93"/>
-</g>
 <!-- ec2_sensors_task_ds18s20&#45;&gt;ec2_devenv_virtualbox -->
 <g id="edge2" class="edge">
 <title>ec2_sensors_task_ds18s20&#45;&gt;ec2_devenv_virtualbox</title>
-<path fill="none" stroke="black" d="M299.48,-133.48C309.14,-130.66 318.74,-127.81 328,-125 357.19,-116.15 388.63,-106.15 417.75,-96.69"/>
-<polygon fill="black" stroke="black" points="419.1,-99.93 427.53,-93.51 416.93,-93.28 419.1,-99.93"/>
+<path fill="none" stroke="black" d="M316.21,-161.97C404.56,-156.78 521.45,-146.27 623,-125 656.06,-118.07 691.34,-107.5 722.78,-96.87"/>
+<polygon fill="black" stroke="black" points="724.08,-100.13 732.4,-93.58 721.81,-93.51 724.08,-100.13"/>
+</g>
+<!-- ec2_sensors_task_ds18s20&#45;&gt;ec2_devenv_sphinx_intro -->
+<g id="edge1" class="edge">
+<title>ec2_sensors_task_ds18s20&#45;&gt;ec2_devenv_sphinx_intro</title>
+<path fill="none" stroke="black" d="M302.99,-133.45C311.5,-130.72 319.9,-127.89 328,-125 350.44,-116.98 374.29,-107.19 396.17,-97.65"/>
+<polygon fill="black" stroke="black" points="397.68,-100.81 405.42,-93.59 394.86,-94.41 397.68,-100.81"/>
+</g>
+<!-- ec2_sensors_task_sensor_iface -->
+<g id="node5" class="node">
+<title>ec2_sensors_task_sensor_iface</title>
+<g id="a_node5"><a xlink:href="task-sensor-iface.html" xlink:title="{Thermometer Interface Definition|responsible joerg.faschingbauer|{100.0% done|initial 0.0h|spent 0.0h}}">
+<path fill="#00ff00" stroke="black" d="M36,-24.5C36,-24.5 304,-24.5 304,-24.5 310,-24.5 316,-30.5 316,-36.5 316,-36.5 316,-81.5 316,-81.5 316,-87.5 310,-93.5 304,-93.5 304,-93.5 36,-93.5 36,-93.5 30,-93.5 24,-87.5 24,-81.5 24,-81.5 24,-36.5 24,-36.5 24,-30.5 30,-24.5 36,-24.5"/>
+<text text-anchor="middle" x="170" y="-78.3" font-family="Times-Roman" font-size="14.00">Thermometer Interface Definition</text>
+<polyline fill="none" stroke="black" points="24,-70.5 316,-70.5 "/>
+<text text-anchor="middle" x="170" y="-55.3" font-family="Times-Roman" font-size="14.00">responsible joerg.faschingbauer</text>
+<polyline fill="none" stroke="black" points="24,-47.5 316,-47.5 "/>
+<text text-anchor="middle" x="79" y="-32.3" font-family="Times-Roman" font-size="14.00">100.0% done</text>
+<polyline fill="none" stroke="black" points="134,-24.5 134,-47.5 "/>
+<text text-anchor="middle" x="179" y="-32.3" font-family="Times-Roman" font-size="14.00">initial 0.0h</text>
+<polyline fill="none" stroke="black" points="224,-24.5 224,-47.5 "/>
+<text text-anchor="middle" x="270" y="-32.3" font-family="Times-Roman" font-size="14.00">spent 0.0h</text>
+</a>
+</g>
 </g>
 <!-- ec2_sensors_task_ds18s20&#45;&gt;ec2_sensors_task_sensor_iface -->
 <g id="edge3" class="edge">

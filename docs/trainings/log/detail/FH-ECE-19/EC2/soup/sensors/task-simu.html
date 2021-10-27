@@ -144,7 +144,7 @@
 <li class="toctree-l8"><a class="reference internal" href="task-prog-stdout.html">Program: Read Sensors, Write to <code class="docutils literal notranslate"><span class="pre">stdout</span></code></a></li>
 <li class="toctree-l8 current"><a class="current reference internal" href="#">Simulated/Dummy Thermometers</a></li>
 <li class="toctree-l8"><a class="reference internal" href="task-ds18s20.html">Temperature Sensor: DS18S20</a></li>
-<li class="toctree-l8"><a class="reference internal" href="task-lm73-dev.html">Temperature Sensor: LM73 (via <code class="docutils literal notranslate"><span class="pre">i2c-dev</span></code> Interface)</a></li>
+<li class="toctree-l8"><a class="reference internal" href="task-lm73-dev.html">Temperature Sensor: LM73 (via <code class="docutils literal notranslate"><span class="pre">i2c-dev</span></code>)</a></li>
 <li class="toctree-l8"><a class="reference internal" href="task-lm73-hwmon.html">Temperature Sensor: LM73 (via <code class="docutils literal notranslate"><span class="pre">hwmon</span></code>)</a></li>
 <li class="toctree-l8"><a class="reference internal" href="task-arduino-proxy.html">Arduino/Raspberry Communication (Proxy Sensor)</a></li>
 </ul>
@@ -190,50 +190,61 @@
 <h1>Simulated/Dummy Thermometers<a class="headerlink" href="#simulated-dummy-thermometers" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#description" id="id1">Description</a></p></li>
-<li><p><a class="reference internal" href="#dependencies" id="id2">Dependencies</a></p></li>
+<li><p><a class="reference internal" href="#description" id="id1">Description</a></p>
+<ul>
+<li><p><a class="reference internal" href="#write-a-number-of-simulated-thermometers" id="id2">Write a Number of Simulated Thermometers</a></p></li>
+<li><p><a class="reference internal" href="#unit-testing-tools" id="id3">Unit Testing Tools</a></p></li>
+<li><p><a class="reference internal" href="#write-a-simple-program" id="id4">Write a Simple Program</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#dependencies" id="id5">Dependencies</a></p></li>
 </ul>
 </div>
 <section id="description">
 <h2><a class="toc-backref" href="#id1">Description</a><a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<table class="docutils align-left">
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>Write a number of simulated thermometers</p>
-<p>Why?</p>
+<section id="write-a-number-of-simulated-thermometers">
+<h3><a class="toc-backref" href="#id2">Write a Number of Simulated Thermometers</a><a class="headerlink" href="#write-a-number-of-simulated-thermometers" title="Permalink to this headline">¶</a></h3>
+<p><strong>Why?</strong></p>
 <ul class="simple">
-<li><p>Cool to have when I’m on a train and don’t have hardware
-around.</p></li>
+<li><p>Cool to have when I’m on a train and don’t have hardware around.</p></li>
 <li><p>Cool to have when I want to unit-test my code.</p></li>
 </ul>
-<p>Which?</p>
+<p><strong>Which?</strong></p>
 <ul class="simple">
-<li><p>One that reads the temperature from a file</p></li>
-<li><p>One that generates a sine (its samples can be given to a
-Fourier analysis)</p></li>
-<li><p>One that spits out random numbers in a range</p></li>
-<li><p>One that gives a constant temperature</p></li>
+<li><p>One that reads the temperature from a file (that <a class="reference external" href="https://github.com/jfasch/FH-ECE-19/blob/master/src/ece19/sensors/file_thermometer.py">exists already</a>)</p></li>
+<li><p>One that generates a sine (its samples can be given to a Fourier
+analysis). <code class="docutils literal notranslate"><span class="pre">Thermometer_Sine</span></code></p></li>
+<li><p>One that spits out random numbers in a range
+(<code class="docutils literal notranslate"><span class="pre">random.randrange()</span></code>). <code class="docutils literal notranslate"><span class="pre">Thermometer_Random</span></code>.</p></li>
+<li><p>One that gives a constant temperature. <code class="docutils literal notranslate"><span class="pre">Thermometer_Constant</span></code>.</p></li>
 </ul>
-</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Write a simple program that</p>
-<ul class="simple">
-<li><p>Instantiates all of those</p></li>
-<li><p>Outputs measurement values to <em>standard output</em> in a loop, at
-a fixed interval</p></li>
-</ul>
-</td>
-<td></td>
-</tr>
-</tbody>
-</table>
+</section>
+<section id="unit-testing-tools">
+<h3><a class="toc-backref" href="#id3">Unit Testing Tools</a><a class="headerlink" href="#unit-testing-tools" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="task-sensor-iface.html"><span class="doc">thermometer interface</span></a> ‘s main method
+<code class="docutils literal notranslate"><span class="pre">get_temperature()</span></code> returns a tuple <code class="docutils literal notranslate"><span class="pre">(timestamp,</span> <span class="pre">celsius)</span></code>.</p>
+<p>During unit testing (we don’t yet know what that is), we don’t want to
+run a test that reads temperatures every second in a loop, for
+example, only to check that what is returned is a sine wave. <em>This
+would take too long</em>, and nobody would have enough patience to run the
+unit tests.</p>
+<p><strong>We want to simulate time</strong>. <code class="docutils literal notranslate"><span class="pre">Thermometer_Sine</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Thermometer_Random</span></code>, <code class="docutils literal notranslate"><span class="pre">Thermometer_Constant</span></code> should be given that
+optional functionality to return timestamps from a given input
+sequence, rather than the real time.</p>
+<p>Check out
+<a class="reference internal" href="../../../../../../material/soup/python/iteration-generation/topic.html"><span class="doc">Iteration, Comprehensions, and Generators</span></a>;
+generators provide a way to generate infinte sequences of timestamps.</p>
+</section>
+<section id="write-a-simple-program">
+<h3><a class="toc-backref" href="#id4">Write a Simple Program</a><a class="headerlink" href="#write-a-simple-program" title="Permalink to this headline">¶</a></h3>
+<p>Write a simple program to verify that those thermometers work ok. We
+cannot use <a class="reference internal" href="task-prog-stdout.html"><span class="doc">Program: Read Sensors, Write to stdout</span></a> for this because that task is
+running in parallel and might not have started altogether.</p>
+</section>
 </section>
 <section id="dependencies">
-<h2><a class="toc-backref" href="#id2">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
 <svg width="348pt" height="278pt"
  viewBox="0.00 0.00 348.00 278.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 274)">
