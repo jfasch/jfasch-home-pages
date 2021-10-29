@@ -197,37 +197,72 @@
 <section id="description">
 <h2><a class="toc-backref" href="#id2">Description</a><a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p>Write a program that periodically reads temperatures from a given set
-of thermometers. That program has the following characteristics.</p>
-<ul>
-<li><p>Takes from a configuration file</p>
-<ul class="simple">
-<li><p>A set of thermometers</p></li>
-<li><p>The temperature read interval</p></li>
-</ul>
-<p>Possible choices for configuration file formats are</p>
-<ul class="simple">
-<li><p>The <code class="docutils literal notranslate"><span class="pre">configparser</span></code> module from the Python standard library; see
-<a class="reference external" href="https://docs.python.org/3/library/configparser.html">here</a></p></li>
-<li><p>Simpler (albeit more involved): something that can be passed to
-the <code class="docutils literal notranslate"><span class="pre">exec()</span></code> function (see <a class="reference external" href="https://docs.python.org/3/library/functions.html#exec">here</a>).</p></li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The configuration file parsing code should be externalized as a
-module. <a class="reference internal" href="../mqtt/task-prog-mqtt.html"><span class="doc">Program: Read Sensors, Publish to MQTT Topic</span></a> is going to use the same
-code.</p>
+of thermometers. The set of thermometers is read from a configuration
+file.</p>
+<p>Currently (as of 2021-10-28), the program looks like follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">from</span> <span class="nn">ece19.sensors.file_thermometer</span> <span class="kn">import</span> <span class="n">FileThermometer</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+
+<span class="n">thermometers</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">FileThermometer</span><span class="p">(</span><span class="s1">&#39;/tmp/thermometer1&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;FileThermometer1&#39;</span><span class="p">),</span>
+    <span class="n">FileThermometer</span><span class="p">(</span><span class="s1">&#39;/tmp/thermometer2&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;FileThermometer2&#39;</span><span class="p">),</span>
+    <span class="c1"># thermometer = LM73Thermometer(1, 0x49, name=&#39;LM73&#39;)</span>
+<span class="p">]</span>
+<span class="n">interval</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">th</span> <span class="ow">in</span> <span class="n">thermometers</span><span class="p">:</span>
+        <span class="n">timestamp</span><span class="p">,</span> <span class="n">temperature</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">get_temperature</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">timestamp</span><span class="p">,</span> <span class="n">temperature</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+</pre></div>
 </div>
-</li>
-<li><p>Writes structured data to <em>standard output</em> <a class="footnote-reference brackets" href="#pipe" id="id1">1</a>. The following
-hypothetical output is reasonable,</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./read-thermometers --config-file /etc/thermometers.conf
-<span class="go">kuehlhaus-lu 1631715429.926543 10.23</span>
-<span class="go">kuehlhaus-ro 1631715458.7846692 11.75</span>
+<p>The functionality of the program is clear: given a list of
+thermometers and an interval, it does that one simple thing: output
+all sensor values infinitely at that interval, to <em>standard output</em>
+<a class="footnote-reference brackets" href="#pipe" id="id1">1</a>. Like so:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./bin/read-thermometers
+<span class="go">FileThermometer1 1635446701.3454807 42.7</span>
+<span class="go">FileThermometer2 1635446701.3455074 -273.5</span>
+<span class="go">FileThermometer1 1635446701.8460739 42.7</span>
+<span class="go">FileThermometer2 1635446701.84612 -273.5</span>
+</pre></div>
+</div>
+<p>The complexity of the task is that nobody likes those hardcoded
+variables <code class="docutils literal notranslate"><span class="pre">thermometers</span></code> and <code class="docutils literal notranslate"><span class="pre">interval</span></code>. We want to feed these
+parameters into the program via a configuration file.</p>
+<p>Lets implement two different configuration file formats in a way that
+makes them available to other people as well (for example, the task
+<a class="reference internal" href="../mqtt/task-prog-mqtt.html"><span class="doc">Program: Read Sensors, Publish to MQTT Topic</span></a> will happily use it):</p>
+<ul class="simple">
+<li><p>One that uses the <code class="docutils literal notranslate"><span class="pre">configparser</span></code> module from the Python standard
+library (<a class="reference external" href="https://docs.python.org/3/library/configparser.html">documentation</a>) to define
+a Windows <code class="docutils literal notranslate"><span class="pre">.ini</span></code> style format. Put it in, say,
+<code class="docutils literal notranslate"><span class="pre">ece19/configs/sensors_ini.py</span></code>.</p></li>
+<li><p>One that is not a special configuration file syntax in itself, but
+rather uses the Python <code class="docutils literal notranslate"><span class="pre">exec()</span></code> function. See
+<a class="reference internal" href="../../../../../../material/soup/python/swdev/exec/topic.html"><span class="doc">The exec() Function</span></a> for an
+explanation. Put it in, say, <code class="docutils literal notranslate"><span class="pre">ece19/configs/sensors_exec.py</span></code>.</p></li>
+</ul>
+<p>Call the program, feeding configuration from a <code class="docutils literal notranslate"><span class="pre">.ini</span></code> file:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./bin/read-thermometers --conf-ini some-config.ini
 <span class="go">...</span>
 </pre></div>
 </div>
-</li>
-</ul>
+<p>Call the program, feeding configuration from a Python config file:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./bin/read-thermometers --conf-exec some-config.py
+<span class="go">...</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To parse this <code class="docutils literal notranslate"><span class="pre">--conf-ini</span></code> and <code class="docutils literal notranslate"><span class="pre">--conf-exec</span></code> commandline, you
+use the <code class="docutils literal notranslate"><span class="pre">argparse</span></code> module from the Python standard
+library. Documentation <a class="reference external" href="https://docs.python.org/3/library/argparse.html">here</a>.</p>
+</div>
 <p class="rubric">Footnotes</p>
 <dl class="footnote brackets">
 <dt class="label" id="pipe"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
@@ -251,24 +286,10 @@ hypothetical output is reasonable,</p>
 <path fill="none" stroke="black" d="M28,-16C28,-16 312,-16 312,-16 318,-16 324,-22 324,-28 324,-28 324,-325 324,-325 324,-331 318,-337 312,-337 312,-337 28,-337 28,-337 22,-337 16,-331 16,-325 16,-325 16,-28 16,-28 16,-22 22,-16 28,-16"/>
 <text text-anchor="middle" x="170" y="-321.8" font-family="Times-Roman" font-size="14.00">Sensors</text>
 </g>
-<!-- ec2_sensors_task_prog_stdout -->
-<g id="node1" class="node">
-<title>ec2_sensors_task_prog_stdout</title>
-<path fill="#ffffff" stroke="black" stroke-width="3" d="M36.5,-236.5C36.5,-236.5 303.5,-236.5 303.5,-236.5 309.5,-236.5 315.5,-242.5 315.5,-248.5 315.5,-248.5 315.5,-293.5 315.5,-293.5 315.5,-299.5 309.5,-305.5 303.5,-305.5 303.5,-305.5 36.5,-305.5 36.5,-305.5 30.5,-305.5 24.5,-299.5 24.5,-293.5 24.5,-293.5 24.5,-248.5 24.5,-248.5 24.5,-242.5 30.5,-236.5 36.5,-236.5"/>
-<text text-anchor="middle" x="170" y="-290.3" font-family="Times-Roman" font-size="14.00">Program: Read Sensors, Write to stdout</text>
-<polyline fill="none" stroke="black" stroke-width="3" points="24.5,-282.5 315.5,-282.5 "/>
-<text text-anchor="middle" x="170" y="-267.3" font-family="Times-Roman" font-size="14.00">responsible</text>
-<polyline fill="none" stroke="black" stroke-width="3" points="24.5,-259.5 315.5,-259.5 "/>
-<text text-anchor="middle" x="73" y="-244.3" font-family="Times-Roman" font-size="14.00">0.0% done</text>
-<polyline fill="none" stroke="black" stroke-width="3" points="121.5,-236.5 121.5,-259.5 "/>
-<text text-anchor="middle" x="169.5" y="-244.3" font-family="Times-Roman" font-size="14.00">initial 0.0h</text>
-<polyline fill="none" stroke="black" stroke-width="3" points="217.5,-236.5 217.5,-259.5 "/>
-<text text-anchor="middle" x="266.5" y="-244.3" font-family="Times-Roman" font-size="14.00">spent 0.0h</text>
-</g>
 <!-- ec2_sensors_task_simu -->
-<g id="node2" class="node">
+<g id="node1" class="node">
 <title>ec2_sensors_task_simu</title>
-<g id="a_node2"><a xlink:href="task-simu.html" xlink:title="{Simulated/Dummy Thermometers|responsible |{0.0% done|initial 0.0h|spent 0.0h}}">
+<g id="a_node1"><a xlink:href="task-simu.html" xlink:title="{Simulated/Dummy Thermometers|responsible |{0.0% done|initial 0.0h|spent 0.0h}}">
 <path fill="#ffffff" stroke="black" d="M45,-130.5C45,-130.5 295,-130.5 295,-130.5 301,-130.5 307,-136.5 307,-142.5 307,-142.5 307,-187.5 307,-187.5 307,-193.5 301,-199.5 295,-199.5 295,-199.5 45,-199.5 45,-199.5 39,-199.5 33,-193.5 33,-187.5 33,-187.5 33,-142.5 33,-142.5 33,-136.5 39,-130.5 45,-130.5"/>
 <text text-anchor="middle" x="170" y="-184.3" font-family="Times-Roman" font-size="14.00">Simulated/Dummy Thermometers</text>
 <polyline fill="none" stroke="black" points="33,-176.5 307,-176.5 "/>
@@ -281,12 +302,6 @@ hypothetical output is reasonable,</p>
 <text text-anchor="middle" x="261" y="-138.3" font-family="Times-Roman" font-size="14.00">spent 0.0h</text>
 </a>
 </g>
-</g>
-<!-- ec2_sensors_task_prog_stdout&#45;&gt;ec2_sensors_task_simu -->
-<g id="edge1" class="edge">
-<title>ec2_sensors_task_prog_stdout&#45;&gt;ec2_sensors_task_simu</title>
-<path fill="none" stroke="black" d="M170,-236.23C170,-227.79 170,-218.62 170,-209.77"/>
-<polygon fill="black" stroke="black" points="173.5,-209.6 170,-199.6 166.5,-209.6 173.5,-209.6"/>
 </g>
 <!-- ec2_sensors_task_sensor_iface -->
 <g id="node3" class="node">
@@ -306,10 +321,30 @@ hypothetical output is reasonable,</p>
 </g>
 </g>
 <!-- ec2_sensors_task_simu&#45;&gt;ec2_sensors_task_sensor_iface -->
-<g id="edge2" class="edge">
+<g id="edge1" class="edge">
 <title>ec2_sensors_task_simu&#45;&gt;ec2_sensors_task_sensor_iface</title>
 <path fill="none" stroke="black" d="M170,-130.23C170,-121.79 170,-112.62 170,-103.77"/>
 <polygon fill="black" stroke="black" points="173.5,-103.6 170,-93.6 166.5,-103.6 173.5,-103.6"/>
+</g>
+<!-- ec2_sensors_task_prog_stdout -->
+<g id="node2" class="node">
+<title>ec2_sensors_task_prog_stdout</title>
+<path fill="#ffffff" stroke="black" stroke-width="3" d="M36.5,-236.5C36.5,-236.5 303.5,-236.5 303.5,-236.5 309.5,-236.5 315.5,-242.5 315.5,-248.5 315.5,-248.5 315.5,-293.5 315.5,-293.5 315.5,-299.5 309.5,-305.5 303.5,-305.5 303.5,-305.5 36.5,-305.5 36.5,-305.5 30.5,-305.5 24.5,-299.5 24.5,-293.5 24.5,-293.5 24.5,-248.5 24.5,-248.5 24.5,-242.5 30.5,-236.5 36.5,-236.5"/>
+<text text-anchor="middle" x="170" y="-290.3" font-family="Times-Roman" font-size="14.00">Program: Read Sensors, Write to stdout</text>
+<polyline fill="none" stroke="black" stroke-width="3" points="24.5,-282.5 315.5,-282.5 "/>
+<text text-anchor="middle" x="170" y="-267.3" font-family="Times-Roman" font-size="14.00">responsible</text>
+<polyline fill="none" stroke="black" stroke-width="3" points="24.5,-259.5 315.5,-259.5 "/>
+<text text-anchor="middle" x="73" y="-244.3" font-family="Times-Roman" font-size="14.00">0.0% done</text>
+<polyline fill="none" stroke="black" stroke-width="3" points="121.5,-236.5 121.5,-259.5 "/>
+<text text-anchor="middle" x="169.5" y="-244.3" font-family="Times-Roman" font-size="14.00">initial 0.0h</text>
+<polyline fill="none" stroke="black" stroke-width="3" points="217.5,-236.5 217.5,-259.5 "/>
+<text text-anchor="middle" x="266.5" y="-244.3" font-family="Times-Roman" font-size="14.00">spent 0.0h</text>
+</g>
+<!-- ec2_sensors_task_prog_stdout&#45;&gt;ec2_sensors_task_simu -->
+<g id="edge2" class="edge">
+<title>ec2_sensors_task_prog_stdout&#45;&gt;ec2_sensors_task_simu</title>
+<path fill="none" stroke="black" d="M170,-236.23C170,-227.79 170,-218.62 170,-209.77"/>
+<polygon fill="black" stroke="black" points="173.5,-209.6 170,-199.6 166.5,-209.6 173.5,-209.6"/>
 </g>
 </g>
 </svg>
