@@ -1,0 +1,719 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>MQTT &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/python/misc/mqtt/topic.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="XML: ElementTree (etree)" href="../python_5550_xml_etree/topic.html" />
+    <link rel="prev" title="K-Means" href="../ai/k-means.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">Python Programming</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../basics/group.html">Python: The Language Fundamentals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../advanced/group.html">Python: More Language Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../swdev/group.html">Python: Project/Package Management</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../group.html">Python: Miscellaneous Topics</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../db/group.html">Databases</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../ai/group.html">Machine Learning, Artificial Intelligence</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">MQTT</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_5550_xml_etree/topic.html">XML: ElementTree (<code class="docutils literal notranslate"><span class="pre">etree</span></code>)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../duck-typing.html">Duck Typing vs. Strong Typing (<em>incomplete</em>)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../context_manager/topic.html">Context Managers (the <code class="docutils literal notranslate"><span class="pre">with</span></code> Statement) (<em>incomplete</em>)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../special_methods.html">Special Methods, Operator Overloading (<em>incomplete</em>)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../import.html">The <code class="docutils literal notranslate"><span class="pre">import</span></code> Statement (incomplete)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../vscode.html">Visual Studio Code for Python Programming</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../encoding/topic.html">Encoding</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../exercises/group.html">Exercises</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../link-collection.html">Python Links</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../graph.html">Python: All Material, Interrelated</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../sysprog/group.html">Systems Programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../kernel/index.html">Kernel Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../devenv/group.html">Linux: Development Environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="mqtt">
+<h1>MQTT<a class="headerlink" href="#mqtt" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#installation" id="id3">Installation</a></p>
+<ul>
+<li><p><a class="reference internal" href="#server-broker" id="id4">Server/Broker</a></p></li>
+<li><p><a class="reference internal" href="#client" id="id5">Client</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#starting-the-service" id="id6">Starting the Service</a></p></li>
+<li><p><a class="reference internal" href="#publishing-a-message-in-python" id="id7">Publishing a Message in Python</a></p></li>
+<li><p><a class="reference internal" href="#subscribing-a-topic-in-python" id="id8">Subscribing a Topic in Python</a></p></li>
+<li><p><a class="reference internal" href="#message-payload" id="id9">Message Payload?</a></p></li>
+<li><p><a class="reference internal" href="#links" id="id10">Links</a></p></li>
+<li><p><a class="reference internal" href="#dependencies" id="id11">Dependencies</a></p></li>
+</ul>
+</div>
+<section id="installation">
+<h2><a class="toc-backref" href="#id3">Installation</a><a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<section id="server-broker">
+<h3><a class="toc-backref" href="#id4">Server/Broker</a><a class="headerlink" href="#server-broker" title="Permalink to this headline">¶</a></h3>
+<p>First, install an MQTT broker of your choice. My choice is <a class="reference external" href="https://mosquitto.org/">Eclipse
+Mosquitto</a>. On Fedora, you install that
+package like so …</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>dnf install mosquitto
+</pre></div>
+</div>
+</section>
+<section id="client">
+<h3><a class="toc-backref" href="#id5">Client</a><a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h3>
+<p>Then, to communicate with that broker from Python programs, you
+install a Python client implementation of your choice. My choice is
+the <a class="reference external" href="https://pypi.org/project/paho-mqtt/">Paho implementation</a>,
+which is installed like so …</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip install paho-mqtt
+</pre></div>
+</div>
+</section>
+</section>
+<section id="starting-the-service">
+<h2><a class="toc-backref" href="#id6">Starting the Service</a><a class="headerlink" href="#starting-the-service" title="Permalink to this headline">¶</a></h2>
+<p>This is <a class="reference external" href="https://getfedora.org/">Fedorish</a>, your mileage might
+vary:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>systemctl start mosquitto.service
+<span class="gp"># </span>netstat -antp<span class="p">|</span>grep mosquitto
+<span class="go">tcp        0      0 0.0.0.0:1883            0.0.0.0:*               LISTEN      53767/mosquitto</span>
+<span class="go">tcp6       0      0 :::1883                 :::*                    LISTEN      53767/mosquitto</span>
+</pre></div>
+</div>
+<p>Ah, runs on port 1883.</p>
+<p>See if it works. In one terminal, subscribe to a random topic. (Topic
+are created as soon as they are mentioned.)</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>mosquitto_sub --host localhost --port <span class="m">1883</span> --topic /random/topic
+<span class="go">...sit and wait for message...</span>
+</pre></div>
+</div>
+<p>In another terminal, publish a message,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>mosquitto_pub --host localhost --port <span class="m">1883</span> --topic /random/topic --message blah
+</pre></div>
+</div>
+<p>You should see “blah” as the output of <code class="docutils literal notranslate"><span class="pre">mosquitto_sub</span></code> in the other
+terminal.</p>
+</section>
+<section id="publishing-a-message-in-python">
+<h2><a class="toc-backref" href="#id7">Publishing a Message in Python</a><a class="headerlink" href="#publishing-a-message-in-python" title="Permalink to this headline">¶</a></h2>
+<p>This is the easiest, so lets start with that.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/520aae068285e46bcefef4b7addfabd5/publish.py"><code class="xref download docutils literal notranslate"><span class="pre">publish.py</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">from</span> <span class="nn">paho.mqtt</span> <span class="kn">import</span> <span class="n">client</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="n">c</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">1883</span><span class="p">)</span>
+<span class="n">c</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="s1">&#39;/random/topic&#39;</span><span class="p">,</span> <span class="s1">&#39;blech&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Run it, and in the terminal running <code class="docutils literal notranslate"><span class="pre">mosquitto_sub</span></code> you’ll see
+<code class="docutils literal notranslate"><span class="pre">&quot;blech&quot;</span></code> on <code class="docutils literal notranslate"><span class="pre">stdout</span></code>.</p>
+</section>
+<section id="subscribing-a-topic-in-python">
+<h2><a class="toc-backref" href="#id8">Subscribing a Topic in Python</a><a class="headerlink" href="#subscribing-a-topic-in-python" title="Permalink to this headline">¶</a></h2>
+<p>A little more complicated - we have to</p>
+<ul class="simple">
+<li><p>run an <em>event loop</em>: we want to see more than one message coming in</p></li>
+<li><p>register a <em>callback</em> function that is called by MQTT to notify us
+about an incoming message</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/7930c28a9c8032b0827b7f3b77436d72/subscribe.py"><code class="xref download docutils literal notranslate"><span class="pre">subscribe.py</span></code></a></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">from</span> <span class="nn">paho.mqtt</span> <span class="kn">import</span> <span class="n">client</span>
+
+<span class="k">def</span> <span class="nf">message_received</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">userdata</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">payload</span><span class="p">)</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="n">c</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">1883</span><span class="p">)</span>
+<span class="n">c</span><span class="o">.</span><span class="n">on_message</span> <span class="o">=</span> <span class="n">message_received</span>
+
+<span class="n">c</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s1">&#39;/random/topic&#39;</span><span class="p">)</span>
+<span class="n">c</span><span class="o">.</span><span class="n">loop_forever</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Run it, possibly side by side with <code class="docutils literal notranslate"><span class="pre">mosquitto_sub</span></code>. Publish a
+message, using either the <code class="docutils literal notranslate"><span class="pre">publish.py</span></code> program above, or
+<code class="docutils literal notranslate"><span class="pre">mosqitto_pub</span></code>.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./subscribe.py
+<span class="go">b&#39;blech&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="message-payload">
+<h2><a class="toc-backref" href="#id9">Message Payload?</a><a class="headerlink" href="#message-payload" title="Permalink to this headline">¶</a></h2>
+<p>Note the <code class="docutils literal notranslate"><span class="pre">b</span></code> in the output: what comes in is <em>not</em> a string. MQTT’s
+transport is encoding-free; what is sent is completely up to the
+communicating parties.</p>
+<p>You should probably read up on</p>
+<ul class="simple">
+<li><p>Encoding:
+<a class="reference internal" href="../../basics/python_0330_strings_encoding/topic.html"><span class="doc">Strings and Encoding</span></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/json.html#module-json">JSON</a>,
+a popular transport format, used for MQTT message transfer, and on
+The Web which is full of it.</p></li>
+</ul>
+</section>
+<section id="links">
+<h2><a class="toc-backref" href="#id10">Links</a><a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>Nice video about MQTT concepts, and a little Python code (<em>German</em>)</p>
+<blockquote>
+<div><iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/DiqLgy2-lD4"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen>
+</iframe></div></blockquote>
+</li>
+<li><p>Same, but with Node-RED (<em>Styrian</em>)</p>
+<blockquote>
+<div><iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/watch?v=ItcGWCvYa8o"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen>
+</iframe></div></blockquote>
+</li>
+<li><p>Communicating from Arduino/ESP to Raspberry (<em>German</em>)</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://smarthome-blogger.de/tutorial/mqtt-raspberry-pi-einfuehrung/">Python side</a></p></li>
+<li><p><a class="reference external" href="https://smarthome-blogger.de/tutorial/esp8266-mqtt-tutorial/">Arduino/ESP side</a></p></li>
+</ul>
+</li>
+<li><p>Encryption, Users, from minute 11:30 (<em>German</em>)</p>
+<blockquote>
+<div><iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/watch?v=gU5Vp0zCzak"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen>
+</iframe></div></blockquote>
+</li>
+</ul>
+</section>
+<section id="dependencies">
+<h2><a class="toc-backref" href="#id11">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<svg width="768pt" height="1099pt"
+ viewBox="0.00 0.00 768.00 1099.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1095)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-1095 764,-1095 764,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_python</title>
+<path fill="none" stroke="black" d="M20,-8C20,-8 740,-8 740,-8 746,-8 752,-14 752,-20 752,-20 752,-1071 752,-1071 752,-1077 746,-1083 740,-1083 740,-1083 20,-1083 20,-1083 14,-1083 8,-1077 8,-1071 8,-1071 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="380" y="-1067.8" font-family="Times-Roman" font-size="14.00">Python Programming</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_python_advanced</title>
+<path fill="none" stroke="black" d="M301,-747C301,-747 585,-747 585,-747 591,-747 597,-753 597,-759 597,-759 597,-882 597,-882 597,-888 591,-894 585,-894 585,-894 301,-894 301,-894 295,-894 289,-888 289,-882 289,-882 289,-759 289,-759 289,-753 295,-747 301,-747"/>
+<text text-anchor="middle" x="443" y="-878.8" font-family="Times-Roman" font-size="14.00">Python: More Language Features</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_python_basics</title>
+<path fill="none" stroke="black" d="M166,-16C166,-16 585,-16 585,-16 591,-16 597,-22 597,-28 597,-28 597,-727 597,-727 597,-733 591,-739 585,-739 585,-739 166,-739 166,-739 160,-739 154,-733 154,-727 154,-727 154,-28 154,-28 154,-22 160,-16 166,-16"/>
+<text text-anchor="middle" x="375.5" y="-723.8" font-family="Times-Roman" font-size="14.00">Python: The Language Fundamentals</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_python_misc</title>
+<path fill="none" stroke="black" d="M312,-902C312,-902 732,-902 732,-902 738,-902 744,-908 744,-914 744,-914 744,-965 744,-965 744,-971 738,-977 732,-977 732,-977 312,-977 312,-977 306,-977 300,-971 300,-965 300,-965 300,-914 300,-914 300,-908 306,-902 312,-902"/>
+<text text-anchor="middle" x="522" y="-961.8" font-family="Times-Roman" font-size="14.00">Python: Miscellaneous Topics</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_python_swdev</title>
+<path fill="none" stroke="black" d="M28,-902C28,-902 280,-902 280,-902 286,-902 292,-908 292,-914 292,-914 292,-1040 292,-1040 292,-1046 286,-1052 280,-1052 280,-1052 28,-1052 28,-1052 22,-1052 16,-1046 16,-1040 16,-1040 16,-914 16,-914 16,-908 22,-902 28,-902"/>
+<text text-anchor="middle" x="154" y="-1036.8" font-family="Times-Roman" font-size="14.00">Python: Project/Package Management</text>
+</g>
+<!-- python_advanced_modules -->
+<g id="node1" class="node">
+<title>python_advanced_modules</title>
+<g id="a_node1"><a xlink:href="../../advanced/modules.html" xlink:title="Modules and Packages">
+<ellipse fill="#dcdcdc" stroke="black" cx="477" cy="-845" rx="112.38" ry="18"/>
+<text text-anchor="middle" x="477" y="-841.3" font-family="Times-Roman" font-size="14.00">Modules and Packages</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_oo -->
+<g id="node2" class="node">
+<title>python_advanced_oo</title>
+<g id="a_node2"><a xlink:href="../../advanced/oo.html" xlink:title="Object Oriented Programming">
+<ellipse fill="#dcdcdc" stroke="black" cx="443" cy="-773" rx="146.47" ry="18"/>
+<text text-anchor="middle" x="443" y="-769.3" font-family="Times-Roman" font-size="14.00">Object Oriented Programming</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_modules&#45;&gt;python_advanced_oo -->
+<g id="edge3" class="edge">
+<title>python_advanced_modules&#45;&gt;python_advanced_oo</title>
+<path fill="none" stroke="black" d="M468.6,-826.7C464.73,-818.73 460.05,-809.1 455.76,-800.26"/>
+<polygon fill="black" stroke="black" points="458.83,-798.57 451.31,-791.1 452.53,-801.63 458.83,-798.57"/>
+</g>
+<!-- python_basics_python_0140_variables -->
+<g id="node8" class="node">
+<title>python_basics_python_0140_variables</title>
+<g id="a_node8"><a xlink:href="../../basics/python_0140_variables/topic.html" xlink:title="Variables">
+<ellipse fill="#dcdcdc" stroke="black" cx="374" cy="-258" rx="51.99" ry="18"/>
+<text text-anchor="middle" x="374" y="-254.3" font-family="Times-Roman" font-size="14.00">Variables</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_modules&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge2" class="edge">
+<title>python_advanced_modules&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M546.42,-830.74C569.83,-822.92 594.04,-810.54 610,-791 638.57,-756.02 628,-736.16 628,-691 628,-691 628,-691 628,-401 628,-312.22 508.31,-278.41 433.25,-265.94"/>
+<polygon fill="black" stroke="black" points="433.4,-262.42 422.97,-264.32 432.31,-269.34 433.4,-262.42"/>
+</g>
+<!-- python_basics_python_0270_functions -->
+<g id="node15" class="node">
+<title>python_basics_python_0270_functions</title>
+<g id="a_node15"><a xlink:href="../../basics/python_0270_functions/topic.html" xlink:title="Functions">
+<ellipse fill="#dcdcdc" stroke="black" cx="255" cy="-402" rx="53.89" ry="18"/>
+<text text-anchor="middle" x="255" y="-398.3" font-family="Times-Roman" font-size="14.00">Functions</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_modules&#45;&gt;python_basics_python_0270_functions -->
+<g id="edge1" class="edge">
+<title>python_advanced_modules&#45;&gt;python_basics_python_0270_functions</title>
+<path fill="none" stroke="black" d="M540.74,-830.07C562.24,-822.17 584.24,-809.92 598,-791 624.27,-754.88 608,-735.67 608,-691 608,-691 608,-691 608,-545 608,-505.2 625.92,-484.37 598,-456 554,-411.29 379.54,-432.2 318,-420 313.38,-419.08 308.6,-418.02 303.84,-416.87"/>
+<polygon fill="black" stroke="black" points="304.68,-413.48 294.13,-414.44 302.97,-420.27 304.68,-413.48"/>
+</g>
+<!-- python_basics_python_0450_dictionaries -->
+<g id="node7" class="node">
+<title>python_basics_python_0450_dictionaries</title>
+<g id="a_node7"><a xlink:href="../../basics/python_0450_dictionaries/topic.html" xlink:title="More on Dictionaries">
+<ellipse fill="#dcdcdc" stroke="black" cx="443" cy="-690" rx="102.88" ry="18"/>
+<text text-anchor="middle" x="443" y="-686.3" font-family="Times-Roman" font-size="14.00">More on Dictionaries</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_oo&#45;&gt;python_basics_python_0450_dictionaries -->
+<g id="edge5" class="edge">
+<title>python_advanced_oo&#45;&gt;python_basics_python_0450_dictionaries</title>
+<path fill="none" stroke="black" d="M443,-754.82C443,-744.19 443,-730.31 443,-718.2"/>
+<polygon fill="black" stroke="black" points="446.5,-718.15 443,-708.15 439.5,-718.15 446.5,-718.15"/>
+</g>
+<!-- python_advanced_oo&#45;&gt;python_basics_python_0270_functions -->
+<g id="edge6" class="edge">
+<title>python_advanced_oo&#45;&gt;python_basics_python_0270_functions</title>
+<path fill="none" stroke="black" d="M335.12,-760.84C249.11,-745.27 143,-708.01 143,-619 143,-619 143,-619 143,-545 143,-504.46 138.96,-488.65 163,-456 174.71,-440.09 192.74,-428.22 209.74,-419.78"/>
+<polygon fill="black" stroke="black" points="211.45,-422.85 219.03,-415.45 208.49,-416.5 211.45,-422.85"/>
+</g>
+<!-- python_basics_python_0170_if -->
+<g id="node3" class="node">
+<title>python_basics_python_0170_if</title>
+<g id="a_node3"><a xlink:href="../../basics/python_0170_if/topic.html" xlink:title="The if Statement">
+<ellipse fill="#dcdcdc" stroke="black" cx="268" cy="-474" rx="85.59" ry="18"/>
+<text text-anchor="middle" x="268" y="-470.3" font-family="Times-Roman" font-size="14.00">The if Statement</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0160_boolean -->
+<g id="node6" class="node">
+<title>python_basics_python_0160_boolean</title>
+<g id="a_node6"><a xlink:href="../../basics/python_0160_boolean/topic.html" xlink:title="Boolean">
+<ellipse fill="#dcdcdc" stroke="black" cx="374" cy="-402" rx="46.59" ry="18"/>
+<text text-anchor="middle" x="374" y="-398.3" font-family="Times-Roman" font-size="14.00">Boolean</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0170_if&#45;&gt;python_basics_python_0160_boolean -->
+<g id="edge4" class="edge">
+<title>python_basics_python_0170_if&#45;&gt;python_basics_python_0160_boolean</title>
+<path fill="none" stroke="black" d="M292.85,-456.59C307.83,-446.7 327.02,-434.02 342.98,-423.48"/>
+<polygon fill="black" stroke="black" points="345.05,-426.31 351.47,-417.88 341.2,-420.47 345.05,-426.31"/>
+</g>
+<!-- python_basics_python_0120_helloworld -->
+<g id="node4" class="node">
+<title>python_basics_python_0120_helloworld</title>
+<g id="a_node4"><a xlink:href="../../basics/python_0120_helloworld/topic.html" xlink:title="Hello World">
+<ellipse fill="#dcdcdc" stroke="black" cx="374" cy="-114" rx="61.99" ry="18"/>
+<text text-anchor="middle" x="374" y="-110.3" font-family="Times-Roman" font-size="14.00">Hello World</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0110_blahblah -->
+<g id="node5" class="node">
+<title>python_basics_python_0110_blahblah</title>
+<g id="a_node5"><a xlink:href="../../basics/python_0110_blahblah/topic.html" xlink:title="Blahblah">
+<ellipse fill="#dcdcdc" stroke="black" cx="374" cy="-42" rx="50.09" ry="18"/>
+<text text-anchor="middle" x="374" y="-38.3" font-family="Times-Roman" font-size="14.00">Blahblah</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0120_helloworld&#45;&gt;python_basics_python_0110_blahblah -->
+<g id="edge7" class="edge">
+<title>python_basics_python_0120_helloworld&#45;&gt;python_basics_python_0110_blahblah</title>
+<path fill="none" stroke="black" d="M374,-95.7C374,-87.98 374,-78.71 374,-70.11"/>
+<polygon fill="black" stroke="black" points="377.5,-70.1 374,-60.1 370.5,-70.1 377.5,-70.1"/>
+</g>
+<!-- python_basics_python_0150_datatypes_overview -->
+<g id="node9" class="node">
+<title>python_basics_python_0150_datatypes_overview</title>
+<g id="a_node9"><a xlink:href="../../basics/python_0150_datatypes_overview/topic.html" xlink:title="Datatypes">
+<ellipse fill="#dcdcdc" stroke="black" cx="374" cy="-330" rx="56.59" ry="18"/>
+<text text-anchor="middle" x="374" y="-326.3" font-family="Times-Roman" font-size="14.00">Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0160_boolean&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge8" class="edge">
+<title>python_basics_python_0160_boolean&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M374,-383.7C374,-375.98 374,-366.71 374,-358.11"/>
+<polygon fill="black" stroke="black" points="377.5,-358.1 374,-348.1 370.5,-358.1 377.5,-358.1"/>
+</g>
+<!-- python_basics_python_0220_for -->
+<g id="node12" class="node">
+<title>python_basics_python_0220_for</title>
+<g id="a_node12"><a xlink:href="../../basics/python_0220_for/topic.html" xlink:title="for Loops">
+<ellipse fill="#dcdcdc" stroke="black" cx="429" cy="-618" rx="52.79" ry="18"/>
+<text text-anchor="middle" x="429" y="-614.3" font-family="Times-Roman" font-size="14.00">for Loops</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0220_for -->
+<g id="edge13" class="edge">
+<title>python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0220_for</title>
+<path fill="none" stroke="black" d="M439.54,-671.7C438,-663.98 436.14,-654.71 434.42,-646.11"/>
+<polygon fill="black" stroke="black" points="437.81,-645.22 432.42,-636.1 430.95,-646.6 437.81,-645.22"/>
+</g>
+<!-- python_basics_python_0150_datatypes_overview_compound -->
+<g id="node13" class="node">
+<title>python_basics_python_0150_datatypes_overview_compound</title>
+<g id="a_node13"><a xlink:href="../../basics/python_0150_datatypes_overview_compound/topic.html" xlink:title="Compound Datatypes">
+<ellipse fill="#dcdcdc" stroke="black" cx="480" cy="-474" rx="108.58" ry="18"/>
+<text text-anchor="middle" x="480" y="-470.3" font-family="Times-Roman" font-size="14.00">Compound Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0150_datatypes_overview_compound -->
+<g id="edge12" class="edge">
+<title>python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0150_datatypes_overview_compound</title>
+<path fill="none" stroke="black" d="M463.82,-672.22C488.96,-650.42 529.77,-609.7 545,-564 550.06,-548.82 551.86,-542.45 545,-528 539.18,-515.74 528.97,-505.38 518.35,-497.16"/>
+<polygon fill="black" stroke="black" points="520.38,-494.3 510.22,-491.3 516.28,-499.98 520.38,-494.3"/>
+</g>
+<!-- python_basics_python_0130_syntax_etc -->
+<g id="node11" class="node">
+<title>python_basics_python_0130_syntax_etc</title>
+<g id="a_node11"><a xlink:href="../../basics/python_0130_syntax_etc/topic.html" xlink:title="Syntax etc.">
+<ellipse fill="#dcdcdc" stroke="black" cx="374" cy="-186" rx="61.99" ry="18"/>
+<text text-anchor="middle" x="374" y="-182.3" font-family="Times-Roman" font-size="14.00">Syntax etc.</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0140_variables&#45;&gt;python_basics_python_0130_syntax_etc -->
+<g id="edge14" class="edge">
+<title>python_basics_python_0140_variables&#45;&gt;python_basics_python_0130_syntax_etc</title>
+<path fill="none" stroke="black" d="M374,-239.7C374,-231.98 374,-222.71 374,-214.11"/>
+<polygon fill="black" stroke="black" points="377.5,-214.1 374,-204.1 370.5,-214.1 377.5,-214.1"/>
+</g>
+<!-- python_basics_python_0150_datatypes_overview&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge15" class="edge">
+<title>python_basics_python_0150_datatypes_overview&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M374,-311.7C374,-303.98 374,-294.71 374,-286.11"/>
+<polygon fill="black" stroke="black" points="377.5,-286.1 374,-276.1 370.5,-286.1 377.5,-286.1"/>
+</g>
+<!-- python_basics_python_0193_while -->
+<g id="node10" class="node">
+<title>python_basics_python_0193_while</title>
+<g id="a_node10"><a xlink:href="../../basics/python_0193_while/topic.html" xlink:title="while Loops">
+<ellipse fill="#dcdcdc" stroke="black" cx="240" cy="-546" rx="63.89" ry="18"/>
+<text text-anchor="middle" x="240" y="-542.3" font-family="Times-Roman" font-size="14.00">while Loops</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0193_while&#45;&gt;python_basics_python_0170_if -->
+<g id="edge17" class="edge">
+<title>python_basics_python_0193_while&#45;&gt;python_basics_python_0170_if</title>
+<path fill="none" stroke="black" d="M246.78,-528.05C249.93,-520.18 253.75,-510.62 257.28,-501.79"/>
+<polygon fill="black" stroke="black" points="260.63,-502.86 261.09,-492.28 254.13,-500.26 260.63,-502.86"/>
+</g>
+<!-- python_basics_python_0193_while&#45;&gt;python_basics_python_0160_boolean -->
+<g id="edge16" class="edge">
+<title>python_basics_python_0193_while&#45;&gt;python_basics_python_0160_boolean</title>
+<path fill="none" stroke="black" d="M210.63,-530.03C196.47,-521.09 180.88,-508.29 173,-492 166.03,-477.6 163.14,-468.6 173,-456 213.91,-403.7 253.99,-437.65 318,-420 321.59,-419.01 325.3,-417.96 329.02,-416.87"/>
+<polygon fill="black" stroke="black" points="330.23,-420.17 338.83,-413.98 328.25,-413.45 330.23,-420.17"/>
+</g>
+<!-- python_basics_python_0130_syntax_etc&#45;&gt;python_basics_python_0120_helloworld -->
+<g id="edge19" class="edge">
+<title>python_basics_python_0130_syntax_etc&#45;&gt;python_basics_python_0120_helloworld</title>
+<path fill="none" stroke="black" d="M374,-167.7C374,-159.98 374,-150.71 374,-142.11"/>
+<polygon fill="black" stroke="black" points="377.5,-142.1 374,-132.1 370.5,-142.1 377.5,-142.1"/>
+</g>
+<!-- python_basics_python_0220_for&#45;&gt;python_basics_python_0193_while -->
+<g id="edge21" class="edge">
+<title>python_basics_python_0220_for&#45;&gt;python_basics_python_0193_while</title>
+<path fill="none" stroke="black" d="M394.33,-604.16C364.07,-592.95 319.9,-576.59 286.56,-564.25"/>
+<polygon fill="black" stroke="black" points="287.62,-560.91 277.03,-560.71 285.19,-567.47 287.62,-560.91"/>
+</g>
+<!-- python_basics_python_0200_sequential_types -->
+<g id="node14" class="node">
+<title>python_basics_python_0200_sequential_types</title>
+<g id="a_node14"><a xlink:href="../../basics/python_0200_sequential_types/topic.html" xlink:title="Sequential Datatypes">
+<ellipse fill="#dcdcdc" stroke="black" cx="429" cy="-546" rx="107.48" ry="18"/>
+<text text-anchor="middle" x="429" y="-542.3" font-family="Times-Roman" font-size="14.00">Sequential Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0220_for&#45;&gt;python_basics_python_0200_sequential_types -->
+<g id="edge20" class="edge">
+<title>python_basics_python_0220_for&#45;&gt;python_basics_python_0200_sequential_types</title>
+<path fill="none" stroke="black" d="M429,-599.7C429,-591.98 429,-582.71 429,-574.11"/>
+<polygon fill="black" stroke="black" points="432.5,-574.1 429,-564.1 425.5,-574.1 432.5,-574.1"/>
+</g>
+<!-- python_basics_python_0150_datatypes_overview_compound&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge22" class="edge">
+<title>python_basics_python_0150_datatypes_overview_compound&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M472.36,-456C463.56,-437.37 447.98,-407.06 430,-384 421.56,-373.17 410.89,-362.51 401.13,-353.62"/>
+<polygon fill="black" stroke="black" points="403.37,-350.93 393.57,-346.91 398.72,-356.16 403.37,-350.93"/>
+</g>
+<!-- python_basics_python_0200_sequential_types&#45;&gt;python_basics_python_0150_datatypes_overview_compound -->
+<g id="edge24" class="edge">
+<title>python_basics_python_0200_sequential_types&#45;&gt;python_basics_python_0150_datatypes_overview_compound</title>
+<path fill="none" stroke="black" d="M441.35,-528.05C447.39,-519.75 454.8,-509.58 461.51,-500.38"/>
+<polygon fill="black" stroke="black" points="464.35,-502.42 467.41,-492.28 458.7,-498.3 464.35,-502.42"/>
+</g>
+<!-- python_basics_python_0270_functions&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge25" class="edge">
+<title>python_basics_python_0270_functions&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M262.78,-384.09C271.94,-365.26 288.41,-334.53 308,-312 318.16,-300.31 331.15,-289.26 342.91,-280.31"/>
+<polygon fill="black" stroke="black" points="345.24,-282.94 351.19,-274.18 341.07,-277.31 345.24,-282.94"/>
+</g>
+<!-- python_basics_python_0270_functions&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge26" class="edge">
+<title>python_basics_python_0270_functions&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M280.53,-385.98C297.67,-375.9 320.46,-362.5 339.24,-351.44"/>
+<polygon fill="black" stroke="black" points="341.26,-354.32 348.1,-346.23 337.71,-348.29 341.26,-354.32"/>
+</g>
+<!-- python_misc_mqtt -->
+<g id="node16" class="node">
+<title>python_misc_mqtt</title>
+<ellipse fill="#dcdcdc" stroke="black" stroke-width="3" cx="700" cy="-928" rx="36.29" ry="18"/>
+<text text-anchor="middle" x="700" y="-924.3" font-family="Times-Roman" font-size="14.00">MQTT</text>
+</g>
+<!-- python_swdev_venv -->
+<g id="node18" class="node">
+<title>python_swdev_venv</title>
+<g id="a_node18"><a xlink:href="../../swdev/venv/topic.html" xlink:title="Virtual Environments">
+<ellipse fill="#dcdcdc" stroke="black" cx="179" cy="-1003" rx="105.08" ry="18"/>
+<text text-anchor="middle" x="179" y="-999.3" font-family="Times-Roman" font-size="14.00">Virtual Environments</text>
+</a>
+</g>
+</g>
+<!-- python_misc_mqtt&#45;&gt;python_swdev_venv -->
+<g id="edge9" class="edge">
+<title>python_misc_mqtt&#45;&gt;python_swdev_venv</title>
+<path fill="none" stroke="black" d="M689.59,-945.48C681.6,-956.54 669.5,-970.26 655,-977 623.14,-991.81 424.07,-997.97 293.67,-1000.44"/>
+<polygon fill="black" stroke="black" points="293.55,-996.94 283.62,-1000.63 293.68,-1003.94 293.55,-996.94"/>
+</g>
+<!-- python_misc_import -->
+<g id="node17" class="node">
+<title>python_misc_import</title>
+<g id="a_node17"><a xlink:href="../import.html" xlink:title="The import Statement (incomplete)">
+<ellipse fill="#dcdcdc" stroke="black" cx="477" cy="-928" rx="168.97" ry="18"/>
+<text text-anchor="middle" x="477" y="-924.3" font-family="Times-Roman" font-size="14.00">The import Statement (incomplete)</text>
+</a>
+</g>
+</g>
+<!-- python_misc_import&#45;&gt;python_advanced_modules -->
+<g id="edge23" class="edge">
+<title>python_misc_import&#45;&gt;python_advanced_modules</title>
+<path fill="none" stroke="black" d="M477,-909.82C477,-899.19 477,-885.31 477,-873.2"/>
+<polygon fill="black" stroke="black" points="480.5,-873.15 477,-863.15 473.5,-873.15 480.5,-873.15"/>
+</g>
+<!-- python_swdev_venv&#45;&gt;python_misc_import -->
+<g id="edge10" class="edge">
+<title>python_swdev_venv&#45;&gt;python_misc_import</title>
+<path fill="none" stroke="black" d="M243.8,-988.74C260.82,-985.1 279.13,-981.04 296,-977 333.84,-967.95 375.86,-956.87 409.88,-947.63"/>
+<polygon fill="black" stroke="black" points="410.98,-950.96 419.71,-944.96 409.14,-944.21 410.98,-950.96"/>
+</g>
+<!-- python_swdev_pip -->
+<g id="node19" class="node">
+<title>python_swdev_pip</title>
+<g id="a_node19"><a xlink:href="../../swdev/pip/topic.html" xlink:title="Python Package Index">
+<ellipse fill="#dcdcdc" stroke="black" cx="174" cy="-928" rx="109.68" ry="18"/>
+<text text-anchor="middle" x="174" y="-924.3" font-family="Times-Roman" font-size="14.00">Python Package Index</text>
+</a>
+</g>
+</g>
+<!-- python_swdev_venv&#45;&gt;python_swdev_pip -->
+<g id="edge11" class="edge">
+<title>python_swdev_venv&#45;&gt;python_swdev_pip</title>
+<path fill="none" stroke="black" d="M177.82,-984.7C177.24,-976.25 176.53,-965.87 175.87,-956.37"/>
+<polygon fill="black" stroke="black" points="179.35,-955.91 175.18,-946.18 172.37,-956.39 179.35,-955.91"/>
+</g>
+<!-- python_swdev_pip&#45;&gt;python_misc_import -->
+<g id="edge18" class="edge">
+<title>python_swdev_pip&#45;&gt;python_misc_import</title>
+<path fill="none" stroke="black" d="M284.07,-928C288.65,-928 293.22,-928 297.8,-928"/>
+<polygon fill="black" stroke="black" points="297.81,-931.5 307.81,-928 297.81,-924.5 297.81,-931.5"/>
+</g>
+</g>
+</svg>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2021 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/python/misc/mqtt/topic.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
