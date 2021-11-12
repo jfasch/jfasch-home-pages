@@ -547,8 +547,31 @@ sensor. There is an entire framework inside the kernel, <code class="docutils li
 cover such devices - no matter if they are Onewire or I2C (or …)
 devices, or if they are reachable via a CPU internal bus.</p>
 <p>As such - <em>a temperature sensor</em> - the device appears under an
-alternative location in <code class="docutils literal notranslate"><span class="pre">sysfs</span></code>,</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -l /sys/class/hwmon/hwmon3/
+alternative location under <code class="docutils literal notranslate"><span class="pre">/sysfs/class/hwmon/</span></code>, among other.</p>
+<p>Prior to loading the driver, on the Raspberry there are two such
+<code class="docutils literal notranslate"><span class="pre">hwmon</span></code> devices preinstalled; these apparently represent temperature
+sensors that are built-in to the CPU, and which are enabled as part of
+Linux’s Raspberry board support.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -l /sys/class/hwmon/
+<span class="go">total 0</span>
+<span class="go">lrwxrwxrwx 1 root root 0 Nov 12 07:14 hwmon0 -&gt; ../../devices/virtual/thermal/thermal_zone0/hwmon0</span>
+<span class="go">lrwxrwxrwx 1 root root 0 Nov 12 07:14 hwmon1 -&gt; ../../devices/platform/soc/soc:firmware/raspberrypi-hwmon/hwmon/hwmon1</span>
+</pre></div>
+</div>
+<p>After we load the driver (remember, the <code class="docutils literal notranslate"><span class="pre">echo</span> <span class="pre">lm73</span> <span class="pre">0x48</span> <span class="pre">&gt;</span> <span class="pre">...</span></code>
+above), another symlink appears in <code class="docutils literal notranslate"><span class="pre">/sys/class/hwmon/</span></code>.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -l /sys/class/hwmon/
+<span class="go">total 0</span>
+<span class="go">lrwxrwxrwx 1 root root 0 Nov 12 07:14 hwmon0 -&gt; ../../devices/virtual/thermal/thermal_zone0/hwmon0</span>
+<span class="go">lrwxrwxrwx 1 root root 0 Nov 12 07:14 hwmon1 -&gt; ../../devices/platform/soc/soc:firmware/raspberrypi-hwmon/hwmon/hwmon1</span>
+<span class="go">lrwxrwxrwx 1 root root 0 Nov 12 07:36 hwmon2 -&gt; ../../devices/platform/soc/fe804000.i2c/i2c-1/1-0048/hwmon/hwmon2</span>
+
+<span class="go">All these ``/sys/class/hwmon/hwmon*`` symlinks refer to directories</span>
+<span class="go">in a different location in ``sysfs`` where the fun stuff is. Lets</span>
+<span class="go">look at our sensor,</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -l /sys/class/hwmon/hwmon2/
 <span class="go">total 0</span>
 <span class="go">lrwxrwxrwx 1 root root    0 Oct  5 08:57 device -&gt; ../../../1-0048</span>
 <span class="go">-r--r--r-- 1 root root 4096 Oct  5 08:57 name</span>
@@ -565,20 +588,20 @@ alternative location in <code class="docutils literal notranslate"><span class="
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">temp1_input</span></code> is what contains information for us (the temperature
 in milli-celsius):</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cat /sys/class/hwmon/hwmon3/temp1_input
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cat /sys/class/hwmon/hwmon2/temp1_input
 <span class="go">22000</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li><p><strong>Question</strong>: how do I know that it’s my sensor in <code class="docutils literal notranslate"><span class="pre">hwmon3</span></code>?
-<code class="docutils literal notranslate"><span class="pre">hwmon3</span></code> seems like a randomly/sequentially chosen name, and I
+<li><p><strong>Question</strong>: how do I know that it’s my sensor in <code class="docutils literal notranslate"><span class="pre">hwmon2</span></code>?
+<code class="docutils literal notranslate"><span class="pre">hwmon2</span></code> seems like a randomly/sequentially chosen name, and I
 assume the order is not always the same across boots.</p></li>
 <li><p><strong>Answer</strong>: correct. You can identify your sensor, though, by
 looking at the <code class="docutils literal notranslate"><span class="pre">device</span></code> symlink,</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -l /sys/class/hwmon/hwmon3/device
-<span class="go">lrwxrwxrwx 1 root root 0 Oct  5 08:57 /sys/class/hwmon/hwmon3/device -&gt; ../../../1-0048</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -l /sys/class/hwmon/hwmon2/device
+<span class="go">lrwxrwxrwx 1 root root 0 Oct  5 08:57 /sys/class/hwmon/hwmon2/device -&gt; ../../../1-0048</span>
 </pre></div>
 </div>
 <p>Apparently, the nomenclature is <code class="docutils literal notranslate"><span class="pre">&lt;bus&gt;-&lt;address&gt;</span></code>.</p>
