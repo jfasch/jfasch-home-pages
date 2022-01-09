@@ -1,0 +1,631 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Exercise: Read CSV File, Write into Sqlite3 Database &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/python/exercises/csv/csv-db.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="C and C++ Programming" href="../../../../../repertoire/c-like/index.html" />
+    <link rel="prev" title="Exercise: Read CSV File" href="csv-module.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../basics/group.html">Python: The Language Fundamentals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../advanced/group.html">Python: More Language Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../swdev/group.html">Python: Project/Package Management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../misc/group.html">Python: Miscellaneous Topics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../link-collection.html">Python Links</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../graph.html">Python: All Material, Interrelated</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../group.html">Exercises</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../legacy/group.html">Exercises (Legacy)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../herdt/group.html">Exercises (External)</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="group.html">CSV and Databases</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="csv-module.html">Exercise: Read CSV File</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">Exercise: Read CSV File, Write into Sqlite3 Database</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../sysprog/group.html">Systems Programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../kernel/index.html">Linux Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../devenv/group.html">Linux: Development Environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="exercise-read-csv-file-write-into-sqlite3-database">
+<h1>Exercise: Read CSV File, Write into Sqlite3 Database<a class="headerlink" href="#exercise-read-csv-file-write-into-sqlite3-database" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#requirement" id="id1">Requirement</a></p></li>
+<li><p><a class="reference internal" href="#dependencies" id="id2">Dependencies</a></p></li>
+</ul>
+</div>
+<section id="requirement">
+<h2><a class="toc-backref" href="#id1">Requirement</a><a class="headerlink" href="#requirement" title="Permalink to this headline">¶</a></h2>
+<p>Based on the outcome from <a class="reference internal" href="csv-module.html"><span class="doc">Exercise: Read CSV File</span></a>, write two programs to
+manipulate a <a class="reference internal" href="../../misc/db/sqlite3.html"><span class="doc">Sqlite3 database</span></a>.</p>
+<ol class="arabic">
+<li><p>A program that creates a database schema. We need this as a
+separate program because we want to create the database once, and
+insert into it the contents of potentially many CSV files.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python create-schema.py /tmp/mydb.sqlite
+</pre></div>
+</div>
+</li>
+<li><p>Another program that inserts the contents of a CSV file into that
+database.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python stock-to-db.py stock.csv /tmp/mydb.sqlite
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="dependencies">
+<h2><a class="toc-backref" href="#id2">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<svg 
+ viewBox="0.00 0.00 744.57 1229.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1225)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-1225 740.57,-1225 740.57,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_python</title>
+<path fill="none" stroke="black" d="M20,-8C20,-8 704,-8 704,-8 710,-8 716,-14 716,-20 716,-20 716,-1201 716,-1201 716,-1207 710,-1213 704,-1213 704,-1213 20,-1213 20,-1213 14,-1213 8,-1207 8,-1201 8,-1201 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="362" y="-1197.8" font-family="Times-Roman" font-size="14.00">Python Programming: From Absolute Beginner to Advanced Productivity</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_python_basics</title>
+<path fill="none" stroke="black" d="M224,-16C224,-16 644,-16 644,-16 650,-16 656,-22 656,-28 656,-28 656,-727 656,-727 656,-733 650,-739 644,-739 644,-739 224,-739 224,-739 218,-739 212,-733 212,-727 212,-727 212,-28 212,-28 212,-22 218,-16 224,-16"/>
+<text text-anchor="middle" x="434" y="-723.8" font-family="Times-Roman" font-size="14.00">Python: The Language Fundamentals</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_python_db</title>
+<path fill="none" stroke="black" d="M424,-913C424,-913 582,-913 582,-913 588,-913 594,-919 594,-925 594,-925 594,-1048 594,-1048 594,-1054 588,-1060 582,-1060 582,-1060 424,-1060 424,-1060 418,-1060 412,-1054 412,-1048 412,-1048 412,-925 412,-925 412,-919 418,-913 424,-913"/>
+<text text-anchor="middle" x="503" y="-1044.8" font-family="Times-Roman" font-size="14.00">Databases</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_python_exercises</title>
+<path fill="none" stroke="black" d="M182,-1068C182,-1068 696,-1068 696,-1068 702,-1068 708,-1074 708,-1080 708,-1080 708,-1170 708,-1170 708,-1176 702,-1182 696,-1182 696,-1182 182,-1182 182,-1182 176,-1182 170,-1176 170,-1170 170,-1170 170,-1080 170,-1080 170,-1074 176,-1068 182,-1068"/>
+<text text-anchor="middle" x="439" y="-1166.8" font-family="Times-Roman" font-size="14.00">Exercises</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_python_exercises_csv</title>
+<path fill="none" stroke="black" d="M190,-1076C190,-1076 688,-1076 688,-1076 694,-1076 700,-1082 700,-1088 700,-1088 700,-1139 700,-1139 700,-1145 694,-1151 688,-1151 688,-1151 190,-1151 190,-1151 184,-1151 178,-1145 178,-1139 178,-1139 178,-1088 178,-1088 178,-1082 184,-1076 190,-1076"/>
+<text text-anchor="middle" x="439" y="-1135.8" font-family="Times-Roman" font-size="14.00">CSV and Databases</text>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_python_advanced</title>
+<path fill="none" stroke="black" d="M28,-747C28,-747 684,-747 684,-747 690,-747 696,-753 696,-759 696,-759 696,-893 696,-893 696,-899 690,-905 684,-905 684,-905 28,-905 28,-905 22,-905 16,-899 16,-893 16,-893 16,-759 16,-759 16,-753 22,-747 28,-747"/>
+<text text-anchor="middle" x="356" y="-889.8" font-family="Times-Roman" font-size="14.00">Python: More Language Features</text>
+</g>
+<g id="clust7" class="cluster">
+<title>cluster_python_advanced_oo</title>
+<path fill="none" stroke="black" d="M380,-755C380,-755 664,-755 664,-755 670,-755 676,-761 676,-767 676,-767 676,-818 676,-818 676,-824 670,-830 664,-830 664,-830 380,-830 380,-830 374,-830 368,-824 368,-818 368,-818 368,-767 368,-767 368,-761 374,-755 380,-755"/>
+<text text-anchor="middle" x="522" y="-814.8" font-family="Times-Roman" font-size="14.00">Object Oriented Programming</text>
+</g>
+<!-- python_basics_python_0150_datatypes_overview_compound -->
+<g id="node1" class="node">
+<title>python_basics_python_0150_datatypes_overview_compound</title>
+<g id="a_node1"><a xlink:href="../../basics/python_0150_datatypes_overview_compound/topic.html" xlink:title="Compound Datatypes">
+<ellipse fill="#dcdcdc" stroke="black" cx="329" cy="-474" rx="108.58" ry="18"/>
+<text text-anchor="middle" x="329" y="-470.3" font-family="Times-Roman" font-size="14.00">Compound Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0150_datatypes_overview -->
+<g id="node6" class="node">
+<title>python_basics_python_0150_datatypes_overview</title>
+<g id="a_node6"><a xlink:href="../../basics/python_0150_datatypes_overview/topic.html" xlink:title="Datatypes">
+<ellipse fill="#dcdcdc" stroke="black" cx="457" cy="-330" rx="56.59" ry="18"/>
+<text text-anchor="middle" x="457" y="-326.3" font-family="Times-Roman" font-size="14.00">Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0150_datatypes_overview_compound&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge1" class="edge">
+<title>python_basics_python_0150_datatypes_overview_compound&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M341.64,-456.05C355.54,-437.72 378.86,-407.93 401,-384 410.47,-373.77 421.5,-363.09 431.26,-354.02"/>
+<polygon fill="black" stroke="black" points="433.76,-356.47 438.76,-347.13 429.03,-351.32 433.76,-356.47"/>
+</g>
+<!-- python_basics_python_0140_variables -->
+<g id="node2" class="node">
+<title>python_basics_python_0140_variables</title>
+<g id="a_node2"><a xlink:href="../../basics/python_0140_variables/topic.html" xlink:title="Variables">
+<ellipse fill="#dcdcdc" stroke="black" cx="457" cy="-258" rx="51.99" ry="18"/>
+<text text-anchor="middle" x="457" y="-254.3" font-family="Times-Roman" font-size="14.00">Variables</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0130_syntax_etc -->
+<g id="node8" class="node">
+<title>python_basics_python_0130_syntax_etc</title>
+<g id="a_node8"><a xlink:href="../../basics/python_0130_syntax_etc/topic.html" xlink:title="Syntax etc.">
+<ellipse fill="#dcdcdc" stroke="black" cx="457" cy="-186" rx="61.99" ry="18"/>
+<text text-anchor="middle" x="457" y="-182.3" font-family="Times-Roman" font-size="14.00">Syntax etc.</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0140_variables&#45;&gt;python_basics_python_0130_syntax_etc -->
+<g id="edge5" class="edge">
+<title>python_basics_python_0140_variables&#45;&gt;python_basics_python_0130_syntax_etc</title>
+<path fill="none" stroke="black" d="M457,-239.7C457,-231.98 457,-222.71 457,-214.11"/>
+<polygon fill="black" stroke="black" points="460.5,-214.1 457,-204.1 453.5,-214.1 460.5,-214.1"/>
+</g>
+<!-- python_basics_python_0170_if -->
+<g id="node3" class="node">
+<title>python_basics_python_0170_if</title>
+<g id="a_node3"><a xlink:href="../../basics/python_0170_if/topic.html" xlink:title="The if Statement">
+<ellipse fill="#dcdcdc" stroke="black" cx="562" cy="-474" rx="85.59" ry="18"/>
+<text text-anchor="middle" x="562" y="-470.3" font-family="Times-Roman" font-size="14.00">The if Statement</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0160_boolean -->
+<g id="node12" class="node">
+<title>python_basics_python_0160_boolean</title>
+<g id="a_node12"><a xlink:href="../../basics/python_0160_boolean/topic.html" xlink:title="Boolean">
+<ellipse fill="#dcdcdc" stroke="black" cx="457" cy="-402" rx="46.59" ry="18"/>
+<text text-anchor="middle" x="457" y="-398.3" font-family="Times-Roman" font-size="14.00">Boolean</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0170_if&#45;&gt;python_basics_python_0160_boolean -->
+<g id="edge6" class="edge">
+<title>python_basics_python_0170_if&#45;&gt;python_basics_python_0160_boolean</title>
+<path fill="none" stroke="black" d="M537.38,-456.59C522.55,-446.7 503.54,-434.02 487.72,-423.48"/>
+<polygon fill="black" stroke="black" points="489.58,-420.51 479.32,-417.88 485.7,-426.34 489.58,-420.51"/>
+</g>
+<!-- python_basics_python_0110_blahblah -->
+<g id="node4" class="node">
+<title>python_basics_python_0110_blahblah</title>
+<g id="a_node4"><a xlink:href="../../basics/python_0110_blahblah/topic.html" xlink:title="Blahblah">
+<ellipse fill="#dcdcdc" stroke="black" cx="457" cy="-42" rx="50.09" ry="18"/>
+<text text-anchor="middle" x="457" y="-38.3" font-family="Times-Roman" font-size="14.00">Blahblah</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0225_range -->
+<g id="node5" class="node">
+<title>python_basics_python_0225_range</title>
+<g id="a_node5"><a xlink:href="../../basics/python_0225_range/topic.html" xlink:title="The range Function">
+<ellipse fill="#dcdcdc" stroke="black" cx="326" cy="-690" rx="98.28" ry="18"/>
+<text text-anchor="middle" x="326" y="-686.3" font-family="Times-Roman" font-size="14.00">The range Function</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0220_for -->
+<g id="node11" class="node">
+<title>python_basics_python_0220_for</title>
+<g id="a_node11"><a xlink:href="../../basics/python_0220_for/topic.html" xlink:title="for Loops">
+<ellipse fill="#dcdcdc" stroke="black" cx="398" cy="-618" rx="52.79" ry="18"/>
+<text text-anchor="middle" x="398" y="-614.3" font-family="Times-Roman" font-size="14.00">for Loops</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0225_range&#45;&gt;python_basics_python_0220_for -->
+<g id="edge10" class="edge">
+<title>python_basics_python_0225_range&#45;&gt;python_basics_python_0220_for</title>
+<path fill="none" stroke="black" d="M343.43,-672.05C352.58,-663.16 363.94,-652.11 373.92,-642.41"/>
+<polygon fill="black" stroke="black" points="376.5,-644.79 381.23,-635.31 371.62,-639.77 376.5,-644.79"/>
+</g>
+<!-- python_basics_python_0200_sequential_types -->
+<g id="node13" class="node">
+<title>python_basics_python_0200_sequential_types</title>
+<g id="a_node13"><a xlink:href="../../basics/python_0200_sequential_types/topic.html" xlink:title="Sequential Datatypes">
+<ellipse fill="#dcdcdc" stroke="black" cx="328" cy="-546" rx="107.48" ry="18"/>
+<text text-anchor="middle" x="328" y="-542.3" font-family="Times-Roman" font-size="14.00">Sequential Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0225_range&#45;&gt;python_basics_python_0200_sequential_types -->
+<g id="edge9" class="edge">
+<title>python_basics_python_0225_range&#45;&gt;python_basics_python_0200_sequential_types</title>
+<path fill="none" stroke="black" d="M326.24,-671.87C326.58,-647.67 327.21,-603.21 327.61,-574.39"/>
+<polygon fill="black" stroke="black" points="331.12,-574.24 327.76,-564.19 324.12,-574.14 331.12,-574.24"/>
+</g>
+<!-- python_basics_python_0150_datatypes_overview&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge11" class="edge">
+<title>python_basics_python_0150_datatypes_overview&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M457,-311.7C457,-303.98 457,-294.71 457,-286.11"/>
+<polygon fill="black" stroke="black" points="460.5,-286.1 457,-276.1 453.5,-286.1 460.5,-286.1"/>
+</g>
+<!-- python_basics_python_0193_while -->
+<g id="node7" class="node">
+<title>python_basics_python_0193_while</title>
+<g id="a_node7"><a xlink:href="../../basics/python_0193_while/topic.html" xlink:title="while Loops">
+<ellipse fill="#dcdcdc" stroke="black" cx="553" cy="-546" rx="63.89" ry="18"/>
+<text text-anchor="middle" x="553" y="-542.3" font-family="Times-Roman" font-size="14.00">while Loops</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0193_while&#45;&gt;python_basics_python_0170_if -->
+<g id="edge13" class="edge">
+<title>python_basics_python_0193_while&#45;&gt;python_basics_python_0170_if</title>
+<path fill="none" stroke="black" d="M555.22,-527.7C556.22,-519.98 557.41,-510.71 558.51,-502.11"/>
+<polygon fill="black" stroke="black" points="562,-502.47 559.8,-492.1 555.05,-501.58 562,-502.47"/>
+</g>
+<!-- python_basics_python_0193_while&#45;&gt;python_basics_python_0160_boolean -->
+<g id="edge12" class="edge">
+<title>python_basics_python_0193_while&#45;&gt;python_basics_python_0160_boolean</title>
+<path fill="none" stroke="black" d="M515.96,-531.28C498.2,-522.74 478.37,-509.92 467,-492 455.39,-473.69 453.46,-448.93 454.11,-430.17"/>
+<polygon fill="black" stroke="black" points="457.6,-430.38 454.71,-420.18 450.62,-429.95 457.6,-430.38"/>
+</g>
+<!-- python_basics_python_0120_helloworld -->
+<g id="node9" class="node">
+<title>python_basics_python_0120_helloworld</title>
+<g id="a_node9"><a xlink:href="../../basics/python_0120_helloworld/topic.html" xlink:title="Hello World">
+<ellipse fill="#dcdcdc" stroke="black" cx="457" cy="-114" rx="61.99" ry="18"/>
+<text text-anchor="middle" x="457" y="-110.3" font-family="Times-Roman" font-size="14.00">Hello World</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0130_syntax_etc&#45;&gt;python_basics_python_0120_helloworld -->
+<g id="edge21" class="edge">
+<title>python_basics_python_0130_syntax_etc&#45;&gt;python_basics_python_0120_helloworld</title>
+<path fill="none" stroke="black" d="M457,-167.7C457,-159.98 457,-150.71 457,-142.11"/>
+<polygon fill="black" stroke="black" points="460.5,-142.1 457,-132.1 453.5,-142.1 460.5,-142.1"/>
+</g>
+<!-- python_basics_python_0120_helloworld&#45;&gt;python_basics_python_0110_blahblah -->
+<g id="edge22" class="edge">
+<title>python_basics_python_0120_helloworld&#45;&gt;python_basics_python_0110_blahblah</title>
+<path fill="none" stroke="black" d="M457,-95.7C457,-87.98 457,-78.71 457,-70.11"/>
+<polygon fill="black" stroke="black" points="460.5,-70.1 457,-60.1 453.5,-70.1 460.5,-70.1"/>
+</g>
+<!-- python_basics_python_0270_functions -->
+<g id="node10" class="node">
+<title>python_basics_python_0270_functions</title>
+<g id="a_node10"><a xlink:href="../../basics/python_0270_functions/topic.html" xlink:title="Functions">
+<ellipse fill="#dcdcdc" stroke="black" cx="576" cy="-402" rx="53.89" ry="18"/>
+<text text-anchor="middle" x="576" y="-398.3" font-family="Times-Roman" font-size="14.00">Functions</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0270_functions&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge23" class="edge">
+<title>python_basics_python_0270_functions&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M568.22,-384.09C559.06,-365.26 542.59,-334.53 523,-312 512.84,-300.31 499.85,-289.26 488.09,-280.31"/>
+<polygon fill="black" stroke="black" points="489.93,-277.31 479.81,-274.18 485.76,-282.94 489.93,-277.31"/>
+</g>
+<!-- python_basics_python_0270_functions&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge24" class="edge">
+<title>python_basics_python_0270_functions&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M550.47,-385.98C533.33,-375.9 510.54,-362.5 491.76,-351.44"/>
+<polygon fill="black" stroke="black" points="493.29,-348.29 482.9,-346.23 489.74,-354.32 493.29,-348.29"/>
+</g>
+<!-- python_basics_python_0220_for&#45;&gt;python_basics_python_0193_while -->
+<g id="edge26" class="edge">
+<title>python_basics_python_0220_for&#45;&gt;python_basics_python_0193_while</title>
+<path fill="none" stroke="black" d="M428.62,-603.17C452.27,-592.49 485.26,-577.59 511.31,-565.83"/>
+<polygon fill="black" stroke="black" points="512.9,-568.95 520.57,-561.65 510.02,-562.57 512.9,-568.95"/>
+</g>
+<!-- python_basics_python_0220_for&#45;&gt;python_basics_python_0200_sequential_types -->
+<g id="edge25" class="edge">
+<title>python_basics_python_0220_for&#45;&gt;python_basics_python_0200_sequential_types</title>
+<path fill="none" stroke="black" d="M381.76,-600.76C373.01,-592.01 362.03,-581.03 352.28,-571.28"/>
+<polygon fill="black" stroke="black" points="354.67,-568.72 345.12,-564.12 349.72,-573.67 354.67,-568.72"/>
+</g>
+<!-- python_basics_python_0160_boolean&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge29" class="edge">
+<title>python_basics_python_0160_boolean&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M457,-383.7C457,-375.98 457,-366.71 457,-358.11"/>
+<polygon fill="black" stroke="black" points="460.5,-358.1 457,-348.1 453.5,-358.1 460.5,-358.1"/>
+</g>
+<!-- python_basics_python_0200_sequential_types&#45;&gt;python_basics_python_0150_datatypes_overview_compound -->
+<g id="edge30" class="edge">
+<title>python_basics_python_0200_sequential_types&#45;&gt;python_basics_python_0150_datatypes_overview_compound</title>
+<path fill="none" stroke="black" d="M328.25,-527.7C328.36,-519.98 328.49,-510.71 328.61,-502.11"/>
+<polygon fill="black" stroke="black" points="332.11,-502.15 328.76,-492.1 325.11,-502.05 332.11,-502.15"/>
+</g>
+<!-- python_basics_python_0450_dictionaries -->
+<g id="node14" class="node">
+<title>python_basics_python_0450_dictionaries</title>
+<g id="a_node14"><a xlink:href="../../basics/python_0450_dictionaries/topic.html" xlink:title="More on Dictionaries">
+<ellipse fill="#dcdcdc" stroke="black" cx="545" cy="-690" rx="102.88" ry="18"/>
+<text text-anchor="middle" x="545" y="-686.3" font-family="Times-Roman" font-size="14.00">More on Dictionaries</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0150_datatypes_overview_compound -->
+<g id="edge32" class="edge">
+<title>python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0150_datatypes_overview_compound</title>
+<path fill="none" stroke="black" d="M538.14,-671.69C524.6,-639.48 491.58,-569.83 444,-528 427.61,-513.59 406.64,-502.39 387.11,-494.07"/>
+<polygon fill="black" stroke="black" points="388.25,-490.76 377.66,-490.22 385.6,-497.24 388.25,-490.76"/>
+</g>
+<!-- python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0220_for -->
+<g id="edge33" class="edge">
+<title>python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0220_for</title>
+<path fill="none" stroke="black" d="M511.28,-672.94C489.07,-662.37 459.94,-648.5 436.78,-637.47"/>
+<polygon fill="black" stroke="black" points="438.12,-634.23 427.59,-633.09 435.11,-640.55 438.12,-634.23"/>
+</g>
+<!-- python_db_dbapi2 -->
+<g id="node15" class="node">
+<title>python_db_dbapi2</title>
+<g id="a_node15"><a xlink:href="../../misc/db/dbapi2.html" xlink:title="DBAPI 2">
+<ellipse fill="#dcdcdc" stroke="black" cx="521" cy="-939" rx="47.39" ry="18"/>
+<text text-anchor="middle" x="521" y="-935.3" font-family="Times-Roman" font-size="14.00">DBAPI 2</text>
+</a>
+</g>
+</g>
+<!-- python_db_dbapi2&#45;&gt;python_basics_python_0220_for -->
+<g id="edge3" class="edge">
+<title>python_db_dbapi2&#45;&gt;python_basics_python_0220_for</title>
+<path fill="none" stroke="black" d="M568.18,-935.94C615.46,-932.76 683.52,-924.79 700,-905 767.37,-824.07 734.94,-742.81 657,-672 628.45,-646.06 525.69,-631.33 458.51,-624.28"/>
+<polygon fill="black" stroke="black" points="458.77,-620.78 448.46,-623.25 458.06,-627.75 458.77,-620.78"/>
+</g>
+<!-- python_advanced_modules -->
+<g id="node18" class="node">
+<title>python_advanced_modules</title>
+<g id="a_node18"><a xlink:href="../../advanced/modules.html" xlink:title="Modules and Packages">
+<ellipse fill="#dcdcdc" stroke="black" cx="576" cy="-856" rx="112.38" ry="18"/>
+<text text-anchor="middle" x="576" y="-852.3" font-family="Times-Roman" font-size="14.00">Modules and Packages</text>
+</a>
+</g>
+</g>
+<!-- python_db_dbapi2&#45;&gt;python_advanced_modules -->
+<g id="edge2" class="edge">
+<title>python_db_dbapi2&#45;&gt;python_advanced_modules</title>
+<path fill="none" stroke="black" d="M532.4,-921.22C540.01,-910 550.18,-895.03 558.78,-882.36"/>
+<polygon fill="black" stroke="black" points="561.71,-884.28 564.43,-874.04 555.92,-880.35 561.71,-884.28"/>
+</g>
+<!-- python_advanced_python_1010_generators_yield -->
+<g id="node19" class="node">
+<title>python_advanced_python_1010_generators_yield</title>
+<g id="a_node19"><a xlink:href="../../advanced/iteration-generation/python_1010_generators_yield/topic.html" xlink:title="Iteration, and Generators: the yield Keyword">
+<ellipse fill="#dcdcdc" stroke="black" cx="235" cy="-856" rx="210.66" ry="18"/>
+<text text-anchor="middle" x="235" y="-852.3" font-family="Times-Roman" font-size="14.00">Iteration, and Generators: the yield Keyword</text>
+</a>
+</g>
+</g>
+<!-- python_db_dbapi2&#45;&gt;python_advanced_python_1010_generators_yield -->
+<g id="edge4" class="edge">
+<title>python_db_dbapi2&#45;&gt;python_advanced_python_1010_generators_yield</title>
+<path fill="none" stroke="black" d="M484.2,-927.58C438.34,-914.59 359.12,-892.15 302.3,-876.06"/>
+<polygon fill="black" stroke="black" points="303.25,-872.69 292.68,-873.34 301.35,-879.43 303.25,-872.69"/>
+</g>
+<!-- python_db_sqlite3 -->
+<g id="node16" class="node">
+<title>python_db_sqlite3</title>
+<g id="a_node16"><a xlink:href="../../misc/db/sqlite3.html" xlink:title="DBAPI 2: sqlite3">
+<ellipse fill="#dcdcdc" stroke="black" cx="503" cy="-1011" rx="83.39" ry="18"/>
+<text text-anchor="middle" x="503" y="-1007.3" font-family="Times-Roman" font-size="14.00">DBAPI 2: sqlite3</text>
+</a>
+</g>
+</g>
+<!-- python_db_sqlite3&#45;&gt;python_db_dbapi2 -->
+<g id="edge31" class="edge">
+<title>python_db_sqlite3&#45;&gt;python_db_dbapi2</title>
+<path fill="none" stroke="black" d="M507.45,-992.7C509.45,-984.9 511.87,-975.51 514.1,-966.83"/>
+<polygon fill="black" stroke="black" points="517.5,-967.66 516.6,-957.1 510.72,-965.92 517.5,-967.66"/>
+</g>
+<!-- python_exercises_csv_csv_db -->
+<g id="node17" class="node">
+<title>python_exercises_csv_csv_db</title>
+<ellipse fill="red" stroke="black" stroke-width="3" cx="430" cy="-1102" rx="244.26" ry="18"/>
+<text text-anchor="middle" x="430" y="-1098.3" font-family="Times-Roman" font-size="14.00">Exercise: Read CSV File, Write into Sqlite3 Database</text>
+</g>
+<!-- python_exercises_csv_csv_db&#45;&gt;python_db_sqlite3 -->
+<g id="edge8" class="edge">
+<title>python_exercises_csv_csv_db&#45;&gt;python_db_sqlite3</title>
+<path fill="none" stroke="black" d="M444.08,-1083.84C455.05,-1070.46 470.45,-1051.69 482.75,-1036.69"/>
+<polygon fill="black" stroke="black" points="485.58,-1038.76 489.22,-1028.81 480.17,-1034.32 485.58,-1038.76"/>
+</g>
+<!-- python_exercises_csv_csv_db&#45;&gt;python_exercises_csv_csv_db -->
+<g id="edge7" class="edge">
+<title>python_exercises_csv_csv_db&#45;&gt;python_exercises_csv_csv_db</title>
+<path fill="none" stroke="black" d="M549.41,-1117.72C622.76,-1121.43 692.38,-1116.19 692.38,-1102 692.38,-1088.47 629.14,-1083.08 559.69,-1085.82"/>
+<polygon fill="black" stroke="black" points="559.24,-1082.33 549.41,-1086.28 559.56,-1089.33 559.24,-1082.33"/>
+</g>
+<!-- python_advanced_modules&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge15" class="edge">
+<title>python_advanced_modules&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M496.34,-843.21C482.57,-841.34 468.38,-839.53 455,-838 305.09,-820.89 149,-841.88 149,-691 149,-691 149,-691 149,-401 149,-293.7 305.06,-267.21 395.01,-260.85"/>
+<polygon fill="black" stroke="black" points="395.35,-264.33 405.1,-260.2 394.9,-257.35 395.35,-264.33"/>
+</g>
+<!-- python_advanced_modules&#45;&gt;python_basics_python_0270_functions -->
+<g id="edge14" class="edge">
+<title>python_advanced_modules&#45;&gt;python_basics_python_0270_functions</title>
+<path fill="none" stroke="black" d="M653.08,-842.86C665.5,-839.43 675.7,-835.18 680,-830 719.5,-782.4 687,-752.86 687,-691 687,-691 687,-691 687,-545 687,-504.64 692.65,-488.7 669,-456 657.42,-439.99 639.42,-428.14 622.33,-419.75"/>
+<polygon fill="black" stroke="black" points="623.52,-416.45 612.97,-415.44 620.59,-422.8 623.52,-416.45"/>
+</g>
+<!-- python_advanced_oo_basics -->
+<g id="node20" class="node">
+<title>python_advanced_oo_basics</title>
+<g id="a_node20"><a xlink:href="../../advanced/oo/basics.html" xlink:title="Object Oriented Programming">
+<ellipse fill="#dcdcdc" stroke="black" cx="522" cy="-781" rx="146.47" ry="18"/>
+<text text-anchor="middle" x="522" y="-777.3" font-family="Times-Roman" font-size="14.00">Object Oriented Programming</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_modules&#45;&gt;python_advanced_oo_basics -->
+<g id="edge16" class="edge">
+<title>python_advanced_modules&#45;&gt;python_advanced_oo_basics</title>
+<path fill="none" stroke="black" d="M563.48,-838.07C556.71,-828.92 548.22,-817.45 540.69,-807.26"/>
+<polygon fill="black" stroke="black" points="543.4,-805.05 534.64,-799.09 537.78,-809.21 543.4,-805.05"/>
+</g>
+<!-- python_advanced_python_1010_generators_yield&#45;&gt;python_basics_python_0225_range -->
+<g id="edge19" class="edge">
+<title>python_advanced_python_1010_generators_yield&#45;&gt;python_basics_python_0225_range</title>
+<path fill="none" stroke="black" d="M244.57,-837.76C260.58,-808.89 292.91,-750.63 311.66,-716.85"/>
+<polygon fill="black" stroke="black" points="314.77,-718.45 316.56,-708.01 308.65,-715.06 314.77,-718.45"/>
+</g>
+<!-- python_advanced_python_1010_generators_yield&#45;&gt;python_basics_python_0270_functions -->
+<g id="edge20" class="edge">
+<title>python_advanced_python_1010_generators_yield&#45;&gt;python_basics_python_0270_functions</title>
+<path fill="none" stroke="black" d="M181.96,-838.41C178.94,-835.98 176.23,-833.19 174,-830 138.64,-779.29 169,-752.82 169,-691 169,-691 169,-691 169,-545 169,-501.26 175.51,-481.57 211,-456 265.84,-416.5 446.64,-432.84 513,-420 517.62,-419.11 522.41,-418.05 527.17,-416.92"/>
+<polygon fill="black" stroke="black" points="528.03,-420.31 536.89,-414.5 526.34,-413.52 528.03,-420.31"/>
+</g>
+<!-- python_advanced_python_1010_generators_yield&#45;&gt;python_basics_python_0220_for -->
+<g id="edge17" class="edge">
+<title>python_advanced_python_1010_generators_yield&#45;&gt;python_basics_python_0220_for</title>
+<path fill="none" stroke="black" d="M226.61,-837.81C210.85,-802.75 181.6,-722.08 219,-672 233.77,-652.22 294.34,-637.22 340.97,-628.31"/>
+<polygon fill="black" stroke="black" points="341.8,-631.71 350.99,-626.44 340.52,-624.83 341.8,-631.71"/>
+</g>
+<!-- python_advanced_python_1010_generators_yield&#45;&gt;python_basics_python_0200_sequential_types -->
+<g id="edge18" class="edge">
+<title>python_advanced_python_1010_generators_yield&#45;&gt;python_basics_python_0200_sequential_types</title>
+<path fill="none" stroke="black" d="M204.23,-838.14C201.77,-835.71 199.62,-833 198,-830 164.72,-768.16 169.37,-736.56 197,-672 216.11,-627.36 259.86,-591.08 291.55,-569.32"/>
+<polygon fill="black" stroke="black" points="293.77,-572.04 300.14,-563.58 289.88,-566.23 293.77,-572.04"/>
+</g>
+<!-- python_advanced_oo_basics&#45;&gt;python_basics_python_0270_functions -->
+<g id="edge28" class="edge">
+<title>python_advanced_oo_basics&#45;&gt;python_basics_python_0270_functions</title>
+<path fill="none" stroke="black" d="M616.55,-767.1C632.1,-760.92 646.53,-751.96 657,-739 690.63,-697.37 667,-672.52 667,-619 667,-619 667,-619 667,-545 667,-505.2 677.86,-489.9 657,-456 647.88,-441.18 632.9,-429.68 618.27,-421.24"/>
+<polygon fill="black" stroke="black" points="619.74,-418.05 609.28,-416.38 616.41,-424.21 619.74,-418.05"/>
+</g>
+<!-- python_advanced_oo_basics&#45;&gt;python_basics_python_0450_dictionaries -->
+<g id="edge27" class="edge">
+<title>python_advanced_oo_basics&#45;&gt;python_basics_python_0450_dictionaries</title>
+<path fill="none" stroke="black" d="M526.43,-762.84C529.71,-750.16 534.24,-732.64 538,-718.08"/>
+<polygon fill="black" stroke="black" points="541.47,-718.67 540.58,-708.11 534.69,-716.91 541.47,-718.67"/>
+</g>
+</g>
+</svg>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2021 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/python/exercises/csv/csv-db.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

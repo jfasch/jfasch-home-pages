@@ -1,0 +1,869 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<meta content="Python advanced: language internals" name="description" />
+<meta content="schulung, training, raspberry, programming, python, object oriented, oo, class, exception, closure, decorator, starargs, args, positional, kwargs, keyword arguments, starstarargs, iterator, for loop, iterator protocol, operator, operator overloading, exec" name="keywords" />
+
+    <title>Python: More Language Features &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/python/advanced/group.html" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="Iterating Intelligently: Generators, and the Iterator Protocol" href="iteration-generation/topic.html" />
+    <link rel="prev" title="Function Objects" href="../basics/python_1000_function_objects/topic.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../index.html">
+    <img class="logo" src="../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../basics/group.html">Python: The Language Fundamentals</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Python: More Language Features</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="iteration-generation/topic.html">Iterating Intelligently: Generators, and the Iterator Protocol</a></li>
+<li class="toctree-l5"><a class="reference internal" href="starargs/topic.html">Positional and Keyword Arguments</a></li>
+<li class="toctree-l5"><a class="reference internal" href="closures/topic.html">Closures</a></li>
+<li class="toctree-l5"><a class="reference internal" href="decorators/topic.html">Decorators</a></li>
+<li class="toctree-l5"><a class="reference internal" href="exec/topic.html">The <code class="docutils literal notranslate"><span class="pre">exec()</span></code> Function</a></li>
+<li class="toctree-l5"><a class="reference internal" href="oo/group.html">Object Oriented Programming</a></li>
+<li class="toctree-l5"><a class="reference internal" href="exceptions.html">Exception Handling</a></li>
+<li class="toctree-l5"><a class="reference internal" href="modules.html">Modules and Packages</a></li>
+<li class="toctree-l5"><a class="reference internal" href="multithreading/group.html">Multithreading</a></li>
+<li class="toctree-l5"><a class="reference internal" href="multiprocessing/group.html">Multiprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../swdev/group.html">Python: Project/Package Management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../misc/group.html">Python: Miscellaneous Topics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../link-collection.html">Python Links</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../graph.html">Python: All Material, Interrelated</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../exercises/group.html">Exercises</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx/group.html">C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../sysprog/group.html">Systems Programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../kernel/index.html">Linux Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../devenv/group.html">Linux: Development Environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="python-more-language-features">
+<h1>Python: More Language Features<a class="headerlink" href="#python-more-language-features" title="Permalink to this headline">¶</a></h1>
+<a class="reference internal image-reference" href="../../../../../_images/python-logo-master-v3-TM.png"><img alt="Python logo" class="align-right" src="../../../../../_images/python-logo-master-v3-TM.png" style="width: 300.5px; height: 101.5px;" /></a>
+<aside class="sidebar">
+<table class="docutils align-left">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Duration</strong></p></td>
+<td><p>2-3 days (depends on previous knowledge)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Requirements</strong></p></td>
+<td><p><a class="reference internal" href="../basics/group.html"><span class="doc">Python: The Language Fundamentals</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Target Audience</strong></p></td>
+<td><p>Those who want to use Python as a programming (<em>not
+scripting</em>) language</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Course Language</strong></p></td>
+<td><ul class="simple">
+<li><p>Course material language is English</p></li>
+<li><p>Trainer language is English or German</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p><strong>See also</strong></p></td>
+<td><p><a class="reference internal" href="../group.html"><span class="doc">Complete Python material</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Booking</strong></p></td>
+<td><p><a class="reference external" href="mailto:training&#37;&#52;&#48;faschingbauer&#46;co&#46;at">training<span>&#64;</span>faschingbauer<span>&#46;</span>co<span>&#46;</span>at</a></p></td>
+</tr>
+</tbody>
+</table>
+</aside>
+<p>What is missing from <a class="reference internal" href="../basics/group.html"><span class="doc">Python: The Language Fundamentals</span></a> is what makes Python a
+language that is …</p>
+<ul class="simple">
+<li><p><em>interesting</em></p></li>
+<li><p><em>powerful</em></p></li>
+<li><p><em>beautiful</em></p></li>
+</ul>
+<p>To meet this goal, this course covers some advanced language features
+which you won’t be able to do without once you got used to them.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="iteration-generation/topic.html">Iterating Intelligently: Generators, and the Iterator Protocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="starargs/topic.html">Positional and Keyword Arguments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="closures/topic.html">Closures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decorators/topic.html">Decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exec/topic.html">The <code class="docutils literal notranslate"><span class="pre">exec()</span></code> Function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oo/group.html">Object Oriented Programming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exception Handling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules and Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multithreading/group.html">Multithreading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multiprocessing/group.html">Multiprocessing</a></li>
+</ul>
+</div>
+<svg 
+ viewBox="0.00 0.00 3159.00 892.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 888)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-888 3155,-888 3155,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_python</title>
+<path fill="none" stroke="black" d="M20,-8C20,-8 3131,-8 3131,-8 3137,-8 3143,-14 3143,-20 3143,-20 3143,-864 3143,-864 3143,-870 3137,-876 3131,-876 3131,-876 20,-876 20,-876 14,-876 8,-870 8,-864 8,-864 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="1575.5" y="-860.8" font-family="Times-Roman" font-size="14.00">Python Programming: From Absolute Beginner to Advanced Productivity</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_python_basics</title>
+<path fill="none" stroke="black" d="M2357,-16C2357,-16 3091,-16 3091,-16 3097,-16 3103,-22 3103,-28 3103,-28 3103,-727 3103,-727 3103,-733 3097,-739 3091,-739 3091,-739 2357,-739 2357,-739 2351,-739 2345,-733 2345,-727 2345,-727 2345,-28 2345,-28 2345,-22 2351,-16 2357,-16"/>
+<text text-anchor="middle" x="2724" y="-723.8" font-family="Times-Roman" font-size="14.00">Python: The Language Fundamentals</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_python_advanced</title>
+<path fill="none" stroke="black" d="M28,-584C28,-584 2325,-584 2325,-584 2331,-584 2337,-590 2337,-596 2337,-596 2337,-833 2337,-833 2337,-839 2331,-845 2325,-845 2325,-845 28,-845 28,-845 22,-845 16,-839 16,-833 16,-833 16,-596 16,-596 16,-590 22,-584 28,-584"/>
+<text text-anchor="middle" x="1176.5" y="-829.8" font-family="Times-Roman" font-size="14.00">Python: More Language Features</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_python_advanced_multithreading</title>
+<path fill="none" stroke="black" d="M953,-664C953,-664 1239,-664 1239,-664 1245,-664 1251,-670 1251,-676 1251,-676 1251,-802 1251,-802 1251,-808 1245,-814 1239,-814 1239,-814 953,-814 953,-814 947,-814 941,-808 941,-802 941,-802 941,-676 941,-676 941,-670 947,-664 953,-664"/>
+<text text-anchor="middle" x="1096" y="-798.8" font-family="Times-Roman" font-size="14.00">Multithreading</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_python_advanced_multiprocessing</title>
+<path fill="none" stroke="black" d="M1757,-664C1757,-664 1911,-664 1911,-664 1917,-664 1923,-670 1923,-676 1923,-676 1923,-727 1923,-727 1923,-733 1917,-739 1911,-739 1911,-739 1757,-739 1757,-739 1751,-739 1745,-733 1745,-727 1745,-727 1745,-676 1745,-676 1745,-670 1751,-664 1757,-664"/>
+<text text-anchor="middle" x="1834" y="-723.8" font-family="Times-Roman" font-size="14.00">Multiprocessing</text>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_python_advanced_oo</title>
+<path fill="none" stroke="black" d="M1271,-592C1271,-592 1725,-592 1725,-592 1731,-592 1737,-598 1737,-604 1737,-604 1737,-727 1737,-727 1737,-733 1731,-739 1725,-739 1725,-739 1271,-739 1271,-739 1265,-739 1259,-733 1259,-727 1259,-727 1259,-604 1259,-604 1259,-598 1265,-592 1271,-592"/>
+<text text-anchor="middle" x="1498" y="-723.8" font-family="Times-Roman" font-size="14.00">Object Oriented Programming</text>
+</g>
+<!-- python_basics_python_0150_datatypes_overview_compound -->
+<g id="node1" class="node">
+<title>python_basics_python_0150_datatypes_overview_compound</title>
+<g id="a_node1"><a xlink:href="../basics/python_0150_datatypes_overview_compound/topic.html" xlink:title="Compound Datatypes">
+<ellipse fill="#dcdcdc" stroke="black" cx="2628" cy="-402" rx="108.58" ry="18"/>
+<text text-anchor="middle" x="2628" y="-398.3" font-family="Times-Roman" font-size="14.00">Compound Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0150_datatypes_overview -->
+<g id="node5" class="node">
+<title>python_basics_python_0150_datatypes_overview</title>
+<g id="a_node5"><a xlink:href="../basics/python_0150_datatypes_overview/topic.html" xlink:title="Datatypes">
+<ellipse fill="#dcdcdc" stroke="black" cx="2592" cy="-330" rx="56.59" ry="18"/>
+<text text-anchor="middle" x="2592" y="-326.3" font-family="Times-Roman" font-size="14.00">Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0150_datatypes_overview_compound&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge1" class="edge">
+<title>python_basics_python_0150_datatypes_overview_compound&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M2619.29,-384.05C2615.08,-375.89 2609.95,-365.91 2605.28,-356.82"/>
+<polygon fill="black" stroke="black" points="2608.32,-355.08 2600.63,-347.79 2602.1,-358.28 2608.32,-355.08"/>
+</g>
+<!-- python_basics_python_0140_variables -->
+<g id="node2" class="node">
+<title>python_basics_python_0140_variables</title>
+<g id="a_node2"><a xlink:href="../basics/python_0140_variables/topic.html" xlink:title="Variables">
+<ellipse fill="#dcdcdc" stroke="black" cx="2411" cy="-258" rx="51.99" ry="18"/>
+<text text-anchor="middle" x="2411" y="-254.3" font-family="Times-Roman" font-size="14.00">Variables</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0130_syntax_etc -->
+<g id="node9" class="node">
+<title>python_basics_python_0130_syntax_etc</title>
+<g id="a_node9"><a xlink:href="../basics/python_0130_syntax_etc/topic.html" xlink:title="Syntax etc.">
+<ellipse fill="#dcdcdc" stroke="black" cx="2415" cy="-186" rx="61.99" ry="18"/>
+<text text-anchor="middle" x="2415" y="-182.3" font-family="Times-Roman" font-size="14.00">Syntax etc.</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0140_variables&#45;&gt;python_basics_python_0130_syntax_etc -->
+<g id="edge3" class="edge">
+<title>python_basics_python_0140_variables&#45;&gt;python_basics_python_0130_syntax_etc</title>
+<path fill="none" stroke="black" d="M2411.99,-239.7C2412.43,-231.98 2412.96,-222.71 2413.45,-214.11"/>
+<polygon fill="black" stroke="black" points="2416.95,-214.29 2414.02,-204.1 2409.96,-213.89 2416.95,-214.29"/>
+</g>
+<!-- python_basics_python_0170_if -->
+<g id="node3" class="node">
+<title>python_basics_python_0170_if</title>
+<g id="a_node3"><a xlink:href="../basics/python_0170_if/topic.html" xlink:title="The if Statement">
+<ellipse fill="#dcdcdc" stroke="black" cx="2989" cy="-474" rx="85.59" ry="18"/>
+<text text-anchor="middle" x="2989" y="-470.3" font-family="Times-Roman" font-size="14.00">The if Statement</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0160_boolean -->
+<g id="node15" class="node">
+<title>python_basics_python_0160_boolean</title>
+<g id="a_node15"><a xlink:href="../basics/python_0160_boolean/topic.html" xlink:title="Boolean">
+<ellipse fill="#dcdcdc" stroke="black" cx="2989" cy="-402" rx="46.59" ry="18"/>
+<text text-anchor="middle" x="2989" y="-398.3" font-family="Times-Roman" font-size="14.00">Boolean</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0170_if&#45;&gt;python_basics_python_0160_boolean -->
+<g id="edge4" class="edge">
+<title>python_basics_python_0170_if&#45;&gt;python_basics_python_0160_boolean</title>
+<path fill="none" stroke="black" d="M2989,-455.7C2989,-447.98 2989,-438.71 2989,-430.11"/>
+<polygon fill="black" stroke="black" points="2992.5,-430.1 2989,-420.1 2985.5,-430.1 2992.5,-430.1"/>
+</g>
+<!-- python_basics_python_0110_blahblah -->
+<g id="node4" class="node">
+<title>python_basics_python_0110_blahblah</title>
+<g id="a_node4"><a xlink:href="../basics/python_0110_blahblah/topic.html" xlink:title="Blahblah">
+<ellipse fill="#dcdcdc" stroke="black" cx="2415" cy="-42" rx="50.09" ry="18"/>
+<text text-anchor="middle" x="2415" y="-38.3" font-family="Times-Roman" font-size="14.00">Blahblah</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0150_datatypes_overview&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge6" class="edge">
+<title>python_basics_python_0150_datatypes_overview&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M2557.53,-315.67C2528.06,-304.27 2485.53,-287.82 2453.87,-275.58"/>
+<polygon fill="black" stroke="black" points="2455.01,-272.27 2444.42,-271.93 2452.49,-278.8 2455.01,-272.27"/>
+</g>
+<!-- python_basics_python_0225_range -->
+<g id="node6" class="node">
+<title>python_basics_python_0225_range</title>
+<g id="a_node6"><a xlink:href="../basics/python_0225_range/topic.html" xlink:title="The range Function">
+<ellipse fill="#dcdcdc" stroke="black" cx="2776" cy="-690" rx="98.28" ry="18"/>
+<text text-anchor="middle" x="2776" y="-686.3" font-family="Times-Roman" font-size="14.00">The range Function</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0220_for -->
+<g id="node14" class="node">
+<title>python_basics_python_0220_for</title>
+<g id="a_node14"><a xlink:href="../basics/python_0220_for/topic.html" xlink:title="for Loops">
+<ellipse fill="#dcdcdc" stroke="black" cx="2850" cy="-618" rx="52.79" ry="18"/>
+<text text-anchor="middle" x="2850" y="-614.3" font-family="Times-Roman" font-size="14.00">for Loops</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0225_range&#45;&gt;python_basics_python_0220_for -->
+<g id="edge8" class="edge">
+<title>python_basics_python_0225_range&#45;&gt;python_basics_python_0220_for</title>
+<path fill="none" stroke="black" d="M2793.91,-672.05C2803.39,-663.09 2815.17,-651.95 2825.48,-642.2"/>
+<polygon fill="black" stroke="black" points="2828.15,-644.48 2833.01,-635.07 2823.34,-639.4 2828.15,-644.48"/>
+</g>
+<!-- python_basics_python_0200_sequential_types -->
+<g id="node16" class="node">
+<title>python_basics_python_0200_sequential_types</title>
+<g id="a_node16"><a xlink:href="../basics/python_0200_sequential_types/topic.html" xlink:title="Sequential Datatypes">
+<ellipse fill="#dcdcdc" stroke="black" cx="2778" cy="-474" rx="107.48" ry="18"/>
+<text text-anchor="middle" x="2778" y="-470.3" font-family="Times-Roman" font-size="14.00">Sequential Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0225_range&#45;&gt;python_basics_python_0200_sequential_types -->
+<g id="edge7" class="edge">
+<title>python_basics_python_0225_range&#45;&gt;python_basics_python_0200_sequential_types</title>
+<path fill="none" stroke="black" d="M2776.16,-671.85C2776.51,-634.83 2777.33,-547.18 2777.74,-502.39"/>
+<polygon fill="black" stroke="black" points="2781.25,-502.26 2777.84,-492.23 2774.25,-502.2 2781.25,-502.26"/>
+</g>
+<!-- python_basics_python_0193_while -->
+<g id="node7" class="node">
+<title>python_basics_python_0193_while</title>
+<g id="a_node7"><a xlink:href="../basics/python_0193_while/topic.html" xlink:title="while Loops">
+<ellipse fill="#dcdcdc" stroke="black" cx="2989" cy="-546" rx="63.89" ry="18"/>
+<text text-anchor="middle" x="2989" y="-542.3" font-family="Times-Roman" font-size="14.00">while Loops</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0193_while&#45;&gt;python_basics_python_0170_if -->
+<g id="edge10" class="edge">
+<title>python_basics_python_0193_while&#45;&gt;python_basics_python_0170_if</title>
+<path fill="none" stroke="black" d="M2989,-527.7C2989,-519.98 2989,-510.71 2989,-502.11"/>
+<polygon fill="black" stroke="black" points="2992.5,-502.1 2989,-492.1 2985.5,-502.1 2992.5,-502.1"/>
+</g>
+<!-- python_basics_python_0193_while&#45;&gt;python_basics_python_0160_boolean -->
+<g id="edge9" class="edge">
+<title>python_basics_python_0193_while&#45;&gt;python_basics_python_0160_boolean</title>
+<path fill="none" stroke="black" d="M3031.72,-532.36C3051.29,-524.2 3072.62,-511.38 3084,-492 3092.1,-478.2 3092.1,-469.8 3084,-456 3073.28,-437.75 3053.74,-425.32 3035.16,-417.11"/>
+<polygon fill="black" stroke="black" points="3036.45,-413.86 3025.87,-413.31 3033.8,-420.34 3036.45,-413.86"/>
+</g>
+<!-- python_basics_python_0250_refs_flat_deep_copy -->
+<g id="node8" class="node">
+<title>python_basics_python_0250_refs_flat_deep_copy</title>
+<g id="a_node8"><a xlink:href="../basics/python_0250_refs_flat_deep_copy/topic.html" xlink:title="References, (Im)mutability">
+<ellipse fill="#dcdcdc" stroke="black" cx="2483" cy="-474" rx="129.98" ry="18"/>
+<text text-anchor="middle" x="2483" y="-470.3" font-family="Times-Roman" font-size="14.00">References, (Im)mutability</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0250_refs_flat_deep_copy&#45;&gt;python_basics_python_0150_datatypes_overview_compound -->
+<g id="edge21" class="edge">
+<title>python_basics_python_0250_refs_flat_deep_copy&#45;&gt;python_basics_python_0150_datatypes_overview_compound</title>
+<path fill="none" stroke="black" d="M2517,-456.59C2537.43,-446.72 2563.61,-434.08 2585.42,-423.56"/>
+<polygon fill="black" stroke="black" points="2586.98,-426.69 2594.47,-419.19 2583.94,-420.38 2586.98,-426.69"/>
+</g>
+<!-- python_basics_python_0250_refs_flat_deep_copy&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge19" class="edge">
+<title>python_basics_python_0250_refs_flat_deep_copy&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M2482.01,-455.94C2480.61,-437.79 2477.35,-408.37 2470,-384 2459.17,-348.1 2439.58,-309.46 2425.96,-284.79"/>
+<polygon fill="black" stroke="black" points="2428.83,-282.76 2420.88,-275.75 2422.72,-286.18 2428.83,-282.76"/>
+</g>
+<!-- python_basics_python_0250_refs_flat_deep_copy&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge20" class="edge">
+<title>python_basics_python_0250_refs_flat_deep_copy&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M2484.68,-455.67C2487.31,-436.47 2493.87,-405.41 2510,-384 2520.64,-369.87 2536.23,-358.46 2550.97,-349.89"/>
+<polygon fill="black" stroke="black" points="2552.91,-352.82 2559.98,-344.93 2549.54,-346.69 2552.91,-352.82"/>
+</g>
+<!-- python_basics_python_0120_helloworld -->
+<g id="node11" class="node">
+<title>python_basics_python_0120_helloworld</title>
+<g id="a_node11"><a xlink:href="../basics/python_0120_helloworld/topic.html" xlink:title="Hello World">
+<ellipse fill="#dcdcdc" stroke="black" cx="2415" cy="-114" rx="61.99" ry="18"/>
+<text text-anchor="middle" x="2415" y="-110.3" font-family="Times-Roman" font-size="14.00">Hello World</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0130_syntax_etc&#45;&gt;python_basics_python_0120_helloworld -->
+<g id="edge23" class="edge">
+<title>python_basics_python_0130_syntax_etc&#45;&gt;python_basics_python_0120_helloworld</title>
+<path fill="none" stroke="black" d="M2415,-167.7C2415,-159.98 2415,-150.71 2415,-142.11"/>
+<polygon fill="black" stroke="black" points="2418.5,-142.1 2415,-132.1 2411.5,-142.1 2418.5,-142.1"/>
+</g>
+<!-- python_basics_python_0300_strings -->
+<g id="node10" class="node">
+<title>python_basics_python_0300_strings</title>
+<g id="a_node10"><a xlink:href="../basics/python_0300_strings/topic.html" xlink:title="More About Strings">
+<ellipse fill="#dcdcdc" stroke="black" cx="2652" cy="-546" rx="97.48" ry="18"/>
+<text text-anchor="middle" x="2652" y="-542.3" font-family="Times-Roman" font-size="14.00">More About Strings</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0300_strings&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge25" class="edge">
+<title>python_basics_python_0300_strings&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M2649.17,-527.77C2646.98,-508.37 2646.52,-476.84 2662,-456 2686.22,-423.39 2723.64,-453.91 2746,-420 2754.81,-406.64 2755.29,-397.03 2746,-384 2725.76,-355.63 2689.31,-342.29 2656.96,-336.09"/>
+<polygon fill="black" stroke="black" points="2657.52,-332.63 2647.07,-334.38 2656.33,-339.53 2657.52,-332.63"/>
+</g>
+<!-- python_basics_python_0300_strings&#45;&gt;python_basics_python_0250_refs_flat_deep_copy -->
+<g id="edge26" class="edge">
+<title>python_basics_python_0300_strings&#45;&gt;python_basics_python_0250_refs_flat_deep_copy</title>
+<path fill="none" stroke="black" d="M2614.07,-529.29C2589.72,-519.2 2557.86,-506.01 2531.64,-495.15"/>
+<polygon fill="black" stroke="black" points="2532.85,-491.86 2522.27,-491.26 2530.17,-498.33 2532.85,-491.86"/>
+</g>
+<!-- python_basics_python_0300_strings&#45;&gt;python_basics_python_0200_sequential_types -->
+<g id="edge24" class="edge">
+<title>python_basics_python_0300_strings&#45;&gt;python_basics_python_0200_sequential_types</title>
+<path fill="none" stroke="black" d="M2681.22,-528.76C2698.59,-519.12 2720.82,-506.77 2739.6,-496.34"/>
+<polygon fill="black" stroke="black" points="2741.46,-499.31 2748.5,-491.39 2738.06,-493.19 2741.46,-499.31"/>
+</g>
+<!-- python_basics_python_0120_helloworld&#45;&gt;python_basics_python_0110_blahblah -->
+<g id="edge27" class="edge">
+<title>python_basics_python_0120_helloworld&#45;&gt;python_basics_python_0110_blahblah</title>
+<path fill="none" stroke="black" d="M2415,-95.7C2415,-87.98 2415,-78.71 2415,-70.11"/>
+<polygon fill="black" stroke="black" points="2418.5,-70.1 2415,-60.1 2411.5,-70.1 2418.5,-70.1"/>
+</g>
+<!-- python_basics_python_0500_files -->
+<g id="node12" class="node">
+<title>python_basics_python_0500_files</title>
+<g id="a_node12"><a xlink:href="../basics/python_0500_files/topic.html" xlink:title="File I/O">
+<ellipse fill="#dcdcdc" stroke="black" cx="2618" cy="-690" rx="41.69" ry="18"/>
+<text text-anchor="middle" x="2618" y="-686.3" font-family="Times-Roman" font-size="14.00">File I/O</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0500_files&#45;&gt;python_basics_python_0220_for -->
+<g id="edge31" class="edge">
+<title>python_basics_python_0500_files&#45;&gt;python_basics_python_0220_for</title>
+<path fill="none" stroke="black" d="M2642.96,-675.45C2651.1,-671.39 2660.29,-667.18 2669,-664 2692.33,-655.49 2752.69,-641.02 2797.33,-630.79"/>
+<polygon fill="black" stroke="black" points="2798.19,-634.18 2807.16,-628.55 2796.63,-627.36 2798.19,-634.18"/>
+</g>
+<!-- python_basics_python_0330_strings_encoding -->
+<g id="node18" class="node">
+<title>python_basics_python_0330_strings_encoding</title>
+<g id="a_node18"><a xlink:href="../basics/python_0330_strings_encoding/topic.html" xlink:title="Strings and Encoding">
+<ellipse fill="#dcdcdc" stroke="black" cx="2651" cy="-618" rx="107.78" ry="18"/>
+<text text-anchor="middle" x="2651" y="-614.3" font-family="Times-Roman" font-size="14.00">Strings and Encoding</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0500_files&#45;&gt;python_basics_python_0330_strings_encoding -->
+<g id="edge32" class="edge">
+<title>python_basics_python_0500_files&#45;&gt;python_basics_python_0330_strings_encoding</title>
+<path fill="none" stroke="black" d="M2625.99,-672.05C2629.74,-664.09 2634.31,-654.41 2638.5,-645.51"/>
+<polygon fill="black" stroke="black" points="2641.76,-646.81 2642.86,-636.28 2635.43,-643.83 2641.76,-646.81"/>
+</g>
+<!-- python_basics_python_0270_functions -->
+<g id="node13" class="node">
+<title>python_basics_python_0270_functions</title>
+<g id="a_node13"><a xlink:href="../basics/python_0270_functions/topic.html" xlink:title="Functions">
+<ellipse fill="#dcdcdc" stroke="black" cx="2407" cy="-402" rx="53.89" ry="18"/>
+<text text-anchor="middle" x="2407" y="-398.3" font-family="Times-Roman" font-size="14.00">Functions</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0270_functions&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge33" class="edge">
+<title>python_basics_python_0270_functions&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M2407.48,-383.87C2408.16,-359.67 2409.42,-315.21 2410.23,-286.39"/>
+<polygon fill="black" stroke="black" points="2413.73,-286.28 2410.52,-276.19 2406.74,-286.09 2413.73,-286.28"/>
+</g>
+<!-- python_basics_python_0270_functions&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge34" class="edge">
+<title>python_basics_python_0270_functions&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M2441.36,-388C2471.19,-376.71 2514.59,-360.29 2547.15,-347.97"/>
+<polygon fill="black" stroke="black" points="2548.76,-351.1 2556.88,-344.29 2546.29,-344.56 2548.76,-351.1"/>
+</g>
+<!-- python_basics_python_0220_for&#45;&gt;python_basics_python_0193_while -->
+<g id="edge36" class="edge">
+<title>python_basics_python_0220_for&#45;&gt;python_basics_python_0193_while</title>
+<path fill="none" stroke="black" d="M2878.46,-602.67C2899.13,-592.26 2927.33,-578.06 2950.08,-566.6"/>
+<polygon fill="black" stroke="black" points="2951.78,-569.66 2959.13,-562.04 2948.63,-563.41 2951.78,-569.66"/>
+</g>
+<!-- python_basics_python_0220_for&#45;&gt;python_basics_python_0200_sequential_types -->
+<g id="edge35" class="edge">
+<title>python_basics_python_0220_for&#45;&gt;python_basics_python_0200_sequential_types</title>
+<path fill="none" stroke="black" d="M2841.46,-600.15C2829.08,-575.73 2806.02,-530.26 2791.37,-501.38"/>
+<polygon fill="black" stroke="black" points="2794.4,-499.6 2786.76,-492.27 2788.16,-502.77 2794.4,-499.6"/>
+</g>
+<!-- python_basics_python_0160_boolean&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge40" class="edge">
+<title>python_basics_python_0160_boolean&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M2947.26,-393.64C2876.15,-381.1 2731.33,-355.57 2650.27,-341.27"/>
+<polygon fill="black" stroke="black" points="2650.69,-337.79 2640.23,-339.5 2649.47,-344.69 2650.69,-337.79"/>
+</g>
+<!-- python_basics_python_0200_sequential_types&#45;&gt;python_basics_python_0150_datatypes_overview_compound -->
+<g id="edge44" class="edge">
+<title>python_basics_python_0200_sequential_types&#45;&gt;python_basics_python_0150_datatypes_overview_compound</title>
+<path fill="none" stroke="black" d="M2743.59,-456.94C2722.23,-446.97 2694.58,-434.07 2671.68,-423.38"/>
+<polygon fill="black" stroke="black" points="2673.05,-420.16 2662.51,-419.11 2670.09,-426.51 2673.05,-420.16"/>
+</g>
+<!-- python_basics_python_0450_dictionaries -->
+<g id="node17" class="node">
+<title>python_basics_python_0450_dictionaries</title>
+<g id="a_node17"><a xlink:href="../basics/python_0450_dictionaries/topic.html" xlink:title="More on Dictionaries">
+<ellipse fill="#dcdcdc" stroke="black" cx="2456" cy="-690" rx="102.88" ry="18"/>
+<text text-anchor="middle" x="2456" y="-686.3" font-family="Times-Roman" font-size="14.00">More on Dictionaries</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0150_datatypes_overview_compound -->
+<g id="edge49" class="edge">
+<title>python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0150_datatypes_overview_compound</title>
+<path fill="none" stroke="black" d="M2461.64,-671.72C2472.92,-639.56 2501.09,-569.99 2546,-528 2573.3,-502.48 2600.96,-522.89 2622,-492 2634.23,-474.05 2634.86,-449.05 2632.93,-430.12"/>
+<polygon fill="black" stroke="black" points="2636.38,-429.5 2631.61,-420.04 2629.44,-430.41 2636.38,-429.5"/>
+</g>
+<!-- python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0220_for -->
+<g id="edge50" class="edge">
+<title>python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0220_for</title>
+<path fill="none" stroke="black" d="M2513.71,-675.05C2530.81,-671.17 2549.61,-667.16 2567,-664 2655.74,-647.85 2679.13,-651.39 2768,-636 2777.46,-634.36 2787.5,-632.44 2797.19,-630.48"/>
+<polygon fill="black" stroke="black" points="2798.03,-633.88 2807.12,-628.45 2796.62,-627.03 2798.03,-633.88"/>
+</g>
+<!-- python_basics_python_0330_strings_encoding&#45;&gt;python_basics_python_0300_strings -->
+<g id="edge51" class="edge">
+<title>python_basics_python_0330_strings_encoding&#45;&gt;python_basics_python_0300_strings</title>
+<path fill="none" stroke="black" d="M2651.25,-599.7C2651.36,-591.98 2651.49,-582.71 2651.61,-574.11"/>
+<polygon fill="black" stroke="black" points="2655.11,-574.15 2651.76,-564.1 2648.11,-574.05 2655.11,-574.15"/>
+</g>
+<!-- python_advanced_starargs -->
+<g id="node19" class="node">
+<title>python_advanced_starargs</title>
+<g id="a_node19"><a xlink:href="starargs/topic.html" xlink:title="Positional and Keyword Arguments">
+<ellipse fill="#dcdcdc" stroke="black" cx="191" cy="-690" rx="167.07" ry="18"/>
+<text text-anchor="middle" x="191" y="-686.3" font-family="Times-Roman" font-size="14.00">Positional and Keyword Arguments</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_starargs&#45;&gt;python_basics_python_0270_functions -->
+<g id="edge5" class="edge">
+<title>python_advanced_starargs&#45;&gt;python_basics_python_0270_functions</title>
+<path fill="none" stroke="black" d="M248.05,-672.99C406.84,-629.23 868.03,-507.4 1260,-456 1471.99,-428.2 2134.02,-409.78 2343.07,-404.54"/>
+<polygon fill="black" stroke="black" points="2343.35,-408.03 2353.26,-404.28 2343.18,-401.03 2343.35,-408.03"/>
+</g>
+<!-- python_advanced_modules -->
+<g id="node20" class="node">
+<title>python_advanced_modules</title>
+<g id="a_node20"><a xlink:href="modules.html" xlink:title="Modules and Packages">
+<ellipse fill="#dcdcdc" stroke="black" cx="488" cy="-690" rx="112.38" ry="18"/>
+<text text-anchor="middle" x="488" y="-686.3" font-family="Times-Roman" font-size="14.00">Modules and Packages</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_modules&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge12" class="edge">
+<title>python_advanced_modules&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M560.45,-676.18C628.52,-659.48 720,-622.91 720,-547 720,-547 720,-547 720,-401 720,-317.57 2044.47,-270.59 2349.07,-260.89"/>
+<polygon fill="black" stroke="black" points="2349.58,-264.38 2359.47,-260.56 2349.36,-257.38 2349.58,-264.38"/>
+</g>
+<!-- python_advanced_modules&#45;&gt;python_basics_python_0270_functions -->
+<g id="edge11" class="edge">
+<title>python_advanced_modules&#45;&gt;python_basics_python_0270_functions</title>
+<path fill="none" stroke="black" d="M554.46,-675.48C602.14,-665.45 667.79,-650.97 725,-636 802.67,-615.67 820.72,-605.77 898,-584 992.22,-557.46 1015.67,-550.23 1111,-528 1266.93,-491.63 1305.2,-476.55 1464,-456 1792.66,-413.47 2190.13,-405.06 2342.91,-403.4"/>
+<polygon fill="black" stroke="black" points="2343.09,-406.9 2353.06,-403.3 2343.02,-399.9 2343.09,-406.9"/>
+</g>
+<!-- python_advanced_oo_basics -->
+<g id="node30" class="node">
+<title>python_advanced_oo_basics</title>
+<g id="a_node30"><a xlink:href="oo/basics.html" xlink:title="Object Oriented Programming">
+<ellipse fill="#dcdcdc" stroke="black" cx="1498" cy="-618" rx="146.47" ry="18"/>
+<text text-anchor="middle" x="1498" y="-614.3" font-family="Times-Roman" font-size="14.00">Object Oriented Programming</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_modules&#45;&gt;python_advanced_oo_basics -->
+<g id="edge13" class="edge">
+<title>python_advanced_modules&#45;&gt;python_advanced_oo_basics</title>
+<path fill="none" stroke="black" d="M547.87,-674.69C567.55,-670.54 589.61,-666.46 610,-664 935.87,-624.7 1020.7,-660.72 1348,-636 1361.25,-635 1375.13,-633.73 1388.88,-632.33"/>
+<polygon fill="black" stroke="black" points="1389.27,-635.81 1398.86,-631.3 1388.55,-628.85 1389.27,-635.81"/>
+</g>
+<!-- python_advanced_python_1010_generators_yield -->
+<g id="node21" class="node">
+<title>python_advanced_python_1010_generators_yield</title>
+<g id="a_node21"><a xlink:href="iteration-generation/python_1010_generators_yield/topic.html" xlink:title="Iteration, and Generators: the yield Keyword">
+<ellipse fill="#dcdcdc" stroke="black" cx="2118" cy="-765" rx="210.66" ry="18"/>
+<text text-anchor="middle" x="2118" y="-761.3" font-family="Times-Roman" font-size="14.00">Iteration, and Generators: the yield Keyword</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_python_1010_generators_yield&#45;&gt;python_basics_python_0225_range -->
+<g id="edge16" class="edge">
+<title>python_advanced_python_1010_generators_yield&#45;&gt;python_basics_python_0225_range</title>
+<path fill="none" stroke="black" d="M2327.01,-762.58C2454.94,-760.15 2605.83,-754.03 2669,-739 2693.11,-733.27 2718.48,-722.13 2738.47,-712.03"/>
+<polygon fill="black" stroke="black" points="2740.26,-715.04 2747.53,-707.33 2737.04,-708.83 2740.26,-715.04"/>
+</g>
+<!-- python_advanced_python_1010_generators_yield&#45;&gt;python_basics_python_0270_functions -->
+<g id="edge17" class="edge">
+<title>python_advanced_python_1010_generators_yield&#45;&gt;python_basics_python_0270_functions</title>
+<path fill="none" stroke="black" d="M2325.65,-761.98C2612.11,-758.75 3095.19,-751.46 3110,-739 3151.62,-703.99 3134,-673.39 3134,-619 3134,-619 3134,-619 3134,-545 3134,-504.89 3148.85,-482.79 3119,-456 3068.55,-410.72 2577.37,-427.53 2510,-420 2494.71,-418.29 2478.23,-415.85 2463.03,-413.34"/>
+<polygon fill="black" stroke="black" points="2463.19,-409.82 2452.75,-411.6 2462.03,-416.72 2463.19,-409.82"/>
+</g>
+<!-- python_advanced_python_1010_generators_yield&#45;&gt;python_basics_python_0220_for -->
+<g id="edge14" class="edge">
+<title>python_advanced_python_1010_generators_yield&#45;&gt;python_basics_python_0220_for</title>
+<path fill="none" stroke="black" d="M2328.64,-764.4C2552.88,-763.76 2878.34,-759.3 2898,-739 2921.19,-715.06 2911.25,-694.59 2898,-664 2894.23,-655.3 2887.86,-647.51 2880.98,-640.96"/>
+<polygon fill="black" stroke="black" points="2883.23,-638.29 2873.4,-634.35 2878.63,-643.56 2883.23,-638.29"/>
+</g>
+<!-- python_advanced_python_1010_generators_yield&#45;&gt;python_basics_python_0200_sequential_types -->
+<g id="edge15" class="edge">
+<title>python_advanced_python_1010_generators_yield&#45;&gt;python_basics_python_0200_sequential_types</title>
+<path fill="none" stroke="black" d="M2326.36,-762.29C2610.38,-759.45 3085.68,-752.66 3099,-739 3138.8,-698.17 3078.72,-543.41 3062,-528 3054.57,-521.15 2944.01,-501.93 2863.07,-488.63"/>
+<polygon fill="black" stroke="black" points="2863.29,-485.11 2852.86,-486.95 2862.16,-492.02 2863.29,-485.11"/>
+</g>
+<!-- python_advanced_closures -->
+<g id="node22" class="node">
+<title>python_advanced_closures</title>
+<g id="a_node22"><a xlink:href="closures/topic.html" xlink:title="Closures">
+<ellipse fill="#dcdcdc" stroke="black" cx="668" cy="-690" rx="49.29" ry="18"/>
+<text text-anchor="middle" x="668" y="-686.3" font-family="Times-Roman" font-size="14.00">Closures</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_closures&#45;&gt;python_basics_python_0270_functions -->
+<g id="edge18" class="edge">
+<title>python_advanced_closures&#45;&gt;python_basics_python_0270_functions</title>
+<path fill="none" stroke="black" d="M696.4,-675.11C705.66,-671.03 716.11,-666.89 726,-664 800.34,-642.29 823.22,-656.16 898,-636 960.48,-619.16 971.61,-601.18 1034,-584 1525.89,-448.55 2145.7,-413.29 2343.38,-405.19"/>
+<polygon fill="black" stroke="black" points="2343.73,-408.68 2353.59,-404.78 2343.45,-401.68 2343.73,-408.68"/>
+</g>
+<!-- python_advanced_exceptions -->
+<g id="node23" class="node">
+<title>python_advanced_exceptions</title>
+<g id="a_node23"><a xlink:href="exceptions.html" xlink:title="Exception Handling">
+<ellipse fill="#dcdcdc" stroke="black" cx="834" cy="-690" rx="98.58" ry="18"/>
+<text text-anchor="middle" x="834" y="-686.3" font-family="Times-Roman" font-size="14.00">Exception Handling</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_exceptions&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge28" class="edge">
+<title>python_advanced_exceptions&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M860.18,-672.5C897.46,-649.65 968.61,-608.43 1034,-584 1528.23,-399.32 2162.51,-295.75 2353.88,-267.19"/>
+<polygon fill="black" stroke="black" points="2354.61,-270.62 2363.99,-265.69 2353.59,-263.7 2354.61,-270.62"/>
+</g>
+<!-- python_advanced_exceptions&#45;&gt;python_basics_python_0270_functions -->
+<g id="edge29" class="edge">
+<title>python_advanced_exceptions&#45;&gt;python_basics_python_0270_functions</title>
+<path fill="none" stroke="black" d="M885.87,-674.64C965.03,-653.04 1120.94,-611.79 1255,-584 1595.56,-513.42 1683.19,-508.47 2027,-456 2140.2,-438.72 2272.73,-420.75 2347.58,-410.81"/>
+<polygon fill="black" stroke="black" points="2348.3,-414.24 2357.75,-409.46 2347.38,-407.3 2348.3,-414.24"/>
+</g>
+<!-- python_advanced_exceptions&#45;&gt;python_advanced_oo_basics -->
+<g id="edge30" class="edge">
+<title>python_advanced_exceptions&#45;&gt;python_advanced_oo_basics</title>
+<path fill="none" stroke="black" d="M885.79,-674.61C902.06,-670.58 920.18,-666.6 937,-664 1117.95,-636.08 1165.66,-652.54 1348,-636 1360.69,-634.85 1373.97,-633.52 1387.15,-632.13"/>
+<polygon fill="black" stroke="black" points="1387.64,-635.6 1397.21,-631.05 1386.89,-628.64 1387.64,-635.6"/>
+</g>
+<!-- python_advanced_exec -->
+<g id="node24" class="node">
+<title>python_advanced_exec</title>
+<g id="a_node24"><a xlink:href="exec/topic.html" xlink:title="The exec() Function">
+<ellipse fill="#dcdcdc" stroke="black" cx="1360" cy="-765" rx="98.58" ry="18"/>
+<text text-anchor="middle" x="1360" y="-761.3" font-family="Times-Roman" font-size="14.00">The exec() Function</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_exec&#45;&gt;python_basics_python_0500_files -->
+<g id="edge42" class="edge">
+<title>python_advanced_exec&#45;&gt;python_basics_python_0500_files</title>
+<path fill="none" stroke="black" d="M1427.51,-751.79C1440.88,-749.82 1454.85,-748.08 1468,-747 1498.45,-744.51 2539.69,-750.51 2568,-739 2580.19,-734.04 2591.09,-724.56 2599.58,-715.32"/>
+<polygon fill="black" stroke="black" points="2602.25,-717.59 2606.12,-707.73 2596.94,-713.02 2602.25,-717.59"/>
+</g>
+<!-- python_advanced_exec&#45;&gt;python_basics_python_0450_dictionaries -->
+<g id="edge41" class="edge">
+<title>python_advanced_exec&#45;&gt;python_basics_python_0450_dictionaries</title>
+<path fill="none" stroke="black" d="M1427.81,-751.86C1441.09,-749.89 1454.95,-748.14 1468,-747 1671.26,-729.32 1723.27,-750 1927,-739 2079.76,-730.75 2256.69,-713.03 2362.31,-701.59"/>
+<polygon fill="black" stroke="black" points="2362.74,-705.06 2372.3,-700.5 2361.98,-698.1 2362.74,-705.06"/>
+</g>
+<!-- python_advanced_iteration_generation -->
+<g id="node25" class="node">
+<title>python_advanced_iteration_generation</title>
+<g id="a_node25"><a xlink:href="iteration-generation/iteration-generation/topic.html" xlink:title="Iteration, Comprehensions, and Generators">
+<ellipse fill="#dcdcdc" stroke="black" cx="1683" cy="-765" rx="206.06" ry="18"/>
+<text text-anchor="middle" x="1683" y="-761.3" font-family="Times-Roman" font-size="14.00">Iteration, Comprehensions, and Generators</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_iteration_generation&#45;&gt;python_basics_python_0220_for -->
+<g id="edge43" class="edge">
+<title>python_advanced_iteration_generation&#45;&gt;python_basics_python_0220_for</title>
+<path fill="none" stroke="black" d="M1821.12,-751.63C1846.66,-749.75 1873.12,-748.08 1898,-747 1911.67,-746.4 2873.37,-748.71 2883,-739 2906.47,-715.33 2893.37,-695.68 2883,-664 2880.64,-656.78 2876.63,-649.77 2872.2,-643.51"/>
+<polygon fill="black" stroke="black" points="2874.9,-641.27 2866.02,-635.49 2869.36,-645.55 2874.9,-641.27"/>
+</g>
+<!-- python_advanced_decorators -->
+<g id="node26" class="node">
+<title>python_advanced_decorators</title>
+<g id="a_node26"><a xlink:href="decorators/topic.html" xlink:title="Decorators">
+<ellipse fill="#dcdcdc" stroke="black" cx="668" cy="-765" rx="59.59" ry="18"/>
+<text text-anchor="middle" x="668" y="-761.3" font-family="Times-Roman" font-size="14.00">Decorators</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_decorators&#45;&gt;python_basics_python_0270_functions -->
+<g id="edge46" class="edge">
+<title>python_advanced_decorators&#45;&gt;python_basics_python_0270_functions</title>
+<path fill="none" stroke="black" d="M724.89,-759.43C779.3,-755.28 863.69,-749.46 937,-747 964.01,-746.09 2857.99,-749.25 2883,-739 3025.74,-680.47 3189.62,-568.45 3084,-456 3040.25,-409.42 2573.49,-427.21 2510,-420 2494.71,-418.26 2478.23,-415.81 2463.04,-413.3"/>
+<polygon fill="black" stroke="black" points="2463.19,-409.78 2452.75,-411.57 2462.03,-416.68 2463.19,-409.78"/>
+</g>
+<!-- python_advanced_decorators&#45;&gt;python_advanced_starargs -->
+<g id="edge48" class="edge">
+<title>python_advanced_decorators&#45;&gt;python_advanced_starargs</title>
+<path fill="none" stroke="black" d="M608.76,-762.28C547.76,-759.77 450.14,-753.66 367,-739 327.68,-732.07 284.41,-720.32 250.61,-710.19"/>
+<polygon fill="black" stroke="black" points="251.48,-706.79 240.89,-707.24 249.45,-713.49 251.48,-706.79"/>
+</g>
+<!-- python_advanced_decorators&#45;&gt;python_advanced_closures -->
+<g id="edge47" class="edge">
+<title>python_advanced_decorators&#45;&gt;python_advanced_closures</title>
+<path fill="none" stroke="black" d="M668,-746.7C668,-738.25 668,-727.87 668,-718.37"/>
+<polygon fill="black" stroke="black" points="671.5,-718.18 668,-708.18 664.5,-718.18 671.5,-718.18"/>
+</g>
+<!-- python_advanced_multithreading_mutex -->
+<g id="node27" class="node">
+<title>python_advanced_multithreading_mutex</title>
+<g id="a_node27"><a xlink:href="multithreading/mutex.html" xlink:title="Race Conditions, and Mutexes">
+<ellipse fill="#dcdcdc" stroke="black" cx="1096" cy="-765" rx="146.77" ry="18"/>
+<text text-anchor="middle" x="1096" y="-761.3" font-family="Times-Roman" font-size="14.00">Race Conditions, and Mutexes</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_multithreading_basics -->
+<g id="node28" class="node">
+<title>python_advanced_multithreading_basics</title>
+<g id="a_node28"><a xlink:href="multithreading/basics.html" xlink:title="Multithreading">
+<ellipse fill="#dcdcdc" stroke="black" cx="1131" cy="-690" rx="76.09" ry="18"/>
+<text text-anchor="middle" x="1131" y="-686.3" font-family="Times-Roman" font-size="14.00">Multithreading</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_multithreading_mutex&#45;&gt;python_advanced_multithreading_basics -->
+<g id="edge2" class="edge">
+<title>python_advanced_multithreading_mutex&#45;&gt;python_advanced_multithreading_basics</title>
+<path fill="none" stroke="black" d="M1104.29,-746.7C1108.51,-737.91 1113.72,-727.04 1118.42,-717.25"/>
+<polygon fill="black" stroke="black" points="1121.72,-718.45 1122.89,-707.92 1115.41,-715.43 1121.72,-718.45"/>
+</g>
+<!-- python_advanced_multithreading_basics&#45;&gt;python_advanced_oo_basics -->
+<g id="edge45" class="edge">
+<title>python_advanced_multithreading_basics&#45;&gt;python_advanced_oo_basics</title>
+<path fill="none" stroke="black" d="M1186.52,-677.61C1207.91,-673.28 1232.58,-668.34 1255,-664 1306.12,-654.11 1363.37,-643.49 1409.46,-635.05"/>
+<polygon fill="black" stroke="black" points="1410.21,-638.47 1419.42,-633.23 1408.95,-631.58 1410.21,-638.47"/>
+</g>
+<!-- python_advanced_multiprocessing_basics -->
+<g id="node29" class="node">
+<title>python_advanced_multiprocessing_basics</title>
+<g id="a_node29"><a xlink:href="multiprocessing/basics.html" xlink:title="Multiprocessing">
+<ellipse fill="#dcdcdc" stroke="black" cx="1834" cy="-690" rx="81.49" ry="18"/>
+<text text-anchor="middle" x="1834" y="-686.3" font-family="Times-Roman" font-size="14.00">Multiprocessing</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_multiprocessing_basics&#45;&gt;python_advanced_oo_basics -->
+<g id="edge22" class="edge">
+<title>python_advanced_multiprocessing_basics&#45;&gt;python_advanced_oo_basics</title>
+<path fill="none" stroke="black" d="M1785.91,-675.29C1771.53,-671.4 1755.68,-667.33 1741,-664 1691.98,-652.89 1636.95,-642.53 1591.66,-634.55"/>
+<polygon fill="black" stroke="black" points="1592.01,-631.06 1581.56,-632.78 1590.81,-637.96 1592.01,-631.06"/>
+</g>
+<!-- python_advanced_oo_basics&#45;&gt;python_basics_python_0270_functions -->
+<g id="edge38" class="edge">
+<title>python_advanced_oo_basics&#45;&gt;python_basics_python_0270_functions</title>
+<path fill="none" stroke="black" d="M1562.64,-601.78C1734,-561.44 2197.46,-452.33 2354.3,-415.41"/>
+<polygon fill="black" stroke="black" points="2355.25,-418.78 2364.18,-413.08 2353.64,-411.97 2355.25,-418.78"/>
+</g>
+<!-- python_advanced_oo_basics&#45;&gt;python_basics_python_0450_dictionaries -->
+<g id="edge37" class="edge">
+<title>python_advanced_oo_basics&#45;&gt;python_basics_python_0450_dictionaries</title>
+<path fill="none" stroke="black" d="M1620.26,-627.93C1810.82,-641.86 2175.2,-668.48 2353.12,-681.48"/>
+<polygon fill="black" stroke="black" points="2353.04,-684.99 2363.27,-682.22 2353.55,-678 2353.04,-684.99"/>
+</g>
+<!-- python_advanced_oo_implementation_inheritance -->
+<g id="node31" class="node">
+<title>python_advanced_oo_implementation_inheritance</title>
+<g id="a_node31"><a xlink:href="oo/implementation-inheritance.html" xlink:title="From Duck Typing to Implementation Inheritance">
+<ellipse fill="#dcdcdc" stroke="black" cx="1498" cy="-690" rx="230.96" ry="18"/>
+<text text-anchor="middle" x="1498" y="-686.3" font-family="Times-Roman" font-size="14.00">From Duck Typing to Implementation Inheritance</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_oo_implementation_inheritance&#45;&gt;python_advanced_oo_basics -->
+<g id="edge39" class="edge">
+<title>python_advanced_oo_implementation_inheritance&#45;&gt;python_advanced_oo_basics</title>
+<path fill="none" stroke="black" d="M1498,-671.7C1498,-663.98 1498,-654.71 1498,-646.11"/>
+<polygon fill="black" stroke="black" points="1501.5,-646.1 1498,-636.1 1494.5,-646.1 1501.5,-646.1"/>
+</g>
+</g>
+</svg>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2021 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../_sources/trainings/material/soup/python/advanced/group.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
