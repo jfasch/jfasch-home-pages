@@ -157,20 +157,20 @@
 <h1>Tasks? Processes? Threads?<a class="headerlink" href="#tasks-processes-threads" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#tasks" id="id11">Tasks</a></p></li>
-<li><p><a class="reference internal" href="#a-typical-bare-metal-application" id="id12">A Typical Bare Metal Application</a></p></li>
-<li><p><a class="reference internal" href="#hm-need-another-timer-interrupt" id="id13">Hm. Need Another Timer Interrupt!</a></p></li>
-<li><p><a class="reference internal" href="#away-from-interrupts-use-an-operating-system" id="id14">Away From Interrupts: Use An Operating System</a></p></li>
-<li><p><a class="reference internal" href="#id1" id="id15">Tasks?</a></p></li>
-<li><p><a class="reference internal" href="#threads-are-great-more-functionality" id="id16">Threads Are Great: More Functionality</a></p></li>
-<li><p><a class="reference internal" href="#are-threads-great" id="id17">Are Threads Great?</a></p></li>
-<li><p><a class="reference internal" href="#stability-considerations" id="id18">Stability Considerations</a></p></li>
-<li><p><a class="reference internal" href="#processes-address-spaces" id="id19">Processes, Address Spaces</a></p></li>
-<li><p><a class="reference internal" href="#stabilizing" id="id20">Stabilizing</a></p></li>
+<li><p><a class="reference internal" href="#tasks" id="id5">Tasks</a></p></li>
+<li><p><a class="reference internal" href="#a-typical-bare-metal-application" id="id6">A Typical Bare Metal Application</a></p></li>
+<li><p><a class="reference internal" href="#hm-need-another-timer-interrupt" id="id7">Hm. Need Another Timer Interrupt!</a></p></li>
+<li><p><a class="reference internal" href="#away-from-interrupts-use-an-operating-system" id="id8">Away From Interrupts: Use An Operating System</a></p></li>
+<li><p><a class="reference internal" href="#id1" id="id9">Tasks?</a></p></li>
+<li><p><a class="reference internal" href="#threads-are-great-more-functionality" id="id10">Threads Are Great: More Functionality</a></p></li>
+<li><p><a class="reference internal" href="#are-threads-great" id="id11">Are Threads Great?</a></p></li>
+<li><p><a class="reference internal" href="#stability-considerations" id="id12">Stability Considerations</a></p></li>
+<li><p><a class="reference internal" href="#processes-address-spaces" id="id13">Processes, Address Spaces</a></p></li>
+<li><p><a class="reference internal" href="#stabilizing" id="id14">Stabilizing</a></p></li>
 </ul>
 </div>
 <section id="tasks">
-<h2><a class="toc-backref" href="#id11">Tasks</a><a class="headerlink" href="#tasks" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">Tasks</a><a class="headerlink" href="#tasks" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>In userspace, there is no such thing as a task</p></li>
 <li><p>Only processes and threads</p></li>
@@ -184,7 +184,7 @@
 </ul>
 </section>
 <section id="a-typical-bare-metal-application">
-<h2><a class="toc-backref" href="#id12">A Typical Bare Metal Application</a><a class="headerlink" href="#a-typical-bare-metal-application" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">A Typical Bare Metal Application</a><a class="headerlink" href="#a-typical-bare-metal-application" title="Permalink to this headline">¶</a></h2>
 <p><strong>Back in Time, Back in Technology</strong></p>
 <ul class="simple">
 <li><p>One timer interrupt with two responsibilities</p>
@@ -194,8 +194,6 @@
 </ul>
 </li>
 </ul>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/6f46dcc8743131a58ff316df28d2a3f4/embedded-app-1-irq.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/embedded-app-1-irq.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// g++ -o /tmp/embedded-app-1-irq embedded-app-1-irq.cpp -lrt</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;signal.h&gt;</span><span class="cp"></span>
@@ -310,7 +308,6 @@
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>g++ -o /tmp/embedded-app-1-irq embedded-app-1-irq.cpp -lrt
 <span class="gp">$ </span>/tmp/embedded-app-1-irq
 <span class="go">----------</span>
@@ -334,16 +331,14 @@
 </div>
 </section>
 <section id="hm-need-another-timer-interrupt">
-<h2><a class="toc-backref" href="#id13">Hm. Need Another Timer Interrupt!</a><a class="headerlink" href="#hm-need-another-timer-interrupt" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id7">Hm. Need Another Timer Interrupt!</a><a class="headerlink" href="#hm-need-another-timer-interrupt" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Update rates and display rates are the same currently</p></li>
 <li><p>Want them to diverge for whatever reason</p></li>
 <li><p>⟶ “update” timer (0.5s, and a separate “show” timer
 (1s)</p></li>
 </ul>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/7a969941ed43c365fe6df7c8c595900d/embedded-app-2-irq.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/embedded-app-2-irq.cpp</span></code></a></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// g++ -o /tmp/embedded-app-2-irq embedded-app-2-irq.cpp -lrt</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// g++ -o /tmp/embedded-app-1-irq embedded-app-1-irq.cpp -lrt</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;signal.h&gt;</span><span class="cp"></span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;time.h&gt;</span><span class="cp"></span>
@@ -389,10 +384,7 @@
 <span class="w">        </span><span class="n">status</span><span class="p">.</span><span class="n">tick_counter</span><span class="o">++</span><span class="p">;</span><span class="w"></span>
 <span class="w">    </span><span class="k">else</span><span class="w"> </span>
 <span class="w">        </span><span class="n">status</span><span class="p">.</span><span class="n">tick_counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
 
-<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">show_status</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="n">write</span><span class="p">(</span><span class="n">STDOUT_FILENO</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">.</span><span class="n">display</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">status</span><span class="p">.</span><span class="n">display</span><span class="p">));</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 
@@ -405,7 +397,7 @@
 <span class="w">        </span><span class="n">strcpy</span><span class="p">(</span><span class="n">status</span><span class="p">.</span><span class="n">display</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;----------</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-<span class="w">    </span><span class="c1">// establish update timer handler</span>
+<span class="w">    </span><span class="c1">// establish timer handler</span>
 <span class="w">    </span><span class="p">{</span><span class="w"></span>
 <span class="w">        </span><span class="k">struct</span> <span class="nc">sigaction</span><span class="w"> </span><span class="n">sa</span><span class="p">;</span><span class="w"></span>
 <span class="w">        </span><span class="n">memset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sa</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">sa</span><span class="p">));</span><span class="w"></span>
@@ -418,7 +410,7 @@
 <span class="w">        </span><span class="p">}</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-<span class="w">    </span><span class="c1">// create and start update timer</span>
+<span class="w">    </span><span class="c1">// create and start timer</span>
 <span class="w">    </span><span class="p">{</span><span class="w"></span>
 <span class="w">        </span><span class="k">struct</span> <span class="nc">sigevent</span><span class="w"> </span><span class="n">sev</span><span class="p">;</span><span class="w"></span>
 <span class="w">        </span><span class="n">memset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sev</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">sev</span><span class="p">));</span><span class="w"></span>
@@ -452,53 +444,6 @@
 <span class="w">        </span><span class="p">}</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-<span class="w">    </span><span class="c1">// establish show timer handler</span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="k">struct</span> <span class="nc">sigaction</span><span class="w"> </span><span class="n">sa</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="n">memset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sa</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">sa</span><span class="p">));</span><span class="w"></span>
-<span class="w">        </span><span class="n">sa</span><span class="p">.</span><span class="n">sa_handler</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">show_status</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sigaction</span><span class="p">(</span><span class="n">SIGRTMIN</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">sa</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span><span class="w"></span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;sigaction&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-
-<span class="w">    </span><span class="c1">// create and start show timer</span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="k">struct</span> <span class="nc">sigevent</span><span class="w"> </span><span class="n">sev</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="n">memset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sev</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">sev</span><span class="p">));</span><span class="w"></span>
-<span class="w">        </span><span class="n">sev</span><span class="p">.</span><span class="n">sigev_notify</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SIGEV_SIGNAL</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="n">sev</span><span class="p">.</span><span class="n">sigev_signo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SIGRTMIN</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">        </span><span class="kt">timer_t</span><span class="w"> </span><span class="n">timer</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">timer_create</span><span class="p">(</span><span class="n">CLOCK_MONOTONIC</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">sev</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">timer</span><span class="p">);</span><span class="w"></span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;timer_create&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-
-<span class="w">        </span><span class="n">itimerspec</span><span class="w"> </span><span class="n">tspec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="cm">/*interval*/</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="cm">/*sec*/</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span>
-<span class="w">                </span><span class="cm">/*nsec*/</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">            </span><span class="p">},</span><span class="w"></span>
-<span class="w">            </span><span class="cm">/*initial expiration in a second*/</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="cm">/*sec*/</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="cm">/*nsec*/</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="w">        </span><span class="p">};</span><span class="w"></span>
-
-<span class="w">        </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">timer_settime</span><span class="p">(</span><span class="n">timer</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">tspec</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span><span class="w"></span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;timer_settime&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-
 <span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nb">true</span><span class="p">)</span><span class="w"></span>
 <span class="w">        </span><span class="n">pause</span><span class="p">();</span><span class="w">  </span><span class="c1">// or do power management, on a real bare metal</span>
 <span class="w">                  </span><span class="c1">// platform</span>
@@ -506,7 +451,6 @@
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </pre></div>
-</div>
 </div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>g++ -o /tmp/embedded-app-1-irq embedded-app-2-irq.cpp -lrt
 <span class="gp">$ </span>/tmp/embedded-app-2-irq
@@ -528,7 +472,7 @@
 <p>(Missing every second status update, roughly)</p>
 </section>
 <section id="away-from-interrupts-use-an-operating-system">
-<h2><a class="toc-backref" href="#id14">Away From Interrupts: Use An Operating System</a><a class="headerlink" href="#away-from-interrupts-use-an-operating-system" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id8">Away From Interrupts: Use An Operating System</a><a class="headerlink" href="#away-from-interrupts-use-an-operating-system" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>I want to do periodic actions</p></li>
 <li><p>Number of actions will soon exceed number of timer chips</p></li>
@@ -550,8 +494,6 @@ physical timer chips</p></li>
 <li><p>⟶ replace timer interrupts with synchronous loops in
 tasks</p></li>
 </ul>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/408fa05115b84c6f647bd3c29436417c/embedded-app-tasks.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/embedded-app-tasks.cpp</span></code></a></span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// g++ -o /tmp/embedded-app-tasks embedded-app-tasks.cpp -lrt -lpthread</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;signal.h&gt;</span><span class="cp"></span>
@@ -679,7 +621,6 @@ tasks</p></li>
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>g++ -o /tmp/embedded-app-tasks embedded-app-tasks.cpp -lrt -lpthread
 <span class="gp">$ </span>/tmp/embedded-app-tasks
 <span class="go">...</span>
@@ -687,7 +628,7 @@ tasks</p></li>
 </div>
 </section>
 <section id="id1">
-<h2><a class="toc-backref" href="#id15">Tasks?</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id9">Tasks?</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Great win: one process with two tasks (threads)</p></li>
 <li><p>Lets do some introspection</p></li>
@@ -704,16 +645,16 @@ tasks</p></li>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">strace</span></code>: <a class="reference external" href="https://en.wikipedia.org/wiki/Strace">system call tracer</a></p></li>
 </ul>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">main thread</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">main thread</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>strace -p <span class="m">231765</span>
 <span class="go">strace: Process 231765 attached</span>
 <span class="go">pause(</span>
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">update thread</span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">update thread</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>strace -p <span class="m">231766</span>
 <span class="go">strace: Process 231766 attached</span>
 <span class="go">restart_syscall(&lt;... resuming interrupted read ...&gt;) = 0</span>
@@ -722,8 +663,8 @@ tasks</p></li>
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">show thread</span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">show thread</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>strace -p <span class="m">231767</span>
 <span class="go">strace: Process 231767 attached</span>
 <span class="go">restart_syscall(&lt;... resuming interrupted read ...&gt;) = 0</span>
@@ -734,7 +675,7 @@ tasks</p></li>
 </div>
 </section>
 <section id="threads-are-great-more-functionality">
-<h2><a class="toc-backref" href="#id16">Threads Are Great: More Functionality</a><a class="headerlink" href="#threads-are-great-more-functionality" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id10">Threads Are Great: More Functionality</a><a class="headerlink" href="#threads-are-great-more-functionality" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Not being interrupt driven anymore</p></li>
 <li><p>⟶ good</p></li>
@@ -746,8 +687,6 @@ tasks</p></li>
 <li><p>Reverse: <code class="docutils literal notranslate"><span class="pre">&quot;\033[7m&quot;</span></code></p></li>
 <li><p>Normal: <code class="docutils literal notranslate"><span class="pre">&quot;\033[0m&quot;</span></code></p></li>
 </ul>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/1de316755924083b164da4cc0e7ea178/embedded-app-more-tasks.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/embedded-app-more-tasks.cpp</span></code></a></span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// g++ -o /tmp/embedded-app-more-tasks embedded-app-more-tasks.cpp -lrt -lpthread</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;signal.h&gt;</span><span class="cp"></span>
@@ -908,7 +847,6 @@ tasks</p></li>
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>g++ -o /tmp/embedded-app-more-tasks embedded-app-more-tasks.cpp -lrt -lpthread
 <span class="gp">$ </span>/tmp/embedded-app-more-tasks
 <span class="go">...</span>
@@ -916,7 +854,7 @@ tasks</p></li>
 </div>
 </section>
 <section id="are-threads-great">
-<h2><a class="toc-backref" href="#id17">Are Threads Great?</a><a class="headerlink" href="#are-threads-great" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id11">Are Threads Great?</a><a class="headerlink" href="#are-threads-great" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Cramming tons of functionality into a single program requires some
 programming skills</p>
@@ -932,8 +870,6 @@ programming skills</p>
 </ul>
 <p><strong>Worst case</strong>: one thread causes a bug … (hint: it’s the unrelated
 terminal flasher)</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/c919f8046f7386882621977da221bae5/embedded-app-more-tasks-buggy.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/embedded-app-more-tasks-buggy.cpp</span></code></a></span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// g++ -o /tmp/embedded-app-more-tasks-buggy embedded-app-more-tasks-buggy.cpp -lrt</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;signal.h&gt;</span><span class="cp"></span>
@@ -1107,7 +1043,6 @@ terminal flasher)</p>
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>g++ -o /tmp/embedded-app-more-tasks-buggy embedded-app-more-tasks-buggy.cpp -lrt -lpthread
 <span class="gp">$ </span>/tmp/embedded-app-more-tasks-buggy
 <span class="go">...</span>
@@ -1115,7 +1050,7 @@ terminal flasher)</p>
 </div>
 </section>
 <section id="stability-considerations">
-<h2><a class="toc-backref" href="#id18">Stability Considerations</a><a class="headerlink" href="#stability-considerations" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">Stability Considerations</a><a class="headerlink" href="#stability-considerations" title="Permalink to this headline">¶</a></h2>
 <p>Three <em>tasks</em> (indepenently running entities)</p>
 <ol class="arabic simple">
 <li><p>Update status</p></li>
@@ -1130,7 +1065,7 @@ terminal flasher)</p>
 <p><strong>Probably the latter requires a bit more isolation!</strong></p>
 </section>
 <section id="processes-address-spaces">
-<h2><a class="toc-backref" href="#id19">Processes, Address Spaces</a><a class="headerlink" href="#processes-address-spaces" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">Processes, Address Spaces</a><a class="headerlink" href="#processes-address-spaces" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p><a class="reference external" href="https://en.wikipedia.org/wiki/Memory_management_unit">Memory Management Unit (MMU)</a></p></li>
 <li><p>Maps <em>virtual</em> addresses to <em>physical</em> addresses</p></li>
@@ -1153,7 +1088,7 @@ fault</strong> (in <a class="reference external" href="https://en.wikipedia.org/
 </ul>
 </section>
 <section id="stabilizing">
-<h2><a class="toc-backref" href="#id20">Stabilizing</a><a class="headerlink" href="#stabilizing" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id14">Stabilizing</a><a class="headerlink" href="#stabilizing" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Lets rip the offender out; “<em>decouple the rest from it</em>”</p></li>
 <li><p>Make a <em>single threaded</em> program that we start separately. Respectively,</p>
@@ -1163,8 +1098,6 @@ fault</strong> (in <a class="reference external" href="https://en.wikipedia.org/
 </ul>
 </li>
 </ul>
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/d5e03f42d973fa2e07bfaace373a999a/flash-terminal.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/flash-terminal.cpp</span></code></a></span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// g++ -o /tmp/flash-terminal flash-terminal.cpp</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span><span class="cp"></span>
@@ -1195,7 +1128,6 @@ fault</strong> (in <a class="reference external" href="https://en.wikipedia.org/
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </pre></div>
-</div>
 </div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>g++ -o /tmp/flash-terminal flash-terminal.cpp
 <span class="gp">$ </span>/tmp/flash-terminal <span class="p">&amp;</span>         <span class="c1"># &lt;--- BACKGROUND, ON SAME TERMINAL!</span>
