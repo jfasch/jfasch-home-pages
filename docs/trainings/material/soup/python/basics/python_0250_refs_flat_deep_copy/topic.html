@@ -1,0 +1,391 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>References, (Im)mutability &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/python/basics/python_0250_refs_flat_deep_copy/topic.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="Functions" href="../python_0270_functions/topic.html" />
+    <link rel="prev" title="The range Function" href="../python_0225_range/topic.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../group.html">Python: The Language Fundamentals</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../installation.html">Python Installation</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0110_blahblah/topic.html">Blahblah</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0120_helloworld/topic.html">Hello World</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0130_syntax_etc/topic.html">Syntax etc.</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0140_variables/topic.html">Variables</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0150_datatypes_overview/topic.html">Datatypes</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0150_datatypes_overview_compound/topic.html">Compound Datatypes</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0160_boolean/topic.html">Boolean</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0170_if/topic.html">The <code class="docutils literal notranslate"><span class="pre">if</span></code> Statement</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0193_while/topic.html"><code class="docutils literal notranslate"><span class="pre">while</span></code> Loops</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0200_sequential_types/topic.html">Sequential Datatypes</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0210_indexing_slicing/topic.html">Indexing and Slicing</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0220_for/topic.html"><code class="docutils literal notranslate"><span class="pre">for</span></code> Loops</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0225_range/topic.html">The <code class="docutils literal notranslate"><span class="pre">range</span></code> Function</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">References, (Im)mutability</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0270_functions/topic.html">Functions</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0300_strings/topic.html">More About Strings</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0310_strings_formatting/topic.html">String Formatting</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0320_strings_methods/topic.html">Miscellaneous String Methods</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0330_strings_encoding/topic.html">Strings and Encoding</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0400_lists/topic.html">More on Lists</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0450_dictionaries/topic.html">More on Dictionaries</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0460_sets/topic.html">More on Sets</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_0500_files/topic.html">File I/O</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../python_1000_function_objects/topic.html">Function Objects</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../advanced/group.html">Python: More Language Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../swdev/group.html">Python: Project/Package Management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../misc/group.html">Python: Miscellaneous Topics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../link-collection.html">Python Links</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../graph.html">Python: All Material, Interrelated</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../exercises/group.html">Exercises</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../sysprog/group.html">Systems Programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../kernel/index.html">Linux Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../devenv/group.html">Linux: Development Environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="references-im-mutability">
+<h1>References, (Im)mutability<a class="headerlink" href="#references-im-mutability" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#immutability-numbers" id="id2">Immutability: Numbers</a></p></li>
+<li><p><a class="reference internal" href="#immutability-tuples" id="id3">Immutability: Tuples</a></p></li>
+<li><p><a class="reference internal" href="#mutability-lists-1" id="id4">Mutability: Lists (1)</a></p></li>
+<li><p><a class="reference internal" href="#mutability-lists-2" id="id5">Mutability: Lists (2)</a></p></li>
+<li><p><a class="reference internal" href="#shallow-copy" id="id6">Shallow Copy</a></p></li>
+<li><p><a class="reference internal" href="#deep-copy" id="id7">Deep Copy</a></p></li>
+</ul>
+</div>
+<section id="immutability-numbers">
+<h2><a class="toc-backref" href="#id2">Immutability: Numbers</a><a class="headerlink" href="#immutability-numbers" title="Permalink to this headline">¶</a></h2>
+<p><strong>Numbers are immutable</strong> …</p>
+<ul class="simple">
+<li><p>Object of type <code class="docutils literal notranslate"><span class="pre">int</span></code> with value 42</p></li>
+<li><p>Variable <code class="docutils literal notranslate"><span class="pre">a</span></code> points to it (“gives it a name”)</p></li>
+<li><p>The object cannot change its value - there is no method to
+modify an integer object</p></li>
+<li><p>⟶ The latter situation is equivalent to the former
+(which is the implementation)</p></li>
+</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">a</span>
+</pre></div>
+</div>
+</td>
+<td><img alt="../../../../../../_images/0250-refs-flat-deep-copy-immutability-numbers-shared.svg" src="../../../../../../_images/0250-refs-flat-deep-copy-immutability-numbers-shared.svg" /></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">42</span>
+</pre></div>
+</div>
+</td>
+<td><img alt="../../../../../../_images/0250-refs-flat-deep-copy-immutability-numbers-distinct.svg" src="../../../../../../_images/0250-refs-flat-deep-copy-immutability-numbers-distinct.svg" /></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="immutability-tuples">
+<h2><a class="toc-backref" href="#id3">Immutability: Tuples</a><a class="headerlink" href="#immutability-tuples" title="Permalink to this headline">¶</a></h2>
+<p><strong>Same with tuples</strong></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><ul class="simple">
+<li><p>Like lists, but <em>immutable</em></p></li>
+<li><p>No way to modify a tuple</p>
+<ul>
+<li><p>No appending</p></li>
+<li><p>No slice assignment</p></li>
+<li><p>No nothing</p></li>
+</ul>
+</li>
+<li><p>So both of these are equivalent</p>
+<ul>
+<li><p>To the user, <code class="docutils literal notranslate"><span class="pre">b</span></code> <em>is a copy of</em> <code class="docutils literal notranslate"><span class="pre">a</span></code></p></li>
+</ul>
+</li>
+</ul>
+</td>
+<td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="s2">&quot;xy&quot;</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">a</span>
+</pre></div>
+</div>
+<img alt="../../../../../../_images/0250-refs-flat-deep-copy-immutability-tuples-shared.svg" src="../../../../../../_images/0250-refs-flat-deep-copy-immutability-tuples-shared.svg" /><img alt="../../../../../../_images/0250-refs-flat-deep-copy-immutability-tuples-distinct.svg" src="../../../../../../_images/0250-refs-flat-deep-copy-immutability-tuples-distinct.svg" /></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mutability-lists-1">
+<h2><a class="toc-backref" href="#id4">Mutability: Lists (1)</a><a class="headerlink" href="#mutability-lists-1" title="Permalink to this headline">¶</a></h2>
+<p><strong>Lists are mutable</strong> …</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span>
+<span class="go">[1, 2, 3]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span>
+<span class="go">[1, 2, 3, 4]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">[1, 2, 3, 4]</span>
+</pre></div>
+</div>
+</td>
+<td><ul class="simple">
+<li><p>Objects can be modified</p></li>
+<li><p>E.g. by using <code class="docutils literal notranslate"><span class="pre">append()</span></code></p></li>
+</ul>
+<img alt="../../../../../../_images/0250-refs-flat-deep-copy-mutability-list.svg" src="../../../../../../_images/0250-refs-flat-deep-copy-mutability-list.svg" /></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mutability-lists-2">
+<h2><a class="toc-backref" href="#id5">Mutability: Lists (2)</a><a class="headerlink" href="#mutability-lists-2" title="Permalink to this headline">¶</a></h2>
+<p><strong>Danger …</strong></p>
+<ul class="simple">
+<li><p>Take care when passing complex data structures</p></li>
+<li><p>Not passed <em>by copy</em> (as in C++)</p></li>
+<li><p>Passed <em>by reference</em> (as in Java)</p></li>
+<li><p>Make a copy if needed</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Copying a list</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="p">[:]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span>
+<span class="go">[1, 2, 3]</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="shallow-copy">
+<h2><a class="toc-backref" href="#id6">Shallow Copy</a><a class="headerlink" href="#shallow-copy" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="mi">2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="p">[:]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span>
+<span class="go">[1, [1, 2, 3], 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">[1, [1, 2, 3, 4], 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span>
+<span class="go">[1, [1, 2, 3, 4], 2]</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</td>
+<td><img alt="../../../../../../_images/0250-refs-flat-deep-copy-shallow-copy.svg" src="../../../../../../_images/0250-refs-flat-deep-copy-shallow-copy.svg" /><ul class="simple">
+<li><p>Only first level copied</p></li>
+<li><p><em>Shallow copy</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">a[1]</span></code> is a <em>reference</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">is</span></code>: <em>object identity</em></p></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="deep-copy">
+<h2><a class="toc-backref" href="#id7">Deep Copy</a><a class="headerlink" href="#deep-copy" title="Permalink to this headline">¶</a></h2>
+<p><strong>Solution:</strong> not easy</p>
+<ul class="simple">
+<li><p>Recursive structure traversal</p></li>
+<li><p>Handling every possible type</p></li>
+<li><p>Dedicated module in the standard library: <code class="docutils literal notranslate"><span class="pre">copy</span></code></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="mi">2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2021 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/python/basics/python_0250_refs_flat_deep_copy/topic.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

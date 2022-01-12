@@ -1,0 +1,339 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Communication: Condition Variable &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/sysprog/posix-threads/060-condition-variable/topic.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="Condition Variable: Message Queue" href="../070-exercise-condition-variable/topic.html" />
+    <link rel="prev" title="Mutex: Solve Load/Modify/Conflict" href="../050-exercise-mutex/topic.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../linux/group.html">Linux</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">Systems Programming</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../scheduling/group.html">Scheduling</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../group.html">POSIX Threads</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../010-introduction/topic.html">Basics</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../020-lifecycle/topic.html">Thread Life Cycle</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../030-exercise-pthcreate-race-condition/topic.html">Thread Creation, Race Condition</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../040-mutex/topic.html">Synchronization</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../050-exercise-mutex/topic.html">Mutex: Solve Load/Modify/Conflict</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">Communication: Condition Variable</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../070-exercise-condition-variable/topic.html">Condition Variable: Message Queue</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../080-miscellaneous/topic.html">Miscellaneous</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../090-last-warning/topic.html">Last Warning</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../locked-trylock.html">Trylock/islocked</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../sysprog_signals/topic.html">Sysprog: Signals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../sysprog_ipc/topic.html">Sysprog: POSIX IPC</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../sysprog_events/topic.html">Sysprog: Events</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../kernel/index.html">Linux Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../devenv/group.html">Linux: Development Environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="communication-condition-variable">
+<h1>Communication: Condition Variable<a class="headerlink" href="#communication-condition-variable" title="Permalink to this headline">¶</a></h1>
+<section id="condition-variable-1">
+<h2>Condition Variable (1)<a class="headerlink" href="#condition-variable-1" title="Permalink to this headline">¶</a></h2>
+<p><strong>Communication</strong>:</p>
+<ul class="simple">
+<li><p>One thread waits for a certain event to happen</p></li>
+<li><p>The event is produced by another thread</p></li>
+<li><p>The waiting thread does not consume and CPU time while waiting (polling is dumb)</p></li>
+<li><p>Solution in Windows: <em>WIN32 Events</em> (auto-reset, manual-reset)</p></li>
+</ul>
+<p><strong>POSIX is different:</strong> <em>Condition Variable</em></p>
+<ul class="simple">
+<li><p>No state (as opposed to WIN32 Events — set/unset)</p></li>
+<li><p>Operations <code class="docutils literal notranslate"><span class="pre">wait()</span></code> and <code class="docutils literal notranslate"><span class="pre">signal()</span></code></p></li>
+<li><p>Useless on its own</p></li>
+<li><p>Building block to build custom communication mechanisms around
+custom conditions</p></li>
+</ul>
+</section>
+<section id="condition-variable-2">
+<h2>Condition Variable (2)<a class="headerlink" href="#condition-variable-2" title="Permalink to this headline">¶</a></h2>
+<p><strong>Sample conditions</strong> (<em>predicates</em>, in POSIX parlance):</p>
+<ul class="simple">
+<li><p>Event has been set</p></li>
+<li><p>Message queue is not empty anymore</p></li>
+<li><p>Message queue is not full anymore</p></li>
+<li><p>Semaphore count is not zero anymore</p></li>
+<li><p>…</p></li>
+</ul>
+<p>Condition is coupled with a state which is protected by a <em>mutex</em>. For
+example:</p>
+<ul class="simple">
+<li><p>Boolean flag “set/unset”</p></li>
+<li><p>Message queue implementation (linked list?)</p></li>
+</ul>
+</section>
+<section id="condition-variable-wait">
+<h2>Condition Variable: <code class="docutils literal notranslate"><span class="pre">wait()</span></code><a class="headerlink" href="#condition-variable-wait" title="Permalink to this headline">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://linux.die.net/man/3/pthread_cond_wait">man 3 pthread_cond_wait</a></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">pthread_cond_wait</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">pthread_cond_t</span><span class="w"> </span><span class="o">*</span><span class="n">cond</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">pthread_mutex_t</span><span class="w"> </span><span class="o">*</span><span class="n">mutex</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>In an <strong>atomic</strong> operation (otherwise ⟶ “Lost
+Wakeup”)</p>
+</div>
+<ul class="simple">
+<li><p>Releases mutex</p></li>
+<li><p>Suspends caller until condition variable is <em>signaled</em> by another
+thread</p></li>
+</ul>
+</section>
+<section id="condition-variable-signal">
+<h2>Condition Variable: <code class="docutils literal notranslate"><span class="pre">signal()</span></code><a class="headerlink" href="#condition-variable-signal" title="Permalink to this headline">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://linux.die.net/man/3/pthread_cond_signal">man 3 pthread_cond_signal</a></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">pthread_cond_signal</span><span class="p">(</span><span class="n">pthread_cond_t</span><span class="w"> </span><span class="o">*</span><span class="n">cond</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<p>Again, in an <strong>atomic</strong> operation:</p>
+<ul class="simple">
+<li><p>Wakes one waiter if any</p></li>
+<li><p>Lets him acquire the mutex</p></li>
+</ul>
+</section>
+<section id="example-win32-auto-reset-event-1">
+<h2>Example: WIN32 Auto Reset Event (1)<a class="headerlink" href="#example-win32-auto-reset-event-1" title="Permalink to this headline">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Setting the event</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">set_autoreset_event</span><span class="p">(</span><span class="n">Event</span><span class="o">*</span><span class="w"> </span><span class="n">ev</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">pthread_cond_signal</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">is_set</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="example-win32-auto-reset-event-2">
+<h2>Example: WIN32 Auto Reset Event (2)<a class="headerlink" href="#example-win32-auto-reset-event-2" title="Permalink to this headline">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Waiting for the event</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">wait_autoreset_event</span><span class="p">(</span><span class="n">Event</span><span class="o">*</span><span class="w"> </span><span class="n">ev</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">value</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">pthread_cond_wait</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">is_set</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="cm">/* mutex acquiriert */</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="cm">/* &quot;autoreset&quot; */</span><span class="w"></span>
+<span class="w">    </span><span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="condition-variable-checking-the-predicate">
+<h2>Condition Variable: Checking the Predicate<a class="headerlink" href="#condition-variable-checking-the-predicate" title="Permalink to this headline">¶</a></h2>
+<p><strong>Use</strong> <code class="docutils literal notranslate"><span class="pre">while</span></code> <strong>instead of</strong> <code class="docutils literal notranslate"><span class="pre">if</span></code> <strong>, because …</strong></p>
+<ul class="simple">
+<li><p>Spurious wakeups are possible (for example if the PThread
+implementation is using signals internally)</p></li>
+<li><p>Multiple waiters are woken (broadcast)</p>
+<ul>
+<li><p>Predicate is true, but the first thread invalidates it immediately</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="condition-variable-initialization">
+<h2>Condition Variable: Initialization<a class="headerlink" href="#condition-variable-initialization" title="Permalink to this headline">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://linux.die.net/man/3/pthread_cond_init">man 3 pthread_cond_init</a></span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">pthread_cond_destroy</span><span class="p">(</span><span class="n">pthread_cond_t</span><span class="w"> </span><span class="o">*</span><span class="n">cond</span><span class="p">);</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">pthread_cond_init</span><span class="p">(</span><span class="n">pthread_cond_t</span><span class="w"> </span><span class="o">*</span><span class="n">cond</span><span class="p">,</span><span class="w"></span>
+<span class="w">       </span><span class="k">const</span><span class="w"> </span><span class="n">pthread_condattr_t</span><span class="w"> </span><span class="o">*</span><span class="n">attr</span><span class="p">);</span><span class="w"></span>
+<span class="n">pthread_cond_t</span><span class="w"> </span><span class="n">cond</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PTHREAD_COND_INITIALIZER</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><p>Dynamic initialization using
+<code class="docutils literal notranslate"><span class="pre">pthread_cond_init()</span></code>/<code class="docutils literal notranslate"><span class="pre">pthread_cond_destroy()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">attr</span> <span class="pre">==</span> <span class="pre">NULL</span></code> ⟶ default condition variable</p></li>
+<li><p>Static initialization using <code class="docutils literal notranslate"><span class="pre">PTHREAD_COND_INITIALIZER</span></code></p></li>
+</ul>
+</section>
+<section id="condition-variable-miscellaneous">
+<h2>Condition Variable: Miscellaneous<a class="headerlink" href="#condition-variable-miscellaneous" title="Permalink to this headline">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://linux.die.net/man/3/pthread_cond_broadcast">man 3 pthread_cond_broadcast</a></span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">pthread_cond_broadcast</span><span class="p">(</span><span class="n">pthread_cond_t</span><span class="w"> </span><span class="o">*</span><span class="n">cond</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://linux.die.net/man/3/pthread_cond_wait">man 3 pthread_cond_timedwait</a></span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">pthread_cond_timedwait</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">pthread_cond_t</span><span class="w"> </span><span class="o">*</span><span class="n">cond</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">pthread_mutex_t</span><span class="w"> </span><span class="o">*</span><span class="n">mutex</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span> <span class="nc">timespec</span><span class="w"> </span><span class="o">*</span><span class="n">abstime</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2021 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/sysprog/posix-threads/060-condition-variable/topic.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
