@@ -173,7 +173,7 @@
 </div>
 <section id="description">
 <h2><a class="toc-backref" href="#id2">Description</a><a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p>In the previous exercise, <span class="xref std std-doc">../userdb-search/exercise`</span>, we used
+<p>In the previous exercise, <a class="reference internal" href="../userdb-search/exercise.html"><span class="doc">Exercise: Search a User By Lastname</span></a>, we used
 the original (C) search implementation, which has a number of
 shortcomings,</p>
 <ul class="simple">
@@ -190,29 +190,37 @@ for documentation on <code class="docutils literal notranslate"><span class="pre
 is user-visible). The test program from the previous exercise is
 sufficient - if that works, our change did not break anything.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/e8901a1e282b46d11ea89aa8e71fd345/userdb-main.cpp"><code class="xref download docutils literal notranslate"><span class="pre">../userdb-search/userdb-main.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include &quot;userdb.h&quot;</span>
-<span class="c1">#include &lt;iostream&gt;</span>
-<span class="c1">#include &lt;cassert&gt;</span>
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/a522f3b572b320d09c223375d195ea3b/test-userdb-search.cpp"><code class="xref download docutils literal notranslate"><span class="pre">../userdb-search/test-userdb-search.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#include &quot;userdb.h&quot;
+#include &lt;iostream&gt;
+#include &lt;cassert&gt;
 
-<span class="nb">int</span> <span class="n">main</span><span class="p">()</span>
-<span class="p">{</span>
-    <span class="n">UserDB</span> <span class="n">db</span><span class="p">;</span>
+int main()
+{
+    UserDB db;
 
-    <span class="o">//</span> <span class="n">setup</span> <span class="n">db</span> <span class="n">to</span> <span class="n">have</span> <span class="n">something</span> <span class="n">to</span> <span class="n">search</span> <span class="k">for</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">User</span><span class="p">(</span><span class="s2">&quot;Philipp&quot;</span><span class="p">,</span> <span class="s2">&quot;Lichtenberger&quot;</span><span class="p">,</span> <span class="mi">35</span><span class="p">));</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">User</span><span class="p">(</span><span class="s2">&quot;Joerg&quot;</span><span class="p">,</span> <span class="s2">&quot;Faschingbauer&quot;</span><span class="p">,</span> <span class="mi">55</span><span class="p">));</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">User</span><span class="p">(</span><span class="s2">&quot;Caro&quot;</span><span class="p">,</span> <span class="s2">&quot;Faschingbauer&quot;</span><span class="p">,</span> <span class="mi">24</span><span class="p">));</span>
+    // setup db to have something to search for
+    // ----------------------------------------
+    db.insert(User(&quot;Philipp&quot;, &quot;Lichtenberger&quot;, 35));
+    db.insert(User(&quot;Joerg&quot;, &quot;Faschingbauer&quot;, 55));
+    db.insert(User(&quot;Caro&quot;, &quot;Faschingbauer&quot;, 24));
 
-    <span class="o">//</span> <span class="n">test</span> <span class="n">the</span> <span class="n">search</span>
-    <span class="n">User</span> <span class="n">found</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">search_by_lastname</span><span class="p">(</span><span class="s2">&quot;Faschingbauer&quot;</span><span class="p">);</span>
+    // test the search
+    // ---------------
 
-    <span class="k">assert</span><span class="p">(</span><span class="n">found</span><span class="o">.</span><span class="n">firstname</span> <span class="o">==</span> <span class="s2">&quot;Joerg&quot;</span><span class="p">);</span>
-    <span class="k">assert</span><span class="p">(</span><span class="n">found</span><span class="o">.</span><span class="n">lastname</span> <span class="o">==</span> <span class="s2">&quot;Faschingbauer&quot;</span><span class="p">);</span>
-    <span class="k">assert</span><span class="p">(</span><span class="n">found</span><span class="o">.</span><span class="n">age</span> <span class="o">==</span> <span class="mi">55</span><span class="p">);</span>
+    // we find the *first* user if it exists
+    User found = db.search_by_lastname(&quot;Faschingbauer&quot;);
+    assert(found.firstname == &quot;Joerg&quot;);
+    assert(found.lastname == &quot;Faschingbauer&quot;);
+    assert(found.age == 55);
 
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
+    // lacking knowledge of exception handling, we have to return an
+    // invalid user when none exists.
+    User notfound = db.search_by_lastname(&quot;DoesNotExist&quot;);
+    assert(!notfound.isvalid());
+
+    return 0;
+}
 </pre></div>
 </div>
 </div>
@@ -220,13 +228,13 @@ sufficient - if that works, our change did not break anything.</p>
 <section id="dependencies">
 <h2><a class="toc-backref" href="#id3">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
 <svg 
- viewBox="0.00 0.00 940.00 1750.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ viewBox="0.00 0.00 920.00 1750.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1746)">
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-1746 936,-1746 936,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-1746 916,-1746 916,4 -4,4"/>
 <g id="clust1" class="cluster">
 <title>cluster_cxx03</title>
-<path fill="none" stroke="black" d="M20,-130C20,-130 912,-130 912,-130 918,-130 924,-136 924,-142 924,-142 924,-1722 924,-1722 924,-1728 918,-1734 912,-1734 912,-1734 20,-1734 20,-1734 14,-1734 8,-1728 8,-1722 8,-1722 8,-142 8,-142 8,-136 14,-130 20,-130"/>
-<text text-anchor="middle" x="466" y="-1718.8" font-family="Times-Roman" font-size="14.00">C++ 03</text>
+<path fill="none" stroke="black" d="M20,-130C20,-130 892,-130 892,-130 898,-130 904,-136 904,-142 904,-142 904,-1722 904,-1722 904,-1728 898,-1734 892,-1734 892,-1734 20,-1734 20,-1734 14,-1734 8,-1728 8,-1722 8,-1722 8,-142 8,-142 8,-136 14,-130 20,-130"/>
+<text text-anchor="middle" x="456" y="-1718.8" font-family="Times-Roman" font-size="14.00">C++ 03</text>
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_cxx03_exercises_userdb</title>
@@ -234,51 +242,51 @@ sufficient - if that works, our change did not break anything.</p>
 <text text-anchor="middle" x="635" y="-1687.8" font-family="Times-Roman" font-size="14.00">Exercises: User Database</text>
 </g>
 <g id="clust3" class="cluster">
-<title>cluster_cxx03_exceptions</title>
-<path fill="none" stroke="black" d="M28,-1027C28,-1027 134,-1027 134,-1027 140,-1027 146,-1033 146,-1039 146,-1039 146,-1162 146,-1162 146,-1168 140,-1174 134,-1174 134,-1174 28,-1174 28,-1174 22,-1174 16,-1168 16,-1162 16,-1162 16,-1039 16,-1039 16,-1033 22,-1027 28,-1027"/>
-<text text-anchor="middle" x="81" y="-1158.8" font-family="Times-Roman" font-size="14.00">Exceptions</text>
-</g>
-<g id="clust4" class="cluster">
-<title>cluster_cxx03_data_encapsulation</title>
-<path fill="none" stroke="black" d="M379,-202C379,-202 695,-202 695,-202 701,-202 707,-208 707,-214 707,-214 707,-481 707,-481 707,-487 701,-493 695,-493 695,-493 379,-493 379,-493 373,-493 367,-487 367,-481 367,-481 367,-214 367,-214 367,-208 373,-202 379,-202"/>
-<text text-anchor="middle" x="537" y="-477.8" font-family="Times-Roman" font-size="14.00">Data Encapsulation</text>
-</g>
-<g id="clust5" class="cluster">
-<title>cluster_cxx03_templates</title>
-<path fill="none" stroke="black" d="M98,-1182C98,-1182 284,-1182 284,-1182 290,-1182 296,-1188 296,-1194 296,-1194 296,-1317 296,-1317 296,-1323 290,-1329 284,-1329 284,-1329 98,-1329 98,-1329 92,-1329 86,-1323 86,-1317 86,-1317 86,-1194 86,-1194 86,-1188 92,-1182 98,-1182"/>
-<text text-anchor="middle" x="191" y="-1313.8" font-family="Times-Roman" font-size="14.00">Templates</text>
-</g>
-<g id="clust6" class="cluster">
-<title>cluster_cxx03_functions_and_methods</title>
-<path fill="none" stroke="black" d="M144,-501C144,-501 354,-501 354,-501 360,-501 366,-507 366,-513 366,-513 366,-1007 366,-1007 366,-1013 360,-1019 354,-1019 354,-1019 144,-1019 144,-1019 138,-1019 132,-1013 132,-1007 132,-1007 132,-513 132,-513 132,-507 138,-501 144,-501"/>
-<text text-anchor="middle" x="249" y="-1003.8" font-family="Times-Roman" font-size="14.00">Functions and Methods</text>
-</g>
-<g id="clust7" class="cluster">
 <title>cluster_cxx03_stl</title>
 <path fill="none" stroke="black" d="M28,-1337C28,-1337 354,-1337 354,-1337 360,-1337 366,-1343 366,-1349 366,-1349 366,-1400 366,-1400 366,-1406 360,-1412 354,-1412 354,-1412 28,-1412 28,-1412 22,-1412 16,-1406 16,-1400 16,-1400 16,-1349 16,-1349 16,-1343 22,-1337 28,-1337"/>
 <text text-anchor="middle" x="191" y="-1396.8" font-family="Times-Roman" font-size="14.00">Standard Template Library: Container Templates</text>
 </g>
+<g id="clust4" class="cluster">
+<title>cluster_cxx03_data_encapsulation</title>
+<path fill="none" stroke="black" d="M285,-202C285,-202 601,-202 601,-202 607,-202 613,-208 613,-214 613,-214 613,-481 613,-481 613,-487 607,-493 601,-493 601,-493 285,-493 285,-493 279,-493 273,-487 273,-481 273,-481 273,-214 273,-214 273,-208 279,-202 285,-202"/>
+<text text-anchor="middle" x="443" y="-477.8" font-family="Times-Roman" font-size="14.00">Data Encapsulation</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_cxx03_functions_and_methods</title>
+<path fill="none" stroke="black" d="M126,-501C126,-501 336,-501 336,-501 342,-501 348,-507 348,-513 348,-513 348,-1007 348,-1007 348,-1013 342,-1019 336,-1019 336,-1019 126,-1019 126,-1019 120,-1019 114,-1013 114,-1007 114,-1007 114,-513 114,-513 114,-507 120,-501 126,-501"/>
+<text text-anchor="middle" x="231" y="-1003.8" font-family="Times-Roman" font-size="14.00">Functions and Methods</text>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_cxx03_exceptions</title>
+<path fill="none" stroke="black" d="M182,-1027C182,-1027 288,-1027 288,-1027 294,-1027 300,-1033 300,-1039 300,-1039 300,-1162 300,-1162 300,-1168 294,-1174 288,-1174 288,-1174 182,-1174 182,-1174 176,-1174 170,-1168 170,-1162 170,-1162 170,-1039 170,-1039 170,-1033 176,-1027 182,-1027"/>
+<text text-anchor="middle" x="235" y="-1158.8" font-family="Times-Roman" font-size="14.00">Exceptions</text>
+</g>
+<g id="clust7" class="cluster">
+<title>cluster_cxx03_templates</title>
+<path fill="none" stroke="black" d="M144,-1182C144,-1182 330,-1182 330,-1182 336,-1182 342,-1188 342,-1194 342,-1194 342,-1317 342,-1317 342,-1323 336,-1329 330,-1329 330,-1329 144,-1329 144,-1329 138,-1329 132,-1323 132,-1317 132,-1317 132,-1194 132,-1194 132,-1188 138,-1182 144,-1182"/>
+<text text-anchor="middle" x="237" y="-1313.8" font-family="Times-Roman" font-size="14.00">Templates</text>
+</g>
 <g id="clust8" class="cluster">
 <title>cluster_cxx03_standard_library_miscellanea</title>
-<path fill="none" stroke="black" d="M455,-861C455,-861 745,-861 745,-861 751,-861 757,-867 757,-873 757,-873 757,-924 757,-924 757,-930 751,-936 745,-936 745,-936 455,-936 455,-936 449,-936 443,-930 443,-924 443,-924 443,-873 443,-873 443,-867 449,-861 455,-861"/>
-<text text-anchor="middle" x="600" y="-920.8" font-family="Times-Roman" font-size="14.00">The Standard Library: Miscellaneous Topics</text>
+<path fill="none" stroke="black" d="M460,-861C460,-861 750,-861 750,-861 756,-861 762,-867 762,-873 762,-873 762,-924 762,-924 762,-930 756,-936 750,-936 750,-936 460,-936 460,-936 454,-936 448,-930 448,-924 448,-924 448,-873 448,-873 448,-867 454,-861 460,-861"/>
+<text text-anchor="middle" x="605" y="-920.8" font-family="Times-Roman" font-size="14.00">The Standard Library: Miscellaneous Topics</text>
 </g>
 <g id="clust9" class="cluster">
 <title>cluster_c</title>
-<path fill="none" stroke="black" d="M436,-8C436,-8 639,-8 639,-8 645,-8 651,-14 651,-20 651,-20 651,-110 651,-110 651,-116 645,-122 639,-122 639,-122 436,-122 436,-122 430,-122 424,-116 424,-110 424,-110 424,-20 424,-20 424,-14 430,-8 436,-8"/>
-<text text-anchor="middle" x="537.5" y="-106.8" font-family="Times-Roman" font-size="14.00">The C Programming Language</text>
+<path fill="none" stroke="black" d="M342,-8C342,-8 545,-8 545,-8 551,-8 557,-14 557,-20 557,-20 557,-110 557,-110 557,-116 551,-122 545,-122 545,-122 342,-122 342,-122 336,-122 330,-116 330,-110 330,-110 330,-20 330,-20 330,-14 336,-8 342,-8"/>
+<text text-anchor="middle" x="443.5" y="-106.8" font-family="Times-Roman" font-size="14.00">The C Programming Language</text>
 </g>
 <g id="clust10" class="cluster">
 <title>cluster_c_introduction</title>
-<path fill="none" stroke="black" d="M481,-16C481,-16 593,-16 593,-16 599,-16 605,-22 605,-28 605,-28 605,-79 605,-79 605,-85 599,-91 593,-91 593,-91 481,-91 481,-91 475,-91 469,-85 469,-79 469,-79 469,-28 469,-28 469,-22 475,-16 481,-16"/>
-<text text-anchor="middle" x="537" y="-75.8" font-family="Times-Roman" font-size="14.00">Introduction</text>
+<path fill="none" stroke="black" d="M387,-16C387,-16 499,-16 499,-16 505,-16 511,-22 511,-28 511,-28 511,-79 511,-79 511,-85 505,-91 499,-91 499,-91 387,-91 387,-91 381,-91 375,-85 375,-79 375,-79 375,-28 375,-28 375,-22 381,-16 387,-16"/>
+<text text-anchor="middle" x="443" y="-75.8" font-family="Times-Roman" font-size="14.00">Introduction</text>
 </g>
 <!-- cxx03_introduction -->
 <g id="node1" class="node">
 <title>cxx03_introduction</title>
 <g id="a_node1"><a xlink:href="../../001-introduction/topic.html" xlink:title="Introduction">
-<ellipse fill="#dcdcdc" stroke="black" cx="537" cy="-156" rx="65.79" ry="18"/>
-<text text-anchor="middle" x="537" y="-152.3" font-family="Times-Roman" font-size="14.00">Introduction</text>
+<ellipse fill="#dcdcdc" stroke="black" cx="443" cy="-156" rx="65.79" ry="18"/>
+<text text-anchor="middle" x="443" y="-152.3" font-family="Times-Roman" font-size="14.00">Introduction</text>
 </a>
 </g>
 </g>
@@ -286,466 +294,466 @@ sufficient - if that works, our change did not break anything.</p>
 <g id="node29" class="node">
 <title>c_introduction_installation</title>
 <g id="a_node29"><a xlink:href="../../../c/010-introduction/000-installation/topic.html" xlink:title="Installation">
-<ellipse fill="#dcdcdc" stroke="black" cx="537" cy="-42" rx="60.39" ry="18"/>
-<text text-anchor="middle" x="537" y="-38.3" font-family="Times-Roman" font-size="14.00">Installation</text>
+<ellipse fill="#dcdcdc" stroke="black" cx="443" cy="-42" rx="60.39" ry="18"/>
+<text text-anchor="middle" x="443" y="-38.3" font-family="Times-Roman" font-size="14.00">Installation</text>
 </a>
 </g>
 </g>
 <!-- cxx03_introduction&#45;&gt;c_introduction_installation -->
-<g id="edge7" class="edge">
+<g id="edge17" class="edge">
 <title>cxx03_introduction&#45;&gt;c_introduction_installation</title>
-<path fill="none" stroke="black" d="M537,-137.99C537,-120.06 537,-91.56 537,-70.44"/>
-<polygon fill="black" stroke="black" points="540.5,-70.17 537,-60.17 533.5,-70.17 540.5,-70.17"/>
-</g>
-<!-- cxx03_exercises_userdb_user_default_ctor -->
-<g id="node2" class="node">
-<title>cxx03_exercises_userdb_user_default_ctor</title>
-<g id="a_node2"><a xlink:href="../user-default-ctor/exercise.html" xlink:title="Exercise: Default Constructor (was: Arrays of Objects)">
-<ellipse fill="red" stroke="black" cx="635" cy="-1363" rx="253.46" ry="18"/>
-<text text-anchor="middle" x="635" y="-1359.3" font-family="Times-Roman" font-size="14.00">Exercise: Default Constructor (was: Arrays of Objects)</text>
-</a>
-</g>
-</g>
-<!-- cxx03_exercises_userdb_user_const -->
-<g id="node11" class="node">
-<title>cxx03_exercises_userdb_user_const</title>
-<g id="a_node11"><a xlink:href="../user-const/exercise.html" xlink:title="Exercise: Use const">
-<ellipse fill="red" stroke="black" cx="719" cy="-1280" rx="98.28" ry="18"/>
-<text text-anchor="middle" x="719" y="-1276.3" font-family="Times-Roman" font-size="14.00">Exercise: Use const</text>
-</a>
-</g>
-</g>
-<!-- cxx03_exercises_userdb_user_default_ctor&#45;&gt;cxx03_exercises_userdb_user_const -->
-<g id="edge1" class="edge">
-<title>cxx03_exercises_userdb_user_default_ctor&#45;&gt;cxx03_exercises_userdb_user_const</title>
-<path fill="none" stroke="black" d="M652.81,-1344.82C664.81,-1333.25 680.8,-1317.83 694.06,-1305.05"/>
-<polygon fill="black" stroke="black" points="696.73,-1307.34 701.5,-1297.88 691.87,-1302.3 696.73,-1307.34"/>
-</g>
-<!-- cxx03_data_encapsulation_ctor_dtor -->
-<g id="node15" class="node">
-<title>cxx03_data_encapsulation_ctor_dtor</title>
-<g id="a_node15"><a xlink:href="../../020-data-encapsulation/ctor-dtor/topic.html" xlink:title="More Constructors, Destructors">
-<ellipse fill="#dcdcdc" stroke="black" cx="532" cy="-372" rx="152.17" ry="18"/>
-<text text-anchor="middle" x="532" y="-368.3" font-family="Times-Roman" font-size="14.00">More Constructors, Destructors</text>
-</a>
-</g>
-</g>
-<!-- cxx03_exercises_userdb_user_default_ctor&#45;&gt;cxx03_data_encapsulation_ctor_dtor -->
-<g id="edge2" class="edge">
-<title>cxx03_exercises_userdb_user_default_ctor&#45;&gt;cxx03_data_encapsulation_ctor_dtor</title>
-<path fill="none" stroke="black" d="M761.5,-1347.36C789.26,-1342.51 813.96,-1336.41 826,-1329 882.54,-1294.19 915,-1275.4 915,-1209 915,-1209 915,-1209 915,-526 915,-462.66 732.09,-413.8 619.08,-389.65"/>
-<polygon fill="black" stroke="black" points="619.55,-386.17 609.05,-387.53 618.11,-393.02 619.55,-386.17"/>
-</g>
-<!-- cxx03_exercises_userdb_user_ctor -->
-<g id="node3" class="node">
-<title>cxx03_exercises_userdb_user_ctor</title>
-<g id="a_node3"><a xlink:href="../user-to-cxx-ctor/exercise.html" xlink:title="Exercise: Transform struct User Into A Class">
-<ellipse fill="red" stroke="black" cx="618" cy="-970" rx="208.76" ry="18"/>
-<text text-anchor="middle" x="618" y="-966.3" font-family="Times-Roman" font-size="14.00">Exercise: Transform struct User Into A Class</text>
-</a>
-</g>
-</g>
-<!-- cxx03_data_encapsulation_ctor_basics -->
-<g id="node16" class="node">
-<title>cxx03_data_encapsulation_ctor_basics</title>
-<g id="a_node16"><a xlink:href="../../020-data-encapsulation/ctor-basics/topic.html" xlink:title="Constructor: Basics">
-<ellipse fill="#dcdcdc" stroke="black" cx="537" cy="-300" rx="98.28" ry="18"/>
-<text text-anchor="middle" x="537" y="-296.3" font-family="Times-Roman" font-size="14.00">Constructor: Basics</text>
-</a>
-</g>
-</g>
-<!-- cxx03_exercises_userdb_user_ctor&#45;&gt;cxx03_data_encapsulation_ctor_basics -->
-<g id="edge3" class="edge">
-<title>cxx03_exercises_userdb_user_ctor&#45;&gt;cxx03_data_encapsulation_ctor_basics</title>
-<path fill="none" stroke="black" d="M721.54,-954.33C800.22,-936.64 895,-898.27 895,-816 895,-816 895,-816 895,-443 895,-382.92 718.59,-337.22 613.44,-315.31"/>
-<polygon fill="black" stroke="black" points="614,-311.85 603.5,-313.27 612.59,-318.71 614,-311.85"/>
-</g>
-<!-- cxx03_standard_library_miscellanea_string -->
-<g id="node28" class="node">
-<title>cxx03_standard_library_miscellanea_string</title>
-<g id="a_node28"><a xlink:href="../../900-standard-library-miscellanea/string/topic.html" xlink:title="std::string">
-<ellipse fill="#dcdcdc" stroke="black" cx="618" cy="-887" rx="57.39" ry="18"/>
-<text text-anchor="middle" x="618" y="-883.3" font-family="Times-Roman" font-size="14.00">std::string</text>
-</a>
-</g>
-</g>
-<!-- cxx03_exercises_userdb_user_ctor&#45;&gt;cxx03_standard_library_miscellanea_string -->
-<g id="edge4" class="edge">
-<title>cxx03_exercises_userdb_user_ctor&#45;&gt;cxx03_standard_library_miscellanea_string</title>
-<path fill="none" stroke="black" d="M618,-951.82C618,-941.19 618,-927.31 618,-915.2"/>
-<polygon fill="black" stroke="black" points="621.5,-915.15 618,-905.15 614.5,-915.15 621.5,-915.15"/>
-</g>
-<!-- cxx03_exercises_userdb_user_simple_method -->
-<g id="node4" class="node">
-<title>cxx03_exercises_userdb_user_simple_method</title>
-<g id="a_node4"><a xlink:href="../user-simple-method/exercise.html" xlink:title="Exercise: Simple Method (Users Age By n Years)">
-<ellipse fill="red" stroke="black" cx="609" cy="-1125" rx="227.46" ry="18"/>
-<text text-anchor="middle" x="609" y="-1121.3" font-family="Times-Roman" font-size="14.00">Exercise: Simple Method (Users Age By n Years)</text>
-</a>
-</g>
-</g>
-<!-- cxx03_exercises_userdb_user_const_members -->
-<g id="node8" class="node">
-<title>cxx03_exercises_userdb_user_const_members</title>
-<g id="a_node8"><a xlink:href="../user-const-members/exercise.html" xlink:title="Exercise: const Members">
-<ellipse fill="red" stroke="black" cx="609" cy="-1053" rx="122.68" ry="18"/>
-<text text-anchor="middle" x="609" y="-1049.3" font-family="Times-Roman" font-size="14.00">Exercise: const Members</text>
-</a>
-</g>
-</g>
-<!-- cxx03_exercises_userdb_user_simple_method&#45;&gt;cxx03_exercises_userdb_user_const_members -->
-<g id="edge15" class="edge">
-<title>cxx03_exercises_userdb_user_simple_method&#45;&gt;cxx03_exercises_userdb_user_const_members</title>
-<path fill="none" stroke="black" d="M609,-1106.7C609,-1098.98 609,-1089.71 609,-1081.11"/>
-<polygon fill="black" stroke="black" points="612.5,-1081.1 609,-1071.1 605.5,-1081.1 612.5,-1081.1"/>
-</g>
-<!-- cxx03_functions_and_methods_methods -->
-<g id="node20" class="node">
-<title>cxx03_functions_and_methods_methods</title>
-<g id="a_node20"><a xlink:href="../../030-functions-and-methods/020-methods/topic.html" xlink:title="Methods">
-<ellipse fill="#dcdcdc" stroke="black" cx="295" cy="-599" rx="49.29" ry="18"/>
-<text text-anchor="middle" x="295" y="-595.3" font-family="Times-Roman" font-size="14.00">Methods</text>
-</a>
-</g>
-</g>
-<!-- cxx03_exercises_userdb_user_simple_method&#45;&gt;cxx03_functions_and_methods_methods -->
-<g id="edge16" class="edge">
-<title>cxx03_exercises_userdb_user_simple_method&#45;&gt;cxx03_functions_and_methods_methods</title>
-<path fill="none" stroke="black" d="M532.57,-1108.01C394.56,-1079.11 117.77,-1020.94 116,-1019 76.59,-975.62 101,-946.6 101,-888 101,-888 101,-888 101,-742 101,-670.39 188.14,-630.98 245.62,-612.78"/>
-<polygon fill="black" stroke="black" points="246.73,-616.1 255.27,-609.83 244.69,-609.4 246.73,-616.1"/>
+<path fill="none" stroke="black" d="M443,-137.99C443,-120.06 443,-91.56 443,-70.44"/>
+<polygon fill="black" stroke="black" points="446.5,-70.17 443,-60.17 439.5,-70.17 446.5,-70.17"/>
 </g>
 <!-- cxx03_exercises_userdb_userdb_vector_basic -->
-<g id="node5" class="node">
+<g id="node2" class="node">
 <title>cxx03_exercises_userdb_userdb_vector_basic</title>
-<g id="a_node5"><a xlink:href="../userdb-vector/exercise.html" xlink:title="Exercise: Use std::vector in UserDB">
+<g id="a_node2"><a xlink:href="../userdb-vector/exercise.html" xlink:title="Exercise: Use std::vector in UserDB">
 <ellipse fill="red" stroke="black" cx="570" cy="-1438" rx="170.07" ry="18"/>
 <text text-anchor="middle" x="570" y="-1434.3" font-family="Times-Roman" font-size="14.00">Exercise: Use std::vector in UserDB</text>
 </a>
 </g>
 </g>
+<!-- cxx03_exercises_userdb_user_default_ctor -->
+<g id="node9" class="node">
+<title>cxx03_exercises_userdb_user_default_ctor</title>
+<g id="a_node9"><a xlink:href="../user-default-ctor/exercise.html" xlink:title="Exercise: Default Constructor (was: Arrays of Objects)">
+<ellipse fill="red" stroke="black" cx="635" cy="-1363" rx="253.46" ry="18"/>
+<text text-anchor="middle" x="635" y="-1359.3" font-family="Times-Roman" font-size="14.00">Exercise: Default Constructor (was: Arrays of Objects)</text>
+</a>
+</g>
+</g>
 <!-- cxx03_exercises_userdb_userdb_vector_basic&#45;&gt;cxx03_exercises_userdb_user_default_ctor -->
-<g id="edge19" class="edge">
+<g id="edge1" class="edge">
 <title>cxx03_exercises_userdb_userdb_vector_basic&#45;&gt;cxx03_exercises_userdb_user_default_ctor</title>
 <path fill="none" stroke="black" d="M585.08,-1420.07C593.38,-1410.74 603.85,-1398.99 613.05,-1388.65"/>
 <polygon fill="black" stroke="black" points="615.74,-1390.89 619.78,-1381.09 610.52,-1386.23 615.74,-1390.89"/>
 </g>
 <!-- cxx03_stl_basics -->
-<g id="node27" class="node">
+<g id="node12" class="node">
 <title>cxx03_stl_basics</title>
-<g id="a_node27"><a xlink:href="../../060-stl-containers/010-basics/topic.html" xlink:title="Basics">
+<g id="a_node12"><a xlink:href="../../060-stl-containers/010-basics/topic.html" xlink:title="Basics">
 <ellipse fill="#dcdcdc" stroke="black" cx="318" cy="-1363" rx="39.79" ry="18"/>
 <text text-anchor="middle" x="318" y="-1359.3" font-family="Times-Roman" font-size="14.00">Basics</text>
 </a>
 </g>
 </g>
 <!-- cxx03_exercises_userdb_userdb_vector_basic&#45;&gt;cxx03_stl_basics -->
-<g id="edge20" class="edge">
+<g id="edge2" class="edge">
 <title>cxx03_exercises_userdb_userdb_vector_basic&#45;&gt;cxx03_stl_basics</title>
 <path fill="none" stroke="black" d="M438,-1426.63C409.13,-1422.95 383.25,-1418.16 370,-1412 357.81,-1406.34 346.55,-1396.75 337.64,-1387.63"/>
 <polygon fill="black" stroke="black" points="340.1,-1385.14 330.75,-1380.17 334.96,-1389.89 340.1,-1385.14"/>
 </g>
 <!-- cxx03_exercises_userdb_userdb_search_find_if -->
-<g id="node6" class="node">
+<g id="node3" class="node">
 <title>cxx03_exercises_userdb_userdb_search_find_if</title>
 <ellipse fill="red" stroke="black" stroke-width="3" cx="617" cy="-1654" rx="235.06" ry="18"/>
 <text text-anchor="middle" x="617" y="-1650.3" font-family="Times-Roman" font-size="14.00">Exercise: Search a User By Lastname (std::find_if)</text>
 </g>
 <!-- cxx03_exercises_userdb_userdb_search -->
-<g id="node7" class="node">
+<g id="node4" class="node">
 <title>cxx03_exercises_userdb_userdb_search</title>
-<g id="a_node7"><a xlink:href="../userdb-search/exercise.html" xlink:title="Exercise: Search a User By Lastname">
+<g id="a_node4"><a xlink:href="../userdb-search/exercise.html" xlink:title="Exercise: Search a User By Lastname">
 <ellipse fill="red" stroke="black" cx="588" cy="-1582" rx="178.17" ry="18"/>
 <text text-anchor="middle" x="588" y="-1578.3" font-family="Times-Roman" font-size="14.00">Exercise: Search a User By Lastname</text>
 </a>
 </g>
 </g>
 <!-- cxx03_exercises_userdb_userdb_search_find_if&#45;&gt;cxx03_exercises_userdb_userdb_search -->
-<g id="edge22" class="edge">
+<g id="edge8" class="edge">
 <title>cxx03_exercises_userdb_userdb_search_find_if&#45;&gt;cxx03_exercises_userdb_userdb_search</title>
 <path fill="none" stroke="black" d="M609.83,-1635.7C606.57,-1627.81 602.63,-1618.3 599,-1609.55"/>
 <polygon fill="black" stroke="black" points="602.15,-1608 595.09,-1600.1 595.68,-1610.68 602.15,-1608"/>
 </g>
 <!-- cxx03_exercises_userdb_userdb_insert -->
-<g id="node9" class="node">
+<g id="node10" class="node">
 <title>cxx03_exercises_userdb_userdb_insert</title>
-<g id="a_node9"><a xlink:href="../userdb-insert/exercise.html" xlink:title="Exercise: Insert a User into UserDB">
+<g id="a_node10"><a xlink:href="../userdb-insert/exercise.html" xlink:title="Exercise: Insert a User into UserDB">
 <ellipse fill="red" stroke="black" cx="570" cy="-1510" rx="168.97" ry="18"/>
 <text text-anchor="middle" x="570" y="-1506.3" font-family="Times-Roman" font-size="14.00">Exercise: Insert a User into UserDB</text>
 </a>
 </g>
 </g>
 <!-- cxx03_exercises_userdb_userdb_search&#45;&gt;cxx03_exercises_userdb_userdb_insert -->
-<g id="edge24" class="edge">
+<g id="edge12" class="edge">
 <title>cxx03_exercises_userdb_userdb_search&#45;&gt;cxx03_exercises_userdb_userdb_insert</title>
 <path fill="none" stroke="black" d="M583.55,-1563.7C581.55,-1555.9 579.13,-1546.51 576.9,-1537.83"/>
 <polygon fill="black" stroke="black" points="580.28,-1536.92 574.4,-1528.1 573.5,-1538.66 580.28,-1536.92"/>
 </g>
+<!-- cxx03_exercises_userdb_user_access_methods -->
+<g id="node5" class="node">
+<title>cxx03_exercises_userdb_user_access_methods</title>
+<g id="a_node5"><a xlink:href="../user-access-methods/exercise.html" xlink:title="Exercise: Access Methods for Members">
+<ellipse fill="red" stroke="black" cx="585" cy="-1208" rx="186.57" ry="18"/>
+<text text-anchor="middle" x="585" y="-1204.3" font-family="Times-Roman" font-size="14.00">Exercise: Access Methods for Members</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_user_simple_method -->
+<g id="node11" class="node">
+<title>cxx03_exercises_userdb_user_simple_method</title>
+<g id="a_node11"><a xlink:href="../user-simple-method/exercise.html" xlink:title="Exercise: Simple Method (Users Age By n Years)">
+<ellipse fill="red" stroke="black" cx="645" cy="-1125" rx="227.46" ry="18"/>
+<text text-anchor="middle" x="645" y="-1121.3" font-family="Times-Roman" font-size="14.00">Exercise: Simple Method (Users Age By n Years)</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_user_access_methods&#45;&gt;cxx03_exercises_userdb_user_simple_method -->
+<g id="edge13" class="edge">
+<title>cxx03_exercises_userdb_user_access_methods&#45;&gt;cxx03_exercises_userdb_user_simple_method</title>
+<path fill="none" stroke="black" d="M597.72,-1189.82C606,-1178.65 616.93,-1163.9 626.2,-1151.38"/>
+<polygon fill="black" stroke="black" points="629.15,-1153.27 632.29,-1143.15 623.53,-1149.11 629.15,-1153.27"/>
+</g>
+<!-- cxx03_functions_and_methods_methods -->
+<g id="node20" class="node">
+<title>cxx03_functions_and_methods_methods</title>
+<g id="a_node20"><a xlink:href="../../030-functions-and-methods/020-methods/topic.html" xlink:title="Methods">
+<ellipse fill="#dcdcdc" stroke="black" cx="291" cy="-599" rx="49.29" ry="18"/>
+<text text-anchor="middle" x="291" y="-595.3" font-family="Times-Roman" font-size="14.00">Methods</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_user_access_methods&#45;&gt;cxx03_functions_and_methods_methods -->
+<g id="edge14" class="edge">
+<title>cxx03_exercises_userdb_user_access_methods&#45;&gt;cxx03_functions_and_methods_methods</title>
+<path fill="none" stroke="black" d="M460.74,-1194.56C437.14,-1189.75 417.23,-1183.12 409,-1174 373.14,-1134.27 399,-1107.52 399,-1054 399,-1054 399,-1054 399,-742 399,-690.68 353.76,-646.31 321.84,-621.39"/>
+<polygon fill="black" stroke="black" points="323.73,-618.43 313.64,-615.18 319.5,-624.01 323.73,-618.43"/>
+</g>
+<!-- cxx03_exercises_userdb_user_const -->
+<g id="node6" class="node">
+<title>cxx03_exercises_userdb_user_const</title>
+<g id="a_node6"><a xlink:href="../user-const/exercise.html" xlink:title="Exercise: Use const">
+<ellipse fill="red" stroke="black" cx="533" cy="-1280" rx="98.28" ry="18"/>
+<text text-anchor="middle" x="533" y="-1276.3" font-family="Times-Roman" font-size="14.00">Exercise: Use const</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_user_const&#45;&gt;cxx03_exercises_userdb_user_access_methods -->
+<g id="edge19" class="edge">
+<title>cxx03_exercises_userdb_user_const&#45;&gt;cxx03_exercises_userdb_user_access_methods</title>
+<path fill="none" stroke="black" d="M545.59,-1262.05C551.76,-1253.75 559.31,-1243.58 566.15,-1234.38"/>
+<polygon fill="black" stroke="black" points="569.01,-1236.39 572.17,-1226.28 563.39,-1232.22 569.01,-1236.39"/>
+</g>
+<!-- cxx03_functions_and_methods_references -->
+<g id="node19" class="node">
+<title>cxx03_functions_and_methods_references</title>
+<g id="a_node19"><a xlink:href="../../030-functions-and-methods/050-references/topic.html" xlink:title="References">
+<ellipse fill="#dcdcdc" stroke="black" cx="280" cy="-815" rx="60.39" ry="18"/>
+<text text-anchor="middle" x="280" y="-811.3" font-family="Times-Roman" font-size="14.00">References</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_user_const&#45;&gt;cxx03_functions_and_methods_references -->
+<g id="edge21" class="edge">
+<title>cxx03_exercises_userdb_user_const&#45;&gt;cxx03_functions_and_methods_references</title>
+<path fill="none" stroke="black" d="M452,-1269.63C423.36,-1262.26 393.47,-1249.17 374,-1226 345.08,-1191.6 359,-1170.94 359,-1126 359,-1126 359,-1126 359,-969 359,-918.94 325.19,-868.9 301.81,-840.28"/>
+<polygon fill="black" stroke="black" points="304.34,-837.85 295.23,-832.45 298.98,-842.35 304.34,-837.85"/>
+</g>
+<!-- cxx03_functions_and_methods_const -->
+<g id="node23" class="node">
+<title>cxx03_functions_and_methods_const</title>
+<g id="a_node23"><a xlink:href="../../030-functions-and-methods/030-const/topic.html" xlink:title="const">
+<ellipse fill="#dcdcdc" stroke="black" cx="291" cy="-671" rx="35.19" ry="18"/>
+<text text-anchor="middle" x="291" y="-667.3" font-family="Times-Roman" font-size="14.00">const</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_user_const&#45;&gt;cxx03_functions_and_methods_const -->
+<g id="edge20" class="edge">
+<title>cxx03_exercises_userdb_user_const&#45;&gt;cxx03_functions_and_methods_const</title>
+<path fill="none" stroke="black" d="M458.55,-1268.19C432.65,-1260.64 405.88,-1247.8 389,-1226 361.65,-1190.68 379,-1170.67 379,-1126 379,-1126 379,-1126 379,-814 379,-765.69 341.75,-720.14 315.72,-694.2"/>
+<polygon fill="black" stroke="black" points="318.01,-691.54 308.39,-687.11 313.14,-696.57 318.01,-691.54"/>
+</g>
+<!-- cxx03_exercises_userdb_user_const_members -->
+<g id="node7" class="node">
+<title>cxx03_exercises_userdb_user_const_members</title>
+<g id="a_node7"><a xlink:href="../user-const-members/exercise.html" xlink:title="Exercise: const Members">
+<ellipse fill="red" stroke="black" cx="645" cy="-1053" rx="122.68" ry="18"/>
+<text text-anchor="middle" x="645" y="-1049.3" font-family="Times-Roman" font-size="14.00">Exercise: const Members</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_user_ctor -->
+<g id="node8" class="node">
+<title>cxx03_exercises_userdb_user_ctor</title>
+<g id="a_node8"><a xlink:href="../user-to-cxx-ctor/exercise.html" xlink:title="Exercise: Transform struct User Into A Class">
+<ellipse fill="red" stroke="black" cx="667" cy="-970" rx="208.76" ry="18"/>
+<text text-anchor="middle" x="667" y="-966.3" font-family="Times-Roman" font-size="14.00">Exercise: Transform struct User Into A Class</text>
+</a>
+</g>
+</g>
 <!-- cxx03_exercises_userdb_user_const_members&#45;&gt;cxx03_exercises_userdb_user_ctor -->
-<g id="edge26" class="edge">
+<g id="edge22" class="edge">
 <title>cxx03_exercises_userdb_user_const_members&#45;&gt;cxx03_exercises_userdb_user_ctor</title>
-<path fill="none" stroke="black" d="M610.91,-1034.82C612.09,-1024.19 613.63,-1010.31 614.98,-998.2"/>
-<polygon fill="black" stroke="black" points="618.47,-998.48 616.09,-988.15 611.51,-997.71 618.47,-998.48"/>
+<path fill="none" stroke="black" d="M649.67,-1034.82C652.58,-1024.08 656.4,-1010.03 659.71,-997.84"/>
+<polygon fill="black" stroke="black" points="663.1,-998.72 662.34,-988.15 656.34,-996.89 663.1,-998.72"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_dtor -->
+<g id="node13" class="node">
+<title>cxx03_data_encapsulation_ctor_dtor</title>
+<g id="a_node13"><a xlink:href="../../020-data-encapsulation/ctor-dtor/topic.html" xlink:title="More Constructors, Destructors">
+<ellipse fill="#dcdcdc" stroke="black" cx="442" cy="-372" rx="152.17" ry="18"/>
+<text text-anchor="middle" x="442" y="-368.3" font-family="Times-Roman" font-size="14.00">More Constructors, Destructors</text>
+</a>
+</g>
 </g>
 <!-- cxx03_exercises_userdb_user_const_members&#45;&gt;cxx03_data_encapsulation_ctor_dtor -->
-<g id="edge27" class="edge">
+<g id="edge23" class="edge">
 <title>cxx03_exercises_userdb_user_const_members&#45;&gt;cxx03_data_encapsulation_ctor_dtor</title>
-<path fill="none" stroke="black" d="M502.18,-1044.08C432.87,-1039.02 340.6,-1032.41 259,-1027 244.45,-1026.04 138.27,-1029.35 128,-1019 107.46,-998.31 121,-917.15 121,-888 121,-888 121,-888 121,-526 121,-514.46 119.98,-509.3 128,-501 197.68,-428.93 307.62,-397.31 395.24,-383.51"/>
-<polygon fill="black" stroke="black" points="395.9,-386.95 405.27,-381.99 394.85,-380.03 395.9,-386.95"/>
+<path fill="none" stroke="black" d="M550.93,-1041.4C504.3,-1035.21 456.36,-1027.06 449,-1019 429.31,-997.44 439,-917.2 439,-888 439,-888 439,-888 439,-526 439,-482.23 440.24,-431.42 441.13,-400.77"/>
+<polygon fill="black" stroke="black" points="444.64,-400.54 441.44,-390.44 437.64,-400.33 444.64,-400.54"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_basics -->
+<g id="node14" class="node">
+<title>cxx03_data_encapsulation_ctor_basics</title>
+<g id="a_node14"><a xlink:href="../../020-data-encapsulation/ctor-basics/topic.html" xlink:title="Constructor: Basics">
+<ellipse fill="#dcdcdc" stroke="black" cx="443" cy="-300" rx="98.28" ry="18"/>
+<text text-anchor="middle" x="443" y="-296.3" font-family="Times-Roman" font-size="14.00">Constructor: Basics</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_user_ctor&#45;&gt;cxx03_data_encapsulation_ctor_basics -->
+<g id="edge25" class="edge">
+<title>cxx03_exercises_userdb_user_ctor&#45;&gt;cxx03_data_encapsulation_ctor_basics</title>
+<path fill="none" stroke="black" d="M746.03,-953.08C753.74,-948.68 760.66,-943.09 766,-936 798.11,-893.36 771,-869.38 771,-816 771,-816 771,-816 771,-443 771,-344.71 645.43,-313.69 549.68,-304.32"/>
+<polygon fill="black" stroke="black" points="549.91,-300.83 539.64,-303.41 549.28,-307.8 549.91,-300.83"/>
+</g>
+<!-- cxx03_standard_library_miscellanea_string -->
+<g id="node28" class="node">
+<title>cxx03_standard_library_miscellanea_string</title>
+<g id="a_node28"><a xlink:href="../../900-standard-library-miscellanea/string/topic.html" xlink:title="std::string">
+<ellipse fill="#dcdcdc" stroke="black" cx="667" cy="-887" rx="57.39" ry="18"/>
+<text text-anchor="middle" x="667" y="-883.3" font-family="Times-Roman" font-size="14.00">std::string</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_user_ctor&#45;&gt;cxx03_standard_library_miscellanea_string -->
+<g id="edge26" class="edge">
+<title>cxx03_exercises_userdb_user_ctor&#45;&gt;cxx03_standard_library_miscellanea_string</title>
+<path fill="none" stroke="black" d="M667,-951.82C667,-941.19 667,-927.31 667,-915.2"/>
+<polygon fill="black" stroke="black" points="670.5,-915.15 667,-905.15 663.5,-915.15 670.5,-915.15"/>
+</g>
+<!-- cxx03_exercises_userdb_user_default_ctor&#45;&gt;cxx03_exercises_userdb_user_const -->
+<g id="edge30" class="edge">
+<title>cxx03_exercises_userdb_user_default_ctor&#45;&gt;cxx03_exercises_userdb_user_const</title>
+<path fill="none" stroke="black" d="M613.37,-1344.82C598.43,-1332.96 578.39,-1317.04 562.06,-1304.08"/>
+<polygon fill="black" stroke="black" points="563.91,-1301.08 553.9,-1297.6 559.56,-1306.56 563.91,-1301.08"/>
+</g>
+<!-- cxx03_exercises_userdb_user_default_ctor&#45;&gt;cxx03_data_encapsulation_ctor_dtor -->
+<g id="edge31" class="edge">
+<title>cxx03_exercises_userdb_user_default_ctor&#45;&gt;cxx03_data_encapsulation_ctor_dtor</title>
+<path fill="none" stroke="black" d="M728.87,-1346.18C803.34,-1327.62 895,-1288.61 895,-1209 895,-1209 895,-1209 895,-526 895,-453.32 683.03,-408.48 549.08,-387.4"/>
+<polygon fill="black" stroke="black" points="549.6,-383.94 539.18,-385.86 548.52,-390.86 549.6,-383.94"/>
 </g>
 <!-- cxx03_exercises_userdb_userdb_insert&#45;&gt;cxx03_exercises_userdb_userdb_vector_basic -->
-<g id="edge28" class="edge">
+<g id="edge32" class="edge">
 <title>cxx03_exercises_userdb_userdb_insert&#45;&gt;cxx03_exercises_userdb_userdb_vector_basic</title>
 <path fill="none" stroke="black" d="M570,-1491.7C570,-1483.98 570,-1474.71 570,-1466.11"/>
 <polygon fill="black" stroke="black" points="573.5,-1466.1 570,-1456.1 566.5,-1466.1 573.5,-1466.1"/>
 </g>
 <!-- cxx03_exercises_userdb_userdb_insert&#45;&gt;cxx03_stl_basics -->
-<g id="edge29" class="edge">
+<g id="edge33" class="edge">
 <title>cxx03_exercises_userdb_userdb_insert&#45;&gt;cxx03_stl_basics</title>
 <path fill="none" stroke="black" d="M482.89,-1494.5C452.05,-1486.55 418.26,-1474.41 391,-1456 365.68,-1438.9 345,-1410.31 332.19,-1389.53"/>
 <polygon fill="black" stroke="black" points="335.16,-1387.67 327.03,-1380.88 329.15,-1391.26 335.16,-1387.67"/>
 </g>
-<!-- cxx03_exercises_userdb_user_access_methods -->
-<g id="node10" class="node">
-<title>cxx03_exercises_userdb_user_access_methods</title>
-<g id="a_node10"><a xlink:href="../user-access-methods/exercise.html" xlink:title="Exercise: Access Methods for Members">
-<ellipse fill="red" stroke="black" cx="649" cy="-1208" rx="186.57" ry="18"/>
-<text text-anchor="middle" x="649" y="-1204.3" font-family="Times-Roman" font-size="14.00">Exercise: Access Methods for Members</text>
-</a>
-</g>
-</g>
-<!-- cxx03_exercises_userdb_user_access_methods&#45;&gt;cxx03_exercises_userdb_user_simple_method -->
-<g id="edge30" class="edge">
-<title>cxx03_exercises_userdb_user_access_methods&#45;&gt;cxx03_exercises_userdb_user_simple_method</title>
-<path fill="none" stroke="black" d="M640.52,-1189.82C635.16,-1178.98 628.13,-1164.74 622.07,-1152.47"/>
-<polygon fill="black" stroke="black" points="625.04,-1150.57 617.47,-1143.15 618.76,-1153.67 625.04,-1150.57"/>
-</g>
-<!-- cxx03_exercises_userdb_user_access_methods&#45;&gt;cxx03_functions_and_methods_methods -->
-<g id="edge31" class="edge">
-<title>cxx03_exercises_userdb_user_access_methods&#45;&gt;cxx03_functions_and_methods_methods</title>
-<path fill="none" stroke="black" d="M788.69,-1196.05C814.52,-1191.18 836.17,-1184.15 845,-1174 897.24,-1113.95 855,-895.59 855,-816 855,-816 855,-816 855,-742 855,-639.52 498.19,-610.17 354.2,-602.49"/>
-<polygon fill="black" stroke="black" points="354.37,-599 344.21,-601.98 354.01,-605.99 354.37,-599"/>
-</g>
-<!-- cxx03_exercises_userdb_user_const&#45;&gt;cxx03_exercises_userdb_user_access_methods -->
+<!-- cxx03_exercises_userdb_user_simple_method&#45;&gt;cxx03_exercises_userdb_user_const_members -->
 <g id="edge34" class="edge">
-<title>cxx03_exercises_userdb_user_const&#45;&gt;cxx03_exercises_userdb_user_access_methods</title>
-<path fill="none" stroke="black" d="M702.05,-1262.05C693.5,-1253.5 682.96,-1242.96 673.54,-1233.54"/>
-<polygon fill="black" stroke="black" points="675.82,-1230.87 666.28,-1226.28 670.87,-1235.82 675.82,-1230.87"/>
+<title>cxx03_exercises_userdb_user_simple_method&#45;&gt;cxx03_exercises_userdb_user_const_members</title>
+<path fill="none" stroke="black" d="M645,-1106.7C645,-1098.98 645,-1089.71 645,-1081.11"/>
+<polygon fill="black" stroke="black" points="648.5,-1081.1 645,-1071.1 641.5,-1081.1 648.5,-1081.1"/>
 </g>
-<!-- cxx03_functions_and_methods_const -->
-<g id="node21" class="node">
-<title>cxx03_functions_and_methods_const</title>
-<g id="a_node21"><a xlink:href="../../030-functions-and-methods/030-const/topic.html" xlink:title="const">
-<ellipse fill="#dcdcdc" stroke="black" cx="296" cy="-671" rx="35.19" ry="18"/>
-<text text-anchor="middle" x="296" y="-667.3" font-family="Times-Roman" font-size="14.00">const</text>
-</a>
-</g>
-</g>
-<!-- cxx03_exercises_userdb_user_const&#45;&gt;cxx03_functions_and_methods_const -->
+<!-- cxx03_exercises_userdb_user_simple_method&#45;&gt;cxx03_functions_and_methods_methods -->
 <g id="edge35" class="edge">
-<title>cxx03_exercises_userdb_user_const&#45;&gt;cxx03_functions_and_methods_const</title>
-<path fill="none" stroke="black" d="M785.73,-1266.7C809.99,-1258.95 835.48,-1246.37 852,-1226 903.13,-1162.96 915.86,-925.05 866,-861 735.57,-693.43 451.87,-672.86 341.35,-671.46"/>
-<polygon fill="black" stroke="black" points="341.23,-667.96 331.21,-671.38 341.18,-674.96 341.23,-667.96"/>
+<title>cxx03_exercises_userdb_user_simple_method&#45;&gt;cxx03_functions_and_methods_methods</title>
+<path fill="none" stroke="black" d="M574.42,-1107.85C508.11,-1088.01 419,-1047.17 419,-971 419,-971 419,-971 419,-742 419,-701.89 428.26,-684.94 404,-653 388.82,-633.01 364.23,-620.26 341.86,-612.29"/>
+<polygon fill="black" stroke="black" points="342.71,-608.88 332.12,-609.05 340.51,-615.52 342.71,-608.88"/>
 </g>
-<!-- cxx03_functions_and_methods_references -->
-<g id="node25" class="node">
-<title>cxx03_functions_and_methods_references</title>
-<g id="a_node25"><a xlink:href="../../030-functions-and-methods/050-references/topic.html" xlink:title="References">
-<ellipse fill="#dcdcdc" stroke="black" cx="296" cy="-815" rx="60.39" ry="18"/>
-<text text-anchor="middle" x="296" y="-811.3" font-family="Times-Roman" font-size="14.00">References</text>
+<!-- cxx03_templates_class_templates -->
+<g id="node27" class="node">
+<title>cxx03_templates_class_templates</title>
+<g id="a_node27"><a xlink:href="../../050-templates/020-class-templates/topic.html" xlink:title="Class Templates">
+<ellipse fill="#dcdcdc" stroke="black" cx="244" cy="-1280" rx="83.39" ry="18"/>
+<text text-anchor="middle" x="244" y="-1276.3" font-family="Times-Roman" font-size="14.00">Class Templates</text>
 </a>
 </g>
 </g>
-<!-- cxx03_exercises_userdb_user_const&#45;&gt;cxx03_functions_and_methods_references -->
-<g id="edge36" class="edge">
-<title>cxx03_exercises_userdb_user_const&#45;&gt;cxx03_functions_and_methods_references</title>
-<path fill="none" stroke="black" d="M785.73,-1266.65C808.44,-1258.92 831.48,-1246.36 845,-1226 860.47,-1202.72 842.3,-959.11 836,-944 816.87,-898.11 805.41,-883.35 761,-861 693.73,-827.15 479.37,-818.73 366.72,-816.66"/>
-<polygon fill="black" stroke="black" points="366.53,-813.15 356.47,-816.48 366.41,-820.15 366.53,-813.15"/>
-</g>
-<!-- cxx03_exceptions_basics -->
-<g id="node12" class="node">
-<title>cxx03_exceptions_basics</title>
-<g id="a_node12"><a xlink:href="../../040-exceptions/010-basics/topic.html" xlink:title="Basics">
-<ellipse fill="#dcdcdc" stroke="black" cx="88" cy="-1053" rx="39.79" ry="18"/>
-<text text-anchor="middle" x="88" y="-1049.3" font-family="Times-Roman" font-size="14.00">Basics</text>
-</a>
-</g>
-</g>
-<!-- cxx03_functions_and_methods_operators -->
-<g id="node22" class="node">
-<title>cxx03_functions_and_methods_operators</title>
-<g id="a_node22"><a xlink:href="../../030-functions-and-methods/070-operators/topic.html" xlink:title="Operator Overloading">
-<ellipse fill="#dcdcdc" stroke="black" cx="249" cy="-970" rx="109.38" ry="18"/>
-<text text-anchor="middle" x="249" y="-966.3" font-family="Times-Roman" font-size="14.00">Operator Overloading</text>
-</a>
-</g>
-</g>
-<!-- cxx03_exceptions_basics&#45;&gt;cxx03_functions_and_methods_operators -->
-<g id="edge5" class="edge">
-<title>cxx03_exceptions_basics&#45;&gt;cxx03_functions_and_methods_operators</title>
-<path fill="none" stroke="black" d="M113.51,-1039.17C138.71,-1026.49 177.69,-1006.88 207.38,-991.94"/>
-<polygon fill="black" stroke="black" points="209.3,-994.89 216.67,-987.27 206.16,-988.64 209.3,-994.89"/>
-</g>
-<!-- cxx03_exceptions_try_catch -->
-<g id="node13" class="node">
-<title>cxx03_exceptions_try_catch</title>
-<g id="a_node13"><a xlink:href="../../040-exceptions/020-try-catch/topic.html" xlink:title="try &#45; catch">
-<ellipse fill="#dcdcdc" stroke="black" cx="81" cy="-1125" rx="57.39" ry="18"/>
-<text text-anchor="middle" x="81" y="-1121.3" font-family="Times-Roman" font-size="14.00">try &#45; catch</text>
-</a>
-</g>
-</g>
-<!-- cxx03_exceptions_try_catch&#45;&gt;cxx03_exceptions_basics -->
-<g id="edge33" class="edge">
-<title>cxx03_exceptions_try_catch&#45;&gt;cxx03_exceptions_basics</title>
-<path fill="none" stroke="black" d="M82.73,-1106.7C83.5,-1098.98 84.43,-1089.71 85.29,-1081.11"/>
-<polygon fill="black" stroke="black" points="88.78,-1081.4 86.29,-1071.1 81.81,-1080.71 88.78,-1081.4"/>
-</g>
-<!-- cxx03_data_encapsulation_object_copy -->
-<g id="node14" class="node">
-<title>cxx03_data_encapsulation_object_copy</title>
-<g id="a_node14"><a xlink:href="../../020-data-encapsulation/object-copy/topic.html" xlink:title="Object Copy">
-<ellipse fill="#dcdcdc" stroke="black" cx="484" cy="-444" rx="65.79" ry="18"/>
-<text text-anchor="middle" x="484" y="-440.3" font-family="Times-Roman" font-size="14.00">Object Copy</text>
-</a>
-</g>
-</g>
-<!-- cxx03_data_encapsulation_object_copy&#45;&gt;cxx03_data_encapsulation_ctor_dtor -->
-<g id="edge6" class="edge">
-<title>cxx03_data_encapsulation_object_copy&#45;&gt;cxx03_data_encapsulation_ctor_dtor</title>
-<path fill="none" stroke="black" d="M495.62,-426.05C501.25,-417.84 508.14,-407.79 514.4,-398.66"/>
-<polygon fill="black" stroke="black" points="517.39,-400.5 520.15,-390.28 511.61,-396.54 517.39,-400.5"/>
+<!-- cxx03_stl_basics&#45;&gt;cxx03_templates_class_templates -->
+<g id="edge3" class="edge">
+<title>cxx03_stl_basics&#45;&gt;cxx03_templates_class_templates</title>
+<path fill="none" stroke="black" d="M303.38,-1346C292.75,-1334.36 278.16,-1318.39 266.11,-1305.2"/>
+<polygon fill="black" stroke="black" points="268.68,-1302.83 259.35,-1297.81 263.51,-1307.55 268.68,-1302.83"/>
 </g>
 <!-- cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_basics -->
-<g id="edge13" class="edge">
+<g id="edge4" class="edge">
 <title>cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_basics</title>
-<path fill="none" stroke="black" d="M533.24,-353.7C533.79,-345.98 534.45,-336.71 535.06,-328.11"/>
-<polygon fill="black" stroke="black" points="538.56,-328.33 535.78,-318.1 531.57,-327.83 538.56,-328.33"/>
+<path fill="none" stroke="black" d="M442.25,-353.7C442.36,-345.98 442.49,-336.71 442.61,-328.11"/>
+<polygon fill="black" stroke="black" points="446.11,-328.15 442.76,-318.1 439.11,-328.05 446.11,-328.15"/>
 </g>
 <!-- cxx03_data_encapsulation_introduction -->
-<g id="node17" class="node">
+<g id="node16" class="node">
 <title>cxx03_data_encapsulation_introduction</title>
-<g id="a_node17"><a xlink:href="../../020-data-encapsulation/encapsulation-intro/topic.html" xlink:title="Introduction: Classes and Objects">
-<ellipse fill="#dcdcdc" stroke="black" cx="537" cy="-228" rx="162.47" ry="18"/>
-<text text-anchor="middle" x="537" y="-224.3" font-family="Times-Roman" font-size="14.00">Introduction: Classes and Objects</text>
+<g id="a_node16"><a xlink:href="../../020-data-encapsulation/encapsulation-intro/topic.html" xlink:title="Introduction: Classes and Objects">
+<ellipse fill="#dcdcdc" stroke="black" cx="443" cy="-228" rx="162.47" ry="18"/>
+<text text-anchor="middle" x="443" y="-224.3" font-family="Times-Roman" font-size="14.00">Introduction: Classes and Objects</text>
 </a>
 </g>
 </g>
 <!-- cxx03_data_encapsulation_ctor_basics&#45;&gt;cxx03_data_encapsulation_introduction -->
-<g id="edge14" class="edge">
+<g id="edge10" class="edge">
 <title>cxx03_data_encapsulation_ctor_basics&#45;&gt;cxx03_data_encapsulation_introduction</title>
-<path fill="none" stroke="black" d="M537,-281.7C537,-273.98 537,-264.71 537,-256.11"/>
-<polygon fill="black" stroke="black" points="540.5,-256.1 537,-246.1 533.5,-256.1 540.5,-256.1"/>
+<path fill="none" stroke="black" d="M443,-281.7C443,-273.98 443,-264.71 443,-256.11"/>
+<polygon fill="black" stroke="black" points="446.5,-256.1 443,-246.1 439.5,-256.1 446.5,-256.1"/>
+</g>
+<!-- cxx03_data_encapsulation_object_copy -->
+<g id="node15" class="node">
+<title>cxx03_data_encapsulation_object_copy</title>
+<g id="a_node15"><a xlink:href="../../020-data-encapsulation/object-copy/topic.html" xlink:title="Object Copy">
+<ellipse fill="#dcdcdc" stroke="black" cx="349" cy="-444" rx="65.79" ry="18"/>
+<text text-anchor="middle" x="349" y="-440.3" font-family="Times-Roman" font-size="14.00">Object Copy</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_object_copy&#45;&gt;cxx03_data_encapsulation_ctor_dtor -->
+<g id="edge18" class="edge">
+<title>cxx03_data_encapsulation_object_copy&#45;&gt;cxx03_data_encapsulation_ctor_dtor</title>
+<path fill="none" stroke="black" d="M370.57,-426.76C382.75,-417.6 398.16,-406 411.55,-395.92"/>
+<polygon fill="black" stroke="black" points="413.69,-398.69 419.58,-389.88 409.48,-393.1 413.69,-398.69"/>
 </g>
 <!-- cxx03_data_encapsulation_introduction&#45;&gt;cxx03_introduction -->
-<g id="edge18" class="edge">
+<g id="edge24" class="edge">
 <title>cxx03_data_encapsulation_introduction&#45;&gt;cxx03_introduction</title>
-<path fill="none" stroke="black" d="M537,-209.7C537,-201.98 537,-192.71 537,-184.11"/>
-<polygon fill="black" stroke="black" points="540.5,-184.1 537,-174.1 533.5,-184.1 540.5,-184.1"/>
-</g>
-<!-- cxx03_templates_function_templates -->
-<g id="node18" class="node">
-<title>cxx03_templates_function_templates</title>
-<g id="a_node18"><a xlink:href="../../050-templates/010-function-templates/topic.html" xlink:title="Function Templates">
-<ellipse fill="#dcdcdc" stroke="black" cx="191" cy="-1208" rx="97.48" ry="18"/>
-<text text-anchor="middle" x="191" y="-1204.3" font-family="Times-Roman" font-size="14.00">Function Templates</text>
-</a>
-</g>
-</g>
-<!-- cxx03_templates_function_templates&#45;&gt;cxx03_exceptions_try_catch -->
-<g id="edge8" class="edge">
-<title>cxx03_templates_function_templates&#45;&gt;cxx03_exceptions_try_catch</title>
-<path fill="none" stroke="black" d="M168.47,-1190.41C151.84,-1178.16 129.02,-1161.36 110.87,-1147.99"/>
-<polygon fill="black" stroke="black" points="112.5,-1144.85 102.37,-1141.74 108.35,-1150.49 112.5,-1144.85"/>
-</g>
-<!-- cxx03_templates_class_templates -->
-<g id="node19" class="node">
-<title>cxx03_templates_class_templates</title>
-<g id="a_node19"><a xlink:href="../../050-templates/020-class-templates/topic.html" xlink:title="Class Templates">
-<ellipse fill="#dcdcdc" stroke="black" cx="198" cy="-1280" rx="83.39" ry="18"/>
-<text text-anchor="middle" x="198" y="-1276.3" font-family="Times-Roman" font-size="14.00">Class Templates</text>
-</a>
-</g>
-</g>
-<!-- cxx03_templates_class_templates&#45;&gt;cxx03_templates_function_templates -->
-<g id="edge21" class="edge">
-<title>cxx03_templates_class_templates&#45;&gt;cxx03_templates_function_templates</title>
-<path fill="none" stroke="black" d="M196.27,-1261.7C195.5,-1253.98 194.57,-1244.71 193.71,-1236.11"/>
-<polygon fill="black" stroke="black" points="197.19,-1235.71 192.71,-1226.1 190.22,-1236.4 197.19,-1235.71"/>
-</g>
-<!-- cxx03_functions_and_methods_overloading -->
-<g id="node26" class="node">
-<title>cxx03_functions_and_methods_overloading</title>
-<g id="a_node26"><a xlink:href="../../030-functions-and-methods/010-overloading/topic.html" xlink:title="Overloading">
-<ellipse fill="#dcdcdc" stroke="black" cx="292" cy="-527" rx="65.79" ry="18"/>
-<text text-anchor="middle" x="292" y="-523.3" font-family="Times-Roman" font-size="14.00">Overloading</text>
-</a>
-</g>
-</g>
-<!-- cxx03_functions_and_methods_methods&#45;&gt;cxx03_functions_and_methods_overloading -->
-<g id="edge9" class="edge">
-<title>cxx03_functions_and_methods_methods&#45;&gt;cxx03_functions_and_methods_overloading</title>
-<path fill="none" stroke="black" d="M294.26,-580.7C293.93,-572.98 293.53,-563.71 293.16,-555.11"/>
-<polygon fill="black" stroke="black" points="296.66,-554.95 292.73,-545.1 289.66,-555.25 296.66,-554.95"/>
-</g>
-<!-- cxx03_functions_and_methods_const&#45;&gt;cxx03_functions_and_methods_methods -->
-<g id="edge10" class="edge">
-<title>cxx03_functions_and_methods_const&#45;&gt;cxx03_functions_and_methods_methods</title>
-<path fill="none" stroke="black" d="M295.75,-652.7C295.64,-644.98 295.51,-635.71 295.39,-627.11"/>
-<polygon fill="black" stroke="black" points="298.89,-627.05 295.24,-617.1 291.89,-627.15 298.89,-627.05"/>
+<path fill="none" stroke="black" d="M443,-209.7C443,-201.98 443,-192.71 443,-184.11"/>
+<polygon fill="black" stroke="black" points="446.5,-184.1 443,-174.1 439.5,-184.1 446.5,-184.1"/>
 </g>
 <!-- cxx03_functions_and_methods_static -->
-<g id="node23" class="node">
+<g id="node17" class="node">
 <title>cxx03_functions_and_methods_static</title>
-<g id="a_node23"><a xlink:href="../../030-functions-and-methods/060-static/topic.html" xlink:title="static">
-<ellipse fill="#dcdcdc" stroke="black" cx="272" cy="-887" rx="35.19" ry="18"/>
-<text text-anchor="middle" x="272" y="-883.3" font-family="Times-Roman" font-size="14.00">static</text>
+<g id="a_node17"><a xlink:href="../../030-functions-and-methods/060-static/topic.html" xlink:title="static">
+<ellipse fill="#dcdcdc" stroke="black" cx="255" cy="-887" rx="35.19" ry="18"/>
+<text text-anchor="middle" x="255" y="-883.3" font-family="Times-Roman" font-size="14.00">static</text>
 </a>
 </g>
 </g>
-<!-- cxx03_functions_and_methods_operators&#45;&gt;cxx03_functions_and_methods_static -->
-<g id="edge11" class="edge">
-<title>cxx03_functions_and_methods_operators&#45;&gt;cxx03_functions_and_methods_static</title>
-<path fill="none" stroke="black" d="M253.88,-951.82C256.95,-941.01 260.97,-926.84 264.45,-914.59"/>
-<polygon fill="black" stroke="black" points="267.84,-915.45 267.21,-904.88 261.11,-913.54 267.84,-915.45"/>
-</g>
 <!-- cxx03_functions_and_methods_static&#45;&gt;cxx03_functions_and_methods_references -->
-<g id="edge12" class="edge">
+<g id="edge5" class="edge">
 <title>cxx03_functions_and_methods_static&#45;&gt;cxx03_functions_and_methods_references</title>
-<path fill="none" stroke="black" d="M277.81,-869.05C280.51,-861.18 283.79,-851.62 286.81,-842.79"/>
-<polygon fill="black" stroke="black" points="290.14,-843.87 290.08,-833.28 283.52,-841.6 290.14,-843.87"/>
+<path fill="none" stroke="black" d="M261.05,-869.05C263.87,-861.18 267.28,-851.62 270.43,-842.79"/>
+<polygon fill="black" stroke="black" points="273.76,-843.87 273.83,-833.28 267.17,-841.52 273.76,-843.87"/>
 </g>
 <!-- cxx03_functions_and_methods_this -->
-<g id="node24" class="node">
+<g id="node18" class="node">
 <title>cxx03_functions_and_methods_this</title>
-<g id="a_node24"><a xlink:href="../../030-functions-and-methods/040-this/topic.html" xlink:title="this">
-<ellipse fill="#dcdcdc" stroke="black" cx="296" cy="-743" rx="27.1" ry="18"/>
-<text text-anchor="middle" x="296" y="-739.3" font-family="Times-Roman" font-size="14.00">this</text>
+<g id="a_node18"><a xlink:href="../../030-functions-and-methods/040-this/topic.html" xlink:title="this">
+<ellipse fill="#dcdcdc" stroke="black" cx="285" cy="-743" rx="27.1" ry="18"/>
+<text text-anchor="middle" x="285" y="-739.3" font-family="Times-Roman" font-size="14.00">this</text>
 </a>
 </g>
 </g>
 <!-- cxx03_functions_and_methods_this&#45;&gt;cxx03_functions_and_methods_const -->
-<g id="edge23" class="edge">
+<g id="edge6" class="edge">
 <title>cxx03_functions_and_methods_this&#45;&gt;cxx03_functions_and_methods_const</title>
-<path fill="none" stroke="black" d="M296,-724.7C296,-716.98 296,-707.71 296,-699.11"/>
-<polygon fill="black" stroke="black" points="299.5,-699.1 296,-689.1 292.5,-699.1 299.5,-699.1"/>
+<path fill="none" stroke="black" d="M286.48,-724.7C287.14,-716.98 287.94,-707.71 288.68,-699.11"/>
+<polygon fill="black" stroke="black" points="292.17,-699.37 289.53,-689.1 285.19,-698.77 292.17,-699.37"/>
 </g>
 <!-- cxx03_functions_and_methods_references&#45;&gt;cxx03_functions_and_methods_this -->
-<g id="edge25" class="edge">
+<g id="edge9" class="edge">
 <title>cxx03_functions_and_methods_references&#45;&gt;cxx03_functions_and_methods_this</title>
-<path fill="none" stroke="black" d="M296,-796.7C296,-788.98 296,-779.71 296,-771.11"/>
-<polygon fill="black" stroke="black" points="299.5,-771.1 296,-761.1 292.5,-771.1 299.5,-771.1"/>
+<path fill="none" stroke="black" d="M281.24,-796.7C281.79,-788.98 282.45,-779.71 283.06,-771.11"/>
+<polygon fill="black" stroke="black" points="286.56,-771.33 283.78,-761.1 279.57,-770.83 286.56,-771.33"/>
+</g>
+<!-- cxx03_functions_and_methods_overloading -->
+<g id="node22" class="node">
+<title>cxx03_functions_and_methods_overloading</title>
+<g id="a_node22"><a xlink:href="../../030-functions-and-methods/010-overloading/topic.html" xlink:title="Overloading">
+<ellipse fill="#dcdcdc" stroke="black" cx="274" cy="-527" rx="65.79" ry="18"/>
+<text text-anchor="middle" x="274" y="-523.3" font-family="Times-Roman" font-size="14.00">Overloading</text>
+</a>
+</g>
+</g>
+<!-- cxx03_functions_and_methods_methods&#45;&gt;cxx03_functions_and_methods_overloading -->
+<g id="edge15" class="edge">
+<title>cxx03_functions_and_methods_methods&#45;&gt;cxx03_functions_and_methods_overloading</title>
+<path fill="none" stroke="black" d="M286.88,-581.05C284.99,-573.26 282.7,-563.82 280.58,-555.08"/>
+<polygon fill="black" stroke="black" points="283.96,-554.17 278.2,-545.28 277.15,-555.82 283.96,-554.17"/>
+</g>
+<!-- cxx03_functions_and_methods_operators -->
+<g id="node21" class="node">
+<title>cxx03_functions_and_methods_operators</title>
+<g id="a_node21"><a xlink:href="../../030-functions-and-methods/070-operators/topic.html" xlink:title="Operator Overloading">
+<ellipse fill="#dcdcdc" stroke="black" cx="231" cy="-970" rx="109.38" ry="18"/>
+<text text-anchor="middle" x="231" y="-966.3" font-family="Times-Roman" font-size="14.00">Operator Overloading</text>
+</a>
+</g>
+</g>
+<!-- cxx03_functions_and_methods_operators&#45;&gt;cxx03_functions_and_methods_static -->
+<g id="edge16" class="edge">
+<title>cxx03_functions_and_methods_operators&#45;&gt;cxx03_functions_and_methods_static</title>
+<path fill="none" stroke="black" d="M236.09,-951.82C239.29,-941.01 243.49,-926.84 247.12,-914.59"/>
+<polygon fill="black" stroke="black" points="250.51,-915.46 250,-904.88 243.8,-913.47 250.51,-915.46"/>
 </g>
 <!-- cxx03_functions_and_methods_overloading&#45;&gt;cxx03_data_encapsulation_object_copy -->
-<g id="edge32" class="edge">
+<g id="edge28" class="edge">
 <title>cxx03_functions_and_methods_overloading&#45;&gt;cxx03_data_encapsulation_object_copy</title>
-<path fill="none" stroke="black" d="M326.33,-511.52C358.17,-498.08 405.72,-478.02 440.27,-463.45"/>
-<polygon fill="black" stroke="black" points="441.8,-466.6 449.65,-459.49 439.07,-460.15 441.8,-466.6"/>
+<path fill="none" stroke="black" d="M289.54,-509.22C300.2,-497.7 314.51,-482.24 326.43,-469.38"/>
+<polygon fill="black" stroke="black" points="329.25,-471.48 333.48,-461.76 324.12,-466.72 329.25,-471.48"/>
 </g>
-<!-- cxx03_stl_basics&#45;&gt;cxx03_templates_class_templates -->
-<g id="edge17" class="edge">
-<title>cxx03_stl_basics&#45;&gt;cxx03_templates_class_templates</title>
-<path fill="none" stroke="black" d="M296.82,-1347.71C278.49,-1335.33 251.68,-1317.24 230.61,-1303.01"/>
-<polygon fill="black" stroke="black" points="232.52,-1300.08 222.27,-1297.38 228.6,-1305.88 232.52,-1300.08"/>
+<!-- cxx03_functions_and_methods_const&#45;&gt;cxx03_functions_and_methods_methods -->
+<g id="edge29" class="edge">
+<title>cxx03_functions_and_methods_const&#45;&gt;cxx03_functions_and_methods_methods</title>
+<path fill="none" stroke="black" d="M291,-652.7C291,-644.98 291,-635.71 291,-627.11"/>
+<polygon fill="black" stroke="black" points="294.5,-627.1 291,-617.1 287.5,-627.1 294.5,-627.1"/>
+</g>
+<!-- cxx03_exceptions_basics -->
+<g id="node24" class="node">
+<title>cxx03_exceptions_basics</title>
+<g id="a_node24"><a xlink:href="../../040-exceptions/010-basics/topic.html" xlink:title="Basics">
+<ellipse fill="#dcdcdc" stroke="black" cx="232" cy="-1053" rx="39.79" ry="18"/>
+<text text-anchor="middle" x="232" y="-1049.3" font-family="Times-Roman" font-size="14.00">Basics</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exceptions_basics&#45;&gt;cxx03_functions_and_methods_operators -->
+<g id="edge7" class="edge">
+<title>cxx03_exceptions_basics&#45;&gt;cxx03_functions_and_methods_operators</title>
+<path fill="none" stroke="black" d="M231.79,-1034.82C231.66,-1024.19 231.49,-1010.31 231.34,-998.2"/>
+<polygon fill="black" stroke="black" points="234.84,-998.11 231.21,-988.15 227.84,-998.2 234.84,-998.11"/>
+</g>
+<!-- cxx03_exceptions_try_catch -->
+<g id="node25" class="node">
+<title>cxx03_exceptions_try_catch</title>
+<g id="a_node25"><a xlink:href="../../040-exceptions/020-try-catch/topic.html" xlink:title="try &#45; catch">
+<ellipse fill="#dcdcdc" stroke="black" cx="235" cy="-1125" rx="57.39" ry="18"/>
+<text text-anchor="middle" x="235" y="-1121.3" font-family="Times-Roman" font-size="14.00">try &#45; catch</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exceptions_try_catch&#45;&gt;cxx03_exceptions_basics -->
+<g id="edge36" class="edge">
+<title>cxx03_exceptions_try_catch&#45;&gt;cxx03_exceptions_basics</title>
+<path fill="none" stroke="black" d="M234.26,-1106.7C233.93,-1098.98 233.53,-1089.71 233.16,-1081.11"/>
+<polygon fill="black" stroke="black" points="236.66,-1080.95 232.73,-1071.1 229.66,-1081.25 236.66,-1080.95"/>
+</g>
+<!-- cxx03_templates_function_templates -->
+<g id="node26" class="node">
+<title>cxx03_templates_function_templates</title>
+<g id="a_node26"><a xlink:href="../../050-templates/010-function-templates/topic.html" xlink:title="Function Templates">
+<ellipse fill="#dcdcdc" stroke="black" cx="237" cy="-1208" rx="97.48" ry="18"/>
+<text text-anchor="middle" x="237" y="-1204.3" font-family="Times-Roman" font-size="14.00">Function Templates</text>
+</a>
+</g>
+</g>
+<!-- cxx03_templates_function_templates&#45;&gt;cxx03_exceptions_try_catch -->
+<g id="edge11" class="edge">
+<title>cxx03_templates_function_templates&#45;&gt;cxx03_exceptions_try_catch</title>
+<path fill="none" stroke="black" d="M236.58,-1189.82C236.31,-1179.19 235.97,-1165.31 235.67,-1153.2"/>
+<polygon fill="black" stroke="black" points="239.17,-1153.06 235.42,-1143.15 232.17,-1153.24 239.17,-1153.06"/>
+</g>
+<!-- cxx03_templates_class_templates&#45;&gt;cxx03_templates_function_templates -->
+<g id="edge27" class="edge">
+<title>cxx03_templates_class_templates&#45;&gt;cxx03_templates_function_templates</title>
+<path fill="none" stroke="black" d="M242.27,-1261.7C241.5,-1253.98 240.57,-1244.71 239.71,-1236.11"/>
+<polygon fill="black" stroke="black" points="243.19,-1235.71 238.71,-1226.1 236.22,-1236.4 243.19,-1235.71"/>
 </g>
 </g>
 </svg>
