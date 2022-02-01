@@ -17,9 +17,9 @@ int main()
 
     // we find the *first* user if it exists
     User found = db.search_by_lastname("Faschingbauer");
-    assert(found.firstname == "Joerg");
-    assert(found.lastname == "Faschingbauer");
-    assert(found.age == 55);
+    assert(found.firstname() == "Joerg");
+    assert(found.lastname() == "Faschingbauer");
+    assert(found.age() == 55);
 
     // lacking knowledge of exception handling, we have to return an
     // invalid user when none exists.
