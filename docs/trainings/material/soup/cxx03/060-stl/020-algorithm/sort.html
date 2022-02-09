@@ -22,8 +22,8 @@
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx03/060-stl/020-algorithm/sort.html" />
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../search.html" />
-    <link rel="next" title="Basics" href="../010-basics/topic.html" />
-    <link rel="prev" title="std::copy (Draft)" href="copy.html" /> 
+    <link rel="next" title="std::binary_search" href="binary_search.html" />
+    <link rel="prev" title="std::find_if" href="find_if.html" /> 
    
   <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
   
@@ -104,7 +104,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../../group.html">C++ 03</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../../001-introduction/topic.html">Introduction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../020-data-encapsulation/group.html">Data Encapsulation</a></li>
@@ -112,9 +112,12 @@
 <li class="toctree-l4"><a class="reference internal" href="../../040-exceptions/group.html">Exceptions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../050-templates/group.html">Templates</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="../group.html">Standard Template Library</a><ul class="current">
-<li class="toctree-l5 current"><a class="reference internal" href="group.html">Algorithms (<code class="docutils literal notranslate"><span class="pre">&lt;algorithm&gt;</span></code>)</a><ul class="current">
-<li class="toctree-l6"><a class="reference internal" href="copy.html"><code class="docutils literal notranslate"><span class="pre">std::copy</span></code> (Draft)</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="group.html">Algorithms</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="for_each.html"><code class="docutils literal notranslate"><span class="pre">std::for_each</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="copy.html"><code class="docutils literal notranslate"><span class="pre">std::copy</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="find_if.html"><code class="docutils literal notranslate"><span class="pre">std::find_if</span></code></a></li>
 <li class="toctree-l6 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">std::sort</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="binary_search.html"><code class="docutils literal notranslate"><span class="pre">std::binary_search</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../010-basics/topic.html">Basics</a></li>
@@ -123,7 +126,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../050-associative-containers/topic.html">Associative Containers</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="../../070-dynamic-memory/group.html">Standard Template Library: Container Templates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../070-dynamic-memory/group.html">Dynamic Memory Allocation, Resource Management</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../100-inheritance-oo-design/group.html">Inheritance and Object Oriented Design</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../900-standard-library-miscellanea/group.html">The Standard Library: Miscellaneous Topics</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../exercises-userdb/group.html">Exercises: User Database</a></li>
@@ -167,12 +170,13 @@
 <h1><code class="docutils literal notranslate"><span class="pre">std::sort</span></code><a class="headerlink" href="#std-sort" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#algorithm-std-sort" id="id3">Algorithm: <code class="docutils literal notranslate"><span class="pre">std::sort</span></code></a></p></li>
-<li><p><a class="reference internal" href="#algorithm-std-sort-custom-comparison" id="id4">Algorithm: <code class="docutils literal notranslate"><span class="pre">std::sort</span></code>, custom comparison</a></p></li>
+<li><p><a class="reference internal" href="#algorithm-std-sort" id="id4">Algorithm: <code class="docutils literal notranslate"><span class="pre">std::sort</span></code></a></p></li>
+<li><p><a class="reference internal" href="#algorithm-std-sort-custom-comparison" id="id5">Algorithm: <code class="docutils literal notranslate"><span class="pre">std::sort</span></code>, custom comparison</a></p></li>
+<li><p><a class="reference internal" href="#live-hacking" id="id6">Live Hacking</a></p></li>
 </ul>
 </div>
 <section id="algorithm-std-sort">
-<h2><a class="toc-backref" href="#id3">Algorithm: <code class="docutils literal notranslate"><span class="pre">std::sort</span></code></a><a class="headerlink" href="#algorithm-std-sort" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id4">Algorithm: <code class="docutils literal notranslate"><span class="pre">std::sort</span></code></a><a class="headerlink" href="#algorithm-std-sort" title="Permalink to this headline">¶</a></h2>
 <p>Now for something simple …</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">Sorting a C array</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
@@ -194,7 +198,7 @@
 </div>
 </section>
 <section id="algorithm-std-sort-custom-comparison">
-<h2><a class="toc-backref" href="#id4">Algorithm: <code class="docutils literal notranslate"><span class="pre">std::sort</span></code>, custom comparison</a><a class="headerlink" href="#algorithm-std-sort-custom-comparison" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">Algorithm: <code class="docutils literal notranslate"><span class="pre">std::sort</span></code>, custom comparison</a><a class="headerlink" href="#algorithm-std-sort-custom-comparison" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="nf">less_reverse</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">r</span><span class="p">;</span><span class="w"></span>
@@ -203,6 +207,67 @@
 <span class="kt">int</span><span class="w"> </span><span class="n">int_array</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">34</span><span class="p">,</span><span class="w"> </span><span class="mi">45</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">666</span><span class="w"> </span><span class="p">};</span><span class="w"></span>
 <span class="n">std</span><span class="o">::</span><span class="n">sort</span><span class="p">(</span><span class="n">int_array</span><span class="p">,</span><span class="w"> </span><span class="n">int_array</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="n">less_reverse</span><span class="p">);</span><span class="w"></span>
 </pre></div>
+</div>
+</section>
+<section id="live-hacking">
+<h2><a class="toc-backref" href="#id6">Live Hacking</a><a class="headerlink" href="#live-hacking" title="Permalink to this headline">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/0b7186e22b32fdac5e62ec0d38817c9a/sort.cpp"><code class="xref download docutils literal notranslate"><span class="pre">sort.cpp</span></code></a></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;algorithm&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cassert&gt;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">std</span><span class="p">;</span><span class="w"></span>
+
+
+<span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">greater_than</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">r</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">array</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">34</span><span class="p">,</span><span class="w"> </span><span class="mi">45</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">666</span><span class="w"> </span><span class="p">};</span><span class="w"></span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">sort</span><span class="p">(</span><span class="n">array</span><span class="p">,</span><span class="w"> </span><span class="n">array</span><span class="o">+</span><span class="mi">6</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="mi">6</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">array</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="n">array</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="s">&quot;Joerg&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">array</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="s">&quot;Philipp&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">array</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="s">&quot;Caro&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">array</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="s">&quot;Johanna&quot;</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">        </span><span class="c1">// &#39;&lt;&#39; is defined on strings (this is why sort() works with</span>
+<span class="w">        </span><span class="c1">// strings)</span>
+<span class="w">        </span><span class="n">assert</span><span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">array</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span><span class="w"></span>
+<span class="w">        </span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">sort</span><span class="p">(</span><span class="n">array</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">array</span><span class="p">.</span><span class="n">end</span><span class="p">());</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">array</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1">// reverse sort</span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">array</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">34</span><span class="p">,</span><span class="w"> </span><span class="mi">45</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">666</span><span class="w"> </span><span class="p">};</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">sort</span><span class="p">(</span><span class="n">array</span><span class="p">,</span><span class="w"> </span><span class="n">array</span><span class="o">+</span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="n">greater_than</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="mi">6</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
 </div>
 </section>
 </section>
