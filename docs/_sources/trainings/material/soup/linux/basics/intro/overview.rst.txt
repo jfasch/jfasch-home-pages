@@ -9,7 +9,7 @@ Overview
 .. contents::
    :local:
 
-.. image:: user-kernel.svg
+.. image:: user-kernel/user-kernel.svg
 
 User Space, Kernel Space?
 -------------------------
@@ -24,11 +24,19 @@ User Space, Kernel Space?
 User Space: *Abstractions*
 --------------------------
 
+.. sidebar:: 
+
+   See :doc:`blocking-io/group`
+
 * No direct hardware access
-* Per process *linear address space*
+* Per-process *linear address space*
 
   * |longrightarrow| perception that I *own* all memory
   * *Virtual memory* - *virtualization* of physical memory
+
+.. sidebar:: See also
+
+   :doc:`process`
 
 * *Scheduling*
 
@@ -41,13 +49,22 @@ User Space: *Abstractions*
   * *File descriptors* for open files
   * *Blocking* I/O
 
-* Networking: *sockets* (*blocking* I/O)
+* Networking
+
+  * *Sockets*, represented by *file descriptors*
+  * *Blocking* I/O
+
 * (Many more)
 
 Kernel: Where The Heavy Stuff Is
 --------------------------------
 
-* Interrupt from hardware devices
+.. sidebar:: 
+
+   See :doc:`/trainings/material/soup/kernel/index` for a look under
+   the surface.
+
+* Interrupts from hardware devices
 * Raw memory - *not* organized linearly
 * Multiple CPUs
 * One single address space
@@ -55,3 +72,23 @@ Kernel: Where The Heavy Stuff Is
   * |longrightarrow| heavy parallelism
   * |longrightarrow| **Hard!!**
 
+Booting a Computer
+------------------
+
+* Bootloader
+
+  * Machine specific |longrightarrow| low level
+  * Hardware initialization (RAM, basics peripherals like timers)
+  * Loads (and starts) the *kernel* - in a variety of different ways
+
+* Kernel
+
+  * More hardware initialization (optional peripherals, mostly)
+  * Subsystems initialization (memory management, storage, ...)
+  * Starts userspace |longrightarrow| ``/sbin/init`` (usually), **PID
+    1**
+
+* PID 1
+
+  * Starts "services" (``sshd``, graphical login screen, logging, ...)
+  * (Grand-) parent of all other processes

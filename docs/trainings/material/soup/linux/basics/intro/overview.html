@@ -22,8 +22,8 @@
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/basics/intro/overview.html" />
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../search.html" />
-    <link rel="next" title="File System Permissions" href="../permissions/group.html" />
-    <link rel="prev" title="Concepts and Terminology" href="group.html" /> 
+    <link rel="next" title="Blocking I/O: What is That? (“Everything is a file”)" href="blocking-io/group.html" />
+    <link rel="prev" title="Introduction: Concepts and Terminology" href="group.html" /> 
    
   <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
   
@@ -109,8 +109,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../cxx11/group.html">C++ 11</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../../group.html">Linux</a><ul class="current">
 <li class="toctree-l4 current"><a class="reference internal" href="../group.html">Linux Basics</a><ul class="current">
-<li class="toctree-l5 current"><a class="reference internal" href="group.html">Concepts and Terminology</a><ul class="current">
+<li class="toctree-l5 current"><a class="reference internal" href="group.html">Introduction: Concepts and Terminology</a><ul class="current">
 <li class="toctree-l6 current"><a class="current reference internal" href="#">Overview</a></li>
+<li class="toctree-l6"><a class="reference internal" href="blocking-io/group.html">Blocking I/O: What is That? (“Everything is a file”)</a></li>
+<li class="toctree-l6"><a class="reference internal" href="process.html">Processes, Scheduling, Address Spaces</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../permissions/group.html">File System Permissions</a></li>
@@ -158,6 +160,7 @@
 <li><p><a class="reference internal" href="#user-space-kernel-space" id="id1">User Space, Kernel Space?</a></p></li>
 <li><p><a class="reference internal" href="#user-space-abstractions" id="id2">User Space: <em>Abstractions</em></a></p></li>
 <li><p><a class="reference internal" href="#kernel-where-the-heavy-stuff-is" id="id3">Kernel: Where The Heavy Stuff Is</a></p></li>
+<li><p><a class="reference internal" href="#booting-a-computer" id="id4">Booting a Computer</a></p></li>
 </ul>
 </div>
 <img alt="../../../../../../_images/user-kernel.svg" src="../../../../../../_images/user-kernel.svg" /><section id="user-space-kernel-space">
@@ -173,14 +176,23 @@
 </section>
 <section id="user-space-abstractions">
 <h2><a class="toc-backref" href="#id2">User Space: <em>Abstractions</em></a><a class="headerlink" href="#user-space-abstractions" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p>See <a class="reference internal" href="blocking-io/group.html"><span class="doc">Blocking I/O: What is That? (“Everything is a file”)</span></a></p>
+</aside>
 <ul class="simple">
 <li><p>No direct hardware access</p></li>
-<li><p>Per process <em>linear address space</em></p>
+<li><p>Per-process <em>linear address space</em></p>
 <ul>
 <li><p>⟶ perception that I <em>own</em> all memory</p></li>
 <li><p><em>Virtual memory</em> - <em>virtualization</em> of physical memory</p></li>
 </ul>
 </li>
+</ul>
+<aside class="sidebar">
+<p class="sidebar-title">See also</p>
+<p><a class="reference internal" href="process.html"><span class="doc">Processes, Scheduling, Address Spaces</span></a></p>
+</aside>
+<ul class="simple">
 <li><p><em>Scheduling</em></p>
 <ul>
 <li><p>⟶ perception that I <em>own</em> the CPU</p></li>
@@ -194,20 +206,55 @@
 <li><p><em>Blocking</em> I/O</p></li>
 </ul>
 </li>
-<li><p>Networking: <em>sockets</em> (<em>blocking</em> I/O)</p></li>
+<li><p>Networking</p>
+<ul>
+<li><p><em>Sockets</em>, represented by <em>file descriptors</em></p></li>
+<li><p><em>Blocking</em> I/O</p></li>
+</ul>
+</li>
 <li><p>(Many more)</p></li>
 </ul>
 </section>
 <section id="kernel-where-the-heavy-stuff-is">
 <h2><a class="toc-backref" href="#id3">Kernel: Where The Heavy Stuff Is</a><a class="headerlink" href="#kernel-where-the-heavy-stuff-is" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p>See <a class="reference internal" href="../../../kernel/index.html"><span class="doc">Linux Driver Development</span></a> for a look under
+the surface.</p>
+</aside>
 <ul class="simple">
-<li><p>Interrupt from hardware devices</p></li>
+<li><p>Interrupts from hardware devices</p></li>
 <li><p>Raw memory - <em>not</em> organized linearly</p></li>
 <li><p>Multiple CPUs</p></li>
 <li><p>One single address space</p>
 <ul>
 <li><p>⟶ heavy parallelism</p></li>
 <li><p>⟶ <strong>Hard!!</strong></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="booting-a-computer">
+<h2><a class="toc-backref" href="#id4">Booting a Computer</a><a class="headerlink" href="#booting-a-computer" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Bootloader</p>
+<ul>
+<li><p>Machine specific ⟶ low level</p></li>
+<li><p>Hardware initialization (RAM, basics peripherals like timers)</p></li>
+<li><p>Loads (and starts) the <em>kernel</em> - in a variety of different ways</p></li>
+</ul>
+</li>
+<li><p>Kernel</p>
+<ul>
+<li><p>More hardware initialization (optional peripherals, mostly)</p></li>
+<li><p>Subsystems initialization (memory management, storage, …)</p></li>
+<li><p>Starts userspace ⟶ <code class="docutils literal notranslate"><span class="pre">/sbin/init</span></code> (usually), <strong>PID
+1</strong></p></li>
+</ul>
+</li>
+<li><p>PID 1</p>
+<ul>
+<li><p>Starts “services” (<code class="docutils literal notranslate"><span class="pre">sshd</span></code>, graphical login screen, logging, …)</p></li>
+<li><p>(Grand-) parent of all other processes</p></li>
 </ul>
 </li>
 </ul>
