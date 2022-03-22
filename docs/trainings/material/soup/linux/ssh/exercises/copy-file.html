@@ -1,0 +1,392 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Exercise: Copy a File To Remote Machine, And Verify &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/ssh/exercises/copy-file.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="Exercise: Copy a Tree To Remote Machine (And Adjust Permissions)" href="copy-tree.html" />
+    <link rel="prev" title="Exercise: Create SSH Key Pair" href="pubkey.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">Linux</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../basics/group.html">Linux Basics</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../group.html">SSH</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../basics.html">SSH: Basics</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../key-pair.html">SSH: Public Key Authentication</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../scp.html">SSH: Secure Copy</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../portforwarding.html">SSH: Port Forwarding</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../sshfs.html">SSH File System (<code class="docutils literal notranslate"><span class="pre">sshfs</span></code>)</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="group.html">Exercises: SSH</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="pubkey.html">Exercise: Create SSH Key Pair</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">Exercise: Copy a File To Remote Machine, And Verify</a></li>
+<li class="toctree-l6"><a class="reference internal" href="copy-tree.html">Exercise: Copy a Tree To Remote Machine (And Adjust Permissions)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../sysprog/group.html">Linux Systems Programming</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../hardware/group.html">Linux Hardware Interfaces</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../drafts/group.html">Drafts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../sysprog/group.html">Systems Programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../kernel/index.html">Linux Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="exercise-copy-a-file-to-remote-machine-and-verify">
+<h1>Exercise: Copy a File To Remote Machine, And Verify<a class="headerlink" href="#exercise-copy-a-file-to-remote-machine-and-verify" title="Permalink to this headline">¶</a></h1>
+<ul>
+<li><p>View your <em>local</em> password database’s metadata, and compute its
+SHA256 fingerprint.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -l /etc/passwd
+<span class="go">-rw-r--r--. 1 root root 2746 Mar  3 14:12 /etc/passwd</span>
+<span class="gp">$ </span>sha256sum /etc/passwd
+<span class="go">72c18232434d0551af75f964ea66ae5d9271faba895f40a929fb17f19d7ab44c  /etc/passwd</span>
+</pre></div>
+</div>
+</li>
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">scp</span></code> command to copy that file to the remote machine -
+into your remote home directory under the name <code class="docutils literal notranslate"><span class="pre">~/my-local-passwd</span></code></p></li>
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">ssh</span></code> command <em>non-interactively</em> to verify the SHA256
+checksum <em>on the remote side</em>:</p>
+<ul class="simple">
+<li><p>You do not login to the remote machine</p></li>
+<li><p>You do not type the <code class="docutils literal notranslate"><span class="pre">sha256sum</span></code> command an a remote login shell</p></li>
+<li><p>Rather, you use the local <code class="docutils literal notranslate"><span class="pre">ssh</span></code> command to automate that process
+and call <code class="docutils literal notranslate"><span class="pre">sha256sum</span></code> remotely for you.</p></li>
+</ul>
+</li>
+<li><p>Compare the remote fingerprint with the local fingerprint</p></li>
+<li><p>Did the copy succeed without information loss?</p></li>
+</ul>
+<svg 
+ viewBox="0.00 0.00 772.00 723.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 719)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-719 768,-719 768,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_linux</title>
+<path fill="none" stroke="black" d="M20,-8C20,-8 744,-8 744,-8 750,-8 756,-14 756,-20 756,-20 756,-695 756,-695 756,-701 750,-707 744,-707 744,-707 20,-707 20,-707 14,-707 8,-701 8,-695 8,-695 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="382" y="-691.8" font-family="Times-Roman" font-size="14.00">Linux</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_linux_basics</title>
+<path fill="none" stroke="black" d="M66,-16C66,-16 464,-16 464,-16 470,-16 476,-22 476,-28 476,-28 476,-334 476,-334 476,-340 470,-346 464,-346 464,-346 66,-346 66,-346 60,-346 54,-340 54,-334 54,-334 54,-28 54,-28 54,-22 60,-16 66,-16"/>
+<text text-anchor="middle" x="265" y="-330.8" font-family="Times-Roman" font-size="14.00">Linux Basics</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_linux_basics_intro</title>
+<path fill="none" stroke="black" d="M74,-24C74,-24 456,-24 456,-24 462,-24 468,-30 468,-36 468,-36 468,-303 468,-303 468,-309 462,-315 456,-315 456,-315 74,-315 74,-315 68,-315 62,-309 62,-303 62,-303 62,-36 62,-36 62,-30 68,-24 74,-24"/>
+<text text-anchor="middle" x="265" y="-299.8" font-family="Times-Roman" font-size="14.00">Introduction: Concepts and Terminology</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_linux_ssh</title>
+<path fill="none" stroke="black" d="M28,-354C28,-354 736,-354 736,-354 742,-354 748,-360 748,-366 748,-366 748,-664 748,-664 748,-670 742,-676 736,-676 736,-676 28,-676 28,-676 22,-676 16,-670 16,-664 16,-664 16,-366 16,-366 16,-360 22,-354 28,-354"/>
+<text text-anchor="middle" x="382" y="-660.8" font-family="Times-Roman" font-size="14.00">SSH</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_linux_ssh_exercises</title>
+<path fill="none" stroke="black" d="M248,-498C248,-498 728,-498 728,-498 734,-498 740,-504 740,-510 740,-510 740,-633 740,-633 740,-639 734,-645 728,-645 728,-645 248,-645 248,-645 242,-645 236,-639 236,-633 236,-633 236,-510 236,-510 236,-504 242,-498 248,-498"/>
+<text text-anchor="middle" x="488" y="-629.8" font-family="Times-Roman" font-size="14.00">Exercises: SSH</text>
+</g>
+<!-- linux_basics_intro_process -->
+<g id="node1" class="node">
+<title>linux_basics_intro_process</title>
+<g id="a_node1"><a xlink:href="../../basics/intro/process.html" xlink:title="Processes, Scheduling, Address Spaces">
+<ellipse fill="#dcdcdc" stroke="black" cx="265" cy="-122" rx="188.47" ry="18"/>
+<text text-anchor="middle" x="265" y="-118.3" font-family="Times-Roman" font-size="14.00">Processes, Scheduling, Address Spaces</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_intro_overview -->
+<g id="node4" class="node">
+<title>linux_basics_intro_overview</title>
+<g id="a_node4"><a xlink:href="../../basics/intro/overview.html" xlink:title="Overview">
+<ellipse fill="#dcdcdc" stroke="black" cx="265" cy="-50" rx="53.09" ry="18"/>
+<text text-anchor="middle" x="265" y="-46.3" font-family="Times-Roman" font-size="14.00">Overview</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_intro_process&#45;&gt;linux_basics_intro_overview -->
+<g id="edge1" class="edge">
+<title>linux_basics_intro_process&#45;&gt;linux_basics_intro_overview</title>
+<path fill="none" stroke="black" d="M265,-103.7C265,-95.98 265,-86.71 265,-78.11"/>
+<polygon fill="black" stroke="black" points="268.5,-78.1 265,-68.1 261.5,-78.1 268.5,-78.1"/>
+</g>
+<!-- linux_basics_intro_process_tree -->
+<g id="node2" class="node">
+<title>linux_basics_intro_process_tree</title>
+<g id="a_node2"><a xlink:href="../../basics/intro/process-tree.html" xlink:title="Process Hierarchy (Parent, Child Process)">
+<ellipse fill="#dcdcdc" stroke="black" cx="265" cy="-194" rx="194.97" ry="18"/>
+<text text-anchor="middle" x="265" y="-190.3" font-family="Times-Roman" font-size="14.00">Process Hierarchy (Parent, Child Process)</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_intro_process_tree&#45;&gt;linux_basics_intro_process -->
+<g id="edge4" class="edge">
+<title>linux_basics_intro_process_tree&#45;&gt;linux_basics_intro_process</title>
+<path fill="none" stroke="black" d="M265,-175.7C265,-167.98 265,-158.71 265,-150.11"/>
+<polygon fill="black" stroke="black" points="268.5,-150.1 265,-140.1 261.5,-150.1 268.5,-150.1"/>
+</g>
+<!-- linux_basics_intro_login -->
+<g id="node3" class="node">
+<title>linux_basics_intro_login</title>
+<g id="a_node3"><a xlink:href="../../basics/intro/login.html" xlink:title="Login? What Is That?">
+<ellipse fill="#dcdcdc" stroke="black" cx="265" cy="-266" rx="104.78" ry="18"/>
+<text text-anchor="middle" x="265" y="-262.3" font-family="Times-Roman" font-size="14.00">Login? What Is That?</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_intro_login&#45;&gt;linux_basics_intro_process_tree -->
+<g id="edge8" class="edge">
+<title>linux_basics_intro_login&#45;&gt;linux_basics_intro_process_tree</title>
+<path fill="none" stroke="black" d="M265,-247.7C265,-239.98 265,-230.71 265,-222.11"/>
+<polygon fill="black" stroke="black" points="268.5,-222.1 265,-212.1 261.5,-222.1 268.5,-222.1"/>
+</g>
+<!-- linux_ssh_basics -->
+<g id="node5" class="node">
+<title>linux_ssh_basics</title>
+<g id="a_node5"><a xlink:href="../basics.html" xlink:title="SSH: Basics">
+<ellipse fill="#dcdcdc" stroke="black" cx="169" cy="-380" rx="63.89" ry="18"/>
+<text text-anchor="middle" x="169" y="-376.3" font-family="Times-Roman" font-size="14.00">SSH: Basics</text>
+</a>
+</g>
+</g>
+<!-- linux_ssh_basics&#45;&gt;linux_basics_intro_login -->
+<g id="edge2" class="edge">
+<title>linux_ssh_basics&#45;&gt;linux_basics_intro_login</title>
+<path fill="none" stroke="black" d="M183.58,-361.99C199.58,-343.32 225.41,-313.18 243.69,-291.87"/>
+<polygon fill="black" stroke="black" points="246.43,-294.04 250.28,-284.17 241.12,-289.49 246.43,-294.04"/>
+</g>
+<!-- linux_ssh_scp -->
+<g id="node6" class="node">
+<title>linux_ssh_scp</title>
+<g id="a_node6"><a xlink:href="../scp.html" xlink:title="SSH: Secure Copy">
+<ellipse fill="#dcdcdc" stroke="black" cx="136" cy="-524" rx="91.78" ry="18"/>
+<text text-anchor="middle" x="136" y="-520.3" font-family="Times-Roman" font-size="14.00">SSH: Secure Copy</text>
+</a>
+</g>
+</g>
+<!-- linux_ssh_scp&#45;&gt;linux_ssh_basics -->
+<g id="edge3" class="edge">
+<title>linux_ssh_scp&#45;&gt;linux_ssh_basics</title>
+<path fill="none" stroke="black" d="M139.98,-505.87C145.63,-481.56 156.03,-436.82 162.72,-408.01"/>
+<polygon fill="black" stroke="black" points="166.15,-408.72 165.01,-398.19 159.33,-407.14 166.15,-408.72"/>
+</g>
+<!-- linux_ssh_key_pair -->
+<g id="node7" class="node">
+<title>linux_ssh_key_pair</title>
+<g id="a_node7"><a xlink:href="../key-pair.html" xlink:title="SSH: Public Key Authentication">
+<ellipse fill="#dcdcdc" stroke="black" cx="362" cy="-452" rx="149.47" ry="18"/>
+<text text-anchor="middle" x="362" y="-448.3" font-family="Times-Roman" font-size="14.00">SSH: Public Key Authentication</text>
+</a>
+</g>
+</g>
+<!-- linux_ssh_key_pair&#45;&gt;linux_basics_intro_login -->
+<g id="edge6" class="edge">
+<title>linux_ssh_key_pair&#45;&gt;linux_basics_intro_login</title>
+<path fill="none" stroke="black" d="M353.05,-434.02C336.01,-401.71 298.84,-331.18 278.67,-292.93"/>
+<polygon fill="black" stroke="black" points="281.69,-291.15 273.93,-283.94 275.5,-294.42 281.69,-291.15"/>
+</g>
+<!-- linux_ssh_key_pair&#45;&gt;linux_ssh_basics -->
+<g id="edge5" class="edge">
+<title>linux_ssh_key_pair&#45;&gt;linux_ssh_basics</title>
+<path fill="none" stroke="black" d="M317.24,-434.76C286.99,-423.8 247.12,-409.33 216.35,-398.17"/>
+<polygon fill="black" stroke="black" points="217.29,-394.79 206.7,-394.67 214.91,-401.37 217.29,-394.79"/>
+</g>
+<!-- linux_ssh_exercises_pubkey -->
+<g id="node8" class="node">
+<title>linux_ssh_exercises_pubkey</title>
+<g id="a_node8"><a xlink:href="pubkey.html" xlink:title="Exercise: Create SSH Key Pair">
+<ellipse fill="red" stroke="black" cx="389" cy="-524" rx="142.97" ry="18"/>
+<text text-anchor="middle" x="389" y="-520.3" font-family="Times-Roman" font-size="14.00">Exercise: Create SSH Key Pair</text>
+</a>
+</g>
+</g>
+<!-- linux_ssh_exercises_pubkey&#45;&gt;linux_ssh_key_pair -->
+<g id="edge7" class="edge">
+<title>linux_ssh_exercises_pubkey&#45;&gt;linux_ssh_key_pair</title>
+<path fill="none" stroke="black" d="M382.33,-505.7C379.29,-497.81 375.62,-488.3 372.24,-479.55"/>
+<polygon fill="black" stroke="black" points="375.46,-478.17 368.6,-470.1 368.93,-480.69 375.46,-478.17"/>
+</g>
+<!-- linux_ssh_exercises_copy_file -->
+<g id="node9" class="node">
+<title>linux_ssh_exercises_copy_file</title>
+<ellipse fill="red" stroke="black" stroke-width="3" cx="488" cy="-596" rx="244.26" ry="18"/>
+<text text-anchor="middle" x="488" y="-592.3" font-family="Times-Roman" font-size="14.00">Exercise: Copy a File To Remote Machine, And Verify</text>
+</g>
+<!-- linux_ssh_exercises_copy_file&#45;&gt;linux_ssh_basics -->
+<g id="edge12" class="edge">
+<title>linux_ssh_exercises_copy_file&#45;&gt;linux_ssh_basics</title>
+<path fill="none" stroke="black" d="M298.93,-584.56C182.91,-576.16 53.13,-562.37 35,-542 -8.99,-492.56 77.27,-432.06 130.83,-401.2"/>
+<polygon fill="black" stroke="black" points="132.78,-404.12 139.77,-396.15 129.34,-398.02 132.78,-404.12"/>
+</g>
+<!-- linux_ssh_exercises_copy_file&#45;&gt;linux_ssh_scp -->
+<g id="edge11" class="edge">
+<title>linux_ssh_exercises_copy_file&#45;&gt;linux_ssh_scp</title>
+<path fill="none" stroke="black" d="M407.24,-578.94C347.22,-567 266.03,-550.86 208.17,-539.35"/>
+<polygon fill="black" stroke="black" points="208.49,-535.85 198,-537.33 207.13,-542.71 208.49,-535.85"/>
+</g>
+<!-- linux_ssh_exercises_copy_file&#45;&gt;linux_ssh_key_pair -->
+<g id="edge10" class="edge">
+<title>linux_ssh_exercises_copy_file&#45;&gt;linux_ssh_key_pair</title>
+<path fill="none" stroke="black" d="M512.2,-578C523.21,-568.76 535.07,-556.31 541,-542 548.48,-523.93 553.02,-513.42 541,-498 530.82,-484.95 499.71,-475.1 466.22,-468"/>
+<polygon fill="black" stroke="black" points="466.75,-464.54 456.25,-465.98 465.35,-471.4 466.75,-464.54"/>
+</g>
+<!-- linux_ssh_exercises_copy_file&#45;&gt;linux_ssh_exercises_pubkey -->
+<g id="edge9" class="edge">
+<title>linux_ssh_exercises_copy_file&#45;&gt;linux_ssh_exercises_pubkey</title>
+<path fill="none" stroke="black" d="M464.03,-578.05C451.14,-568.94 435.07,-557.58 421.12,-547.71"/>
+<polygon fill="black" stroke="black" points="422.93,-544.7 412.74,-541.79 418.89,-550.42 422.93,-544.7"/>
+</g>
+</g>
+</svg>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2022 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/linux/ssh/exercises/copy-file.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
