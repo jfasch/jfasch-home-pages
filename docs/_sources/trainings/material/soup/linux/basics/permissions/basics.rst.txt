@@ -9,13 +9,16 @@ Mode, User and Group Ownership
 
 .. sidebar:: Documentation
 
-   **Tune Permissions**
+   *Tune Permissions*
 
    * `man -s 1 chmod <https://linux.die.net/man/1/chmod>`__
+
+   *Change Ownership*
+
    * `man -s 1 chgrp <https://linux.die.net/man/1/chgrp>`__
    * `man -s 1 chown <https://linux.die.net/man/1/chown>`__
 
-   **Create and Modify User and Group**
+   *Create and Modify Users and Groups*
 
    * `man -s 8 useradd
      <https://man7.org/linux/man-pages/man8/useradd.8.html>`__
@@ -178,83 +181,6 @@ Directory Permissions
   directories along the path
 * *The right to* ``cd`` *into the directory*
 
-Example: Modifying Permissions: Add Executable Bits To A, Say, Shell Script
----------------------------------------------------------------------------
-
-After writing the script with an editor, the :doc:`default permissions
-<umask>` are in place:
-
-.. code-block:: console
-
-   $ ls -l a-script 
-   -rw-r--r-- 1 jfasch jfasch 22 Mar 23 15:14 a-script
-
-* Possibility 1: *absolute* - I know I want ``rwxr-xr-x``
-
-  .. code-block:: console
-  
-     $ ls -l a-script 
-     -rw-r--r-- 1 jfasch jfasch 22 Mar 23 15:14 a-script
-     $ chmod 755 a-script
-     $ ls -l a-script
-     -rwxr-xr-x 1 jfasch jfasch 22 Mar 23 15:14 a-script
-
-* Possibility 2: *differential symbolic* - I want to add the
-  *executable* bit to user, group, and others, and leave the existing
-  permissions unmodified
-
-  .. code-block:: console
-
-     $ ls -l a-script 
-     -rw-r--r-- 1 jfasch jfasch 22 Mar 23 15:14 a-script
-     $ chmod ugo+x a-script 
-     $ ls -l a-script 
-     -rwxr-xr-x 1 jfasch jfasch 22 Mar 23 15:14 a-script
-
-Example: Modifying Permissions: Remove Write Permissions For Group And Others
------------------------------------------------------------------------------
-
-Say I copied a file from a USB stick (which is usually formatted with
-a non-UNIX filesystem). I end up with permissions which are too open:
-
-.. .. code-block:: console
-.. 
-.. 
-.. .. jjj::
-.. 
-
-
-Shell Commands
---------------
-
-* Permission modification (set to octal value)
-
-  .. code-block:: console
-     
-     $ chmod 755 /bin/script.sh
-
-* Permission modification (differential symbolic)
-
-  .. code-block:: console
-     
-     $ chmod u+x,g-wx,o-rwx /bin/script.sh
-
-* Group ownership modification (only root and members of the group can
-  do this)
-
-  .. code-block:: console
-
-     $ chgrp team /tmp/file
-
-* Ownership modification (only root)
-
-  .. code-block:: console
-
-     # chown jfasch /tmp/file
-
-* ``chmod``, ``chown``, and ``chgrp`` understand
-    ``-R`` for "recursive".
-
 Permission Bits, octal
 ----------------------
   
@@ -275,3 +201,44 @@ Permission Bits, octal
      * ``111101101``
      * ``chmod 0755 <path>``
 
+Shell Commands: Tuning Permissions
+----------------------------------
+
+* Permission modification (set to octal value, absolutely, the whole
+  bitmask no matter what)
+
+  .. code-block:: console
+
+     $ ls -l /bin/script.sh
+     -rw-rw-r-- 1 jfasch jfasch 612 Mar 23 18:39 script.sh
+     $ chmod 755 /bin/script.sh
+     -rwxr-xr-x 1 jfasch jfasch 0 Mar 23 18:39 script.sh
+
+* Permission modification (differential symbolic)
+
+  .. code-block:: console
+     
+     $ ls -l /bin/script.sh
+     -rw-rw-r-- 1 jfasch jfasch 612 Mar 23 18:39 script.sh
+     $ chmod u+x,g-w,g+x,o+x script.sh 
+     $ ls -l script.sh 
+     -rwxr-xr-x. 1 jfasch jfasch 0 Mar 23 18:42 script.sh
+
+Shell Commands: Changing User/Group Ownership
+---------------------------------------------
+
+* Group ownership modification (only root and members of the group can
+  do this)
+
+  .. code-block:: console
+
+     $ chgrp team /tmp/file
+
+* Ownership modification (only root)
+
+  .. code-block:: console
+
+     # chown jfasch /tmp/file
+
+* ``chmod``, ``chown``, and ``chgrp`` understand ``-R`` for
+  "recursive".

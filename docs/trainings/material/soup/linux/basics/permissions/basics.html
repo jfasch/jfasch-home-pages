@@ -162,13 +162,16 @@
 <h1>Mode, User and Group Ownership<a class="headerlink" href="#mode-user-and-group-ownership" title="Permalink to this headline">¶</a></h1>
 <aside class="sidebar">
 <p class="sidebar-title">Documentation</p>
-<p><strong>Tune Permissions</strong></p>
+<p><em>Tune Permissions</em></p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://linux.die.net/man/1/chmod">man -s 1 chmod</a></p></li>
+</ul>
+<p><em>Change Ownership</em></p>
+<ul class="simple">
 <li><p><a class="reference external" href="https://linux.die.net/man/1/chgrp">man -s 1 chgrp</a></p></li>
 <li><p><a class="reference external" href="https://linux.die.net/man/1/chown">man -s 1 chown</a></p></li>
 </ul>
-<p><strong>Create and Modify User and Group</strong></p>
+<p><em>Create and Modify Users and Groups</em></p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://man7.org/linux/man-pages/man8/useradd.8.html">man -s 8 useradd</a></p></li>
 <li><p><a class="reference external" href="https://man7.org/linux/man-pages/man8/groupadd.8.html">man -s 8 groupadd</a></p></li>
@@ -185,10 +188,9 @@
 <li><p><a class="reference internal" href="#permission-check-others" id="id5">Permission Check: Others</a></p></li>
 <li><p><a class="reference internal" href="#programs-execute-permissions" id="id6">Programs: Execute Permissions</a></p></li>
 <li><p><a class="reference internal" href="#directory-permissions" id="id7">Directory Permissions</a></p></li>
-<li><p><a class="reference internal" href="#example-modifying-permissions-add-executable-bits-to-a-say-shell-script" id="id8">Example: Modifying Permissions: Add Executable Bits To A, Say, Shell Script</a></p></li>
-<li><p><a class="reference internal" href="#example-modifying-permissions-remove-write-permissions-for-group-and-others" id="id9">Example: Modifying Permissions: Remove Write Permissions For Group And Others</a></p></li>
-<li><p><a class="reference internal" href="#shell-commands" id="id10">Shell Commands</a></p></li>
-<li><p><a class="reference internal" href="#permission-bits-octal" id="id11">Permission Bits, octal</a></p></li>
+<li><p><a class="reference internal" href="#permission-bits-octal" id="id8">Permission Bits, octal</a></p></li>
+<li><p><a class="reference internal" href="#shell-commands-tuning-permissions" id="id9">Shell Commands: Tuning Permissions</a></p></li>
+<li><p><a class="reference internal" href="#shell-commands-changing-user-group-ownership" id="id10">Shell Commands: Changing User/Group Ownership</a></p></li>
 </ul>
 </div>
 <section id="owner-and-permissions">
@@ -351,74 +353,8 @@ directories along the path</p></li>
 <li><p><em>The right to</em> <code class="docutils literal notranslate"><span class="pre">cd</span></code> <em>into the directory</em></p></li>
 </ul>
 </section>
-<section id="example-modifying-permissions-add-executable-bits-to-a-say-shell-script">
-<h2><a class="toc-backref" href="#id8">Example: Modifying Permissions: Add Executable Bits To A, Say, Shell Script</a><a class="headerlink" href="#example-modifying-permissions-add-executable-bits-to-a-say-shell-script" title="Permalink to this headline">¶</a></h2>
-<p>After writing the script with an editor, the <a class="reference internal" href="umask.html"><span class="doc">default permissions</span></a> are in place:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -l a-script
-<span class="go">-rw-r--r-- 1 jfasch jfasch 22 Mar 23 15:14 a-script</span>
-</pre></div>
-</div>
-<ul>
-<li><p>Possibility 1: <em>absolute</em> - I know I want <code class="docutils literal notranslate"><span class="pre">rwxr-xr-x</span></code></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -l a-script
-<span class="go">-rw-r--r-- 1 jfasch jfasch 22 Mar 23 15:14 a-script</span>
-<span class="gp">$ </span>chmod <span class="m">755</span> a-script
-<span class="gp">$ </span>ls -l a-script
-<span class="go">-rwxr-xr-x 1 jfasch jfasch 22 Mar 23 15:14 a-script</span>
-</pre></div>
-</div>
-</li>
-<li><p>Possibility 2: <em>differential symbolic</em> - I want to add the
-<em>executable</em> bit to user, group, and others, and leave the existing
-permissions unmodified</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -l a-script
-<span class="go">-rw-r--r-- 1 jfasch jfasch 22 Mar 23 15:14 a-script</span>
-<span class="gp">$ </span>chmod ugo+x a-script
-<span class="gp">$ </span>ls -l a-script
-<span class="go">-rwxr-xr-x 1 jfasch jfasch 22 Mar 23 15:14 a-script</span>
-</pre></div>
-</div>
-</li>
-</ul>
-</section>
-<section id="example-modifying-permissions-remove-write-permissions-for-group-and-others">
-<h2><a class="toc-backref" href="#id9">Example: Modifying Permissions: Remove Write Permissions For Group And Others</a><a class="headerlink" href="#example-modifying-permissions-remove-write-permissions-for-group-and-others" title="Permalink to this headline">¶</a></h2>
-<p>Say I copied a file from a USB stick (which is usually formatted with
-a non-UNIX filesystem). I end up with permissions which are too open:</p>
-</section>
-<section id="shell-commands">
-<h2><a class="toc-backref" href="#id10">Shell Commands</a><a class="headerlink" href="#shell-commands" title="Permalink to this headline">¶</a></h2>
-<ul>
-<li><p>Permission modification (set to octal value)</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>chmod <span class="m">755</span> /bin/script.sh
-</pre></div>
-</div>
-</li>
-<li><p>Permission modification (differential symbolic)</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>chmod u+x,g-wx,o-rwx /bin/script.sh
-</pre></div>
-</div>
-</li>
-<li><p>Group ownership modification (only root and members of the group can
-do this)</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>chgrp team /tmp/file
-</pre></div>
-</div>
-</li>
-<li><p>Ownership modification (only root)</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>chown jfasch /tmp/file
-</pre></div>
-</div>
-</li>
-<li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">chmod</span></code>, <code class="docutils literal notranslate"><span class="pre">chown</span></code>, and <code class="docutils literal notranslate"><span class="pre">chgrp</span></code> understand</dt><dd><p><code class="docutils literal notranslate"><span class="pre">-R</span></code> for “recursive”.</p>
-</dd>
-</dl>
-</li>
-</ul>
-</section>
 <section id="permission-bits-octal">
-<h2><a class="toc-backref" href="#id11">Permission Bits, octal</a><a class="headerlink" href="#permission-bits-octal" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id8">Permission Bits, octal</a><a class="headerlink" href="#permission-bits-octal" title="Permalink to this headline">¶</a></h2>
 <table class="docutils align-left">
 <colgroup>
 <col style="width: 33%" />
@@ -446,6 +382,47 @@ do this)</p>
 </tr>
 </tbody>
 </table>
+</section>
+<section id="shell-commands-tuning-permissions">
+<h2><a class="toc-backref" href="#id9">Shell Commands: Tuning Permissions</a><a class="headerlink" href="#shell-commands-tuning-permissions" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>Permission modification (set to octal value, absolutely, the whole
+bitmask no matter what)</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -l /bin/script.sh
+<span class="go">-rw-rw-r-- 1 jfasch jfasch 612 Mar 23 18:39 script.sh</span>
+<span class="gp">$ </span>chmod <span class="m">755</span> /bin/script.sh
+<span class="go">-rwxr-xr-x 1 jfasch jfasch 0 Mar 23 18:39 script.sh</span>
+</pre></div>
+</div>
+</li>
+<li><p>Permission modification (differential symbolic)</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -l /bin/script.sh
+<span class="go">-rw-rw-r-- 1 jfasch jfasch 612 Mar 23 18:39 script.sh</span>
+<span class="gp">$ </span>chmod u+x,g-w,g+x,o+x script.sh
+<span class="gp">$ </span>ls -l script.sh
+<span class="go">-rwxr-xr-x. 1 jfasch jfasch 0 Mar 23 18:42 script.sh</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="shell-commands-changing-user-group-ownership">
+<h2><a class="toc-backref" href="#id10">Shell Commands: Changing User/Group Ownership</a><a class="headerlink" href="#shell-commands-changing-user-group-ownership" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>Group ownership modification (only root and members of the group can
+do this)</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>chgrp team /tmp/file
+</pre></div>
+</div>
+</li>
+<li><p>Ownership modification (only root)</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>chown jfasch /tmp/file
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">chmod</span></code>, <code class="docutils literal notranslate"><span class="pre">chown</span></code>, and <code class="docutils literal notranslate"><span class="pre">chgrp</span></code> understand <code class="docutils literal notranslate"><span class="pre">-R</span></code> for
+“recursive”.</p></li>
+</ul>
 </section>
 </section>
 
