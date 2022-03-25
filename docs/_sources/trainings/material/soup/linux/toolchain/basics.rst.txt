@@ -1,0 +1,138 @@
+.. ot-topic:: linux.toolchain.basics
+
+.. include:: <mmlalias.txt>
+
+
+Basics
+======
+
+.. contents::
+   :local:
+
+GCC - GNU Compiler Collection
+-----------------------------
+
+.. image:: rms.jpg
+   :align: left
+
+* GCC - `GNU Compiler Collection <http://gcc.gnu.org/>`__
+* Started by Richard Stallman in the 1980's
+* Part of the `GNU Project <http://www.gnu.org/>`__, along with other
+  basic technology
+
+  * `GNU Make <https://www.gnu.org/software/make/>`__
+  * `GNU Bash <https://www.gnu.org/software/bash/>`__
+  * `GNU Emacs <https://www.gnu.org/software/emacs/>`__
+
+* Frontends for a number of programming languages
+* |longrightarrow| most popular: C and C++
+* Supports a large number of architectures
+
+  * `All that Linux runs on
+    <https://en.wikipedia.org/wiki/List_of_Linux-supported_computer_architectures>`__
+    (`Intel <https://en.wikipedia.org/wiki/X86-64>`__, `ARM
+    <https://en.wikipedia.org/wiki/ARM_architecture_family>`__,
+    `RISC-V <https://en.wikipedia.org/wiki/RISC-V>`__)
+  * Many tiny to middle-sized embedded processors
+
+* Alternative to GCC: `LLVM <https://llvm.org/>`__
+
+  * Backed by Apple to a certain extent
+  * Modern design |longrightarrow| modular, clean interfaces, etc.
+  * |longrightarrow| `Rust <https://www.rust-lang.org/>`__ (e.g.) is
+    based on it
+
+All-In-One Usage: Single File
+-----------------------------
+
+* "Monolithic" program
+
+  .. literalinclude:: hello-single.c
+     :caption: :download:`hello-single.c`
+     :language: c
+
+* All-in-one: convert C to executable (seemingly directly)
+
+  .. code-block:: console
+  
+     $ gcc hello-single.c
+
+* Produces an *executable program*
+
+  .. code-block:: console
+  
+     $ ls -l a.out 
+     -rwxrwxr-x. 1 jfasch jfasch 24360 Mar 25 11:14 a.out
+     $ ./a.out 
+     Hello World
+
+* Changing the output file's name (``a.out`` is not very expressive)
+
+  .. code-block:: console
+
+     $ gcc -o hello-single hello-single.c
+     $ ls -l hello-single 
+     -rwxrwxr-x. 1 jfasch jfasch 24360 Mar 25 11:39 hello-single
+     $ ./hello-single 
+     Hello World
+
+* *A lot going on behind the scenes!*
+
+All-In-One Usage: Multiple Files
+--------------------------------
+
+* "Modular" program
+
+  .. list-table::
+     :align: left
+     :widths: auto
+     :header-rows: 1
+
+     * * Main
+       * "Modularized" out
+     * * .. literalinclude:: hello-main.c
+            :caption: :download:`hello-main.c`
+            :language: c
+       * .. literalinclude:: hello.h
+            :caption: :download:`hello.h`
+            :language: c
+
+         .. literalinclude:: hello.c
+            :caption: :download:`hello.c`
+            :language: c
+
+* All-in-one: convert *multiple C files* to executable
+  |longrightarrow| simply list them along with the main file
+
+  .. code-block:: console
+  
+     $ gcc -o hello-modular hello-main.c hello.c
+
+* Output as before ...
+
+  .. code-block:: console
+
+     $ ls -l hello-modular 
+     -rwxrwxr-x. 1 jfasch jfasch 24416 Mar 25 11:42 hello-modular
+     $ ./hello-modular 
+     Hello World
+
+ELF
+---
+
+.. sidebar:: Links
+
+   * `Executable and Linkable Format (ELF)
+     <https://en.wikipedia.org/wiki/Executable_and_Linkable_Format>`__
+   * Format definition: `man -s 5 elf
+     <https://man7.org/linux/man-pages/man5/elf.5.html>`__
+   * `man -s 1 readelf
+     <https://man7.org/linux/man-pages/man1/readelf.1.html>`__
+
+* Linux executables are in `Executable and Linkable Format
+  <https://en.wikipedia.org/wiki/Executable_and_Linkable_Format>`__
+
+  * |longrightarrow| Complicated but extensible and flexible
+
+
+jjjj
