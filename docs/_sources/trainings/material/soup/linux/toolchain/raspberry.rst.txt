@@ -1,0 +1,94 @@
+.. ot-topic:: linux.toolchain.raspberry
+   :dependencies: linux.toolchain.basics
+
+.. include:: <mmlalias.txt>
+
+
+The Raspberry Toolchain
+=======================
+
+Find out whether your Raspberry is running a 32 or 64 bit OS, and
+install toolchain accordingly [#debianese]_:
+
+.. list-table::
+   :align: left
+   :widths: auto
+   :header-rows: 1
+
+   * * Raspberry
+     * Host/PC (as ``root``)
+   * * 
+       .. code-block:: console
+  
+	  $ uname -m
+	  armv7l
+
+     *
+
+       **Debian**
+
+       .. code-block:: console
+  
+	  # apt install gcc-arm-linux-gnueabihf
+
+       **Fedora**
+
+       .. code-block:: console
+  
+	  # dnf install gcc-arm-linux-gnu
+
+   * * 
+       .. code-block:: console
+  
+	  $ uname -m
+	  aarch64
+
+     *
+
+       .. code-block:: console
+  
+	  # apt install gcc-aarch64-linux-gnu
+
+
+
+rsync -rzLR --safe-links \
+      joerg.faschingbauer@jfasch.bounceme.net:2020/usr/lib/arm-linux-gnueabihf \
+      joerg.faschingbauer@jfasch.bounceme.net:2020/usr/lib/gcc/arm-linux-gnueabihf \
+      joerg.faschingbauer@jfasch.bounceme.net:2020/usr/include \
+      joerg.faschingbauer@jfasch.bounceme.net:2020/lib/arm-linux-gnueabihf \
+      sysroot/	 
+
+ssh joerg.faschingbauer@jfasch.bounceme.net 'tar zcf - /usr/lib/arm-linux-gnueabihf /usr/lib/gcc/arm-linux-gnueabihf /usr/include /lib/arm-linux-gnueabihf' | tar ztf - 
+
+Configured with: ../gcc-11.2.1-20210728/configure --bindir=/usr/bin --build=x86_64-redhat-linux-gnu --datadir=/usr/share --disable-decimal-float --disable-dependency-tracking --disable-gold --disable-libgcj --disable-libgomp --disable-libmpx --disable-libquadmath --disable-libssp --disable-libunwind-exceptions --disable-shared --disable-silent-rules --disable-sjlj-exceptions --disable-threads --with-ld=/usr/bin/arm-linux-gnu-ld --enable-__cxa_atexit --enable-checking=release --enable-gnu-unique-object --enable-initfini-array --enable-languages=c,c++ --enable-linker-build-id --enable-lto --enable-nls --enable-obsolete --enable-plugin --enable-targets=all --exec-prefix=/usr --host=x86_64-redhat-linux-gnu --includedir=/usr/include --infodir=/usr/share/info --libexecdir=/usr/libexec --localstatedir=/var --mandir=/usr/share/man --prefix=/usr --program-prefix=arm-linux-gnu- --sbindir=/usr/sbin --sharedstatedir=/var/lib --sysconfdir=/etc --target=arm-linux-gnueabi --with-bugurl=http://bugzilla.redhat.com/bugzilla/ --with-gcc-major-version-only --with-isl --with-newlib --with-plugin-ld=/usr/bin/arm-linux-gnu-ld --with-sysroot=/usr/arm-linux-gnu/sys-root --with-system-libunwind --with-system-zlib --without-headers --with-tune=generic-armv7-a --with-arch=armv7-a --with-float=hard --with-fpu=vfpv3-d16 --with-abi=aapcs-linux --enable-gnu-indirect-function --with-linker-hash-style=gnu
+
+
+
+Links
+-----
+
+This topic is going to be larger. Some links for research ...
+
+* cmake cross-compilation with sysroot returns wrong include paths:
+  https://stackoverflow.com/questions/63929668/cmake-cross-compilation-with-sysroot-returns-wrong-include-paths
+* https://www.baeldung.com/linux/sysroot. sysroot explained
+
+* https://github.com/raspberrypi/tools. The ex repository where the
+  toolchain was to be had from. There they mention the Debian packages
+  we install.
+*
+  https://stackoverflow.com/questions/19162072/how-to-install-the-raspberry-pi-cross-compiler-on-my-linux-host-machine/58559140#58559140. Talking
+  about CMake toolchain files.
+*
+  https://medium.com/@stonepreston/how-to-cross-compile-a-cmake-c-application-for-the-raspberry-pi-4-on-ubuntu-20-04-bac6735d36df. They
+  build their own toolchain using ``crossdev-ng``.
+
+
+.. rubric:: Footnotes
+.. [#debianese] This is for Debian
+
+
+
+
+
+
