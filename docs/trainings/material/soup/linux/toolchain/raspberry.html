@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="Exercises: Toolchain" href="exercises/group.html" />
-    <link rel="prev" title="Shared Libraries (Shared Objects)" href="shared-libraries/topic.html" /> 
+    <link rel="prev" title="Cross Development" href="cross/topic.html" /> 
    
   <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
   
@@ -115,6 +115,7 @@
 <li class="toctree-l5"><a class="reference internal" href="separate-compilation/topic.html">Zooming In: Separate Compilation, and Linking <em>Statically</em></a></li>
 <li class="toctree-l5"><a class="reference internal" href="static-library/topic.html">Object Code Archives/Static Libraries</a></li>
 <li class="toctree-l5"><a class="reference internal" href="shared-libraries/topic.html">Shared Libraries (Shared Objects)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cross/topic.html">Cross Development</a></li>
 <li class="toctree-l5 current"><a class="current reference internal" href="#">The Raspberry Toolchain</a></li>
 <li class="toctree-l5"><a class="reference internal" href="exercises/group.html">Exercises: Toolchain</a></li>
 </ul>
@@ -156,69 +157,157 @@
           <div class="body" role="main">
              <section id="the-raspberry-toolchain">
 <h1>The Raspberry Toolchain<a class="headerlink" href="#the-raspberry-toolchain" title="Permalink to this headline">¶</a></h1>
-<p>Find out whether your Raspberry is running a 32 or 64 bit OS, and
-install toolchain accordingly <a class="footnote-reference brackets" href="#debianese" id="id1">1</a>:</p>
-<table class="colwidths-auto docutils align-left">
-<thead>
-<tr class="row-odd"><th class="head"><p>Raspberry</p></th>
-<th class="head"><p>Host/PC (as <code class="docutils literal notranslate"><span class="pre">root</span></code>)</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>uname -m
-<span class="go">armv7l</span>
-</pre></div>
-</div>
-</td>
-<td><p><strong>Debian</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>apt install gcc-arm-linux-gnueabihf
-</pre></div>
-</div>
-<p><strong>Fedora</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>dnf install gcc-arm-linux-gnu
-</pre></div>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>uname -m
-<span class="go">aarch64</span>
-</pre></div>
-</div>
-</td>
-<td><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>apt install gcc-aarch64-linux-gnu
-</pre></div>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="simple">
-<dt>rsync -rzLR –safe-links </dt><dd><p><a class="reference external" href="mailto:joerg&#46;faschingbauer&#37;&#52;&#48;jfasch&#46;bounceme&#46;net">joerg<span>&#46;</span>faschingbauer<span>&#64;</span>jfasch<span>&#46;</span>bounceme<span>&#46;</span>net</a>:2020/usr/lib/arm-linux-gnueabihf <a class="reference external" href="mailto:joerg&#46;faschingbauer&#37;&#52;&#48;jfasch&#46;bounceme&#46;net">joerg<span>&#46;</span>faschingbauer<span>&#64;</span>jfasch<span>&#46;</span>bounceme<span>&#46;</span>net</a>:2020/usr/lib/gcc/arm-linux-gnueabihf <a class="reference external" href="mailto:joerg&#46;faschingbauer&#37;&#52;&#48;jfasch&#46;bounceme&#46;net">joerg<span>&#46;</span>faschingbauer<span>&#64;</span>jfasch<span>&#46;</span>bounceme<span>&#46;</span>net</a>:2020/usr/include <a class="reference external" href="mailto:joerg&#46;faschingbauer&#37;&#52;&#48;jfasch&#46;bounceme&#46;net">joerg<span>&#46;</span>faschingbauer<span>&#64;</span>jfasch<span>&#46;</span>bounceme<span>&#46;</span>net</a>:2020/lib/arm-linux-gnueabihf sysroot/</p>
-</dd>
-</dl>
-<p>ssh <a class="reference external" href="mailto:joerg&#46;faschingbauer&#37;&#52;&#48;jfasch&#46;bounceme&#46;net">joerg<span>&#46;</span>faschingbauer<span>&#64;</span>jfasch<span>&#46;</span>bounceme<span>&#46;</span>net</a> ‘tar zcf - /usr/lib/arm-linux-gnueabihf /usr/lib/gcc/arm-linux-gnueabihf /usr/include /lib/arm-linux-gnueabihf’ | tar ztf -</p>
-<p>Configured with: ../gcc-11.2.1-20210728/configure –bindir=/usr/bin –build=x86_64-redhat-linux-gnu –datadir=/usr/share –disable-decimal-float –disable-dependency-tracking –disable-gold –disable-libgcj –disable-libgomp –disable-libmpx –disable-libquadmath –disable-libssp –disable-libunwind-exceptions –disable-shared –disable-silent-rules –disable-sjlj-exceptions –disable-threads –with-ld=/usr/bin/arm-linux-gnu-ld –enable-__cxa_atexit –enable-checking=release –enable-gnu-unique-object –enable-initfini-array –enable-languages=c,c++ –enable-linker-build-id –enable-lto –enable-nls –enable-obsolete –enable-plugin –enable-targets=all –exec-prefix=/usr –host=x86_64-redhat-linux-gnu –includedir=/usr/include –infodir=/usr/share/info –libexecdir=/usr/libexec –localstatedir=/var –mandir=/usr/share/man –prefix=/usr –program-prefix=arm-linux-gnu- –sbindir=/usr/sbin –sharedstatedir=/var/lib –sysconfdir=/etc –target=arm-linux-gnueabi –with-bugurl=http://bugzilla.redhat.com/bugzilla/ –with-gcc-major-version-only –with-isl –with-newlib –with-plugin-ld=/usr/bin/arm-linux-gnu-ld –with-sysroot=/usr/arm-linux-gnu/sys-root –with-system-libunwind –with-system-zlib –without-headers –with-tune=generic-armv7-a –with-arch=armv7-a –with-float=hard –with-fpu=vfpv3-d16 –with-abi=aapcs-linux –enable-gnu-indirect-function –with-linker-hash-style=gnu</p>
-<section id="links">
-<h2>Links<a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
-<p>This topic is going to be larger. Some links for research …</p>
+<p>Toolchains are always a pain in the butt. Here’s a writeup (as of
+2022-03-29) of something that I found workable.</p>
 <ul class="simple">
-<li><p>cmake cross-compilation with sysroot returns wrong include paths:
-<a class="reference external" href="https://stackoverflow.com/questions/63929668/cmake-cross-compilation-with-sysroot-returns-wrong-include-paths">https://stackoverflow.com/questions/63929668/cmake-cross-compilation-with-sysroot-returns-wrong-include-paths</a></p></li>
-<li><p><a class="reference external" href="https://www.baeldung.com/linux/sysroot">https://www.baeldung.com/linux/sysroot</a>. sysroot explained</p></li>
-<li><p><a class="reference external" href="https://github.com/raspberrypi/tools">https://github.com/raspberrypi/tools</a>. The ex repository where the
-toolchain was to be had from. There they mention the Debian packages
-we install.</p></li>
-<li><p><a class="reference external" href="https://stackoverflow.com/questions/19162072/how-to-install-the-raspberry-pi-cross-compiler-on-my-linux-host-machine/58559140#58559140">https://stackoverflow.com/questions/19162072/how-to-install-the-raspberry-pi-cross-compiler-on-my-linux-host-machine/58559140#58559140</a>. Talking
-about CMake toolchain files.</p></li>
-<li><p><a class="reference external" href="https://medium.com/&#64;stonepreston/how-to-cross-compile-a-cmake-c-application-for-the-raspberry-pi-4-on-ubuntu-20-04-bac6735d36df">https://medium.com/&#64;stonepreston/how-to-cross-compile-a-cmake-c-application-for-the-raspberry-pi-4-on-ubuntu-20-04-bac6735d36df</a>. They
-build their own toolchain using <code class="docutils literal notranslate"><span class="pre">crossdev-ng</span></code>.</p></li>
+<li><p>It is not clean. The <code class="docutils literal notranslate"><span class="pre">sysroot</span></code> is not usually copied over from the
+existing target.</p></li>
+<li><p>By no way it gives insight into the black art of toolchain-making.</p></li>
+<li><p>I have no idea why the Linaro toolchain works for our <code class="docutils literal notranslate"><span class="pre">sysroot</span></code>,
+and Fedora’s <code class="docutils literal notranslate"><span class="pre">gcc-arm-linux-gnu</span></code> doesn’t.</p></li>
 </ul>
-<p class="rubric">Footnotes</p>
-<dl class="footnote brackets">
-<dt class="label" id="debianese"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>This is for Debian</p>
-</dd>
-</dl>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#create-a-sysroot" id="id1">Create a <code class="docutils literal notranslate"><span class="pre">sysroot</span></code></a></p></li>
+<li><p><a class="reference internal" href="#download-and-unpack-linaro-toolchain" id="id2">Download And Unpack Linaro Toolchain</a></p></li>
+<li><p><a class="reference internal" href="#test-cross-build" id="id3">Test Cross Build</a></p>
+<ul>
+<li><p><a class="reference internal" href="#what-we-have" id="id4">What We Have</a></p></li>
+<li><p><a class="reference internal" href="#use-cross-compiler-to-build-against-sysroot" id="id5">Use Cross Compiler To Build Against <code class="docutils literal notranslate"><span class="pre">sysroot</span></code></a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#adjust-path-to-point-to-toolchain" id="id6">Adjust <code class="docutils literal notranslate"><span class="pre">$PATH</span></code> To Point To Toolchain</a></p></li>
+</ul>
+</div>
+<section id="create-a-sysroot">
+<h2><a class="toc-backref" href="#id1">Create a <code class="docutils literal notranslate"><span class="pre">sysroot</span></code></a><a class="headerlink" href="#create-a-sysroot" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p><strong>Topics</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../ssh/basics.html"><span class="doc">SSH: Basics</span></a></p></li>
+<li><p><a class="reference internal" href="../basics/commands/tar.html"><span class="doc">Archives: tar</span></a></p></li>
+</ul>
+<p><strong>Documentation</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man1/tar.1.html">man -s 1 tar</a></p></li>
+</ul>
+</aside>
+<p>Lacking a precomposed <code class="docutils literal notranslate"><span class="pre">sysroot</span></code> that only contains what we need, we
+copy over a minimal set of artifacts from the target. By trial and
+error we can come up for the following remote directories that we copy
+into the host’s <code class="docutils literal notranslate"><span class="pre">sysroot</span></code>,</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">/usr/lib/arm-linux-gnueabihf</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/usr/lib/gcc/arm-linux-gnueabihf</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/usr/include</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/lib/arm-linux-gnueabihf</span></code></p></li>
+</ul>
+<p>We use <a class="reference internal" href="../ssh/basics.html"><span class="doc">SSH remote command execution</span></a> in a pipe
+to</p>
+<ul class="simple">
+<li><p>Create a <a class="reference internal" href="../basics/commands/tar.html"><span class="doc">tar</span></a> archive
+containing these directories, remotely</p></li>
+<li><p>Compress that archive onto the wire, remotely</p></li>
+<li><p>Uncompress from the wire, locally</p></li>
+<li><p>Unpack that, locally, into a directory of our choice. Lets use
+<code class="docutils literal notranslate"><span class="pre">~/cross/</span></code> to keep things in order.</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>mkdir -p ~/cross/sysroots/raspberry
+<span class="gp">$ </span>ssh  me@target <span class="s1">&#39;tar -c -f - /usr/lib/arm-linux-gnueabihf /usr/lib/gcc/arm-linux-gnueabihf /usr/include /lib/arm-linux-gnueabihf | xz --compress&#39;</span> <span class="p">|</span> <span class="se">\</span>
+     xz --decompress <span class="p">|</span> <span class="se">\</span>
+     tar -C ~/cross/sysroots/raspberry -x -f -
+</pre></div>
+</div>
+</section>
+<section id="download-and-unpack-linaro-toolchain">
+<h2><a class="toc-backref" href="#id2">Download And Unpack Linaro Toolchain</a><a class="headerlink" href="#download-and-unpack-linaro-toolchain" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p><strong>Links</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.linaro.org/">Linaro homepage</a></p></li>
+<li><p><a class="reference external" href="https://snapshots.linaro.org/gnu-toolchain/">Linaro toolchain download</a></p></li>
+</ul>
+</aside>
+<ul>
+<li><p>Download tarball (I chose the lastest). Be sure to pick the one that
+runs on <code class="docutils literal notranslate"><span class="pre">x86_64</span></code>, not the <code class="docutils literal notranslate"><span class="pre">aarch64</span></code> one.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>wget -o ~/Downloads/gcc-linaro-12.0.1-2022.02-x86_64_arm-linux-gnueabihf.tar.xz <span class="se">\</span>
+     https://snapshots.linaro.org/gnu-toolchain/12.0-2022.02-1/arm-linux-gnueabihf/gcc-linaro-12.0.1-2022.02-x86_64_arm-linux-gnueabihf.tar.xz
+</pre></div>
+</div>
+</li>
+<li><p>Unpack into <code class="docutils literal notranslate"><span class="pre">~/cross/toolchains</span></code></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>mkdir -p ~/cross/toolchains
+<span class="gp">$ </span>tar -C ~/cross/toolchains -J -x -f ~/Downloads/gcc-linaro-12.0.1-2022.02-x86_64_arm-linux-gnueabihf.tar.xz
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="test-cross-build">
+<h2><a class="toc-backref" href="#id3">Test Cross Build</a><a class="headerlink" href="#test-cross-build" title="Permalink to this headline">¶</a></h2>
+<section id="what-we-have">
+<h3><a class="toc-backref" href="#id4">What We Have</a><a class="headerlink" href="#what-we-have" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>The target’s libraries and header files in <code class="docutils literal notranslate"><span class="pre">~/cross/sysroots/raspberry/</span></code>,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -l ~/cross/sysroots/raspberry/
+<span class="go">total 0</span>
+<span class="go">drwxrwxr-x. 1 jfasch jfasch 38 Mar 29 19:00 lib</span>
+<span class="go">drwxrwxr-x. 1 jfasch jfasch 20 Mar 29 18:59 usr</span>
+</pre></div>
+</div>
+</li>
+<li><p>The cross toolchain in
+<code class="docutils literal notranslate"><span class="pre">~/cross/toolchains/gcc-linaro-12.0.1-2022.02-x86_64_arm-linux-gnueabihf/</span></code></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -l ~/cross/toolchains/gcc-linaro-12.0.1-2022.02-x86_64_arm-linux-gnueabihf/
+<span class="go">total 12</span>
+<span class="go">drwxr-xr-x. 1 jfasch jfasch    40 Feb  5 23:47 arm-linux-gnueabihf</span>
+<span class="go">drwxr-xr-x. 1 jfasch jfasch  1706 Feb  5 23:54 bin</span>
+<span class="go">-rw-r--r--. 1 jfasch jfasch 10552 Feb  5 23:53 gcc-linaro-12.0.1-2022.02-linux-manifest.txt</span>
+<span class="go">drwxr-xr-x. 1 jfasch jfasch    72 Feb  5 23:49 include</span>
+<span class="go">drwxr-xr-x. 1 jfasch jfasch   168 Feb  5 23:54 lib</span>
+<span class="go">drwxr-xr-x. 1 jfasch jfasch     6 Feb  5 23:32 libexec</span>
+<span class="go">drwxr-xr-x. 1 jfasch jfasch    58 Feb  5 23:49 share</span>
+</pre></div>
+</div>
+<p>It’s the <code class="docutils literal notranslate"><span class="pre">bin/</span></code> subdirectory that contains the compiler, <code class="docutils literal notranslate"><span class="pre">gcc</span></code>,
+and the other toolchain programs,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -l ~/cross/toolchains/gcc-linaro-12.0.1-2022.02-x86_64_arm-linux-gnueabihf/bin/
+<span class="go">total 73812</span>
+<span class="go">...</span>
+<span class="go">-rwxr-xr-x. 1 jfasch jfasch  1107168 Feb  5 23:54 arm-linux-gnueabihf-ar</span>
+<span class="go">-rwxr-xr-x. 1 jfasch jfasch  1481768 Feb  5 23:54 arm-linux-gnueabihf-gcc</span>
+<span class="go">-rwxr-xr-x. 1 jfasch jfasch  1968456 Feb  5 23:54 arm-linux-gnueabihf-ld</span>
+<span class="go">-rwxr-xr-x. 1 jfasch jfasch  1091864 Feb  5 23:54 arm-linux-gnueabihf-nm</span>
+<span class="go">-rwxr-xr-x. 1 jfasch jfasch  1030432 Feb  5 23:54 arm-linux-gnueabihf-readelf</span>
+<span class="go">-rwxr-xr-x. 1 jfasch jfasch  1221816 Feb  5 23:54 arm-linux-gnueabihf-strip</span>
+<span class="go">...</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="use-cross-compiler-to-build-against-sysroot">
+<h3><a class="toc-backref" href="#id5">Use Cross Compiler To Build Against <code class="docutils literal notranslate"><span class="pre">sysroot</span></code></a><a class="headerlink" href="#use-cross-compiler-to-build-against-sysroot" title="Permalink to this headline">¶</a></h3>
+<p>Run our cross compiler to compile and link that source code, against
+the Raspberry situation that we have. This is where it all comes together.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>~/cross/toolchains/gcc-linaro-12.0.1-2022.02-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc <span class="se">\</span>
+       --sysroot ~/cross/sysroots/raspberry <span class="se">\</span>
+       -o hello-single hello-single.c
+</pre></div>
+</div>
+<p>Copy the executable over, and run it,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scp hello-single jfasch@target:
+<span class="gp">$ </span>ssh jfasch@target ./hello-single
+<span class="go">Hello World</span>
+</pre></div>
+</div>
+<p>Voila! It works for the simplest case.</p>
+</section>
+</section>
+<section id="adjust-path-to-point-to-toolchain">
+<h2><a class="toc-backref" href="#id6">Adjust <code class="docutils literal notranslate"><span class="pre">$PATH</span></code> To Point To Toolchain</a><a class="headerlink" href="#adjust-path-to-point-to-toolchain" title="Permalink to this headline">¶</a></h2>
+<p>jjjjjjj</p>
 </section>
 </section>
 

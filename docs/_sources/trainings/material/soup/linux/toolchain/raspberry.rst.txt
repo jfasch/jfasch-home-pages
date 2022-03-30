@@ -1,5 +1,8 @@
 .. ot-topic:: linux.toolchain.raspberry
-   :dependencies: linux.toolchain.basics
+   :dependencies: linux.toolchain.cross,
+		  linux.ssh.basics,
+		  linux.ssh.scp,
+		  linux.basics.commands.tar
 
 .. include:: <mmlalias.txt>
 
@@ -7,88 +10,161 @@
 The Raspberry Toolchain
 =======================
 
-Find out whether your Raspberry is running a 32 or 64 bit OS, and
-install toolchain accordingly [#debianese]_:
+Toolchains are always a pain in the butt. Here's a writeup (as of
+2022-03-29) of something that I found workable.
 
-.. list-table::
-   :align: left
-   :widths: auto
-   :header-rows: 1
+* It is not clean. The ``sysroot`` is not usually copied over from the
+  existing target.
+* By no way it gives insight into the black art of toolchain-making.
+* I have no idea why the Linaro toolchain works for our ``sysroot``,
+  and Fedora's ``gcc-arm-linux-gnu`` doesn't.
 
-   * * Raspberry
-     * Host/PC (as ``root``)
-   * * 
-       .. code-block:: console
+.. contents::
+   :local:
+
+Create a ``sysroot``
+--------------------
+
+.. sidebar::
+
+   **Topics**
+
+   * :doc:`../ssh/basics`
+   * :doc:`../basics/commands/tar`
+
+   **Documentation**
+
+   * `man -s 1 tar
+     <https://man7.org/linux/man-pages/man1/tar.1.html>`__
+
+Lacking a precomposed ``sysroot`` that only contains what we need, we
+copy over a minimal set of artifacts from the target. By trial and
+error we can come up for the following remote directories that we copy
+into the host's ``sysroot``,
+
+* ``/usr/lib/arm-linux-gnueabihf``
+* ``/usr/lib/gcc/arm-linux-gnueabihf``
+* ``/usr/include``
+* ``/lib/arm-linux-gnueabihf``
+
+We use :doc:`SSH remote command execution <../ssh/basics>` in a pipe
+to
+
+* Create a :doc:`tar
+  </trainings/material/soup/linux/basics/commands/tar>` archive
+  containing these directories, remotely
+* Compress that archive onto the wire, remotely
+* Uncompress from the wire, locally
+* Unpack that, locally, into a directory of our choice. Lets use
+  ``~/cross/`` to keep things in order.
+
+.. code-block:: console
+
+   $ mkdir -p ~/cross/sysroots/raspberry
+   $ ssh  me@target 'tar -c -f - /usr/lib/arm-linux-gnueabihf /usr/lib/gcc/arm-linux-gnueabihf /usr/include /lib/arm-linux-gnueabihf | xz --compress' | \
+        xz --decompress | \
+	tar -C ~/cross/sysroots/raspberry -x -f -
+
+Download And Unpack Linaro Toolchain
+------------------------------------
+
+.. sidebar:: 
+
+   **Links**
+
+   * `Linaro homepage <https://www.linaro.org/>`__
+   * `Linaro toolchain download
+     <https://snapshots.linaro.org/gnu-toolchain/>`__
+
+* Download tarball (I chose the lastest). Be sure to pick the one that
+  runs on ``x86_64``, not the ``aarch64`` one.
+
+  .. code-block:: console
+
+     $ wget -o ~/Downloads/gcc-linaro-12.0.1-2022.02-x86_64_arm-linux-gnueabihf.tar.xz \
+          https://snapshots.linaro.org/gnu-toolchain/12.0-2022.02-1/arm-linux-gnueabihf/gcc-linaro-12.0.1-2022.02-x86_64_arm-linux-gnueabihf.tar.xz
+
+* Unpack into ``~/cross/toolchains``
+
+  .. code-block:: console
+
+     $ mkdir -p ~/cross/toolchains
+     $ tar -C ~/cross/toolchains -J -x -f ~/Downloads/gcc-linaro-12.0.1-2022.02-x86_64_arm-linux-gnueabihf.tar.xz
+
+Test Cross Build
+----------------
+
+What We Have
+............
+
+* The target's libraries and header files in ``~/cross/sysroots/raspberry/``,
+
+  .. code-block:: console
+
+     $ ls -l ~/cross/sysroots/raspberry/
+     total 0
+     drwxrwxr-x. 1 jfasch jfasch 38 Mar 29 19:00 lib
+     drwxrwxr-x. 1 jfasch jfasch 20 Mar 29 18:59 usr
   
-	  $ uname -m
-	  armv7l
+* The cross toolchain in
+  ``~/cross/toolchains/gcc-linaro-12.0.1-2022.02-x86_64_arm-linux-gnueabihf/``
 
-     *
+  .. code-block:: console
 
-       **Debian**
+     $ ls -l ~/cross/toolchains/gcc-linaro-12.0.1-2022.02-x86_64_arm-linux-gnueabihf/
+     total 12
+     drwxr-xr-x. 1 jfasch jfasch    40 Feb  5 23:47 arm-linux-gnueabihf
+     drwxr-xr-x. 1 jfasch jfasch  1706 Feb  5 23:54 bin
+     -rw-r--r--. 1 jfasch jfasch 10552 Feb  5 23:53 gcc-linaro-12.0.1-2022.02-linux-manifest.txt
+     drwxr-xr-x. 1 jfasch jfasch    72 Feb  5 23:49 include
+     drwxr-xr-x. 1 jfasch jfasch   168 Feb  5 23:54 lib
+     drwxr-xr-x. 1 jfasch jfasch     6 Feb  5 23:32 libexec
+     drwxr-xr-x. 1 jfasch jfasch    58 Feb  5 23:49 share
 
-       .. code-block:: console
-  
-	  # apt install gcc-arm-linux-gnueabihf
+  It's the ``bin/`` subdirectory that contains the compiler, ``gcc``,
+  and the other toolchain programs,
 
-       **Fedora**
+  .. code-block:: console
 
-       .. code-block:: console
-  
-	  # dnf install gcc-arm-linux-gnu
-
-   * * 
-       .. code-block:: console
-  
-	  $ uname -m
-	  aarch64
-
-     *
-
-       .. code-block:: console
-  
-	  # apt install gcc-aarch64-linux-gnu
-
-
-
-rsync -rzLR --safe-links \
-      joerg.faschingbauer@jfasch.bounceme.net:2020/usr/lib/arm-linux-gnueabihf \
-      joerg.faschingbauer@jfasch.bounceme.net:2020/usr/lib/gcc/arm-linux-gnueabihf \
-      joerg.faschingbauer@jfasch.bounceme.net:2020/usr/include \
-      joerg.faschingbauer@jfasch.bounceme.net:2020/lib/arm-linux-gnueabihf \
-      sysroot/	 
-
-ssh joerg.faschingbauer@jfasch.bounceme.net 'tar zcf - /usr/lib/arm-linux-gnueabihf /usr/lib/gcc/arm-linux-gnueabihf /usr/include /lib/arm-linux-gnueabihf' | tar ztf - 
-
-Configured with: ../gcc-11.2.1-20210728/configure --bindir=/usr/bin --build=x86_64-redhat-linux-gnu --datadir=/usr/share --disable-decimal-float --disable-dependency-tracking --disable-gold --disable-libgcj --disable-libgomp --disable-libmpx --disable-libquadmath --disable-libssp --disable-libunwind-exceptions --disable-shared --disable-silent-rules --disable-sjlj-exceptions --disable-threads --with-ld=/usr/bin/arm-linux-gnu-ld --enable-__cxa_atexit --enable-checking=release --enable-gnu-unique-object --enable-initfini-array --enable-languages=c,c++ --enable-linker-build-id --enable-lto --enable-nls --enable-obsolete --enable-plugin --enable-targets=all --exec-prefix=/usr --host=x86_64-redhat-linux-gnu --includedir=/usr/include --infodir=/usr/share/info --libexecdir=/usr/libexec --localstatedir=/var --mandir=/usr/share/man --prefix=/usr --program-prefix=arm-linux-gnu- --sbindir=/usr/sbin --sharedstatedir=/var/lib --sysconfdir=/etc --target=arm-linux-gnueabi --with-bugurl=http://bugzilla.redhat.com/bugzilla/ --with-gcc-major-version-only --with-isl --with-newlib --with-plugin-ld=/usr/bin/arm-linux-gnu-ld --with-sysroot=/usr/arm-linux-gnu/sys-root --with-system-libunwind --with-system-zlib --without-headers --with-tune=generic-armv7-a --with-arch=armv7-a --with-float=hard --with-fpu=vfpv3-d16 --with-abi=aapcs-linux --enable-gnu-indirect-function --with-linker-hash-style=gnu
+     $ ls -l ~/cross/toolchains/gcc-linaro-12.0.1-2022.02-x86_64_arm-linux-gnueabihf/bin/
+     total 73812
+     ...
+     -rwxr-xr-x. 1 jfasch jfasch  1107168 Feb  5 23:54 arm-linux-gnueabihf-ar
+     -rwxr-xr-x. 1 jfasch jfasch  1481768 Feb  5 23:54 arm-linux-gnueabihf-gcc
+     -rwxr-xr-x. 1 jfasch jfasch  1968456 Feb  5 23:54 arm-linux-gnueabihf-ld
+     -rwxr-xr-x. 1 jfasch jfasch  1091864 Feb  5 23:54 arm-linux-gnueabihf-nm
+     -rwxr-xr-x. 1 jfasch jfasch  1030432 Feb  5 23:54 arm-linux-gnueabihf-readelf
+     -rwxr-xr-x. 1 jfasch jfasch  1221816 Feb  5 23:54 arm-linux-gnueabihf-strip
+     ...
 
 
+Use Cross Compiler To Build Against ``sysroot``
+...............................................
 
-Links
------
+.. literalinclude:: ./jfasch-home-linux-toolchain/cross-basics/hello-single.c
+   :caption: :download:`./jfasch-home-linux-toolchain/cross-basics/hello-single.c`
+   :language: c
 
-This topic is going to be larger. Some links for research ...
+Run our cross compiler to compile and link that source code, against
+the Raspberry situation that we have. This is where it all comes together.
 
-* cmake cross-compilation with sysroot returns wrong include paths:
-  https://stackoverflow.com/questions/63929668/cmake-cross-compilation-with-sysroot-returns-wrong-include-paths
-* https://www.baeldung.com/linux/sysroot. sysroot explained
+.. code-block:: console
 
-* https://github.com/raspberrypi/tools. The ex repository where the
-  toolchain was to be had from. There they mention the Debian packages
-  we install.
-*
-  https://stackoverflow.com/questions/19162072/how-to-install-the-raspberry-pi-cross-compiler-on-my-linux-host-machine/58559140#58559140. Talking
-  about CMake toolchain files.
-*
-  https://medium.com/@stonepreston/how-to-cross-compile-a-cmake-c-application-for-the-raspberry-pi-4-on-ubuntu-20-04-bac6735d36df. They
-  build their own toolchain using ``crossdev-ng``.
+   $ ~/cross/toolchains/gcc-linaro-12.0.1-2022.02-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc \
+          --sysroot ~/cross/sysroots/raspberry \
+	  -o hello-single hello-single.c 
 
+Copy the executable over, and run it,
 
-.. rubric:: Footnotes
-.. [#debianese] This is for Debian
+.. code-block:: console
 
+   $ scp hello-single jfasch@target:
+   $ ssh jfasch@target ./hello-single 
+   Hello World
 
+Voila! It works for the simplest case.
 
+Adjust ``$PATH`` To Point To Toolchain
+--------------------------------------
 
-
-
+jjjjjjj
