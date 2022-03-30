@@ -1,8 +1,9 @@
-.. ot-topic:: linux.toolchain.raspberry
-   :dependencies: linux.toolchain.cross,
+.. ot-topic:: linux.toolchain.cross.raspberry
+   :dependencies: linux.toolchain.cross.basics,
 		  linux.ssh.basics,
 		  linux.ssh.scp,
-		  linux.basics.commands.tar
+		  linux.basics.commands.tar,
+		  linux.basics.intro.environment
 
 .. include:: <mmlalias.txt>
 
@@ -29,8 +30,8 @@ Create a ``sysroot``
 
    **Topics**
 
-   * :doc:`../ssh/basics`
-   * :doc:`../basics/commands/tar`
+   * :doc:`../../ssh/basics`
+   * :doc:`../../basics/commands/tar`
 
    **Documentation**
 
@@ -47,7 +48,7 @@ into the host's ``sysroot``,
 * ``/usr/include``
 * ``/lib/arm-linux-gnueabihf``
 
-We use :doc:`SSH remote command execution <../ssh/basics>` in a pipe
+We use :doc:`SSH remote command execution <../../ssh/basics>` in a pipe
 to
 
 * Create a :doc:`tar
@@ -122,7 +123,9 @@ What We Have
      drwxr-xr-x. 1 jfasch jfasch    58 Feb  5 23:49 share
 
   It's the ``bin/`` subdirectory that contains the compiler, ``gcc``,
-  and the other toolchain programs,
+  and the other toolchain programs. All properly prefixed with
+  ``arm-linux-gnueabihf-`` to distinguish them from toolchains for
+  other architectures.
 
   .. code-block:: console
 
@@ -141,8 +144,8 @@ What We Have
 Use Cross Compiler To Build Against ``sysroot``
 ...............................................
 
-.. literalinclude:: ./jfasch-home-linux-toolchain/cross-basics/hello-single.c
-   :caption: :download:`./jfasch-home-linux-toolchain/cross-basics/hello-single.c`
+.. literalinclude:: ../jfasch-home-linux-toolchain/cross-basics/hello-single.c
+   :caption: :download:`../jfasch-home-linux-toolchain/cross-basics/hello-single.c`
    :language: c
 
 Run our cross compiler to compile and link that source code, against
@@ -168,4 +171,24 @@ Voila! It works for the simplest case.
 Adjust ``$PATH`` To Point To Toolchain
 --------------------------------------
 
-jjjjjjj
+.. sidebar::
+
+   **Topics**
+
+   * :doc:`/trainings/material/soup/linux/basics/intro/environment`
+
+Add toolchain's program directory to your ``$PATH`` environment
+variable (you might want to add it to your ``~/.bashrc`` file, and
+:doc:`re-source that
+</trainings/material/soup/linux/basics/intro/environment>`),
+
+.. code-block:: console
+
+   $ PATH=/home/jfasch/cross/toolchains/gcc-linaro-12.0.1-2022.02-x86_64_arm-linux-gnueabihf/bin:$PATH
+   $ export PATH
+
+With this, you are now to just say,
+
+.. code-block:: console
+
+   $ arm-linux-gnueabihf-gcc --sysroot ~/cross/sysroots/raspberry -o hello-single hello-single.c 
