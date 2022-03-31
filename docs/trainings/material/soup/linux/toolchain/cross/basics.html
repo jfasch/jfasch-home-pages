@@ -160,6 +160,91 @@
           <div class="body" role="main">
              <section id="cross-development">
 <h1>Cross Development<a class="headerlink" href="#cross-development" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#native-compilation" id="id2">Native Compilation</a></p></li>
+<li><p><a class="reference internal" href="#cross" id="id3">Cross?</a></p></li>
+<li><p><a class="reference internal" href="#the-sysroot" id="id4">The <code class="docutils literal notranslate"><span class="pre">sysroot</span></code></a></p></li>
+</ul>
+</div>
+<section id="native-compilation">
+<h2><a class="toc-backref" href="#id2">Native Compilation</a><a class="headerlink" href="#native-compilation" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Compiler runs on a machine, say <code class="docutils literal notranslate"><span class="pre">x86_64</span></code></p></li>
+<li><p>Produces code <em>for that machine</em></p></li>
+<li><p>Uses header files and libraries from that machine</p></li>
+<li><p>Default paths for headers and libraries</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">/usr/include</span></code>: e.g. <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;stdio.h&gt;</span></code> is found as
+<code class="docutils literal notranslate"><span class="pre">/usr/include/stdio.h</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/usr/lib</span></code>, <code class="docutils literal notranslate"><span class="pre">/lib64</span></code>, …: e.g. <code class="docutils literal notranslate"><span class="pre">-lpthread</span></code> (“linker, please
+go find me the <code class="docutils literal notranslate"><span class="pre">pthread</span></code> library”) is resolved to
+<code class="docutils literal notranslate"><span class="pre">/lib64/libpthread.so</span></code></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="cross">
+<h2><a class="toc-backref" href="#id3">Cross?</a><a class="headerlink" href="#cross" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Compiler runs on <em>host</em> machine (e.g. <code class="docutils literal notranslate"><span class="pre">x86_64</span></code>)</p></li>
+<li><p>Produces code for the <em>target</em> machine (e.g. <code class="docutils literal notranslate"><span class="pre">armv7l</span></code>)</p></li>
+</ul>
+<p><strong>Simple?</strong> ⟶ No</p>
+<ul class="simple">
+<li><p>Code must be built against <em>target situation</em></p></li>
+<li><p>Header files and libraries</p></li>
+<li><p>⟶ must be available on <em>host</em></p>
+<ul>
+<li><p>⟶ <code class="docutils literal notranslate"><span class="pre">sysroot</span></code></p></li>
+</ul>
+</li>
+<li><p>Must match the target situation ⟶ binary
+compatibility</p></li>
+<li><p>Statically linked cross build generally ok</p></li>
+<li><p><em>But:</em> shared libraries are a continuous source of pain</p></li>
+</ul>
+<p><strong>Challenges</strong></p>
+<ul class="simple">
+<li><p>Cross compiler: finding or building one that works</p>
+<ul>
+<li><p>Trial and error, mostly</p></li>
+<li><p>Building one: <a class="reference external" href="https://crosstool-ng.github.io/">crosstool-ng</a></p></li>
+<li><p>Using a metadistribution like <a class="reference external" href="https://www.yoctoproject.org/">Yocto</a>: give you a cross toolchain as
+by-product of creating the <em>target rootfilesystem</em></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sysroot</span></code></p>
+<ul>
+<li><p>Target root filesystem, in principle</p></li>
+<li><p>Ideally stripped down to a miniumum</p>
+<ul>
+<li><p>Don’t need target <em>executables</em> on the host, for example (they
+won’t run)</p></li>
+</ul>
+</li>
+<li><p>Ideally a by-product of root filesystem creation</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="the-sysroot">
+<h2><a class="toc-backref" href="#id4">The <code class="docutils literal notranslate"><span class="pre">sysroot</span></code></a><a class="headerlink" href="#the-sysroot" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>The situation on the target, made available on the host</p></li>
+<li><p>Usually a single tree, containing a subset of the target’s <em>root
+filesystem</em></p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">One of a number of sysroots; on the <em>host</em></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -l ~/cross/sysroots/raspberry/
+<span class="go">total 0</span>
+<span class="go">drwxrwxr-x. 1 jfasch jfasch 38 Mar 29 19:00 lib</span>
+<span class="go">drwxrwxr-x. 1 jfasch jfasch 20 Mar 29 18:59 usr</span>
+</pre></div>
+</div>
+</div>
+</section>
 </section>
 
 <div class="section">
