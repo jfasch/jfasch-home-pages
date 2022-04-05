@@ -1,0 +1,147 @@
+.. include:: <mmlalias.txt>
+
+
+Live Hacking Before Unit Testing (Run 0)
+========================================
+
+.. contents::
+   :local:
+
+Establish Initial State
+-----------------------
+
+* Establish UserDB status
+
+  * ``db.insert(user)`` goes into a ``std::map``
+  * ``bin/userdb-write-binaryfile.cpp`` fills in-memory db
+
+    * take care to use names that do not exceed 9 chars, and email
+      at 19.
+
+* In ``bin/userdb-write-binaryfile.cpp``, think about completing write
+  functionality.
+
+  * *Don't forget about ``O_TRUNC``*
+  
+* Snapshot:
+  https://github.com/jfasch/2022-04-13/commit/865e0db7adf2031f0993b1dcd744db3c0a314eb8
+
+  Fix missing things
+
+  * Missing user.email
+  * Use shorter "Huber" instead of "Faschingbauer"
+
+* Hack db.write() (and introduce bug). Take care to (wrongly) first
+  implement functionality, and then use that in the program.
+* Snapshot:
+  https://github.com/jfasch/2022-04-13/commit/f383b96a866b4e9076aba5e2659ac71fe93c60a2
+* Need to read, hack that right after write
+* Pull in iterator, begin() and end() snippets
+* Snapshot:
+  https://github.com/jfasch/2022-04-13/commit/d940c494ef205ffb8a0f55044dd976d9ee3af84e
+* Modify ``bin/userdb-write-binaryfile.cpp`` to take input from stdin
+
+  * *Move that to initial status*: no hardwired users, enter "Joerg
+    Huber", "Caro Huber"
+* ``bin/userdb-finduser-binaryfile.cpp``
+
+First Test: Bug Report: Name Too Long
+-------------------------------------
+
+* "Faschingbauer" is too long -> runs through into email buffer
+* |longrightarrow| Test program ``tests/test-funny-overflow.cpp``
+* |longrightarrow| Works
+* |longrightarrow| Must be the file format
+* |longrightarrow| Test program ``tests/test-funny-overflow-file.cpp``
+
+  * ``mkstemp()`` from a snippet
+
+* Discuss: hm. we don't handle any insert errors yet. design
+  errorhandling now? no |longrightarrow| silently truncate, and write
+  a test accordingly. notify documentation department.
+
+  * |longrightarrow| Define a bug a feature
+  * |longrightarrow| ``tests/test-truncate-on-overflow-file.cpp``
+  * Use ``strncpy()``, hardcoding the duplicated array sizes.
+  * Commit and release when done
+
+* Discuss: what about the other tests?
+
+  * ``tests/test-funny-overflow.cpp`` |longrightarrow| a
+    ``UserDB::find()`` test, actually
+  * ``tests/test-funny-overflow-file.cpp``
+  * ``tests/test-truncate-on-overflow-file.cpp``
+
+  .. code-block:: console
+
+     $ for test in ./test-*; do [ -x $test ] && ( $test && echo "SUCCESS: $test" 1>&2 || echo "FAILED: $test" 1>&2 ) done
+     SUCCESS: ./test-funny-overflow
+     test-funny-overflow-file: /home/jfasch/tmp/2022-04-13/tests/test-funny-overflow-file.cpp:31: int main(): Assertion `u.lastname == "Faschingbauer"' failed.
+     FAILED: ./test-funny-overflow-file
+     SUCCESS: ./test-truncate-on-overflow-file
+
+  |longrightarrow| fix, commit
+
+  complain that we're documenting a bug as a feature
+
+Second Test: Requirement: CSV File Format
+-----------------------------------------
+
+Write
+.....
+
+* Write test for write functionality
+
+  * "Lets not change too much, we are in a hurry!". ``UserDB::write()``
+    gains a flag parameter, ``bool binary=true``
+  * During test writing, we say 
+
+    .. code-block:: c++
+
+       db.write(filename, false);
+
+    Complain loudly about lacking *respect* from the
+    reader. ``false``? WTF?
+
+    Discuss how IDEs can help about understanding this
+
+    * |longrightarrow| *not helpful* (my opinion).
+    * |longrightarrow| "IDEs enable one to ride a dead horse for a
+      little longer"
+    * Discuss Python's approach: keyword arguments
+
+* Make it build, providing empty function bodies for ``write_csv()``
+  and ``read_csv()``
+
+  .. code-block:: console
+
+     $ for test in ./test-*; do [ -x $test ] && ( $test && echo "SUCCESS: $test" 1>&2 || echo "FAILED: $test" 1>&2 ) done
+     test-csv: /home/jfasch/tmp/2022-04-13/tests/test-csv.cpp:23: int main(): Assertion `(unsigned)s.st_size == EXPECTED_CONTENT.size()' failed.
+     FAILED: ./test-csv
+     SUCCESS: ./test-funny-overflow
+     SUCCESS: ./test-funny-overflow-file
+     SUCCESS: ./test-truncate-on-overflow-file
+
+* Implement CSV writing
+
+  Discuss: this is TDD only, we're not doing anything that is
+  immediately productive
+
+* Add commandline parameter for ``bin/userdb-write-binaryfile.cpp``
+
+Read
+....
+
+* And reading? Discuss: do we really create one file for each test?
+* |longrightarrow| No, lets add that to ``test-csv``
+
+  .. code-block:: c++
+
+     int test_write_csv();
+     int test_read_csv();
+     
+     ... call in main() ...
+
+* |longrightarrow| test runner for the poor
+* Pull read implementation from snippet
+
