@@ -22,7 +22,7 @@
     <link rel="canonical" href="https://www.faschingbauer.me/about/site/work-in-progress/2022-04-13/seminar/tasks/refactoring/group.html" />
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
-    <link rel="next" title="Load From BackingStore in Constructor" href="pass-store-in-ctor.html" />
+    <link rel="next" title="UserDB::{read,write}(): bool, Really?" href="store-enum-switch.html" />
     <link rel="prev" title="Search By Other Indexes" href="../features/other-indexes.html" /> 
    
   <link rel="stylesheet" href="../../../../../../../_static/custom.css" type="text/css" />
@@ -122,7 +122,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../project-xxx/index.html">I2S Audio for a Kontron SMARC Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../packaging/index.html">Packaging this Site on PyPI</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../../../index.html">Seminar on Clean Coding (2022-04-13)</a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="../../index.html">Is Software A Craft? Software Is A Craft?</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html">Is Software A Craft? Software Is A Craft!</a><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="../../craft-sw.html">What’s There? What Have We Accomplished?</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../block-before-googletest.html">Live Hacking Before (Formal) Unit Testing</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../enter-googletest.html">Live Hacking: Switch To <code class="docutils literal notranslate"><span class="pre">googletest</span></code></a></li>
@@ -131,9 +131,9 @@
 <li class="toctree-l6"><a class="reference internal" href="../bugs/group.html">Bugs</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../features/group.html">Features</a></li>
 <li class="toctree-l6 current"><a class="current reference internal" href="#">Refactoring</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="store-enum-switch.html"><code class="docutils literal notranslate"><span class="pre">UserDB::{read,write}()</span></code>: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, Really?</a></li>
 <li class="toctree-l7"><a class="reference internal" href="pass-store-in-ctor.html">Load From BackingStore in Constructor</a></li>
 <li class="toctree-l7"><a class="reference internal" href="fixture-temp-files.html">Unit Test: Add Fixture For Temporary Files</a></li>
-<li class="toctree-l7"><a class="reference internal" href="store-enum-switch.html"><code class="docutils literal notranslate"><span class="pre">UserDB::{read,write}()</span></code>: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, Really?</a></li>
 <li class="toctree-l7"><a class="reference internal" href="backingstore-monolithic.html"><code class="docutils literal notranslate"><span class="pre">UserDB</span></code> Responsibilities: <code class="docutils literal notranslate"><span class="pre">read()</span></code>, <code class="docutils literal notranslate"><span class="pre">write()</span></code></a></li>
 <li class="toctree-l7"><a class="reference internal" href="backingstore-interface.html"><code class="docutils literal notranslate"><span class="pre">BackingStore</span></code> Responsibilities: Too Many Formats</a></li>
 </ul>
@@ -170,89 +170,109 @@
 <h1>Refactoring<a class="headerlink" href="#refactoring" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="store-enum-switch.html"><code class="docutils literal notranslate"><span class="pre">UserDB::{read,write}()</span></code>: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, Really?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pass-store-in-ctor.html">Load From BackingStore in Constructor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fixture-temp-files.html">Unit Test: Add Fixture For Temporary Files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="store-enum-switch.html"><code class="docutils literal notranslate"><span class="pre">UserDB::{read,write}()</span></code>: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, Really?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="backingstore-monolithic.html"><code class="docutils literal notranslate"><span class="pre">UserDB</span></code> Responsibilities: <code class="docutils literal notranslate"><span class="pre">read()</span></code>, <code class="docutils literal notranslate"><span class="pre">write()</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="backingstore-interface.html"><code class="docutils literal notranslate"><span class="pre">BackingStore</span></code> Responsibilities: Too Many Formats</a></li>
 </ul>
 </div>
 <svg 
- viewBox="0.00 0.00 1035.00 282.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 278)">
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-278 1031,-278 1031,4 -4,4"/>
+ viewBox="0.00 0.00 1035.00 365.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 361)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-361 1031,-361 1031,4 -4,4"/>
 <g id="clust1" class="cluster">
 <title>cluster_clean_code</title>
-<path fill="none" stroke="black" d="M20,-8C20,-8 1007,-8 1007,-8 1013,-8 1019,-14 1019,-20 1019,-20 1019,-254 1019,-254 1019,-260 1013,-266 1007,-266 1007,-266 20,-266 20,-266 14,-266 8,-260 8,-254 8,-254 8,-20 8,-20 8,-14 14,-8 20,-8"/>
-<text text-anchor="middle" x="513.5" y="-250.8" font-family="Times-Roman" font-size="14.00">Tasks</text>
+<path fill="none" stroke="black" d="M20,-8C20,-8 1007,-8 1007,-8 1013,-8 1019,-14 1019,-20 1019,-20 1019,-337 1019,-337 1019,-343 1013,-349 1007,-349 1007,-349 20,-349 20,-349 14,-349 8,-343 8,-337 8,-337 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="513.5" y="-333.8" font-family="Times-Roman" font-size="14.00">Tasks</text>
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_clean_code_refactoring</title>
-<path fill="none" stroke="black" d="M28,-16C28,-16 999,-16 999,-16 1005,-16 1011,-22 1011,-28 1011,-28 1011,-223 1011,-223 1011,-229 1005,-235 999,-235 999,-235 28,-235 28,-235 22,-235 16,-229 16,-223 16,-223 16,-28 16,-28 16,-22 22,-16 28,-16"/>
-<text text-anchor="middle" x="513.5" y="-219.8" font-family="Times-Roman" font-size="14.00">Refactoring</text>
+<path fill="none" stroke="black" d="M28,-99C28,-99 999,-99 999,-99 1005,-99 1011,-105 1011,-111 1011,-111 1011,-306 1011,-306 1011,-312 1005,-318 999,-318 999,-318 28,-318 28,-318 22,-318 16,-312 16,-306 16,-306 16,-111 16,-111 16,-105 22,-99 28,-99"/>
+<text text-anchor="middle" x="513.5" y="-302.8" font-family="Times-Roman" font-size="14.00">Refactoring</text>
 </g>
-<!-- clean_code_refactoring_pass_store_in_ctor -->
-<g id="node1" class="node">
-<title>clean_code_refactoring_pass_store_in_ctor</title>
-<g id="a_node1"><a xlink:href="pass-store-in-ctor.html" xlink:title="Load From BackingStore in Constructor">
-<polygon fill="lightgrey" stroke="black" points="1002.5,-204 715.5,-204 715.5,-168 1002.5,-168 1002.5,-204"/>
-<text text-anchor="start" x="723.5" y="-182.3" font-family="Times-Roman" font-size="14.00">Load From BackingStore in Constructor</text>
-</a>
-</g>
+<g id="clust3" class="cluster">
+<title>cluster_clean_code_features</title>
+<path fill="none" stroke="black" d="M193,-16C193,-16 487,-16 487,-16 493,-16 499,-22 499,-28 499,-28 499,-79 499,-79 499,-85 493,-91 487,-91 487,-91 193,-91 193,-91 187,-91 181,-85 181,-79 181,-79 181,-28 181,-28 181,-22 187,-16 193,-16"/>
+<text text-anchor="middle" x="340" y="-75.8" font-family="Times-Roman" font-size="14.00">Features</text>
 </g>
 <!-- clean_code_refactoring_backingstore_monolithic -->
-<g id="node2" class="node">
+<g id="node1" class="node">
 <title>clean_code_refactoring_backingstore_monolithic</title>
-<g id="a_node2"><a xlink:href="backingstore-monolithic.html" xlink:title="UserDB Responsibilities: read(), write()">
-<polygon fill="lightgrey" stroke="black" points="832.5,-132 547.5,-132 547.5,-96 832.5,-96 832.5,-132"/>
-<text text-anchor="start" x="555.5" y="-110.3" font-family="Times-Roman" font-size="14.00">UserDB Responsibilities: read(), write()</text>
+<g id="a_node1"><a xlink:href="backingstore-monolithic.html" xlink:title="UserDB Responsibilities: read(), write()">
+<polygon fill="lightgrey" stroke="black" points="482.5,-215 197.5,-215 197.5,-179 482.5,-179 482.5,-215"/>
+<text text-anchor="start" x="205.5" y="-193.3" font-family="Times-Roman" font-size="14.00">UserDB Responsibilities: read(), write()</text>
 </a>
 </g>
 </g>
-<!-- clean_code_refactoring_pass_store_in_ctor&#45;&gt;clean_code_refactoring_backingstore_monolithic -->
-<g id="edge1" class="edge">
-<title>clean_code_refactoring_pass_store_in_ctor&#45;&gt;clean_code_refactoring_backingstore_monolithic</title>
-<path fill="none" stroke="black" d="M817.66,-167.88C794.45,-158.26 765.31,-146.19 740.73,-136.01"/>
-<polygon fill="black" stroke="black" points="741.79,-132.66 731.21,-132.07 739.11,-139.13 741.79,-132.66"/>
-</g>
 <!-- clean_code_refactoring_store_enum_switch -->
-<g id="node3" class="node">
+<g id="node5" class="node">
 <title>clean_code_refactoring_store_enum_switch</title>
-<g id="a_node3"><a xlink:href="store-enum-switch.html" xlink:title="UserDB::{read,write}(): bool, Really?">
-<polygon fill="lightgrey" stroke="black" points="826,-60 554,-60 554,-24 826,-24 826,-60"/>
-<text text-anchor="start" x="562" y="-38.3" font-family="Times-Roman" font-size="14.00">UserDB::{read,write}(): bool, Really?</text>
+<g id="a_node5"><a xlink:href="store-enum-switch.html" xlink:title="UserDB::{read,write}(): bool, Really?">
+<polygon fill="lightgrey" stroke="black" points="476,-143 204,-143 204,-107 476,-107 476,-143"/>
+<text text-anchor="start" x="212" y="-121.3" font-family="Times-Roman" font-size="14.00">UserDB::{read,write}(): bool, Really?</text>
 </a>
 </g>
 </g>
 <!-- clean_code_refactoring_backingstore_monolithic&#45;&gt;clean_code_refactoring_store_enum_switch -->
-<g id="edge2" class="edge">
+<g id="edge1" class="edge">
 <title>clean_code_refactoring_backingstore_monolithic&#45;&gt;clean_code_refactoring_store_enum_switch</title>
-<path fill="none" stroke="black" d="M690,-95.7C690,-87.98 690,-78.71 690,-70.11"/>
-<polygon fill="black" stroke="black" points="693.5,-70.1 690,-60.1 686.5,-70.1 693.5,-70.1"/>
+<path fill="none" stroke="black" d="M340,-178.7C340,-170.98 340,-161.71 340,-153.11"/>
+<polygon fill="black" stroke="black" points="343.5,-153.1 340,-143.1 336.5,-153.1 343.5,-153.1"/>
+</g>
+<!-- clean_code_refactoring_fixture_temp_files -->
+<g id="node2" class="node">
+<title>clean_code_refactoring_fixture_temp_files</title>
+<g id="a_node2"><a xlink:href="fixture-temp-files.html" xlink:title="Unit Test: Add Fixture For Temporary Files">
+<polygon fill="lightgrey" stroke="black" points="1003,-287 701,-287 701,-251 1003,-251 1003,-287"/>
+<text text-anchor="start" x="709" y="-265.3" font-family="Times-Roman" font-size="14.00">Unit Test: Add Fixture For Temporary Files</text>
+</a>
+</g>
 </g>
 <!-- clean_code_refactoring_backingstore_interface -->
-<g id="node4" class="node">
+<g id="node3" class="node">
 <title>clean_code_refactoring_backingstore_interface</title>
-<g id="a_node4"><a xlink:href="backingstore-interface.html" xlink:title="BackingStore Responsibilities: Too Many Formats">
-<polygon fill="lightgrey" stroke="black" points="697.5,-204 344.5,-204 344.5,-168 697.5,-168 697.5,-204"/>
-<text text-anchor="start" x="352.5" y="-182.3" font-family="Times-Roman" font-size="14.00">BackingStore Responsibilities: Too Many Formats</text>
+<g id="a_node3"><a xlink:href="backingstore-interface.html" xlink:title="BackingStore Responsibilities: Too Many Formats">
+<polygon fill="lightgrey" stroke="black" points="682.5,-287 329.5,-287 329.5,-251 682.5,-251 682.5,-287"/>
+<text text-anchor="start" x="337.5" y="-265.3" font-family="Times-Roman" font-size="14.00">BackingStore Responsibilities: Too Many Formats</text>
 </a>
 </g>
 </g>
 <!-- clean_code_refactoring_backingstore_interface&#45;&gt;clean_code_refactoring_backingstore_monolithic -->
-<g id="edge3" class="edge">
+<g id="edge2" class="edge">
 <title>clean_code_refactoring_backingstore_interface&#45;&gt;clean_code_refactoring_backingstore_monolithic</title>
-<path fill="none" stroke="black" d="M562.34,-167.88C585.55,-158.26 614.69,-146.19 639.27,-136.01"/>
-<polygon fill="black" stroke="black" points="640.89,-139.13 648.79,-132.07 638.21,-132.66 640.89,-139.13"/>
+<path fill="none" stroke="black" d="M465.39,-250.88C442.6,-241.26 413.97,-229.19 389.83,-219.01"/>
+<polygon fill="black" stroke="black" points="391.05,-215.73 380.48,-215.07 388.33,-222.18 391.05,-215.73"/>
 </g>
-<!-- clean_code_refactoring_fixture_temp_files -->
-<g id="node5" class="node">
-<title>clean_code_refactoring_fixture_temp_files</title>
-<g id="a_node5"><a xlink:href="fixture-temp-files.html" xlink:title="Unit Test: Add Fixture For Temporary Files">
-<polygon fill="lightgrey" stroke="black" points="326,-204 24,-204 24,-168 326,-168 326,-204"/>
-<text text-anchor="start" x="32" y="-182.3" font-family="Times-Roman" font-size="14.00">Unit Test: Add Fixture For Temporary Files</text>
+<!-- clean_code_refactoring_pass_store_in_ctor -->
+<g id="node4" class="node">
+<title>clean_code_refactoring_pass_store_in_ctor</title>
+<g id="a_node4"><a xlink:href="pass-store-in-ctor.html" xlink:title="Load From BackingStore in Constructor">
+<polygon fill="lightgrey" stroke="black" points="311.5,-287 24.5,-287 24.5,-251 311.5,-251 311.5,-287"/>
+<text text-anchor="start" x="32.5" y="-265.3" font-family="Times-Roman" font-size="14.00">Load From BackingStore in Constructor</text>
 </a>
 </g>
+</g>
+<!-- clean_code_refactoring_pass_store_in_ctor&#45;&gt;clean_code_refactoring_backingstore_monolithic -->
+<g id="edge3" class="edge">
+<title>clean_code_refactoring_pass_store_in_ctor&#45;&gt;clean_code_refactoring_backingstore_monolithic</title>
+<path fill="none" stroke="black" d="M210.08,-250.88C233.8,-241.22 263.62,-229.09 288.7,-218.88"/>
+<polygon fill="black" stroke="black" points="290.12,-222.08 298.06,-215.07 287.48,-215.6 290.12,-222.08"/>
+</g>
+<!-- clean_code_features_csv -->
+<g id="node6" class="node">
+<title>clean_code_features_csv</title>
+<g id="a_node6"><a xlink:href="../features/csv.html" xlink:title="UserDB: Alternative Output Format &#45; CSV">
+<polygon fill="lightgrey" stroke="black" points="491,-60 189,-60 189,-24 491,-24 491,-60"/>
+<text text-anchor="start" x="197" y="-38.3" font-family="Times-Roman" font-size="14.00">UserDB: Alternative Output Format &#45; CSV</text>
+</a>
+</g>
+</g>
+<!-- clean_code_refactoring_store_enum_switch&#45;&gt;clean_code_features_csv -->
+<g id="edge4" class="edge">
+<title>clean_code_refactoring_store_enum_switch&#45;&gt;clean_code_features_csv</title>
+<path fill="none" stroke="black" d="M340,-106.82C340,-96.19 340,-82.31 340,-70.2"/>
+<polygon fill="black" stroke="black" points="343.5,-70.15 340,-60.15 336.5,-70.15 343.5,-70.15"/>
 </g>
 </g>
 </svg>
