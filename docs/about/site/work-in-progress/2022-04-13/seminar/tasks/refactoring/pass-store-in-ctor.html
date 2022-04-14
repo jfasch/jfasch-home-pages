@@ -22,8 +22,8 @@
     <link rel="canonical" href="https://www.faschingbauer.me/about/site/work-in-progress/2022-04-13/seminar/tasks/refactoring/pass-store-in-ctor.html" />
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
-    <link rel="next" title="Unit Test: Add Fixture For Temporary Files" href="fixture-temp-files.html" />
-    <link rel="prev" title="Refactoring" href="group.html" /> 
+    <link rel="next" title="Past Agendae, Etc." href="../../../agendae/index.html" />
+    <link rel="prev" title="BackingStore Has Too Many Responsibilities ⟶ Interface" href="backingstore-interface.html" /> 
    
   <link rel="stylesheet" href="../../../../../../../_static/custom.css" type="text/css" />
   
@@ -121,21 +121,20 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../fh-joanneum/index.html">Embedded Computing (FH Joanneum Graz)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../project-xxx/index.html">I2S Audio for a Kontron SMARC Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../packaging/index.html">Packaging this Site on PyPI</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../../../index.html">Seminar on Clean Coding (2022-04-13)</a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="../../index.html">Is Software A Craft? Software Is A Craft?</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../index.html">Seminar on “Clean Code” (2022-04-13)</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html">Is Software A Craft? Software Is A Craft!</a><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="../../craft-sw.html">What’s There? What Have We Accomplished?</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../block-before-googletest.html">Live Hacking Before (Formal) Unit Testing</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../enter-googletest.html">Live Hacking: Switch To <code class="docutils literal notranslate"><span class="pre">googletest</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../clean-code-craftsmanship.html">Clean Code: Messages From The Book</a></li>
-<li class="toctree-l5 current"><a class="reference internal" href="../group.html">Tasks</a><ul class="current">
+<li class="toctree-l5 current"><a class="reference internal" href="../group.html">Backlog: What Needs To Change, Or We Will All Die</a><ul class="current">
 <li class="toctree-l6"><a class="reference internal" href="../bugs/group.html">Bugs</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../features/group.html">Features</a></li>
 <li class="toctree-l6 current"><a class="reference internal" href="group.html">Refactoring</a><ul class="current">
-<li class="toctree-l7 current"><a class="current reference internal" href="#">Load From BackingStore in Constructor</a></li>
-<li class="toctree-l7"><a class="reference internal" href="fixture-temp-files.html">Unit Test: Add Fixture For Temporary Files</a></li>
 <li class="toctree-l7"><a class="reference internal" href="store-enum-switch.html"><code class="docutils literal notranslate"><span class="pre">UserDB::{read,write}()</span></code>: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, Really?</a></li>
-<li class="toctree-l7"><a class="reference internal" href="backingstore-monolithic.html"><code class="docutils literal notranslate"><span class="pre">UserDB</span></code> Responsibilities: <code class="docutils literal notranslate"><span class="pre">read()</span></code>, <code class="docutils literal notranslate"><span class="pre">write()</span></code></a></li>
-<li class="toctree-l7"><a class="reference internal" href="backingstore-interface.html"><code class="docutils literal notranslate"><span class="pre">BackingStore</span></code> Responsibilities: Too Many Formats</a></li>
+<li class="toctree-l7"><a class="reference internal" href="backingstore-monolithic.html"><code class="docutils literal notranslate"><span class="pre">UserDB</span></code> Has Too Many Responsibilities ⟶ <code class="docutils literal notranslate"><span class="pre">BackingStore</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="backingstore-interface.html"><code class="docutils literal notranslate"><span class="pre">BackingStore</span></code> Has Too Many Responsibilities ⟶ Interface</a></li>
+<li class="toctree-l7 current"><a class="current reference internal" href="#">Load From BackingStore in Constructor</a></li>
 </ul>
 </li>
 </ul>
@@ -168,14 +167,18 @@
           <div class="body" role="main">
              <section id="load-from-backingstore-in-constructor">
 <h1>Load From BackingStore in Constructor<a class="headerlink" href="#load-from-backingstore-in-constructor" title="Permalink to this headline">¶</a></h1>
-<p>Finally eliminate that entire <code class="docutils literal notranslate"><span class="pre">read()</span></code> and <code class="docutils literal notranslate"><span class="pre">write()</span></code> mess. It is
-semantically unclear regarding overwrite. Instead,</p>
-<ul class="simple">
-<li><p>Pass an instance of <code class="docutils literal notranslate"><span class="pre">BackingStore</span></code> to <code class="docutils literal notranslate"><span class="pre">UserDB</span></code>’s constructor,
-which will then load its contents from the <code class="docutils literal notranslate"><span class="pre">BackingStore</span></code>.</p></li>
-<li><p>Eliminate the <code class="docutils literal notranslate"><span class="pre">read()</span></code> method.</p></li>
-<li><p>Rename <code class="docutils literal notranslate"><span class="pre">write()</span></code> to <code class="docutils literal notranslate"><span class="pre">sync()</span></code></p></li>
-</ul>
+<p>There are a number of problems with the <code class="docutils literal notranslate"><span class="pre">UserDB::read()</span></code> method. See
+<a class="reference internal" href="../bugs/overwrite-store-content-on-read.html"><span class="doc">UserDB::read(): What If Done Twice?</span></a> for an obvious symptom
+of a design mismatch.</p>
+<p>Apparently <code class="docutils literal notranslate"><span class="pre">UserDB</span></code> works best if it loads its contents from a
+<code class="docutils literal notranslate"><span class="pre">BackingStore</span></code> at most once.</p>
+<p>This is best accomplished by passing it a <code class="docutils literal notranslate"><span class="pre">BackingStore</span></code> instance in
+its constructor. The constructor loads the internal store, and the
+<code class="docutils literal notranslate"><span class="pre">read()</span></code> method can be removed.</p>
+<p>If the constructor would also store the <code class="docutils literal notranslate"><span class="pre">BackingStore</span></code> in a private
+member, <code class="docutils literal notranslate"><span class="pre">write()</span></code> could be relieved from all its arguments. Maybe
+<code class="docutils literal notranslate"><span class="pre">write()</span></code> should also be renamed to <code class="docutils literal notranslate"><span class="pre">sync()</span></code> which would be a
+better name IMHO.</p>
 </section>
 
 <div class="section">
