@@ -5,8 +5,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<meta content="Dieses Training vermittelt Grundkenntnisse der Linux Kernel Programmierung, und ermöglicht ihnen einen schnellen Start" name="description" />
-<meta content="schulung, training, programming, c, linux, kernel, linux kernel, driver, kernel driver, module, hardware, pci, semaphore, mutex, spinlock, wait queue, waitqueue, device, character device, block device, interrupt, interrupt handler, isr" name="keywords" />
+<meta content="A quickstart foor those who are fluent in C, and want to learn how the linux kernel works internally" name="description" />
+<meta content="schulung, training, programming, c, linux, kernel, linux kernel, driver, kernel driver, module, hardware, pci, semaphore, mutex, spinlock, wait queue, waitqueue, device, character device, block device, interrupt, interrupt handler, isr, dma" name="keywords" />
 
     <title>Linux Kernel Driver Development &#8212; Jörg Faschingbauer</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
@@ -144,70 +144,75 @@
              <section id="linux-kernel-driver-development">
 <h1>Linux Kernel Driver Development<a class="headerlink" href="#linux-kernel-driver-development" title="Permalink to this headline">¶</a></h1>
 <aside class="sidebar">
-<p class="sidebar-title">Kursdaten</p>
-<table class="docutils align-default">
+<table class="docutils align-left">
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p>Anfrage</p></td>
+<tr class="row-odd"><td><p><strong>Duration</strong></p></td>
+<td><p>5 days</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Course Language</strong></p></td>
+<td><p>Heavy C</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Booking</strong></p></td>
 <td><p><a class="reference external" href="mailto:training&#37;&#52;&#48;faschingbauer&#46;co&#46;at">training<span>&#64;</span>faschingbauer<span>&#46;</span>co<span>&#46;</span>at</a></p></td>
 </tr>
-<tr class="row-even"><td><p>Dauer</p></td>
-<td><p>5 Tage</p></td>
+<tr class="row-even"><td><p><strong>Course Material</strong></p></td>
+<td><p><a class="reference internal" href="../material/soup/kernel/group.html"><span class="doc">Linux Kernel Driver Development</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>Sourcecode</p></td>
+<tr class="row-odd"><td><p><strong>Source Code</strong></p></td>
 <td><p><a class="reference external" href="https://github.com/jfasch/jf-kernel-course">jf-kernel-course</a></p></td>
-</tr>
-<tr class="row-even"><td><p>Unterlagen</p></td>
-<td><p><a class="reference internal" href="../material/soup/kernel/index.html"><span class="doc">Linux Driver Development</span></a></p></td>
 </tr>
 </tbody>
 </table>
 </aside>
-<p>Der Linux Kernel ist zu verzweigt und komplex, um in eine Schulung
-egal welcher Länge zu passen. Diese Schulung richtet sich an erfahrene
-Programmierer, die in das Thema “Kernelhacking” einsteigen wollen und
-einen Quickstart möchten, der ihnen die grundlegenden Mechanismen mit
-auf den Weg gibt. Damit gerüstet, und mit genügend Neugier und
-Programmiergeschick, kann man sich in die verschiedenen Subsysteme des
-Kernels vorarbeiten. Beispielcode ist <a class="reference external" href="https://github.com/torvalds/linux">mehr als selbst den
-Kernelentwicklern lieb ist</a>
-vorhanden.</p>
-<section id="kursinhalt">
-<h2>Kursinhalt<a class="headerlink" href="#kursinhalt" title="Permalink to this headline">¶</a></h2>
-<p>(Der Ursprung dieses Kurses ist ein <a class="reference internal" href="../log/detail/2015-11-30/index.html#records-bodenseo-2015-11-30-kernel"><span class="std std-ref">eintägiger Ausflug ins
-Kernel-Land</span></a> im Rahmen eines
-einwöchigen <a class="reference internal" href="sysprog/index.html"><span class="doc">“Systemnahe Programmierung”</span></a>
-Trainings am Bodensee.)</p>
+<p>First off: the Linux kernel cannot be taught in 5 days - no way.</p>
+<p>Target audience of this course are experienced C programmers who want
+to get an idea of what it means to be a “Linux kernel hacker”. A
+quickstart, giving an overview of the mechanisms that define the
+kernel universe: parallelism, memory management, scheduling, interrupt
+handling, to name only a few.</p>
+<p>With this, and with a great dose of curiosity, you will find yourself
+enabled to find your own way through the various subsystems inside the
+Linux kernel.</p>
+<section id="course-contents">
+<h2>Course Contents<a class="headerlink" href="#course-contents" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><strong>Module</strong>. In Linux-Speak ist ein <em>Modul</em> dynamisch ladbarer
-Code. Module werden geladen (explizit oder implizit), initialisiert,
-deinitialisiert, entladen.</p></li>
-<li><p><strong>Devices</strong>. Hardware wird im Kernel als <em>Device</em> präsentiert, dem
-Softwaregegenstück zur physischen Hardware. Ein <em>Device Special
-File</em> ist die Schnittstelle zum Userspace.</p></li>
-<li><p><strong>Synchronisationsmechnismen</strong>. Während Prozesse im Userspace eigene
-Adressräume haben, hat der Kernel, der alle Prozesse repräsentiert,
-einen einzigen. Dadurch ist es sehr wichtig, die verfügbaren
-Synchronisationsmechnismen zu kennen und anwenden zu können. (Zum
-Beispiel: “Warum darf man in einer Interruptserviceroutine kein
-Mutex locken?”)</p></li>
-<li><p><strong>Kommunikationsmechnismen</strong>. Jeder kennt <em>Wartebedingungen</em> - liest
-man zum Beispiel von einem Socket, <em>blockiert</em> der Aufruf solange,
-bis Daten einlangen. Solche Wartebedingungen sind allgegenwärtig,
-und an der Basis jedes Betriebssystemes.</p></li>
-<li><p><strong>Interrupthandling</strong>. Interrupts sind im Prinzip Benachrichtigungen
-von Hardware an den Kernel. Es gibt verschiedene Arten, damit
-umzugehen, und noch mehr verschiedene Arten, wie man sein System
-unbrauchbar machen kann.</p></li>
+<li><p><strong>Modules</strong>. A <em>module</em> is dynamic shared object that is loaded into
+a running kernel. We cover its <em>initialization</em> on load,
+<em>deinitialization</em> at unload, and various other aspects like
+metadata and module dependencies.</p></li>
+<li><p><strong>Devices</strong>. Hardware is represented in software as a
+<em>device</em>. Device special files (those in <code class="docutils literal notranslate"><span class="pre">/dev/</span></code>) are used to give
+userspace an easy to use interface.</p></li>
+<li><p><strong>Synchronization mechanisms</strong>. Unlike userpace, where the <em>process</em>
+abstraction implements the illusion of being alone, the kernel is a
+massively parallel program (things are further complicated by the
+presence of hardware interrupts). It is thus vital to know how to
+protect oneself against any kind of race condition.</p></li>
+<li><p><strong>Communication mechanisms</strong>. Waiting for an event to occur - while
+not consuming any CPU time - is one of the most important
+responsibilities of any operating system.</p></li>
+<li><p><strong>Interrupt handling</strong>. Hardware interrupts are something that an
+operating system cannot do without. Linux has a number of ways to
+deal with interrupts.</p></li>
+<li><p><strong>Direct memory access (DMA)</strong>. Efficient communication between
+hardware devices and (processes running on) the CPU requires devices
+to be able to access CPU memory. Devices access main memory in
+different ways; we give an overview of the APIs that are available
+to implement each.</p></li>
+<li><p><strong>PCI</strong>. PCI hardware is commonplace in today’s computers. We
+explain how the PCI subsystem of the Linux kernel works.</p></li>
 </ul>
 </section>
-<section id="empfohlene-vorkenntnisse">
-<h2>Empfohlene Vorkenntnisse<a class="headerlink" href="#empfohlene-vorkenntnisse" title="Permalink to this headline">¶</a></h2>
-<p>Solide Kenntnisse in C werden vorausgesetzt. Kenntnisse in Embedded
-Betriebssystemen sind von Vorteil, genauso wie Hardwarekenntnisse.</p>
+<section id="sample-project">
+<h2>Sample Project<a class="headerlink" href="#sample-project" title="Permalink to this headline">¶</a></h2>
+<p>An exercise project accompanies the course, giving the audience a
+chance to get in touch with the mechanisms as they are covered.</p>
+<p>See <a class="reference internal" href="../material/soup/kernel/sample-project.html"><span class="doc">here</span></a> for a
+trainer-centric view of what’s to be done.</p>
 </section>
 </section>
 
