@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.18)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
 PROJECT(Toolchain-CMake-Demo)
 
 ADD_LIBRARY(greet hello.h hello.c hello-flexible.c)
