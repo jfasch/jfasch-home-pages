@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>File Operations on Character Devices &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/kernel/cdev-file-operations/topic.html" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="File Operations on Character Devices (Slideshow)" href="slides.html" />
+    <link rel="prev" title="Modern Character Devices (Screenplay)" href="../cdev-auto/screenplay.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../index.html">
+    <img class="logo" src="../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../sysprog/group.html">Systems Programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../group.html">Linux Kernel Driver Development</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../cdev-auto/topic.html">Modern Character Devices</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">File Operations on Character Devices</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="slides.html">File Operations on Character Devices (Slideshow)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="screenplay.html">File Operations on Character Devices (Screenplay)</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../cdev-first-functionality/topic.html">Coding: First Functionality</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cdev-manual/topic.html">Character Device Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cdev-multiple-devices/topic.html">Coding: Multiple Devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cdev-refactoring/topic.html">Coding: Refactoring</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dma/topic.html">DMA</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../fedora-kernel-build/topic.html">Fedora: Building the Kernel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../fedora-module-build/topic.html">Fedora: Building External Kernel Modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../hello-world/topic.html">Module Loading, Hello World</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../interrupt-coding/topic.html">Coding: Raspi GPIO Interrupts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../interrupt/topic.html">Interrupts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../iomemory/topic.html">IO Memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../kmalloc/topic.html">Dynamic Memory: <code class="docutils literal notranslate"><span class="pre">kmalloc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../list/topic.html">Doubly Linked Lists</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../mutex-coding/topic.html">Coding: Fix Race Condition (Mutex)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../mutex/topic.html">Mutex (and RT Mutex)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../netdev/topic.html">Network Devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pci/topic.html">PCI</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../process-vs-atomic/topic.html">Process vs.Atomic Context</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../raspi-kernel-build/topic.html">Raspberry Pi: Building the Kernel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../spinlock-coding/topic.html">Coding: Fix <em>Sleep While Atomic</em></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../spinlock/topic.html">Spinlock (vs. Mutex)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stub-sysprog-dup/topic.html"><code class="docutils literal notranslate"><span class="pre">dup()</span></code>, <code class="docutils literal notranslate"><span class="pre">fork()</span></code>, and Reference Counting (Stub)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../time_timer-coding/topic.html">Coding: Timed Event</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../time_timer/topic.html">Timer Management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../usermem/topic.html">Accessing Userspace Memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../waitqueue/topic.html">Waiting for Something</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../workqueue/topic.html">Workqueue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sample-project.html">Sample Code Maintenance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../todo.html">To Do List</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="file-operations-on-character-devices">
+<h1>File Operations on Character Devices<a class="headerlink" href="#file-operations-on-character-devices" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="slides.html">File Operations on Character Devices (Slideshow)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="screenplay.html">File Operations on Character Devices (Screenplay)</a></li>
+</ul>
+</div>
+<svg 
+ viewBox="0.00 0.00 740.00 459.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 455)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-455 736,-455 736,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_kernel</title>
+<path fill="none" stroke="black" d="M20,-8C20,-8 712,-8 712,-8 718,-8 724,-14 724,-20 724,-20 724,-431 724,-431 724,-437 718,-443 712,-443 712,-443 20,-443 20,-443 14,-443 8,-437 8,-431 8,-431 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="366" y="-427.8" font-family="Times-Roman" font-size="14.00">Linux Kernel Driver Development</text>
+</g>
+<!-- kernel_stub_sysprog_dup -->
+<g id="node1" class="node">
+<title>kernel_stub_sysprog_dup</title>
+<g id="a_node1"><a xlink:href="../stub-sysprog-dup/topic.html" xlink:title="dup(), fork(), and Reference Counting (Stub)">
+<ellipse fill="#dcdcdc" stroke="black" cx="227" cy="-322" rx="211.46" ry="18"/>
+<text text-anchor="middle" x="227" y="-318.3" font-family="Times-Roman" font-size="14.00">dup(), fork(), and Reference Counting (Stub)</text>
+</a>
+</g>
+</g>
+<!-- kernel_cdev_manual -->
+<g id="node2" class="node">
+<title>kernel_cdev_manual</title>
+<g id="a_node2"><a xlink:href="../cdev-manual/topic.html" xlink:title="Character Device Basics">
+<ellipse fill="#dcdcdc" stroke="black" cx="569" cy="-250" rx="120.48" ry="18"/>
+<text text-anchor="middle" x="569" y="-246.3" font-family="Times-Roman" font-size="14.00">Character Device Basics</text>
+</a>
+</g>
+</g>
+<!-- kernel_modules_hello_world -->
+<g id="node5" class="node">
+<title>kernel_modules_hello_world</title>
+<g id="a_node5"><a xlink:href="../hello-world/topic.html" xlink:title="Module Loading, Hello World">
+<ellipse fill="#dcdcdc" stroke="black" cx="536" cy="-178" rx="139.18" ry="18"/>
+<text text-anchor="middle" x="536" y="-174.3" font-family="Times-Roman" font-size="14.00">Module Loading, Hello World</text>
+</a>
+</g>
+</g>
+<!-- kernel_cdev_manual&#45;&gt;kernel_modules_hello_world -->
+<g id="edge1" class="edge">
+<title>kernel_cdev_manual&#45;&gt;kernel_modules_hello_world</title>
+<path fill="none" stroke="black" d="M560.84,-231.7C557.09,-223.73 552.55,-214.1 548.38,-205.26"/>
+<polygon fill="black" stroke="black" points="551.49,-203.66 544.06,-196.1 545.16,-206.64 551.49,-203.66"/>
+</g>
+<!-- kernel_fedora_module_build -->
+<g id="node3" class="node">
+<title>kernel_fedora_module_build</title>
+<g id="a_node3"><a xlink:href="../fedora-module-build/topic.html" xlink:title="Fedora: Building External Kernel Modules">
+<ellipse fill="#dcdcdc" stroke="black" cx="520" cy="-106" rx="195.77" ry="18"/>
+<text text-anchor="middle" x="520" y="-102.3" font-family="Times-Roman" font-size="14.00">Fedora: Building External Kernel Modules</text>
+</a>
+</g>
+</g>
+<!-- kernel_fedora_kernel_build -->
+<g id="node7" class="node">
+<title>kernel_fedora_kernel_build</title>
+<g id="a_node7"><a xlink:href="../fedora-kernel-build/topic.html" xlink:title="Fedora: Building the Kernel">
+<ellipse fill="#dcdcdc" stroke="black" cx="520" cy="-34" rx="132.68" ry="18"/>
+<text text-anchor="middle" x="520" y="-30.3" font-family="Times-Roman" font-size="14.00">Fedora: Building the Kernel</text>
+</a>
+</g>
+</g>
+<!-- kernel_fedora_module_build&#45;&gt;kernel_fedora_kernel_build -->
+<g id="edge2" class="edge">
+<title>kernel_fedora_module_build&#45;&gt;kernel_fedora_kernel_build</title>
+<path fill="none" stroke="black" d="M520,-87.7C520,-79.98 520,-70.71 520,-62.11"/>
+<polygon fill="black" stroke="black" points="523.5,-62.1 520,-52.1 516.5,-62.1 523.5,-62.1"/>
+</g>
+<!-- kernel_cdev_auto -->
+<g id="node4" class="node">
+<title>kernel_cdev_auto</title>
+<g id="a_node4"><a xlink:href="../cdev-auto/topic.html" xlink:title="Modern Character Devices">
+<ellipse fill="#dcdcdc" stroke="black" cx="586" cy="-322" rx="129.98" ry="18"/>
+<text text-anchor="middle" x="586" y="-318.3" font-family="Times-Roman" font-size="14.00">Modern Character Devices</text>
+</a>
+</g>
+</g>
+<!-- kernel_cdev_auto&#45;&gt;kernel_cdev_manual -->
+<g id="edge3" class="edge">
+<title>kernel_cdev_auto&#45;&gt;kernel_cdev_manual</title>
+<path fill="none" stroke="black" d="M581.8,-303.7C579.9,-295.9 577.62,-286.51 575.52,-277.83"/>
+<polygon fill="black" stroke="black" points="578.92,-277 573.15,-268.1 572.11,-278.65 578.92,-277"/>
+</g>
+<!-- kernel_modules_hello_world&#45;&gt;kernel_fedora_module_build -->
+<g id="edge4" class="edge">
+<title>kernel_modules_hello_world&#45;&gt;kernel_fedora_module_build</title>
+<path fill="none" stroke="black" d="M532.04,-159.7C530.28,-151.98 528.16,-142.71 526.2,-134.11"/>
+<polygon fill="black" stroke="black" points="529.55,-133.07 523.91,-124.1 522.73,-134.63 529.55,-133.07"/>
+</g>
+<!-- kernel_cdev_file_operations -->
+<g id="node6" class="node">
+<title>kernel_cdev_file_operations</title>
+<ellipse fill="#dcdcdc" stroke="black" stroke-width="3" cx="383" cy="-394" rx="177.37" ry="18"/>
+<text text-anchor="middle" x="383" y="-390.3" font-family="Times-Roman" font-size="14.00">File Operations on Character Devices</text>
+</g>
+<!-- kernel_cdev_file_operations&#45;&gt;kernel_stub_sysprog_dup -->
+<g id="edge6" class="edge">
+<title>kernel_cdev_file_operations&#45;&gt;kernel_stub_sysprog_dup</title>
+<path fill="none" stroke="black" d="M345.63,-376.23C324.01,-366.53 296.59,-354.23 273.57,-343.9"/>
+<polygon fill="black" stroke="black" points="274.89,-340.65 264.33,-339.75 272.02,-347.04 274.89,-340.65"/>
+</g>
+<!-- kernel_cdev_file_operations&#45;&gt;kernel_cdev_auto -->
+<g id="edge5" class="edge">
+<title>kernel_cdev_file_operations&#45;&gt;kernel_cdev_auto</title>
+<path fill="none" stroke="black" d="M430.59,-376.59C460.31,-366.34 498.71,-353.1 529.9,-342.35"/>
+<polygon fill="black" stroke="black" points="531.44,-345.52 539.75,-338.95 529.16,-338.9 531.44,-345.52"/>
+</g>
+</g>
+</svg>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2022 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../_sources/trainings/material/soup/kernel/cdev-file-operations/topic.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

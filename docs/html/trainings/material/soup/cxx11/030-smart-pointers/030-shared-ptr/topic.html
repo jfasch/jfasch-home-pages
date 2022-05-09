@@ -1,0 +1,302 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>std::shared_ptr&lt;&gt; &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx11/030-smart-pointers/030-shared-ptr/topic.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="Smart Pointers: Closing Words" href="../040-closing-words/topic.html" />
+    <link rel="prev" title="std::unique_ptr&lt;&gt;" href="../020-unique-ptr/topic.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">C++ 11</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../010-introduction/group.html">Introduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../020-new-language-features/group.html">New Language Features</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../group.html">Smart Pointers</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../010-introduction/topic.html">Introduction</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../020-unique-ptr/topic.html"><code class="docutils literal notranslate"><span class="pre">std::unique_ptr&lt;&gt;</span></code></a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr&lt;&gt;</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../040-closing-words/topic.html">Smart Pointers: Closing Words</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../040-bind-function/group.html">Functions, Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../050-multithreading/group.html">Multithreading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../100-miscellaneous/group.html">Miscellaneous</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../sysprog/group.html">Systems Programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="std-shared-ptr">
+<h1><code class="docutils literal notranslate"><span class="pre">std::shared_ptr&lt;&gt;</span></code><a class="headerlink" href="#std-shared-ptr" title="Permalink to this headline">¶</a></h1>
+<section id="std-shared-ptr-not-unique">
+<h2><code class="docutils literal notranslate"><span class="pre">std::shared_ptr&lt;&gt;</span></code>: Not Unique<a class="headerlink" href="#std-shared-ptr-not-unique" title="Permalink to this headline">¶</a></h2>
+<p><strong>Ownership is not always clear …</strong></p>
+<ul class="simple">
+<li><p>Rare occasions where shared ownership is the right design choice</p></li>
+<li><p>… laziness, mostly</p></li>
+<li><p>If in doubt, say <code class="docutils literal notranslate"><span class="pre">std::shared_ptr&lt;&gt;</span></code></p></li>
+</ul>
+<table class="docutils align-left">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span><span class="cp"></span>
+<span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MyClass</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ptr</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">MyClass</span><span class="p">(</span><span class="mi">666</span><span class="p">));</span><span class="w"></span>
+</pre></div>
+</div>
+</td>
+<td><img alt="../../../../../../_images/sharedptr.svg" src="../../../../../../_images/sharedptr.svg" /></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="std-shared-ptr-copy">
+<h2><code class="docutils literal notranslate"><span class="pre">std::shared_ptr&lt;&gt;</span></code>: Copy<a class="headerlink" href="#std-shared-ptr-copy" title="Permalink to this headline">¶</a></h2>
+<p><strong>Copying</strong> is what shared pointer are there for</p>
+<table class="docutils align-left">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MyClass</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ptr</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">MyClass</span><span class="p">(</span><span class="mi">666</span><span class="p">));</span><span class="w"></span>
+<span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MyClass</span><span class="o">&gt;</span><span class="w"> </span><span class="n">copy1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ptr</span><span class="p">;</span><span class="w"></span>
+<span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MyClass</span><span class="o">&gt;</span><span class="w"> </span><span class="n">copy2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">copy1</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+</td>
+<td><img alt="../../../../../../_images/sharedptr-copy.svg" src="../../../../../../_images/sharedptr-copy.svg" /></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="std-shared-ptr-vs-std-unique-ptr">
+<h2><code class="docutils literal notranslate"><span class="pre">std::shared_ptr&lt;&gt;</span></code> vs. <code class="docutils literal notranslate"><span class="pre">std::unique_ptr&lt;&gt;</span></code><a class="headerlink" href="#std-shared-ptr-vs-std-unique-ptr" title="Permalink to this headline">¶</a></h2>
+<p>How do <code class="docutils literal notranslate"><span class="pre">std::shared_ptr&lt;&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">std::unique_ptr&lt;&gt;</span></code> compare?</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">std::unique_ptr&lt;&gt;</span></code></p>
+<ul>
+<li><p>Small - size of a pointer</p></li>
+<li><p>Operations compile away entirely</p></li>
+<li><p>No excuse <em>not</em> to use it</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">std::shared_ptr&lt;&gt;</span></code></p>
+<ul>
+<li><p>Size of two pointers</p></li>
+<li><p>Copying manipulates the resource count</p></li>
+<li><p>Copying manipulates non-adjacent memory locations</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="std-shared-ptr-object-lifetime">
+<h2><code class="docutils literal notranslate"><span class="pre">std::shared_ptr&lt;&gt;</span></code>: Object Lifetime<a class="headerlink" href="#std-shared-ptr-object-lifetime" title="Permalink to this headline">¶</a></h2>
+<p><strong>How long does the pointed-to object live?</strong></p>
+<ul class="simple">
+<li><p>Reference count is used to track share ownership</p></li>
+<li><p>When reference count drops to zero, the object is <em>not referenced anymore</em></p></li>
+<li><p>⟶ deleted</p></li>
+</ul>
+<p><strong>Examining the reference count</strong></p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MyClass</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ptr</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">MyClass</span><span class="p">(</span><span class="mi">666</span><span class="p">));</span><span class="w"></span>
+<span class="k">auto</span><span class="w"> </span><span class="n">refcount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ptr</span><span class="o">-&gt;</span><span class="n">use_count</span><span class="p">();</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Do not make any decisions based on it - at least not when the
+pointer is shared among multiple threads!</p>
+</div>
+</section>
+<section id="std-shared-ptr-juggling">
+<h2><code class="docutils literal notranslate"><span class="pre">std::shared_ptr&lt;&gt;</span></code>: Juggling<a class="headerlink" href="#std-shared-ptr-juggling" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-left">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Clearing</strong>: <code class="docutils literal notranslate"><span class="pre">reset()</span></code></p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MyClass</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ptr</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">MyClass</span><span class="p">(</span><span class="mi">666</span><span class="p">));</span><span class="w"></span>
+<span class="k">auto</span><span class="w"> </span><span class="n">copy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ptr</span><span class="p">;</span><span class="w"></span>
+<span class="n">ptr</span><span class="p">.</span><span class="n">reset</span><span class="p">();</span><span class="w"></span>
+</pre></div>
+</div>
+</td>
+<td><ul class="simple">
+<li><p>Decrements reference count</p></li>
+<li><p>Only if it becomes zero, object is deleted</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p><strong>Filling</strong>: <code class="docutils literal notranslate"><span class="pre">reset()</span></code></p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MyClass</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ptr</span><span class="p">;</span><span class="w"></span>
+<span class="n">ptr</span><span class="p">.</span><span class="n">reset</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">MyClass</span><span class="p">(</span><span class="mi">666</span><span class="p">));</span><span class="w"></span>
+</pre></div>
+</div>
+</td>
+<td><ul class="simple">
+<li><p>Makes an empty pointer the initial reference</p></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2022 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/cxx11/030-smart-pointers/030-shared-ptr/topic.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
