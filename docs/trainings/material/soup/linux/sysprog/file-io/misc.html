@@ -22,7 +22,7 @@
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/sysprog/file-io/misc.html" />
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../search.html" />
-    <link rel="next" title="Linux Hardware Interfaces" href="../../hardware/group.html" />
+    <link rel="next" title="Blocking I/O" href="../blocking-io/group.html" />
     <link rel="prev" title="Duplicating (Whats Going On?)" href="duplicate.html" /> 
    
   <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
@@ -121,13 +121,18 @@
 <li class="toctree-l6 current"><a class="current reference internal" href="#">Miscellaneous</a></li>
 </ul>
 </li>
+<li class="toctree-l5"><a class="reference internal" href="../blocking-io/group.html">Blocking I/O</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../posix-threads/group.html">POSIX Threads</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../scheduling/group.html">Scheduling</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../sysprog_events/topic.html">Sysprog: Events</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../sysprog_ipc/topic.html">Sysprog: POSIX IPC</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../sysprog_signals/topic.html">Sysprog: Signals</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../hardware/group.html">Linux Hardware Interfaces</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../drafts/group.html">Drafts</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../../sysprog/group.html">Systems Programming</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../kernel/group.html">Linux Kernel Driver Development</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
@@ -161,16 +166,20 @@
 <h1>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#i-o-without-offset-manipulation" id="id1">I/O without Offset Manipulation</a></p></li>
-<li><p><a class="reference internal" href="#scatter-gather-i-o" id="id2">Scatter/Gather I/O</a></p></li>
+<li><p><a class="reference internal" href="#i-o-without-offset-manipulation" id="id2">I/O without Offset Manipulation</a></p></li>
+<li><p><a class="reference internal" href="#scatter-gather-i-o" id="id3">Scatter/Gather I/O</a></p></li>
+<li><p><a class="reference internal" href="#scatter-gather-i-o-without-offset-manipulation" id="id4">Scatter/Gather I/O, without Offset Manipulation</a></p></li>
+<li><p><a class="reference internal" href="#truncating-files" id="id5">Truncating Files</a></p></li>
+<li><p><a class="reference internal" href="#file-descriptors-allocation" id="id6">File Descriptors - Allocation</a></p></li>
 </ul>
 </div>
 <section id="i-o-without-offset-manipulation">
-<h2><a class="toc-backref" href="#id1">I/O without Offset Manipulation</a><a class="headerlink" href="#i-o-without-offset-manipulation" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id2">I/O without Offset Manipulation</a><a class="headerlink" href="#i-o-without-offset-manipulation" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p class="sidebar-title">Documentation</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/pwrite.2.html">man -s 2 pread</a></p></li>
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/pwrite.2.html">man -s 2 pwrite</a></p></li>
 </ul>
 </aside>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span><span class="cp"></span>
@@ -187,18 +196,79 @@
 </ul>
 </section>
 <section id="scatter-gather-i-o">
-<h2><a class="toc-backref" href="#id2">Scatter/Gather I/O</a><a class="headerlink" href="#scatter-gather-i-o" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id3">Scatter/Gather I/O</a><a class="headerlink" href="#scatter-gather-i-o" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p class="sidebar-title">Documentation</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/pwrite.2.html">man -s 2 pread</a></p></li>
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/readv.2.html">man -s 2 readv</a></p></li>
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/readv.2.html">man -s 2 writev</a></p></li>
+</ul>
+</aside>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sys/uio.h&gt;</span><span class="cp"></span>
+
+<span class="kt">ssize_t</span><span class="w"> </span><span class="nf">readv</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span> <span class="nc">iovec</span><span class="w"> </span><span class="o">*</span><span class="n">iov</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">iovcnt</span><span class="p">);</span><span class="w"></span>
+<span class="kt">ssize_t</span><span class="w"> </span><span class="nf">writev</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span> <span class="nc">iovec</span><span class="w"> </span><span class="o">*</span><span class="n">iov</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">iovcnt</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Often data is not present in one contiguous block</p>
+<ul>
+<li><p>E.g. layered protocols</p></li>
+</ul>
+</li>
+<li><p>⟶ Copy pieces together, or issue repeated small system calls</p></li>
+<li><p>⟶ Scatter/Gather I/O</p></li>
+</ul>
+</section>
+<section id="scatter-gather-i-o-without-offset-manipulation">
+<h2><a class="toc-backref" href="#id4">Scatter/Gather I/O, without Offset Manipulation</a><a class="headerlink" href="#scatter-gather-i-o-without-offset-manipulation" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/readv.2.html">man -s 2 preadv</a></p></li>
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/readv.2.html">man -s 2 pwritev</a></p></li>
+</ul>
+</aside>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sys/uio.h&gt;</span><span class="cp"></span>
+
+<span class="kt">ssize_t</span><span class="w"> </span><span class="nf">preadv</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span> <span class="nc">iovec</span><span class="w"> </span><span class="o">*</span><span class="n">iov</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">iovcnt</span><span class="p">,</span><span class="w"></span>
+<span class="w">               </span><span class="kt">off_t</span><span class="w"> </span><span class="n">offset</span><span class="p">);</span><span class="w"></span>
+<span class="kt">ssize_t</span><span class="w"> </span><span class="nf">pwritev</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span> <span class="nc">iovec</span><span class="w"> </span><span class="o">*</span><span class="n">iov</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">iovcnt</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="kt">off_t</span><span class="w"> </span><span class="n">offset</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="truncating-files">
+<h2><a class="toc-backref" href="#id5">Truncating Files</a><a class="headerlink" href="#truncating-files" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/truncate.2.html">man -s 2 truncate</a></p></li>
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/truncate.2.html">man -s 2 ftruncate</a></p></li>
 </ul>
 </aside>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span><span class="cp"></span>
 
-<span class="kt">ssize_t</span><span class="w"> </span><span class="nf">pread</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="kt">off_t</span><span class="w"> </span><span class="n">offset</span><span class="p">);</span><span class="w"></span>
-<span class="kt">ssize_t</span><span class="w"> </span><span class="nf">pwrite</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="kt">off_t</span><span class="w"> </span><span class="n">offset</span><span class="p">);</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">truncate</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="kt">off_t</span><span class="w"> </span><span class="n">length</span><span class="p">);</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">ftruncate</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="kt">off_t</span><span class="w"> </span><span class="n">length</span><span class="p">);</span><span class="w"></span>
 </pre></div>
+</div>
+<ul class="simple">
+<li><p>Truncating a file …</p></li>
+<li><p>… or create a hole (⟶ <code class="docutils literal notranslate"><span class="pre">lseek()</span></code>)</p></li>
+</ul>
+</section>
+<section id="file-descriptors-allocation">
+<h2><a class="toc-backref" href="#id6">File Descriptors - Allocation</a><a class="headerlink" href="#file-descriptors-allocation" title="Permalink to this headline">¶</a></h2>
+<p>Value of the next file descriptors is not arbitrarily chosen
+⟶ next free slot, starting at 0.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Filedescriptor Allocation</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">close</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">);</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">open</span><span class="p">(</span><span class="s">&quot;/dev/null&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">O_WRONLY</span><span class="p">);</span><span class="w"></span>
+<span class="n">assert</span><span class="p">(</span><span class="n">fd</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
 </div>
 </section>
 </section>

@@ -1,0 +1,560 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Blocking I/O &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/sysprog/blocking-io/group.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="Blocking I/O: What is That? (“Everything is a file”)" href="blocking-io.html" />
+    <link rel="prev" title="Miscellaneous" href="../file-io/misc.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">Linux</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../basics/group.html">Linux Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ssh/group.html">SSH</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../toolchain/group.html">Toolchain</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../group.html">Linux Systems Programming</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../basics/group.html">Linux Systems Programming: Basics</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../file-io/group.html">File I/O</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">Blocking I/O</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="blocking-io.html">Blocking I/O: What is That? (“Everything is a file”)</a></li>
+<li class="toctree-l6"><a class="reference internal" href="blocking-io-file.html">Blocking I/O (On A File): What is That?</a></li>
+<li class="toctree-l6"><a class="reference internal" href="blocking-io-network.html">Blocking I/O: On A Network Socket</a></li>
+<li class="toctree-l6"><a class="reference internal" href="blocking-io-timer.html">Blocking I/O: On A Timer? WTF?</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../posix-threads/group.html">POSIX Threads</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../scheduling/group.html">Scheduling</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../sysprog_events/topic.html">Sysprog: Events</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../sysprog_ipc/topic.html">Sysprog: POSIX IPC</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../sysprog_signals/topic.html">Sysprog: Signals</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../hardware/group.html">Linux Hardware Interfaces</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../drafts/group.html">Drafts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="blocking-i-o">
+<h1>Blocking I/O<a class="headerlink" href="#blocking-i-o" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="blocking-io.html">Blocking I/O: What is That? (“Everything is a file”)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blocking-io-file.html">Blocking I/O (On A File): What is That?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blocking-io-network.html">Blocking I/O: On A Network Socket</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blocking-io-timer.html">Blocking I/O: On A Timer? WTF?</a></li>
+</ul>
+</div>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<svg 
+ viewBox="0.00 0.00 1464.00 1055.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1051)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-1051 1460,-1051 1460,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_linux</title>
+<path fill="none" stroke="black" d="M20,-8C20,-8 1436,-8 1436,-8 1442,-8 1448,-14 1448,-20 1448,-20 1448,-1027 1448,-1027 1448,-1033 1442,-1039 1436,-1039 1436,-1039 20,-1039 20,-1039 14,-1039 8,-1033 8,-1027 8,-1027 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="728" y="-1023.8" font-family="Times-Roman" font-size="14.00">Linux</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_linux_sysprog</title>
+<path fill="none" stroke="black" d="M30,-512C30,-512 1080,-512 1080,-512 1086,-512 1092,-518 1092,-524 1092,-524 1092,-996 1092,-996 1092,-1002 1086,-1008 1080,-1008 1080,-1008 30,-1008 30,-1008 24,-1008 18,-1002 18,-996 18,-996 18,-524 18,-524 18,-518 24,-512 30,-512"/>
+<text text-anchor="middle" x="555" y="-992.8" font-family="Times-Roman" font-size="14.00">Linux Systems Programming</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_linux_sysprog_basics</title>
+<path fill="none" stroke="black" d="M257,-520C257,-520 599,-520 599,-520 605,-520 611,-526 611,-532 611,-532 611,-727 611,-727 611,-733 605,-739 599,-739 599,-739 257,-739 257,-739 251,-739 245,-733 245,-727 245,-727 245,-532 245,-532 245,-526 251,-520 257,-520"/>
+<text text-anchor="middle" x="428" y="-723.8" font-family="Times-Roman" font-size="14.00">Linux Systems Programming: Basics</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_linux_sysprog_blocking_io</title>
+<path fill="none" stroke="black" d="M38,-830C38,-830 1072,-830 1072,-830 1078,-830 1084,-836 1084,-842 1084,-842 1084,-965 1084,-965 1084,-971 1078,-977 1072,-977 1072,-977 38,-977 38,-977 32,-977 26,-971 26,-965 26,-965 26,-842 26,-842 26,-836 32,-830 38,-830"/>
+<text text-anchor="middle" x="555" y="-961.8" font-family="Times-Roman" font-size="14.00">Blocking I/O</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_linux_sysprog_fileio</title>
+<path fill="none" stroke="black" d="M803,-747C803,-747 875,-747 875,-747 881,-747 887,-753 887,-759 887,-759 887,-810 887,-810 887,-816 881,-822 875,-822 875,-822 803,-822 803,-822 797,-822 791,-816 791,-810 791,-810 791,-759 791,-759 791,-753 797,-747 803,-747"/>
+<text text-anchor="middle" x="839" y="-806.8" font-family="Times-Roman" font-size="14.00">File I/O</text>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_linux_basics</title>
+<path fill="none" stroke="black" d="M226,-16C226,-16 1428,-16 1428,-16 1434,-16 1440,-22 1440,-28 1440,-28 1440,-492 1440,-492 1440,-498 1434,-504 1428,-504 1428,-504 226,-504 226,-504 220,-504 214,-498 214,-492 214,-492 214,-28 214,-28 214,-22 220,-16 226,-16"/>
+<text text-anchor="middle" x="827" y="-488.8" font-family="Times-Roman" font-size="14.00">Linux Basics</text>
+</g>
+<g id="clust7" class="cluster">
+<title>cluster_linux_basics_shell</title>
+<path fill="none" stroke="black" d="M234,-96C234,-96 1008,-96 1008,-96 1014,-96 1020,-102 1020,-108 1020,-108 1020,-378 1020,-378 1020,-384 1014,-390 1008,-390 1008,-390 234,-390 234,-390 228,-390 222,-384 222,-378 222,-378 222,-108 222,-108 222,-102 228,-96 234,-96"/>
+<text text-anchor="middle" x="621" y="-374.8" font-family="Times-Roman" font-size="14.00">The Shell (Bash &#45; “Bourne Again Shell”)</text>
+</g>
+<g id="clust8" class="cluster">
+<title>cluster_linux_basics_intro</title>
+<path fill="none" stroke="black" d="M1040,-24C1040,-24 1408,-24 1408,-24 1414,-24 1420,-30 1420,-36 1420,-36 1420,-159 1420,-159 1420,-165 1414,-171 1408,-171 1408,-171 1040,-171 1040,-171 1034,-171 1028,-165 1028,-159 1028,-159 1028,-36 1028,-36 1028,-30 1034,-24 1040,-24"/>
+<text text-anchor="middle" x="1224" y="-155.8" font-family="Times-Roman" font-size="14.00">Introduction: Concepts and Terminology</text>
+</g>
+<g id="clust9" class="cluster">
+<title>cluster_linux_basics_permissions</title>
+<path fill="none" stroke="black" d="M680,-398C680,-398 1000,-398 1000,-398 1006,-398 1012,-404 1012,-410 1012,-410 1012,-461 1012,-461 1012,-467 1006,-473 1000,-473 1000,-473 680,-473 680,-473 674,-473 668,-467 668,-461 668,-461 668,-410 668,-410 668,-404 674,-398 680,-398"/>
+<text text-anchor="middle" x="840" y="-457.8" font-family="Times-Roman" font-size="14.00">File System Permissions</text>
+</g>
+<g id="clust10" class="cluster">
+<title>cluster_linux_toolchain</title>
+<path fill="none" stroke="black" d="M28,-398C28,-398 194,-398 194,-398 200,-398 206,-404 206,-410 206,-410 206,-461 206,-461 206,-467 200,-473 194,-473 194,-473 28,-473 28,-473 22,-473 16,-467 16,-461 16,-461 16,-410 16,-410 16,-404 22,-398 28,-398"/>
+<text text-anchor="middle" x="111" y="-457.8" font-family="Times-Roman" font-size="14.00">Toolchain</text>
+</g>
+<!-- linux_sysprog_basics_errorhandling -->
+<g id="node1" class="node">
+<title>linux_sysprog_basics_errorhandling</title>
+<g id="a_node1"><a xlink:href="../basics/errorhandling.html" xlink:title="Error Handling">
+<ellipse fill="#dcdcdc" stroke="black" cx="376" cy="-618" rx="76.09" ry="18"/>
+<text text-anchor="middle" x="376" y="-614.3" font-family="Times-Roman" font-size="14.00">Error Handling</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_basics_syscalls -->
+<g id="node2" class="node">
+<title>linux_sysprog_basics_syscalls</title>
+<g id="a_node2"><a xlink:href="../basics/syscalls.html" xlink:title="System Calls vs. Library Functions">
+<ellipse fill="#dcdcdc" stroke="black" cx="419" cy="-546" rx="165.97" ry="18"/>
+<text text-anchor="middle" x="419" y="-542.3" font-family="Times-Roman" font-size="14.00">System Calls vs. Library Functions</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_basics_errorhandling&#45;&gt;linux_sysprog_basics_syscalls -->
+<g id="edge1" class="edge">
+<title>linux_sysprog_basics_errorhandling&#45;&gt;linux_sysprog_basics_syscalls</title>
+<path fill="none" stroke="black" d="M386.41,-600.05C391.41,-591.92 397.5,-582 403.06,-572.94"/>
+<polygon fill="black" stroke="black" points="406.14,-574.63 408.39,-564.28 400.17,-570.96 406.14,-574.63"/>
+</g>
+<!-- linux_toolchain_basics -->
+<g id="node17" class="node">
+<title>linux_toolchain_basics</title>
+<g id="a_node17"><a xlink:href="../../toolchain/basics/topic.html" xlink:title="Toolchain: Basics">
+<ellipse fill="#dcdcdc" stroke="black" cx="111" cy="-424" rx="87.18" ry="18"/>
+<text text-anchor="middle" x="111" y="-420.3" font-family="Times-Roman" font-size="14.00">Toolchain: Basics</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_basics_syscalls&#45;&gt;linux_toolchain_basics -->
+<g id="edge14" class="edge">
+<title>linux_sysprog_basics_syscalls&#45;&gt;linux_toolchain_basics</title>
+<path fill="none" stroke="black" d="M376.82,-528.57C320.17,-506.49 219.71,-467.36 159.85,-444.03"/>
+<polygon fill="black" stroke="black" points="160.83,-440.66 150.24,-440.29 158.29,-447.18 160.83,-440.66"/>
+</g>
+<!-- linux_sysprog_basics_groupnode -->
+<g id="node3" class="node">
+<title>linux_sysprog_basics_groupnode</title>
+<g id="a_node3"><a xlink:href="../basics/group.html" xlink:title="Linux Systems Programming: Basics">
+<ellipse fill="#dcdcdc" stroke="black" cx="428" cy="-690" rx="174.67" ry="18"/>
+<text text-anchor="middle" x="428" y="-686.3" font-family="Times-Roman" font-size="14.00">Linux Systems Programming: Basics</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_basics_groupnode&#45;&gt;linux_sysprog_basics_errorhandling -->
+<g id="edge16" class="edge">
+<title>linux_sysprog_basics_groupnode&#45;&gt;linux_sysprog_basics_errorhandling</title>
+<path fill="none" stroke="black" d="M415.15,-671.7C408.97,-663.39 401.46,-653.28 394.68,-644.14"/>
+<polygon fill="black" stroke="black" points="397.48,-642.04 388.71,-636.1 391.86,-646.22 397.48,-642.04"/>
+</g>
+<!-- linux_sysprog_basics_groupnode&#45;&gt;linux_sysprog_basics_syscalls -->
+<g id="edge15" class="edge">
+<title>linux_sysprog_basics_groupnode&#45;&gt;linux_sysprog_basics_syscalls</title>
+<path fill="none" stroke="black" d="M441.98,-672.04C449.19,-662.18 457.25,-649.13 461,-636 465.4,-620.62 466.26,-615.11 461,-600 457.47,-589.86 451.09,-580.19 444.36,-571.96"/>
+<polygon fill="black" stroke="black" points="446.83,-569.46 437.6,-564.24 441.56,-574.07 446.83,-569.46"/>
+</g>
+<!-- linux_sysprog_blocking_io_blocking_io -->
+<g id="node4" class="node">
+<title>linux_sysprog_blocking_io_blocking_io</title>
+<g id="a_node4"><a xlink:href="blocking-io.html" xlink:title="Blocking I/O: What is That? (“Everything is a file”)">
+<ellipse fill="#dcdcdc" stroke="black" cx="584" cy="-856" rx="235.86" ry="18"/>
+<text text-anchor="middle" x="584" y="-852.3" font-family="Times-Roman" font-size="14.00">Blocking I/O: What is That? (“Everything is a file”)</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_fileio_basics -->
+<g id="node8" class="node">
+<title>linux_sysprog_fileio_basics</title>
+<g id="a_node8"><a xlink:href="../file-io/basics.html" xlink:title="Basics">
+<ellipse fill="#dcdcdc" stroke="black" cx="839" cy="-773" rx="39.79" ry="18"/>
+<text text-anchor="middle" x="839" y="-769.3" font-family="Times-Roman" font-size="14.00">Basics</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_blocking_io_blocking_io&#45;&gt;linux_sysprog_fileio_basics -->
+<g id="edge5" class="edge">
+<title>linux_sysprog_blocking_io_blocking_io&#45;&gt;linux_sysprog_fileio_basics</title>
+<path fill="none" stroke="black" d="M636.22,-838.41C683.94,-823.26 753.57,-801.14 797.57,-787.16"/>
+<polygon fill="black" stroke="black" points="798.89,-790.41 807.36,-784.05 796.77,-783.74 798.89,-790.41"/>
+</g>
+<!-- linux_sysprog_blocking_io_blocking_io_network -->
+<g id="node5" class="node">
+<title>linux_sysprog_blocking_io_blocking_io_network</title>
+<g id="a_node5"><a xlink:href="blocking-io-network.html" xlink:title="Blocking I/O: On A Network Socket">
+<ellipse fill="#dcdcdc" stroke="black" cx="584" cy="-928" rx="166.27" ry="18"/>
+<text text-anchor="middle" x="584" y="-924.3" font-family="Times-Roman" font-size="14.00">Blocking I/O: On A Network Socket</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_blocking_io_blocking_io_network&#45;&gt;linux_sysprog_blocking_io_blocking_io -->
+<g id="edge9" class="edge">
+<title>linux_sysprog_blocking_io_blocking_io_network&#45;&gt;linux_sysprog_blocking_io_blocking_io</title>
+<path fill="none" stroke="black" d="M584,-909.7C584,-901.98 584,-892.71 584,-884.11"/>
+<polygon fill="black" stroke="black" points="587.5,-884.1 584,-874.1 580.5,-884.1 587.5,-884.1"/>
+</g>
+<!-- linux_sysprog_blocking_io_blocking_io_network&#45;&gt;linux_sysprog_fileio_basics -->
+<g id="edge8" class="edge">
+<title>linux_sysprog_blocking_io_blocking_io_network&#45;&gt;linux_sysprog_fileio_basics</title>
+<path fill="none" stroke="black" d="M699.91,-915.02C754.39,-906.88 811.25,-893.89 829,-874 846.37,-854.54 846.86,-823.69 844.26,-801.4"/>
+<polygon fill="black" stroke="black" points="847.69,-800.64 842.8,-791.24 840.76,-801.63 847.69,-800.64"/>
+</g>
+<!-- linux_sysprog_blocking_io_blocking_io_file -->
+<g id="node6" class="node">
+<title>linux_sysprog_blocking_io_blocking_io_file</title>
+<g id="a_node6"><a xlink:href="blocking-io-file.html" xlink:title="Blocking I/O (On A File): What is That?">
+<ellipse fill="#dcdcdc" stroke="black" cx="217" cy="-928" rx="182.77" ry="18"/>
+<text text-anchor="middle" x="217" y="-924.3" font-family="Times-Roman" font-size="14.00">Blocking I/O (On A File): What is That?</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_blocking_io_blocking_io_file&#45;&gt;linux_sysprog_blocking_io_blocking_io -->
+<g id="edge13" class="edge">
+<title>linux_sysprog_blocking_io_blocking_io_file&#45;&gt;linux_sysprog_blocking_io_blocking_io</title>
+<path fill="none" stroke="black" d="M297.09,-911.72C354.23,-900.83 431.23,-886.14 491.07,-874.72"/>
+<polygon fill="black" stroke="black" points="491.74,-878.16 500.9,-872.85 490.42,-871.29 491.74,-878.16"/>
+</g>
+<!-- linux_sysprog_blocking_io_blocking_io_timer -->
+<g id="node7" class="node">
+<title>linux_sysprog_blocking_io_blocking_io_timer</title>
+<g id="a_node7"><a xlink:href="blocking-io-timer.html" xlink:title="Blocking I/O: On A Timer? WTF?">
+<ellipse fill="#dcdcdc" stroke="black" cx="922" cy="-928" rx="154.07" ry="18"/>
+<text text-anchor="middle" x="922" y="-924.3" font-family="Times-Roman" font-size="14.00">Blocking I/O: On A Timer? WTF?</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_blocking_io_blocking_io_timer&#45;&gt;linux_sysprog_blocking_io_blocking_io -->
+<g id="edge20" class="edge">
+<title>linux_sysprog_blocking_io_blocking_io_timer&#45;&gt;linux_sysprog_blocking_io_blocking_io</title>
+<path fill="none" stroke="black" d="M849.91,-912.07C797.69,-901.25 726.83,-886.58 671.39,-875.1"/>
+<polygon fill="black" stroke="black" points="672.08,-871.67 661.58,-873.07 670.66,-878.52 672.08,-871.67"/>
+</g>
+<!-- linux_sysprog_blocking_io_blocking_io_timer&#45;&gt;linux_sysprog_fileio_basics -->
+<g id="edge19" class="edge">
+<title>linux_sysprog_blocking_io_blocking_io_timer&#45;&gt;linux_sysprog_fileio_basics</title>
+<path fill="none" stroke="black" d="M912.64,-909.75C898.12,-882.97 870.06,-831.26 853.09,-799.96"/>
+<polygon fill="black" stroke="black" points="856.04,-798.08 848.2,-790.96 849.89,-801.42 856.04,-798.08"/>
+</g>
+<!-- linux_sysprog_fileio_basics&#45;&gt;linux_sysprog_basics_groupnode -->
+<g id="edge17" class="edge">
+<title>linux_sysprog_fileio_basics&#45;&gt;linux_sysprog_basics_groupnode</title>
+<path fill="none" stroke="black" d="M803.25,-764.95C739.52,-752.4 604.64,-725.81 515.16,-708.18"/>
+<polygon fill="black" stroke="black" points="515.78,-704.73 505.29,-706.23 514.43,-711.6 515.78,-704.73"/>
+</g>
+<!-- linux_basics_permissions_basics -->
+<g id="node16" class="node">
+<title>linux_basics_permissions_basics</title>
+<g id="a_node16"><a xlink:href="../../basics/permissions/basics.html" xlink:title="Mode, User and Group Ownership">
+<ellipse fill="#dcdcdc" stroke="black" cx="840" cy="-424" rx="163.57" ry="18"/>
+<text text-anchor="middle" x="840" y="-420.3" font-family="Times-Roman" font-size="14.00">Mode, User and Group Ownership</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_fileio_basics&#45;&gt;linux_basics_permissions_basics -->
+<g id="edge18" class="edge">
+<title>linux_sysprog_fileio_basics&#45;&gt;linux_basics_permissions_basics</title>
+<path fill="none" stroke="black" d="M839.05,-754.79C839.21,-698.72 839.72,-520.92 839.92,-452.34"/>
+<polygon fill="black" stroke="black" points="843.42,-452.32 839.95,-442.31 836.42,-452.3 843.42,-452.32"/>
+</g>
+<!-- linux_basics_shell_cwd -->
+<g id="node9" class="node">
+<title>linux_basics_shell_cwd</title>
+<g id="a_node9"><a xlink:href="../../basics/shell/cwd.html" xlink:title="Current Working Directory">
+<ellipse fill="#dcdcdc" stroke="black" cx="862" cy="-269" rx="128.08" ry="18"/>
+<text text-anchor="middle" x="862" y="-265.3" font-family="Times-Roman" font-size="14.00">Current Working Directory</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_paths -->
+<g id="node11" class="node">
+<title>linux_basics_shell_paths</title>
+<g id="a_node11"><a xlink:href="../../basics/shell/paths.html" xlink:title="Absolute and Relative Paths">
+<ellipse fill="#dcdcdc" stroke="black" cx="715" cy="-197" rx="135.68" ry="18"/>
+<text text-anchor="middle" x="715" y="-193.3" font-family="Times-Roman" font-size="14.00">Absolute and Relative Paths</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_cwd&#45;&gt;linux_basics_shell_paths -->
+<g id="edge4" class="edge">
+<title>linux_basics_shell_cwd&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M827.54,-251.59C806.97,-241.79 780.65,-229.26 758.64,-218.78"/>
+<polygon fill="black" stroke="black" points="760.04,-215.57 749.5,-214.43 757.03,-221.89 760.04,-215.57"/>
+</g>
+<!-- linux_basics_shell_commandline -->
+<g id="node12" class="node">
+<title>linux_basics_shell_commandline</title>
+<g id="a_node12"><a xlink:href="../../basics/shell/commandline.html" xlink:title="Commandline">
+<ellipse fill="#dcdcdc" stroke="black" cx="870" cy="-122" rx="73.39" ry="18"/>
+<text text-anchor="middle" x="870" y="-118.3" font-family="Times-Roman" font-size="14.00">Commandline</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_cwd&#45;&gt;linux_basics_shell_commandline -->
+<g id="edge2" class="edge">
+<title>linux_basics_shell_cwd&#45;&gt;linux_basics_shell_commandline</title>
+<path fill="none" stroke="black" d="M862.95,-250.8C864.32,-225.94 866.87,-179.74 868.5,-150.23"/>
+<polygon fill="black" stroke="black" points="872,-150.36 869.05,-140.18 865.01,-149.97 872,-150.36"/>
+</g>
+<!-- linux_basics_intro_process -->
+<g id="node14" class="node">
+<title>linux_basics_intro_process</title>
+<g id="a_node14"><a xlink:href="../../basics/intro/process.html" xlink:title="Processes, Scheduling, Address Spaces">
+<ellipse fill="#dcdcdc" stroke="black" cx="1224" cy="-122" rx="188.47" ry="18"/>
+<text text-anchor="middle" x="1224" y="-118.3" font-family="Times-Roman" font-size="14.00">Processes, Scheduling, Address Spaces</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_cwd&#45;&gt;linux_basics_intro_process -->
+<g id="edge3" class="edge">
+<title>linux_basics_shell_cwd&#45;&gt;linux_basics_intro_process</title>
+<path fill="none" stroke="black" d="M902.47,-251.79C968.77,-225.23 1100.4,-172.51 1172.99,-143.43"/>
+<polygon fill="black" stroke="black" points="1174.42,-146.63 1182.4,-139.66 1171.81,-140.13 1174.42,-146.63"/>
+</g>
+<!-- linux_basics_shell_file_dir_create_rm -->
+<g id="node10" class="node">
+<title>linux_basics_shell_file_dir_create_rm</title>
+<g id="a_node10"><a xlink:href="../../basics/shell/file_dir_create_rm.html" xlink:title="Creating And Removing Files and Directories">
+<ellipse fill="#dcdcdc" stroke="black" cx="441" cy="-341" rx="211.46" ry="18"/>
+<text text-anchor="middle" x="441" y="-337.3" font-family="Times-Roman" font-size="14.00">Creating And Removing Files and Directories</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_cwd -->
+<g id="edge6" class="edge">
+<title>linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_cwd</title>
+<path fill="none" stroke="black" d="M532.61,-324.77C603.74,-312.94 701.8,-296.64 772.41,-284.9"/>
+<polygon fill="black" stroke="black" points="773.33,-288.29 782.62,-283.2 772.18,-281.39 773.33,-288.29"/>
+</g>
+<!-- linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_paths -->
+<g id="edge7" class="edge">
+<title>linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M473.51,-323.15C523.49,-297.25 619.16,-247.67 673.89,-219.31"/>
+<polygon fill="black" stroke="black" points="675.69,-222.31 682.96,-214.61 672.47,-216.1 675.69,-222.31"/>
+</g>
+<!-- linux_basics_shell_paths&#45;&gt;linux_basics_shell_commandline -->
+<g id="edge11" class="edge">
+<title>linux_basics_shell_paths&#45;&gt;linux_basics_shell_commandline</title>
+<path fill="none" stroke="black" d="M750.17,-179.44C773.46,-168.47 804.1,-154.04 828.56,-142.52"/>
+<polygon fill="black" stroke="black" points="830.05,-145.68 837.61,-138.25 827.07,-139.35 830.05,-145.68"/>
+</g>
+<!-- linux_basics_intro_overview -->
+<g id="node15" class="node">
+<title>linux_basics_intro_overview</title>
+<g id="a_node15"><a xlink:href="../../basics/intro/overview.html" xlink:title="Overview">
+<ellipse fill="#dcdcdc" stroke="black" cx="1224" cy="-50" rx="53.09" ry="18"/>
+<text text-anchor="middle" x="1224" y="-46.3" font-family="Times-Roman" font-size="14.00">Overview</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_commandline&#45;&gt;linux_basics_intro_overview -->
+<g id="edge21" class="edge">
+<title>linux_basics_shell_commandline&#45;&gt;linux_basics_intro_overview</title>
+<path fill="none" stroke="black" d="M925.31,-110.06C991.9,-96.9 1103.02,-74.92 1169.32,-61.81"/>
+<polygon fill="black" stroke="black" points="1170.03,-65.24 1179.17,-59.87 1168.68,-58.37 1170.03,-65.24"/>
+</g>
+<!-- linux_basics_shell_ls -->
+<g id="node13" class="node">
+<title>linux_basics_shell_ls</title>
+<g id="a_node13"><a xlink:href="../../basics/shell/ls.html" xlink:title="Directory Listings: The ls Command">
+<ellipse fill="#dcdcdc" stroke="black" cx="841" cy="-341" rx="170.87" ry="18"/>
+<text text-anchor="middle" x="841" y="-337.3" font-family="Times-Roman" font-size="14.00">Directory Listings: The ls Command</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_ls&#45;&gt;linux_basics_shell_cwd -->
+<g id="edge22" class="edge">
+<title>linux_basics_shell_ls&#45;&gt;linux_basics_shell_cwd</title>
+<path fill="none" stroke="black" d="M846.19,-322.7C848.53,-314.9 851.35,-305.51 853.95,-296.83"/>
+<polygon fill="black" stroke="black" points="857.35,-297.69 856.87,-287.1 850.64,-295.68 857.35,-297.69"/>
+</g>
+<!-- linux_basics_shell_ls&#45;&gt;linux_basics_shell_paths -->
+<g id="edge23" class="edge">
+<title>linux_basics_shell_ls&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M776.93,-324.19C757.31,-316.21 737.6,-304.39 725,-287 712.2,-269.34 710.43,-244.32 711.44,-225.3"/>
+<polygon fill="black" stroke="black" points="714.94,-225.42 712.26,-215.17 707.96,-224.85 714.94,-225.42"/>
+</g>
+<!-- linux_basics_shell_ls&#45;&gt;linux_basics_intro_overview -->
+<g id="edge24" class="edge">
+<title>linux_basics_shell_ls&#45;&gt;linux_basics_intro_overview</title>
+<path fill="none" stroke="black" d="M936.96,-326.07C1086.19,-302.23 1362.82,-248.55 1421,-171 1441,-144.34 1441.78,-122.06 1421,-96 1404.19,-74.91 1336.51,-62.92 1285.13,-56.71"/>
+<polygon fill="black" stroke="black" points="1285.43,-53.22 1275.09,-55.54 1284.62,-60.17 1285.43,-53.22"/>
+</g>
+<!-- linux_basics_intro_process&#45;&gt;linux_basics_intro_overview -->
+<g id="edge10" class="edge">
+<title>linux_basics_intro_process&#45;&gt;linux_basics_intro_overview</title>
+<path fill="none" stroke="black" d="M1224,-103.7C1224,-95.98 1224,-86.71 1224,-78.11"/>
+<polygon fill="black" stroke="black" points="1227.5,-78.1 1224,-68.1 1220.5,-78.1 1227.5,-78.1"/>
+</g>
+<!-- linux_basics_permissions_basics&#45;&gt;linux_basics_shell_ls -->
+<g id="edge25" class="edge">
+<title>linux_basics_permissions_basics&#45;&gt;linux_basics_shell_ls</title>
+<path fill="none" stroke="black" d="M840.21,-405.82C840.34,-395.19 840.51,-381.31 840.66,-369.2"/>
+<polygon fill="black" stroke="black" points="844.16,-369.2 840.79,-359.15 837.16,-369.11 844.16,-369.2"/>
+</g>
+<!-- linux_toolchain_basics&#45;&gt;linux_basics_shell_file_dir_create_rm -->
+<g id="edge12" class="edge">
+<title>linux_toolchain_basics&#45;&gt;linux_basics_shell_file_dir_create_rm</title>
+<path fill="none" stroke="black" d="M164.75,-409.81C219.25,-396.43 304.05,-375.61 365.33,-360.57"/>
+<polygon fill="black" stroke="black" points="366.46,-363.9 375.33,-358.12 364.79,-357.1 366.46,-363.9"/>
+</g>
+</g>
+</svg>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2022 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/linux/sysprog/blocking-io/group.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
