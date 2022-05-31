@@ -22,7 +22,7 @@
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx11/030-smart-pointers/sharedptr.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
-    <link rel="next" title="Smart Pointers: Closing Words" href="040-closing-words/topic.html" />
+    <link rel="next" title="std::weak_ptr" href="weakptr.html" />
     <link rel="prev" title="std::unique_ptr" href="uniqueptr.html" /> 
    
   <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
@@ -114,6 +114,7 @@
 <li class="toctree-l5"><a class="reference internal" href="introduction-livehack.html">(Trying To) Handwrite A Smart Pointer Class</a></li>
 <li class="toctree-l5"><a class="reference internal" href="uniqueptr.html"><code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code></a></li>
 <li class="toctree-l5 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="weakptr.html"><code class="docutils literal notranslate"><span class="pre">std::weak_ptr</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="040-closing-words/topic.html">Smart Pointers: Closing Words</a></li>
 </ul>
 </li>
@@ -324,9 +325,13 @@ pointer is shared among multiple threads!</p>
 <span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rs1</span><span class="o">-&gt;</span><span class="n">get_temperature</span><span class="p">();</span><span class="w"></span>
 <span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">temp</span><span class="o">&gt;=</span><span class="mi">20</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">temp</span><span class="o">&lt;=</span><span class="mi">40</span><span class="p">);</span><span class="w"></span>
 
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">rs1</span><span class="p">.</span><span class="n">use_count</span><span class="p">(),</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+
 <span class="w">    </span><span class="n">sensors</span><span class="p">[</span><span class="s">&quot;rand1&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rs1</span><span class="p">;</span><span class="w"></span>
 <span class="w">    </span><span class="n">sensors</span><span class="p">[</span><span class="s">&quot;rand2&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rs2</span><span class="p">;</span><span class="w"></span>
 <span class="w">    </span><span class="n">sensors</span><span class="p">[</span><span class="s">&quot;const&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cs</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">rs1</span><span class="p">.</span><span class="n">use_count</span><span class="p">(),</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
 
 <span class="w">    </span><span class="c1">// shared ownership: cann access sensors from map *and* from</span>
 <span class="w">    </span><span class="c1">// outside references</span>
