@@ -1,0 +1,677 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Multithreading (Python) &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/python/advanced/multithreading/basics.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="Race Conditions, and Mutexes" href="mutex.html" />
+    <link rel="prev" title="Multithreading" href="group.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../basics/group.html">Python: The Language Fundamentals</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../group.html">Python: More Language Features</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../iteration-generation/topic.html">Iterating Intelligently: Generators, and the Iterator Protocol</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../starargs/topic.html">Positional and Keyword Arguments</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../closures/topic.html">Closures</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../decorators/topic.html">Decorators</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../exec/topic.html">The <code class="docutils literal notranslate"><span class="pre">exec()</span></code> Function</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../oo/group.html">Object Oriented Programming</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../exceptions.html">Exception Handling</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html">Modules and Packages</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="group.html">Multithreading</a><ul class="current">
+<li class="toctree-l6 current"><a class="current reference internal" href="#">Multithreading (Python)</a></li>
+<li class="toctree-l6"><a class="reference internal" href="mutex.html">Race Conditions, and Mutexes</a></li>
+<li class="toctree-l6"><a class="reference internal" href="questions.html">Multithreading: Exam Questions</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../multiprocessing/group.html">Multiprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../swdev/group.html">Python: Project/Package Management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../misc/group.html">Python: Miscellaneous Topics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../drafts/group.html">Python: Draft Topics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../link-collection.html">Python Links</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pcap-exam.html">PCAP Exam</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../graph.html">Python: All Material, Interrelated</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../exercises/group.html">Exercises</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="multithreading-python">
+<h1>Multithreading (Python)<a class="headerlink" href="#multithreading-python" title="Permalink to this headline">¶</a></h1>
+<aside class="sidebar">
+<p><strong>Contents</strong></p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#what-s-a-thread" id="id5">What’s a Thread?</a></p></li>
+<li><p><a class="reference internal" href="#threads-the-pythonic-way" id="id6">Threads: The Pythonic Way</a></p></li>
+<li><p><a class="reference internal" href="#threads-the-oo-way-inheritance" id="id7">Threads: The OO Way - Inheritance</a></p></li>
+<li><p><a class="reference internal" href="#and-program-termination" id="id8">And Program Termination?</a></p></li>
+<li><p><a class="reference internal" href="#daemon-threads" id="id9">Daemon Threads</a></p></li>
+<li><p><a class="reference internal" href="#dependencies" id="id10">Dependencies</a></p></li>
+</ul>
+</div>
+<p><strong>Threading Documentation</strong></p>
+<p><a class="reference external" href="https://docs.python.org/3/library/threading.html" title="(in Python v3.10)"><span>threading — Thread-based parallelism</span></a></p>
+</aside>
+<section id="what-s-a-thread">
+<h2><a class="toc-backref" href="#id5">What’s a Thread?</a><a class="headerlink" href="#what-s-a-thread" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Mechanism for parallel code execution</p></li>
+<li><p>⟶ more than one flow of control in the same address
+space</p></li>
+<li><p>Issues</p>
+<ul>
+<li><p>Startup/shutdown</p></li>
+<li><p>Sharing data: concurrent access, and protecting against</p></li>
+<li><p>Communication between threads</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="threads-the-pythonic-way">
+<h2><a class="toc-backref" href="#id6">Threads: The Pythonic Way</a><a class="headerlink" href="#threads-the-pythonic-way" title="Permalink to this headline">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/446134ef0df4a357f34932a1c057906a/thread-pythonic.py"><code class="xref download docutils literal notranslate"><span class="pre">code/thread-pythonic.py</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">increment_background</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">background_integer</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;background: value is&#39;</span><span class="p">,</span> <span class="n">background_integer</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">background_integer</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="n">background_integer</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">increment_background</span><span class="p">)</span>
+<span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="n">foreground_integer</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;foreground: value is&#39;</span><span class="p">,</span> <span class="n">foreground_integer</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">foreground_integer</span> <span class="o">-=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python code/thread-pythonic.py
+<span class="go">background: value is 0</span>
+<span class="go">foreground: value is 0</span>
+<span class="go">background: value is 1</span>
+<span class="go">foreground: value is -1</span>
+<span class="go">background: value is 2</span>
+<span class="go">foreground: value is -2</span>
+<span class="go">background: value is 3</span>
+<span class="go">foreground: value is -3</span>
+<span class="go">background: value is 4</span>
+<span class="go">...</span>
+</pre></div>
+</div>
+<p><strong>Two threads exist, runnning in parallel</strong></p>
+<ul class="simple">
+<li><p>Main thread (not explicitly create)</p></li>
+<li><p>Background integer incrementer (explicitly started)</p></li>
+</ul>
+</section>
+<section id="threads-the-oo-way-inheritance">
+<h2><a class="toc-backref" href="#id7">Threads: The OO Way - Inheritance</a><a class="headerlink" href="#threads-the-oo-way-inheritance" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Inherit from <code class="docutils literal notranslate"><span class="pre">threading.Thread</span></code></p></li>
+<li><p>Inheritance is a mechanism for <em>late binding</em>, brought to the world
+by languages that have no other mechanism</p></li>
+<li><p>In Python there is <em>duck typing</em></p></li>
+<li><p>This method of starting a thread is equivalent to the pythonic
+method, but should not be used (trainer’s opinion only, though)</p></li>
+</ul>
+<p>Anyway:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/6b15d7ec173d2b77e319b5d2eaaa4433/thread-inheritance.py"><code class="xref download docutils literal notranslate"><span class="pre">code/thread-inheritance.py</span></code></a></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">class</span> <span class="nc">BackgroundIncrementer</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">background_integer</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;background: value is&#39;</span><span class="p">,</span> <span class="n">background_integer</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+            <span class="n">background_integer</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="n">background_integer</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">BackgroundIncrementer</span><span class="p">()</span>
+<span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="n">foreground_integer</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;foreground: value is&#39;</span><span class="p">,</span> <span class="n">foreground_integer</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">foreground_integer</span> <span class="o">-=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><p>Uncool: inheritance is not strictly Pythonic (at least not for such
+kinds of relationship)</p></li>
+<li><p>Uncool: people might not even know what inheritance is</p></li>
+</ul>
+</section>
+<section id="and-program-termination">
+<h2><a class="toc-backref" href="#id8">And Program Termination?</a><a class="headerlink" href="#and-program-termination" title="Permalink to this headline">¶</a></h2>
+<p><strong>Problem</strong>: threads continue running when main thread terminates
+(<em>spoiler</em>: daemon threads don’t)</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/9f72566d728099d2a95d2bd81351fd3c/program-termination-fails.py"><code class="xref download docutils literal notranslate"><span class="pre">code/program-termination-fails.py</span></code></a></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">increment_background</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">background_integer</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;background: value is&#39;</span><span class="p">,</span> <span class="n">background_integer</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">background_integer</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="n">background_integer</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">increment_background</span><span class="p">)</span>
+<span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="n">foreground_integer</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;foreground: value is&#39;</span><span class="p">,</span> <span class="n">foreground_integer</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">foreground_integer</span> <span class="o">-=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python code/thread-program-termination.py
+<span class="go">background: value is 0</span>
+<span class="go">foreground: value is 0</span>
+<span class="go">background: value is 1</span>
+<span class="go">foreground: value is -1</span>
+<span class="go">background: value is 2</span>
+<span class="go">foreground: value is -2  # &lt;--- last notice of main thread</span>
+<span class="go">background: value is 3</span>
+<span class="go">background: value is 4</span>
+<span class="go">background: value is 5</span>
+<span class="go">background: value is 6</span>
+<span class="go">background: value is 7</span>
+<span class="go">background: value is 8</span>
+<span class="go">...   # only background thread running</span>
+</pre></div>
+</div>
+</section>
+<section id="daemon-threads">
+<h2><a class="toc-backref" href="#id9">Daemon Threads</a><a class="headerlink" href="#daemon-threads" title="Permalink to this headline">¶</a></h2>
+<p><strong>Definition</strong></p>
+<ul class="simple">
+<li><p>A program exits when only daemon threads are left</p></li>
+<li><p>The main thread is not a daemon thread</p></li>
+</ul>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>This definition is Python specific!</p>
+</div>
+<dl class="simple">
+<dt><em>Corollary</em>: if I only create daemon threads, then program exit is</dt><dd><p>fine.</p>
+</dd>
+</dl>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/b5bc00d7e7c0e075c76589c5181c20b8/program-termination-ok.py"><code class="xref download docutils literal notranslate"><span class="pre">code/program-termination-ok.py</span></code></a></span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">increment_background</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">background_integer</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;background: value is&#39;</span><span class="p">,</span> <span class="n">background_integer</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">background_integer</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="n">background_integer</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">increment_background</span><span class="p">,</span>
+                     <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>    <span class="c1"># &lt;----- mark as daemon</span>
+<span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="n">foreground_integer</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;foreground: value is&#39;</span><span class="p">,</span> <span class="n">foreground_integer</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">foreground_integer</span> <span class="o">-=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="dependencies">
+<h2><a class="toc-backref" href="#id10">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<svg 
+ viewBox="0.00 0.00 539.00 991.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 987)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-987 535,-987 535,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_python</title>
+<path fill="none" stroke="black" d="M20,-8C20,-8 511,-8 511,-8 517,-8 523,-14 523,-20 523,-20 523,-963 523,-963 523,-969 517,-975 511,-975 511,-975 20,-975 20,-975 14,-975 8,-969 8,-963 8,-963 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="265.5" y="-959.8" font-family="Times-Roman" font-size="14.00">Python Programming: From Absolute Beginner to Advanced Productivity</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_python_basics</title>
+<path fill="none" stroke="black" d="M78,-16C78,-16 498,-16 498,-16 504,-16 510,-22 510,-28 510,-28 510,-727 510,-727 510,-733 504,-739 498,-739 498,-739 78,-739 78,-739 72,-739 66,-733 66,-727 66,-727 66,-28 66,-28 66,-22 72,-16 78,-16"/>
+<text text-anchor="middle" x="288" y="-723.8" font-family="Times-Roman" font-size="14.00">Python: The Language Fundamentals</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_python_advanced</title>
+<path fill="none" stroke="black" d="M37,-747C37,-747 337,-747 337,-747 343,-747 349,-753 349,-759 349,-759 349,-932 349,-932 349,-938 343,-944 337,-944 337,-944 37,-944 37,-944 31,-944 25,-938 25,-932 25,-932 25,-759 25,-759 25,-753 31,-747 37,-747"/>
+<text text-anchor="middle" x="187" y="-928.8" font-family="Times-Roman" font-size="14.00">Python: More Language Features</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_python_advanced_oo</title>
+<path fill="none" stroke="black" d="M45,-755C45,-755 329,-755 329,-755 335,-755 341,-761 341,-767 341,-767 341,-818 341,-818 341,-824 335,-830 329,-830 329,-830 45,-830 45,-830 39,-830 33,-824 33,-818 33,-818 33,-767 33,-767 33,-761 39,-755 45,-755"/>
+<text text-anchor="middle" x="187" y="-814.8" font-family="Times-Roman" font-size="14.00">Object Oriented Programming</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_python_advanced_multithreading</title>
+<path fill="none" stroke="black" d="M74,-838C74,-838 300,-838 300,-838 306,-838 312,-844 312,-850 312,-850 312,-901 312,-901 312,-907 306,-913 300,-913 300,-913 74,-913 74,-913 68,-913 62,-907 62,-901 62,-901 62,-850 62,-850 62,-844 68,-838 74,-838"/>
+<text text-anchor="middle" x="187" y="-897.8" font-family="Times-Roman" font-size="14.00">Multithreading</text>
+</g>
+<!-- python_basics_python_0120_helloworld -->
+<g id="node1" class="node">
+<title>python_basics_python_0120_helloworld</title>
+<g id="a_node1"><a xlink:href="../../basics/python_0120_helloworld/topic.html" xlink:title="Hello World">
+<ellipse fill="#dcdcdc" stroke="black" cx="169" cy="-114" rx="61.99" ry="18"/>
+<text text-anchor="middle" x="169" y="-110.3" font-family="Times-Roman" font-size="14.00">Hello World</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0110_blahblah -->
+<g id="node2" class="node">
+<title>python_basics_python_0110_blahblah</title>
+<g id="a_node2"><a xlink:href="../../basics/python_0110_blahblah/topic.html" xlink:title="Blahblah">
+<ellipse fill="#dcdcdc" stroke="black" cx="169" cy="-42" rx="50.09" ry="18"/>
+<text text-anchor="middle" x="169" y="-38.3" font-family="Times-Roman" font-size="14.00">Blahblah</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0120_helloworld&#45;&gt;python_basics_python_0110_blahblah -->
+<g id="edge1" class="edge">
+<title>python_basics_python_0120_helloworld&#45;&gt;python_basics_python_0110_blahblah</title>
+<path fill="none" stroke="black" d="M169,-95.7C169,-87.98 169,-78.71 169,-70.11"/>
+<polygon fill="black" stroke="black" points="172.5,-70.1 169,-60.1 165.5,-70.1 172.5,-70.1"/>
+</g>
+<!-- python_basics_python_0200_sequential_types -->
+<g id="node3" class="node">
+<title>python_basics_python_0200_sequential_types</title>
+<g id="a_node3"><a xlink:href="../../basics/python_0200_sequential_types/topic.html" xlink:title="Sequential Datatypes">
+<ellipse fill="#dcdcdc" stroke="black" cx="214" cy="-546" rx="107.48" ry="18"/>
+<text text-anchor="middle" x="214" y="-542.3" font-family="Times-Roman" font-size="14.00">Sequential Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0150_datatypes_overview_compound -->
+<g id="node4" class="node">
+<title>python_basics_python_0150_datatypes_overview_compound</title>
+<g id="a_node4"><a xlink:href="../../basics/python_0150_datatypes_overview_compound/topic.html" xlink:title="Compound Datatypes">
+<ellipse fill="#dcdcdc" stroke="black" cx="183" cy="-474" rx="108.58" ry="18"/>
+<text text-anchor="middle" x="183" y="-470.3" font-family="Times-Roman" font-size="14.00">Compound Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0200_sequential_types&#45;&gt;python_basics_python_0150_datatypes_overview_compound -->
+<g id="edge4" class="edge">
+<title>python_basics_python_0200_sequential_types&#45;&gt;python_basics_python_0150_datatypes_overview_compound</title>
+<path fill="none" stroke="black" d="M206.34,-527.7C202.81,-519.73 198.54,-510.1 194.63,-501.26"/>
+<polygon fill="black" stroke="black" points="197.82,-499.83 190.57,-492.1 191.42,-502.67 197.82,-499.83"/>
+</g>
+<!-- python_basics_python_0150_datatypes_overview -->
+<g id="node11" class="node">
+<title>python_basics_python_0150_datatypes_overview</title>
+<g id="a_node11"><a xlink:href="../../basics/python_0150_datatypes_overview/topic.html" xlink:title="Datatypes">
+<ellipse fill="#dcdcdc" stroke="black" cx="203" cy="-330" rx="56.59" ry="18"/>
+<text text-anchor="middle" x="203" y="-326.3" font-family="Times-Roman" font-size="14.00">Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0150_datatypes_overview_compound&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge5" class="edge">
+<title>python_basics_python_0150_datatypes_overview_compound&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M185.66,-455.82C187.25,-445.46 189.29,-431.98 191,-420 193.96,-399.29 197.11,-375.85 199.44,-358.22"/>
+<polygon fill="black" stroke="black" points="202.94,-358.44 200.78,-348.07 196,-357.53 202.94,-358.44"/>
+</g>
+<!-- python_basics_python_0270_functions -->
+<g id="node5" class="node">
+<title>python_basics_python_0270_functions</title>
+<g id="a_node5"><a xlink:href="../../basics/python_0270_functions/topic.html" xlink:title="Functions">
+<ellipse fill="#dcdcdc" stroke="black" cx="128" cy="-402" rx="53.89" ry="18"/>
+<text text-anchor="middle" x="128" y="-398.3" font-family="Times-Roman" font-size="14.00">Functions</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0140_variables -->
+<g id="node7" class="node">
+<title>python_basics_python_0140_variables</title>
+<g id="a_node7"><a xlink:href="../../basics/python_0140_variables/topic.html" xlink:title="Variables">
+<ellipse fill="#dcdcdc" stroke="black" cx="169" cy="-258" rx="51.99" ry="18"/>
+<text text-anchor="middle" x="169" y="-254.3" font-family="Times-Roman" font-size="14.00">Variables</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0270_functions&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge7" class="edge">
+<title>python_basics_python_0270_functions&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M127.53,-383.8C127.53,-365.53 128.99,-336.01 137,-312 140.2,-302.42 145.36,-292.72 150.62,-284.3"/>
+<polygon fill="black" stroke="black" points="153.69,-285.99 156.27,-275.71 147.84,-282.14 153.69,-285.99"/>
+</g>
+<!-- python_basics_python_0270_functions&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge8" class="edge">
+<title>python_basics_python_0270_functions&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M145.4,-384.76C155.14,-375.66 167.47,-364.16 178.21,-354.13"/>
+<polygon fill="black" stroke="black" points="180.78,-356.53 185.7,-347.15 176,-351.41 180.78,-356.53"/>
+</g>
+<!-- python_basics_python_0160_boolean -->
+<g id="node6" class="node">
+<title>python_basics_python_0160_boolean</title>
+<g id="a_node6"><a xlink:href="../../basics/python_0160_boolean/topic.html" xlink:title="Boolean">
+<ellipse fill="#dcdcdc" stroke="black" cx="311" cy="-402" rx="46.59" ry="18"/>
+<text text-anchor="middle" x="311" y="-398.3" font-family="Times-Roman" font-size="14.00">Boolean</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0160_boolean&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge9" class="edge">
+<title>python_basics_python_0160_boolean&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M288.1,-386.15C272.8,-376.24 252.47,-363.06 235.51,-352.07"/>
+<polygon fill="black" stroke="black" points="237.29,-349.05 226.99,-346.55 233.48,-354.93 237.29,-349.05"/>
+</g>
+<!-- python_basics_python_0130_syntax_etc -->
+<g id="node8" class="node">
+<title>python_basics_python_0130_syntax_etc</title>
+<g id="a_node8"><a xlink:href="../../basics/python_0130_syntax_etc/topic.html" xlink:title="Syntax etc.">
+<ellipse fill="#dcdcdc" stroke="black" cx="169" cy="-186" rx="61.99" ry="18"/>
+<text text-anchor="middle" x="169" y="-182.3" font-family="Times-Roman" font-size="14.00">Syntax etc.</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0140_variables&#45;&gt;python_basics_python_0130_syntax_etc -->
+<g id="edge10" class="edge">
+<title>python_basics_python_0140_variables&#45;&gt;python_basics_python_0130_syntax_etc</title>
+<path fill="none" stroke="black" d="M169,-239.7C169,-231.98 169,-222.71 169,-214.11"/>
+<polygon fill="black" stroke="black" points="172.5,-214.1 169,-204.1 165.5,-214.1 172.5,-214.1"/>
+</g>
+<!-- python_basics_python_0130_syntax_etc&#45;&gt;python_basics_python_0120_helloworld -->
+<g id="edge11" class="edge">
+<title>python_basics_python_0130_syntax_etc&#45;&gt;python_basics_python_0120_helloworld</title>
+<path fill="none" stroke="black" d="M169,-167.7C169,-159.98 169,-150.71 169,-142.11"/>
+<polygon fill="black" stroke="black" points="172.5,-142.1 169,-132.1 165.5,-142.1 172.5,-142.1"/>
+</g>
+<!-- python_basics_python_0220_for -->
+<g id="node9" class="node">
+<title>python_basics_python_0220_for</title>
+<g id="a_node9"><a xlink:href="../../basics/python_0220_for/topic.html" xlink:title="for Loops">
+<ellipse fill="#dcdcdc" stroke="black" cx="214" cy="-618" rx="52.79" ry="18"/>
+<text text-anchor="middle" x="214" y="-614.3" font-family="Times-Roman" font-size="14.00">for Loops</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0220_for&#45;&gt;python_basics_python_0200_sequential_types -->
+<g id="edge12" class="edge">
+<title>python_basics_python_0220_for&#45;&gt;python_basics_python_0200_sequential_types</title>
+<path fill="none" stroke="black" d="M214,-599.7C214,-591.98 214,-582.71 214,-574.11"/>
+<polygon fill="black" stroke="black" points="217.5,-574.1 214,-564.1 210.5,-574.1 217.5,-574.1"/>
+</g>
+<!-- python_basics_python_0193_while -->
+<g id="node10" class="node">
+<title>python_basics_python_0193_while</title>
+<g id="a_node10"><a xlink:href="../../basics/python_0193_while/topic.html" xlink:title="while Loops">
+<ellipse fill="#dcdcdc" stroke="black" cx="403" cy="-546" rx="63.89" ry="18"/>
+<text text-anchor="middle" x="403" y="-542.3" font-family="Times-Roman" font-size="14.00">while Loops</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0220_for&#45;&gt;python_basics_python_0193_while -->
+<g id="edge13" class="edge">
+<title>python_basics_python_0220_for&#45;&gt;python_basics_python_0193_while</title>
+<path fill="none" stroke="black" d="M248.67,-604.16C278.93,-592.95 323.1,-576.59 356.44,-564.25"/>
+<polygon fill="black" stroke="black" points="357.81,-567.47 365.97,-560.71 355.38,-560.91 357.81,-567.47"/>
+</g>
+<!-- python_basics_python_0193_while&#45;&gt;python_basics_python_0160_boolean -->
+<g id="edge14" class="edge">
+<title>python_basics_python_0193_while&#45;&gt;python_basics_python_0160_boolean</title>
+<path fill="none" stroke="black" d="M367.65,-530.88C350.71,-522.23 331.8,-509.44 321,-492 309.64,-473.66 307.66,-449.05 308.22,-430.36"/>
+<polygon fill="black" stroke="black" points="311.73,-430.31 308.8,-420.13 304.74,-429.92 311.73,-430.31"/>
+</g>
+<!-- python_basics_python_0170_if -->
+<g id="node12" class="node">
+<title>python_basics_python_0170_if</title>
+<g id="a_node12"><a xlink:href="../../basics/python_0170_if/topic.html" xlink:title="The if Statement">
+<ellipse fill="#dcdcdc" stroke="black" cx="416" cy="-474" rx="85.59" ry="18"/>
+<text text-anchor="middle" x="416" y="-470.3" font-family="Times-Roman" font-size="14.00">The if Statement</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0193_while&#45;&gt;python_basics_python_0170_if -->
+<g id="edge15" class="edge">
+<title>python_basics_python_0193_while&#45;&gt;python_basics_python_0170_if</title>
+<path fill="none" stroke="black" d="M406.21,-527.7C407.65,-519.98 409.37,-510.71 410.96,-502.11"/>
+<polygon fill="black" stroke="black" points="414.44,-502.58 412.82,-492.1 407.56,-501.3 414.44,-502.58"/>
+</g>
+<!-- python_basics_python_0150_datatypes_overview&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge16" class="edge">
+<title>python_basics_python_0150_datatypes_overview&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M194.77,-312.05C190.8,-303.89 185.96,-293.91 181.54,-284.82"/>
+<polygon fill="black" stroke="black" points="184.67,-283.25 177.15,-275.79 178.38,-286.31 184.67,-283.25"/>
+</g>
+<!-- python_basics_python_0170_if&#45;&gt;python_basics_python_0160_boolean -->
+<g id="edge17" class="edge">
+<title>python_basics_python_0170_if&#45;&gt;python_basics_python_0160_boolean</title>
+<path fill="none" stroke="black" d="M391.38,-456.59C376.55,-446.7 357.54,-434.02 341.72,-423.48"/>
+<polygon fill="black" stroke="black" points="343.58,-420.51 333.32,-417.88 339.7,-426.34 343.58,-420.51"/>
+</g>
+<!-- python_basics_python_0450_dictionaries -->
+<g id="node13" class="node">
+<title>python_basics_python_0450_dictionaries</title>
+<g id="a_node13"><a xlink:href="../../basics/python_0450_dictionaries/topic.html" xlink:title="More About Dictionaries">
+<ellipse fill="#dcdcdc" stroke="black" cx="192" cy="-690" rx="118.08" ry="18"/>
+<text text-anchor="middle" x="192" y="-686.3" font-family="Times-Roman" font-size="14.00">More About Dictionaries</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0150_datatypes_overview_compound -->
+<g id="edge18" class="edge">
+<title>python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0150_datatypes_overview_compound</title>
+<path fill="none" stroke="black" d="M173.45,-672.15C150.56,-649.98 112.85,-608.56 98,-564 92.94,-548.82 90.24,-541.99 98,-528 105.61,-514.28 118.42,-503.65 131.81,-495.63"/>
+<polygon fill="black" stroke="black" points="133.6,-498.64 140.65,-490.73 130.21,-492.52 133.6,-498.64"/>
+</g>
+<!-- python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0220_for -->
+<g id="edge19" class="edge">
+<title>python_basics_python_0450_dictionaries&#45;&gt;python_basics_python_0220_for</title>
+<path fill="none" stroke="black" d="M197.44,-671.7C199.89,-663.9 202.84,-654.51 205.57,-645.83"/>
+<polygon fill="black" stroke="black" points="208.96,-646.69 208.62,-636.1 202.29,-644.59 208.96,-646.69"/>
+</g>
+<!-- python_advanced_oo_basics -->
+<g id="node14" class="node">
+<title>python_advanced_oo_basics</title>
+<g id="a_node14"><a xlink:href="../oo/basics.html" xlink:title="Object Oriented Programming">
+<ellipse fill="#dcdcdc" stroke="black" cx="187" cy="-781" rx="146.47" ry="18"/>
+<text text-anchor="middle" x="187" y="-777.3" font-family="Times-Roman" font-size="14.00">Object Oriented Programming</text>
+</a>
+</g>
+</g>
+<!-- python_advanced_oo_basics&#45;&gt;python_basics_python_0270_functions -->
+<g id="edge3" class="edge">
+<title>python_advanced_oo_basics&#45;&gt;python_basics_python_0270_functions</title>
+<path fill="none" stroke="black" d="M102.97,-766.14C88.34,-760.08 74.72,-751.4 65,-739 31.98,-696.88 55,-672.52 55,-619 55,-619 55,-619 55,-545 55,-505.2 46.21,-491.09 65,-456 71.77,-443.35 82.93,-432.47 93.98,-423.92"/>
+<polygon fill="black" stroke="black" points="96.31,-426.55 102.34,-417.84 92.19,-420.89 96.31,-426.55"/>
+</g>
+<!-- python_advanced_oo_basics&#45;&gt;python_basics_python_0450_dictionaries -->
+<g id="edge2" class="edge">
+<title>python_advanced_oo_basics&#45;&gt;python_basics_python_0450_dictionaries</title>
+<path fill="none" stroke="black" d="M187.96,-762.84C188.67,-750.28 189.64,-732.98 190.45,-718.5"/>
+<polygon fill="black" stroke="black" points="193.97,-718.29 191.04,-708.11 186.98,-717.9 193.97,-718.29"/>
+</g>
+<!-- python_advanced_multithreading_basics -->
+<g id="node15" class="node">
+<title>python_advanced_multithreading_basics</title>
+<ellipse fill="#dcdcdc" stroke="black" stroke-width="3" cx="187" cy="-864" rx="116.98" ry="18"/>
+<text text-anchor="middle" x="187" y="-860.3" font-family="Times-Roman" font-size="14.00">Multithreading (Python)</text>
+</g>
+<!-- python_advanced_multithreading_basics&#45;&gt;python_advanced_oo_basics -->
+<g id="edge6" class="edge">
+<title>python_advanced_multithreading_basics&#45;&gt;python_advanced_oo_basics</title>
+<path fill="none" stroke="black" d="M187,-845.82C187,-835.19 187,-821.31 187,-809.2"/>
+<polygon fill="black" stroke="black" points="190.5,-809.15 187,-799.15 183.5,-809.15 190.5,-809.15"/>
+</g>
+</g>
+</svg>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2022 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/python/advanced/multithreading/basics.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
