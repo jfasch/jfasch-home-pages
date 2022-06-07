@@ -157,22 +157,24 @@
 <h1><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code><a class="headerlink" href="#std-shared-ptr" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#std-shared-ptr-not-unique" id="id4"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>: Not Unique</a></p></li>
-<li><p><a class="reference internal" href="#std-shared-ptr-copy" id="id5"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>: Copy</a></p></li>
-<li><p><a class="reference internal" href="#std-shared-ptr-vs-std-unique-ptr" id="id6"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> vs. <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code></a></p></li>
-<li><p><a class="reference internal" href="#std-shared-ptr-object-lifetime" id="id7"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>: Object Lifetime</a></p></li>
-<li><p><a class="reference internal" href="#std-shared-ptr-juggling" id="id8"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>: Juggling</a></p></li>
-<li><p><a class="reference internal" href="#demo-basic-usage" id="id9">Demo: Basic Usage</a></p></li>
-<li><p><a class="reference internal" href="#demo-std-make-shared" id="id10">Demo: <code class="docutils literal notranslate"><span class="pre">std::make_shared</span></code></a></p></li>
-<li><p><a class="reference internal" href="#demo-cyclic-references" id="id11">Demo: Cyclic References</a></p></li>
+<li><p><a class="reference internal" href="#spirit-not-unique-but-shared-i-e-reference-counted" id="id4">Spirit: Not Unique, But Shared (i.e. <em>Reference Counted</em>)</a></p></li>
+<li><p><a class="reference internal" href="#methods" id="id5">Methods</a></p></li>
+<li><p><a class="reference internal" href="#std-shared-ptr-copy" id="id6"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>: Copy</a></p></li>
+<li><p><a class="reference internal" href="#std-shared-ptr-vs-std-unique-ptr" id="id7"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> vs. <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code></a></p></li>
+<li><p><a class="reference internal" href="#std-shared-ptr-object-lifetime" id="id8"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>: Object Lifetime</a></p></li>
+<li><p><a class="reference internal" href="#std-shared-ptr-juggling" id="id9"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>: Juggling</a></p></li>
+<li><p><a class="reference internal" href="#demo-basic-usage" id="id10">Demo: Basic Usage</a></p></li>
+<li><p><a class="reference internal" href="#demo-std-make-shared" id="id11">Demo: <code class="docutils literal notranslate"><span class="pre">std::make_shared</span></code></a></p></li>
+<li><p><a class="reference internal" href="#demo-cyclic-references" id="id12">Demo: Cyclic References</a></p></li>
 </ul>
 </div>
-<section id="std-shared-ptr-not-unique">
-<h2><a class="toc-backref" href="#id4"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>: Not Unique</a><a class="headerlink" href="#std-shared-ptr-not-unique" title="Permalink to this headline">¶</a></h2>
+<section id="spirit-not-unique-but-shared-i-e-reference-counted">
+<h2><a class="toc-backref" href="#id4">Spirit: Not Unique, But Shared (i.e. <em>Reference Counted</em>)</a><a class="headerlink" href="#spirit-not-unique-but-shared-i-e-reference-counted" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>Documentation</strong></p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/memory/shared_ptr">std::shared_ptr</a></p></li>
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/memory/shared_ptr/make_shared">std::make_shared</a></p></li>
 </ul>
 </aside>
 <p><strong>Ownership is not always clear …</strong></p>
@@ -198,8 +200,45 @@
 </tbody>
 </table>
 </section>
+<section id="methods">
+<h2><a class="toc-backref" href="#id5">Methods</a><a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
+<p>Object of type <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> behave like pointers in any respect
+(<code class="docutils literal notranslate"><span class="pre">-&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>, copy, …), except that they have methods:</p>
+<aside class="sidebar">
+<p><strong>Documentation</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/memory/shared_ptr">std::shared_ptr</a></p></li>
+</ul>
+</aside>
+<table class="colwidths-auto docutils align-left">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::shared_ptr()</span></code></p></td>
+<td><p>Initializes to <code class="docutils literal notranslate"><span class="pre">nullptr</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::shared_ptr(T*</span> <span class="pre">pointer)</span></code></p></td>
+<td><p>Initializes to <code class="docutils literal notranslate"><span class="pre">pointer</span></code> (but see <a class="reference internal" href="#make-shared"><span class="std std-ref">std::make_shared</span></a> instead); refcount is 1</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::shared_ptr(std::shared_ptr&amp;&amp;</span> <span class="pre">from)</span></code></p></td>
+<td><p>Move constructor; <code class="docutils literal notranslate"><span class="pre">from</span></code> is empty afterwards (see
+<a class="reference internal" href="../020-new-language-features/060-move/topic.html"><span class="doc">Moving, “RValue References”</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">reset(T*</span> <span class="pre">pointer)</span></code></p></td>
+<td><p>Replaces the managed object if any, possibly deleting it if
+refcount reaches zero. <code class="docutils literal notranslate"><span class="pre">pointer</span></code> can be <code class="docutils literal notranslate"><span class="pre">nullptr</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">get()</span></code></p></td>
+<td><p>Pointer to currently managed object</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="std-shared-ptr-copy">
-<h2><a class="toc-backref" href="#id5"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>: Copy</a><a class="headerlink" href="#std-shared-ptr-copy" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>: Copy</a><a class="headerlink" href="#std-shared-ptr-copy" title="Permalink to this headline">¶</a></h2>
 <p><strong>Copying</strong> is what shared pointer are there for</p>
 <table class="docutils align-left">
 <colgroup>
@@ -220,7 +259,7 @@
 </table>
 </section>
 <section id="std-shared-ptr-vs-std-unique-ptr">
-<h2><a class="toc-backref" href="#id6"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> vs. <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code></a><a class="headerlink" href="#std-shared-ptr-vs-std-unique-ptr" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id7"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> vs. <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code></a><a class="headerlink" href="#std-shared-ptr-vs-std-unique-ptr" title="Permalink to this headline">¶</a></h2>
 <p>How do <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> and <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code> compare?</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code></p>
@@ -251,7 +290,7 @@
 </ul>
 </section>
 <section id="std-shared-ptr-object-lifetime">
-<h2><a class="toc-backref" href="#id7"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>: Object Lifetime</a><a class="headerlink" href="#std-shared-ptr-object-lifetime" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id8"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>: Object Lifetime</a><a class="headerlink" href="#std-shared-ptr-object-lifetime" title="Permalink to this headline">¶</a></h2>
 <p><strong>How long does the pointed-to object live?</strong></p>
 <ul class="simple">
 <li><p>Reference count is used to track share ownership</p></li>
@@ -270,7 +309,7 @@ pointer is shared among multiple threads!</p>
 </div>
 </section>
 <section id="std-shared-ptr-juggling">
-<h2><a class="toc-backref" href="#id8"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>: Juggling</a><a class="headerlink" href="#std-shared-ptr-juggling" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id9"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>: Juggling</a><a class="headerlink" href="#std-shared-ptr-juggling" title="Permalink to this headline">¶</a></h2>
 <table class="docutils align-left">
 <colgroup>
 <col style="width: 50%" />
@@ -306,7 +345,7 @@ pointer is shared among multiple threads!</p>
 </table>
 </section>
 <section id="demo-basic-usage">
-<h2><a class="toc-backref" href="#id9">Demo: Basic Usage</a><a class="headerlink" href="#demo-basic-usage" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id10">Demo: Basic Usage</a><a class="headerlink" href="#demo-basic-usage" title="Permalink to this headline">¶</a></h2>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/bbc3b83df0f1e7d682bbb7af79225975/shared-ptr-basic.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/shared-ptr-basic.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sensors.h&quot;</span><span class="cp"></span>
@@ -343,7 +382,7 @@ pointer is shared among multiple threads!</p>
 </div>
 </section>
 <section id="demo-std-make-shared">
-<h2><a class="toc-backref" href="#id10">Demo: <code class="docutils literal notranslate"><span class="pre">std::make_shared</span></code></a><a class="headerlink" href="#demo-std-make-shared" title="Permalink to this headline">¶</a></h2>
+<span id="make-shared"></span><h2><a class="toc-backref" href="#id11">Demo: <code class="docutils literal notranslate"><span class="pre">std::make_shared</span></code></a><a class="headerlink" href="#demo-std-make-shared" title="Permalink to this headline">¶</a></h2>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/f365a0dae03035447cbc36906751ae35/shared-ptr-basic-make_shared.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/shared-ptr-basic-make_shared.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sensors.h&quot;</span><span class="cp"></span>
@@ -376,7 +415,7 @@ pointer is shared among multiple threads!</p>
 </div>
 </section>
 <section id="demo-cyclic-references">
-<h2><a class="toc-backref" href="#id11">Demo: Cyclic References</a><a class="headerlink" href="#demo-cyclic-references" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">Demo: Cyclic References</a><a class="headerlink" href="#demo-cyclic-references" title="Permalink to this headline">¶</a></h2>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/10b991226a9d81ec15020ea5f07dd9a4/shared-ptr-cyclic.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/shared-ptr-cyclic.cpp</span></code></a></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sensors.h&quot;</span><span class="cp"></span>

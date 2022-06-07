@@ -158,13 +158,14 @@
 <div class="contents local topic" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#the-spirit-of-std-unique-ptr" id="id9">The Spirit Of <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code></a></p></li>
-<li><p><a class="reference internal" href="#basic-usage-prevent-leaks" id="id10">Basic Usage: Prevent Leaks</a></p></li>
-<li><p><a class="reference internal" href="#eliminate-chance-of-leakage-longrightarrow-ownership" id="id11">Eliminate Chance Of Leakage ⟶ <em>Ownership</em></a></p></li>
-<li><p><a class="reference internal" href="#explicitly-acknowledging-ownership-transfer-std-move" id="id12">Explicitly Acknowledging Ownership Transfer: <code class="docutils literal notranslate"><span class="pre">std::move()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#saving-keystrokes-std-make-unique" id="id13">Saving Keystrokes: <code class="docutils literal notranslate"><span class="pre">std::make_unique&lt;&gt;()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#compiler-can-prove-implicit-ownership-transfer" id="id14">Compiler Can Prove: Implicit Ownership Transfer</a></p></li>
-<li><p><a class="reference internal" href="#how-to-write-code-that-can-take-ownership" id="id15">How To Write Code That Can Take Ownership?</a></p></li>
-<li><p><a class="reference internal" href="#manipulating-pointer-content" id="id16">Manipulating Pointer Content</a></p></li>
+<li><p><a class="reference internal" href="#methods" id="id10">Methods</a></p></li>
+<li><p><a class="reference internal" href="#basic-usage-prevent-leaks" id="id11">Basic Usage: Prevent Leaks</a></p></li>
+<li><p><a class="reference internal" href="#eliminate-chance-of-leakage-longrightarrow-ownership" id="id12">Eliminate Chance Of Leakage ⟶ <em>Ownership</em></a></p></li>
+<li><p><a class="reference internal" href="#explicitly-acknowledging-ownership-transfer-std-move" id="id13">Explicitly Acknowledging Ownership Transfer: <code class="docutils literal notranslate"><span class="pre">std::move()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#saving-keystrokes-std-make-unique" id="id14">Saving Keystrokes: <code class="docutils literal notranslate"><span class="pre">std::make_unique&lt;&gt;()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#compiler-can-prove-implicit-ownership-transfer" id="id15">Compiler Can Prove: Implicit Ownership Transfer</a></p></li>
+<li><p><a class="reference internal" href="#how-to-write-code-that-can-take-ownership" id="id16">How To Write Code That Can Take Ownership?</a></p></li>
+<li><p><a class="reference internal" href="#manipulating-pointer-content" id="id17">Manipulating Pointer Content</a></p></li>
 </ul>
 </div>
 <section id="the-spirit-of-std-unique-ptr">
@@ -173,6 +174,7 @@
 <p><strong>Documentation</strong></p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/memory/unique_ptr">std::unique_ptr</a></p></li>
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/memory/make_unique">std::make_unique</a></p></li>
 </ul>
 <p><strong>See also</strong></p>
 <ul class="simple">
@@ -191,8 +193,48 @@ feature:
 <a class="reference internal" href="../020-new-language-features/060-move/topic.html"><span class="doc">Moving, “RValue References”</span></a></p></li>
 </ul>
 </section>
+<section id="methods">
+<h2><a class="toc-backref" href="#id10">Methods</a><a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
+<p>Object of type <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code> behave like pointers in any respect
+(<code class="docutils literal notranslate"><span class="pre">-&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>, copy, …), except that they have methods:</p>
+<aside class="sidebar">
+<p><strong>Documentation</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/memory/unique_ptr">std::unique_ptr</a></p></li>
+</ul>
+</aside>
+<table class="colwidths-auto docutils align-left">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::unique_ptr()</span></code></p></td>
+<td><p>Initializes to <code class="docutils literal notranslate"><span class="pre">nullptr</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::unique_ptr(T*</span> <span class="pre">pointer)</span></code></p></td>
+<td><p>Initializes to <code class="docutils literal notranslate"><span class="pre">pointer</span></code> (but see <a class="reference internal" href="#make-unique"><span class="std std-ref">std::make_unique</span></a> instead)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::unique_ptr(std::unique_ptr&amp;&amp;</span> <span class="pre">from)</span></code></p></td>
+<td><p>Move constructor; <code class="docutils literal notranslate"><span class="pre">from</span></code> is empty afterwards (see
+<a class="reference internal" href="../020-new-language-features/060-move/topic.html"><span class="doc">Moving, “RValue References”</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">release()</span></code></p></td>
+<td><p>Returns pointer to managed object, <em>and releases ownership</em></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">reset(T*</span> <span class="pre">pointer)</span></code></p></td>
+<td><p>Takes ownership of <code class="docutils literal notranslate"><span class="pre">pointer</span></code> (can be <code class="docutils literal notranslate"><span class="pre">nullptr</span></code>), and
+deletes currently owned pointer (if any)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">get()</span></code></p></td>
+<td><p>Pointer to currently owned object</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="basic-usage-prevent-leaks">
-<h2><a class="toc-backref" href="#id10">Basic Usage: Prevent Leaks</a><a class="headerlink" href="#basic-usage-prevent-leaks" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id11">Basic Usage: Prevent Leaks</a><a class="headerlink" href="#basic-usage-prevent-leaks" title="Permalink to this headline">¶</a></h2>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/2ba0cd7547266035fc9a60970a168290/unique-ptr-basic.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/unique-ptr-basic.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sensors.h&quot;</span><span class="cp"></span>
@@ -227,7 +269,7 @@ allocation and wrap</p></li>
 </ul>
 </section>
 <section id="eliminate-chance-of-leakage-longrightarrow-ownership">
-<h2><a class="toc-backref" href="#id11">Eliminate Chance Of Leakage ⟶ <em>Ownership</em></a><a class="headerlink" href="#eliminate-chance-of-leakage-longrightarrow-ownership" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">Eliminate Chance Of Leakage ⟶ <em>Ownership</em></a><a class="headerlink" href="#eliminate-chance-of-leakage-longrightarrow-ownership" title="Permalink to this headline">¶</a></h2>
 <p>Straightforward try to prevent leaks:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/d28321d899324a6e612de83a10383554/unique-ptr-ownership-error.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/unique-ptr-ownership-error.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
@@ -279,7 +321,7 @@ allocation and wrap</p></li>
 </ul>
 </section>
 <section id="explicitly-acknowledging-ownership-transfer-std-move">
-<h2><a class="toc-backref" href="#id12">Explicitly Acknowledging Ownership Transfer: <code class="docutils literal notranslate"><span class="pre">std::move()</span></code></a><a class="headerlink" href="#explicitly-acknowledging-ownership-transfer-std-move" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">Explicitly Acknowledging Ownership Transfer: <code class="docutils literal notranslate"><span class="pre">std::move()</span></code></a><a class="headerlink" href="#explicitly-acknowledging-ownership-transfer-std-move" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>Documentation</strong></p>
 <ul class="simple">
@@ -331,7 +373,7 @@ allocation and wrap</p></li>
 </div>
 </section>
 <section id="saving-keystrokes-std-make-unique">
-<h2><a class="toc-backref" href="#id13">Saving Keystrokes: <code class="docutils literal notranslate"><span class="pre">std::make_unique&lt;&gt;()</span></code></a><a class="headerlink" href="#saving-keystrokes-std-make-unique" title="Permalink to this headline">¶</a></h2>
+<span id="make-unique"></span><h2><a class="toc-backref" href="#id14">Saving Keystrokes: <code class="docutils literal notranslate"><span class="pre">std::make_unique&lt;&gt;()</span></code></a><a class="headerlink" href="#saving-keystrokes-std-make-unique" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>Documentation</strong></p>
 <ul class="simple">
@@ -383,7 +425,7 @@ allocation and wrap</p></li>
 </ul>
 </section>
 <section id="compiler-can-prove-implicit-ownership-transfer">
-<h2><a class="toc-backref" href="#id14">Compiler Can Prove: Implicit Ownership Transfer</a><a class="headerlink" href="#compiler-can-prove-implicit-ownership-transfer" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id15">Compiler Can Prove: Implicit Ownership Transfer</a><a class="headerlink" href="#compiler-can-prove-implicit-ownership-transfer" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>See also</strong></p>
 <ul class="simple">
@@ -445,7 +487,7 @@ reference</p></li>
 ownership transfer.</p>
 </section>
 <section id="how-to-write-code-that-can-take-ownership">
-<h2><a class="toc-backref" href="#id15">How To Write Code That Can Take Ownership?</a><a class="headerlink" href="#how-to-write-code-that-can-take-ownership" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id16">How To Write Code That Can Take Ownership?</a><a class="headerlink" href="#how-to-write-code-that-can-take-ownership" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>See also</strong></p>
 <ul class="simple">
@@ -492,7 +534,7 @@ ownership transfer.</p>
 for details (e.g., why <code class="docutils literal notranslate"><span class="pre">std::move</span></code> in initializer?)</p>
 </section>
 <section id="manipulating-pointer-content">
-<h2><a class="toc-backref" href="#id16">Manipulating Pointer Content</a><a class="headerlink" href="#manipulating-pointer-content" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id17">Manipulating Pointer Content</a><a class="headerlink" href="#manipulating-pointer-content" title="Permalink to this headline">¶</a></h2>
 <table class="colwidths-auto docutils align-left">
 <thead>
 <tr class="row-odd"><th class="head"><p>Method</p></th>

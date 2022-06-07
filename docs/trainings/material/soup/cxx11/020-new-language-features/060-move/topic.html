@@ -22,7 +22,7 @@
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx11/020-new-language-features/060-move/topic.html" />
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../search.html" />
-    <link rel="next" title="Range Based for Loops: Introduction" href="../range-based-for.html" />
+    <link rel="next" title="SmartPtr With Move Semantics" href="livehack-smartptr-move.html" />
     <link rel="prev" title="Delegating Constructor" href="../050-delegating-ctor/topic.html" /> 
    
   <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
@@ -111,6 +111,7 @@
 <li class="toctree-l4 current"><a class="reference internal" href="../group.html">New Language Features</a><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="../050-delegating-ctor/topic.html">Delegating Constructor</a></li>
 <li class="toctree-l5 current"><a class="current reference internal" href="#">Moving, “RValue References”</a></li>
+<li class="toctree-l5"><a class="reference internal" href="livehack-smartptr-move.html"><code class="docutils literal notranslate"><span class="pre">SmartPtr</span></code> With Move Semantics</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../range-based-for.html">Range Based <code class="docutils literal notranslate"><span class="pre">for</span></code> Loops: Introduction</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../range-based-for-map.html">Case Study: Range Based <code class="docutils literal notranslate"><span class="pre">for</span></code> On <code class="docutils literal notranslate"><span class="pre">std::map</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../070-miscellaneous/topic.html">Miscellaneous</a></li>
@@ -164,8 +165,25 @@
           <div class="body" role="main">
              <section id="moving-rvalue-references">
 <h1>Moving, “RValue References”<a class="headerlink" href="#moving-rvalue-references" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#return-object-problem-lifetime-1" id="id2">“Return Object” Problem: Lifetime (1)</a></p></li>
+<li><p><a class="reference internal" href="#return-object-problem-lifetime-2" id="id3">“Return Object” Problem: Lifetime (2)</a></p></li>
+<li><p><a class="reference internal" href="#return-object-problem-lifetime-3" id="id4">“Return Object” Problem: Lifetime (3)</a></p></li>
+<li><p><a class="reference internal" href="#return-object-problem-lifetime-4" id="id5">“Return Object” Problem: Lifetime (4)</a></p></li>
+<li><p><a class="reference internal" href="#return-object-problem-performance" id="id6">“Return Object” Problem: Performance</a></p></li>
+<li><p><a class="reference internal" href="#move-semantics-wish-list" id="id7">Move Semantics: Wish List</a></p></li>
+<li><p><a class="reference internal" href="#sideway-continue-with-smartptr-longrightarrow-move-semantics" id="id8">Sideway: Continue With <code class="docutils literal notranslate"><span class="pre">SmartPtr</span></code> ⟶ Move Semantics</a></p></li>
+<li><p><a class="reference internal" href="#lvalues-and-rvalues-1" id="id9">Lvalues and Rvalues (1)</a></p></li>
+<li><p><a class="reference internal" href="#lvalues-and-rvalues-2" id="id10">Lvalues and Rvalues (2)</a></p></li>
+<li><p><a class="reference internal" href="#moving-1" id="id11">Moving (1)</a></p></li>
+<li><p><a class="reference internal" href="#moving-2" id="id12">Moving (2)</a></p></li>
+<li><p><a class="reference internal" href="#moving-3" id="id13">Moving (3)</a></p></li>
+<li><p><a class="reference internal" href="#no-c-without-pitfalls" id="id14">No C++ Without Pitfalls</a></p></li>
+</ul>
+</div>
 <section id="return-object-problem-lifetime-1">
-<h2>“Return Object” Problem: Lifetime (1)<a class="headerlink" href="#return-object-problem-lifetime-1" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id2">“Return Object” Problem: Lifetime (1)</a><a class="headerlink" href="#return-object-problem-lifetime-1" title="Permalink to this headline">¶</a></h2>
 <p><strong>Whole class of problems</strong>: lifetime of returned objects</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">f</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">s</span><span class="p">{</span><span class="s">&quot;blah&quot;</span><span class="p">};</span><span class="w"></span>
@@ -180,7 +198,7 @@
 </div>
 </section>
 <section id="return-object-problem-lifetime-2">
-<h2>“Return Object” Problem: Lifetime (2)<a class="headerlink" href="#return-object-problem-lifetime-2" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id3">“Return Object” Problem: Lifetime (2)</a><a class="headerlink" href="#return-object-problem-lifetime-2" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">f</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">s</span><span class="p">{</span><span class="s">&quot;blah&quot;</span><span class="p">};</span><span class="w"></span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">s</span><span class="p">;</span><span class="w"></span>
@@ -200,7 +218,7 @@
 </div>
 </section>
 <section id="return-object-problem-lifetime-3">
-<h2>“Return Object” Problem: Lifetime (3)<a class="headerlink" href="#return-object-problem-lifetime-3" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id4">“Return Object” Problem: Lifetime (3)</a><a class="headerlink" href="#return-object-problem-lifetime-3" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">f</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;blah&quot;</span><span class="p">;</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
@@ -222,7 +240,7 @@
 </div>
 </section>
 <section id="return-object-problem-lifetime-4">
-<h2>“Return Object” Problem: Lifetime (4)<a class="headerlink" href="#return-object-problem-lifetime-4" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">“Return Object” Problem: Lifetime (4)</a><a class="headerlink" href="#return-object-problem-lifetime-4" title="Permalink to this headline">¶</a></h2>
 <p><strong>Solution</strong>: return by copy</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">f</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;blah&quot;</span><span class="p">;</span><span class="w"></span>
@@ -243,7 +261,7 @@
 </ul>
 </section>
 <section id="return-object-problem-performance">
-<h2>“Return Object” Problem: Performance<a class="headerlink" href="#return-object-problem-performance" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">“Return Object” Problem: Performance</a><a class="headerlink" href="#return-object-problem-performance" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">f</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">v</span><span class="p">;</span><span class="w"></span>
 <span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">100000</span><span class="p">;</span><span class="w"></span>
@@ -265,28 +283,34 @@
 <span class="c1">#include &lt;vector&gt;</span>
 
 
+<span class="o">//</span> <span class="n">incorrect</span><span class="p">:</span> <span class="n">reference</span> <span class="n">to</span> <span class="n">temporary</span> <span class="nb">object</span>
 <span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">returns_temporary</span><span class="p">()</span>
 <span class="p">{</span>
     <span class="k">return</span> <span class="s2">&quot;blah&quot;</span><span class="p">;</span>
 <span class="p">}</span>
 
+<span class="o">//</span> <span class="n">incorrect</span><span class="p">:</span> <span class="n">reference</span> <span class="n">to</span> <span class="n">stack</span> <span class="nb">object</span>
 <span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">returns_stackobject</span><span class="p">()</span>
 <span class="p">{</span>
     <span class="n">std</span><span class="p">::</span><span class="n">string</span> <span class="n">s</span><span class="p">{</span><span class="s2">&quot;blah&quot;</span><span class="p">};</span>
     <span class="k">return</span> <span class="n">s</span><span class="p">;</span>
 <span class="p">}</span>
 
+<span class="o">//</span> <span class="n">possibly</span> <span class="n">expensive</span><span class="p">:</span> <span class="k">return</span> <span class="n">by</span> <span class="n">copy</span>
 <span class="n">std</span><span class="p">::</span><span class="n">string</span> <span class="n">returns_copy</span><span class="p">()</span>
 <span class="p">{</span>
     <span class="n">std</span><span class="p">::</span><span class="n">string</span> <span class="n">s</span><span class="p">{</span><span class="s2">&quot;blah&quot;</span><span class="p">};</span>
     <span class="k">return</span> <span class="n">s</span><span class="p">;</span>
 <span class="p">}</span>
 
+<span class="o">//</span> <span class="n">correct</span> <span class="n">but</span> <span class="n">ugly</span><span class="p">:</span> <span class="n">explicit</span> <span class="n">output</span> <span class="n">parameter</span>
 <span class="n">void</span> <span class="n">output_parameter</span><span class="p">(</span><span class="n">std</span><span class="p">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">s</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;blah&quot;</span><span class="p">;</span>
 <span class="p">}</span>
 
+<span class="o">//</span> <span class="n">possibly</span> <span class="n">expensive</span> <span class="p">(</span><span class="n">well</span><span class="p">,</span> <span class="n">there</span><span class="s1">&#39;s Return Value Optimization (RVO)):</span>
+<span class="o">//</span> <span class="k">return</span> <span class="n">by</span> <span class="n">copy</span>
 <span class="n">std</span><span class="p">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span> <span class="n">returns_vector_by_copy</span><span class="p">()</span>
 <span class="p">{</span>
     <span class="n">std</span><span class="p">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span> <span class="n">v</span><span class="p">;</span>
@@ -310,111 +334,27 @@
 </div>
 </section>
 <section id="move-semantics-wish-list">
-<h2>Move Semantics: Wish List<a class="headerlink" href="#move-semantics-wish-list" title="Permalink to this headline">¶</a></h2>
-<p><strong>Wish list:</strong></p>
+<h2><a class="toc-backref" href="#id7">Move Semantics: Wish List</a><a class="headerlink" href="#move-semantics-wish-list" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Copy/assignment as before</p></li>
-<li><p>Special constructor for <em>moving</em></p></li>
-<li><p>Can that be implemented in C++03?</p>
-<ul>
-<li><p>Idea: non-const reference</p></li>
+<li><p>Recall <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">SmartPtr</span></code> from
+<a class="reference internal" href="../../030-smart-pointers/introduction-livehack.html"><span class="doc">(Trying To) Handwrite A Smart Pointer Class in C++ Before C++11</span></a></p></li>
+<li><p>⟶ Ownership transfer, just a bit rude (done
+implicitly at copy)</p></li>
 </ul>
-</li>
-</ul>
-<p><strong>Exercise</strong></p>
+<p><strong>What if the compiler could help out?</strong></p>
 <ul class="simple">
-<li><p>Write a <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">X</span></code> that carries an array of <code class="docutils literal notranslate"><span class="pre">int</span></code> and implements
-the usual copy semantics and a proper destructor.</p></li>
-<li><p>Additionally, for performance, the class provides a constructor that
-<em>transfers ownership</em> of the owned buffer.</p></li>
-<li><p>Try out the scenarios above, and see what’s to be done in order for
-the <em>move constructor</em> to (not) be called.</p></li>
+<li><p>Determine automatically that an object <em>cannot be used anymore</em></p></li>
+<li><p><strong>If so</strong>, call a special kind of constructor (<em>move constructor</em>) that
+takes ownership</p></li>
+<li><p><strong>Otherwise</strong>, insert copy constructor as usual</p></li>
 </ul>
 </section>
-<section id="move-semantics-in-c-03">
-<h2>Move Semantics, in C++03<a class="headerlink" href="#move-semantics-in-c-03" title="Permalink to this headline">¶</a></h2>
-<p><strong>Clumsy</strong>, isn’t it?</p>
-<ul class="simple">
-<li><p>Constructor with non-const reference preferred over const</p></li>
-<li><p>⟶ Have to be explicit when moving is not wanted -
-<em>which is the regular case!</em></p></li>
-</ul>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/74831f37b1e216d73264393a4e34226e/moving-in-c%2B%2B03.cc"><code class="xref download docutils literal notranslate"><span class="pre">moving-in-c++03.cc</span></code></a></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include &lt;iostream&gt;</span>
-<span class="c1">#include &lt;cstring&gt;</span>
-
-
-<span class="k">class</span> <span class="nc">X</span>
-<span class="p">{</span>
-<span class="n">public</span><span class="p">:</span>
-    <span class="n">X</span><span class="p">(</span><span class="n">size_t</span> <span class="n">size</span><span class="p">)</span>
-    <span class="p">:</span> <span class="n">data</span><span class="p">(</span><span class="n">new</span> <span class="nb">int</span><span class="p">[</span><span class="n">size</span><span class="p">]),</span>
-      <span class="n">size</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="p">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;X(size_t)&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="p">::</span><span class="n">endl</span><span class="p">;</span>
-    <span class="p">}</span>
-
-    <span class="n">X</span><span class="p">(</span><span class="n">const</span> <span class="n">X</span><span class="o">&amp;</span> <span class="n">x</span><span class="p">)</span>
-    <span class="p">:</span> <span class="n">X</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="p">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;X(const X&amp;)&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="p">::</span><span class="n">endl</span><span class="p">;</span>
-        <span class="n">memcpy</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">sizeof</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">);</span>
-    <span class="p">}</span>
-    
-    <span class="n">X</span><span class="p">(</span><span class="n">X</span><span class="o">&amp;</span> <span class="n">x</span><span class="p">)</span> 
-    <span class="p">:</span> <span class="n">data</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">),</span>
-      <span class="n">size</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="p">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;X(X&amp;)&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="p">::</span><span class="n">endl</span><span class="p">;</span>
-        <span class="n">x</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-        <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="o">~</span><span class="n">X</span><span class="p">()</span>
-    <span class="p">{</span> 
-        <span class="n">std</span><span class="p">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;~X(): data=&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">data</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="p">::</span><span class="n">endl</span><span class="p">;</span> 
-        <span class="k">if</span> <span class="p">(</span><span class="n">data</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-            <span class="n">delete</span><span class="p">[]</span> <span class="n">data</span><span class="p">;</span>
-    <span class="p">}</span>
-
-    <span class="nb">int</span> <span class="o">*</span><span class="n">data</span><span class="p">;</span>
-    <span class="n">size_t</span> <span class="n">size</span><span class="p">;</span>
-<span class="p">};</span>
-
-<span class="n">X</span> <span class="n">f</span><span class="p">()</span>
-<span class="p">{</span>
-    <span class="n">X</span> <span class="n">x</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
-    <span class="k">return</span> <span class="n">x</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="nb">int</span> <span class="n">main</span><span class="p">()</span>
-<span class="p">{</span>
-    <span class="n">std</span><span class="p">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;*** init from f() (sigh: RVO)&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="p">::</span><span class="n">endl</span><span class="p">;</span>
-    <span class="p">{</span>
-        <span class="n">X</span> <span class="n">x</span> <span class="o">=</span> <span class="n">f</span><span class="p">();</span>
-    <span class="p">}</span>
-    <span class="n">std</span><span class="p">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;*** init from non-const&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="p">::</span><span class="n">endl</span><span class="p">;</span>
-    <span class="p">{</span>
-        <span class="n">X</span> <span class="n">x</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
-        <span class="n">X</span> <span class="n">y</span><span class="p">(</span><span class="n">x</span><span class="p">);</span> <span class="o">//</span> <span class="n">non</span><span class="o">-</span><span class="n">const</span> <span class="o">-&gt;</span> <span class="n">moved</span> <span class="o">-&gt;</span> <span class="n">x</span> <span class="n">invalid</span>
-    <span class="p">}</span>
-    <span class="n">std</span><span class="p">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;*** init from const&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="p">::</span><span class="n">endl</span><span class="p">;</span>
-    <span class="p">{</span>
-        <span class="n">const</span> <span class="n">X</span> <span class="n">x</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
-        <span class="n">X</span> <span class="n">y</span><span class="p">(</span><span class="n">x</span><span class="p">);</span> <span class="o">//</span> <span class="n">const</span> <span class="p">(</span><span class="n">no</span> <span class="n">other</span> <span class="n">choice</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div>
-<ul class="simple">
-<li><p>In none of these use cases (except for function return) I want moving!</p></li>
-<li><p>Function return is optimized away ⟶ <em>Return Value
-Optimization (RVO)</em></p></li>
-</ul>
+<section id="sideway-continue-with-smartptr-longrightarrow-move-semantics">
+<h2><a class="toc-backref" href="#id8">Sideway: Continue With <code class="docutils literal notranslate"><span class="pre">SmartPtr</span></code> ⟶ Move Semantics</a><a class="headerlink" href="#sideway-continue-with-smartptr-longrightarrow-move-semantics" title="Permalink to this headline">¶</a></h2>
+<p>See how that is done programmatically: <a class="reference internal" href="livehack-smartptr-move.html"><span class="doc">SmartPtr With Move Semantics</span></a></p>
 </section>
 <section id="lvalues-and-rvalues-1">
-<h2>Lvalues and Rvalues (1)<a class="headerlink" href="#lvalues-and-rvalues-1" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id9">Lvalues and Rvalues (1)</a><a class="headerlink" href="#lvalues-and-rvalues-1" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span><span class="w"></span>
 <span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">43</span><span class="p">;</span><span class="w"></span>
 
@@ -428,7 +368,7 @@ Optimization (RVO)</em></p></li>
 </div>
 </section>
 <section id="lvalues-and-rvalues-2">
-<h2>Lvalues and Rvalues (2)<a class="headerlink" href="#lvalues-and-rvalues-2" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id10">Lvalues and Rvalues (2)</a><a class="headerlink" href="#lvalues-and-rvalues-2" title="Permalink to this headline">¶</a></h2>
 <p><strong>Rules</strong> …</p>
 <ul class="simple">
 <li><p>Everything that has a name is an Lvalue</p></li>
@@ -443,7 +383,7 @@ Optimization (RVO)</em></p></li>
 </ul>
 </section>
 <section id="moving-1">
-<h2>Moving (1)<a class="headerlink" href="#moving-1" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id11">Moving (1)</a><a class="headerlink" href="#moving-1" title="Permalink to this headline">¶</a></h2>
 <table class="docutils align-left">
 <colgroup>
 <col style="width: 50%" />
@@ -480,7 +420,7 @@ Optimization (RVO)</em></p></li>
 </table>
 </section>
 <section id="moving-2">
-<h2>Moving (2)<a class="headerlink" href="#moving-2" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">Moving (2)</a><a class="headerlink" href="#moving-2" title="Permalink to this headline">¶</a></h2>
 <p><strong>Compiler will DWIM</strong> …</p>
 <ul>
 <li><p><em>Return “by copy”</em></p>
@@ -530,7 +470,7 @@ Optimization (RVO)</em></p></li>
 </ul>
 </section>
 <section id="moving-3">
-<h2>Moving (3)<a class="headerlink" href="#moving-3" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">Moving (3)</a><a class="headerlink" href="#moving-3" title="Permalink to this headline">¶</a></h2>
 <p><strong>Explicitly requesting move operation</strong></p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">x</span><span class="p">);</span><span class="w"></span>
 </pre></div>
@@ -547,7 +487,7 @@ Optimization (RVO)</em></p></li>
 </ul>
 </section>
 <section id="no-c-without-pitfalls">
-<h2>No C++ Without Pitfalls<a class="headerlink" href="#no-c-without-pitfalls" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id14">No C++ Without Pitfalls</a><a class="headerlink" href="#no-c-without-pitfalls" title="Permalink to this headline">¶</a></h2>
 <p><strong>Compiler selects function</strong> based upon parameter type</p>
 <ul class="simple">
 <li><p>Normal overload selection</p></li>

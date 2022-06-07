@@ -157,12 +157,62 @@
 <h1><code class="docutils literal notranslate"><span class="pre">std::weak_ptr</span></code><a class="headerlink" href="#std-weak-ptr" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#basic-usage" id="id3">Basic Usage</a></p></li>
-<li><p><a class="reference internal" href="#a-real-life-example" id="id4">A Real-Life Example</a></p></li>
+<li><p><a class="reference internal" href="#spirit-borrowed-reference-that-could-be-invalid" id="id3">Spirit: Borrowed Reference That Could Be Invalid</a></p></li>
+<li><p><a class="reference internal" href="#methods" id="id4">Methods</a></p></li>
+<li><p><a class="reference internal" href="#basic-usage" id="id5">Basic Usage</a></p></li>
+<li><p><a class="reference internal" href="#a-real-life-example" id="id6">A Real-Life Example</a></p></li>
 </ul>
 </div>
+<section id="spirit-borrowed-reference-that-could-be-invalid">
+<h2><a class="toc-backref" href="#id3">Spirit: Borrowed Reference That Could Be Invalid</a><a class="headerlink" href="#spirit-borrowed-reference-that-could-be-invalid" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Tied to a <a class="reference internal" href="sharedptr.html"><span class="doc">shared pointer</span></a></p></li>
+<li><p>Lightweight reference: shared pointer might become invalid (because
+all references are dropped)</p></li>
+<li><p>⟶ ask before use!</p></li>
+</ul>
+</section>
+<section id="methods">
+<h2><a class="toc-backref" href="#id4">Methods</a><a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p><strong>Documentation</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/memory/weak_ptr">std::weak_ptr</a></p></li>
+</ul>
+</aside>
+<table class="colwidths-auto docutils align-left">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::weak_ptr()</span></code></p></td>
+<td><p>Not tied to any shared pointer</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::weak_ptr(const</span> <span class="pre">std::weak_ptr&amp;)</span></code></p></td>
+<td><p>Copy constructor</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::weak_ptr(std::weak_ptr&amp;&amp;</span> <span class="pre">from)</span></code></p></td>
+<td><p>Move constructor; <code class="docutils literal notranslate"><span class="pre">from</span></code> is not tied to any shared pointer
+afterwards (see
+<a class="reference internal" href="../020-new-language-features/060-move/topic.html"><span class="doc">Moving, “RValue References”</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::weak_ptr(const</span> <span class="pre">std::shared_ptr&amp;</span> <span class="pre">that)</span></code></p></td>
+<td><p>Tie constructed object to <code class="docutils literal notranslate"><span class="pre">that</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">reset()</span></code></p></td>
+<td><p>Untie</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lock()</span></code></p></td>
+<td><p>Creates a <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> that references the managed
+object</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="basic-usage">
-<h2><a class="toc-backref" href="#id3">Basic Usage</a><a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">Basic Usage</a><a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/e10d7bb297719cd65d4cbdb319e52c08/weak-ptr-basic.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/weak-ptr-basic.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sensors.h&quot;</span><span class="cp"></span>
@@ -192,7 +242,7 @@
 </div>
 </section>
 <section id="a-real-life-example">
-<h2><a class="toc-backref" href="#id4">A Real-Life Example</a><a class="headerlink" href="#a-real-life-example" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">A Real-Life Example</a><a class="headerlink" href="#a-real-life-example" title="Permalink to this headline">¶</a></h2>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/1e932887acc84ec486f28ffec926a4cb/weak-ptr-demo-thread.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/weak-ptr-demo-thread.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sensors.h&quot;</span><span class="cp"></span>
