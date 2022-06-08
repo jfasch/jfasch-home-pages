@@ -153,13 +153,19 @@
 <h1><code class="docutils literal notranslate"><span class="pre">std::bind</span></code><a class="headerlink" href="#std-bind" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#std-bind-why-what-s-the-problem" id="id10"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>: Why? What’s The Problem?</a></p></li>
-<li><p><a class="reference internal" href="#sideway-std-transform" id="id11">Sideway: <code class="docutils literal notranslate"><span class="pre">std::transform</span></code></a></p></li>
-<li><p><a class="reference internal" href="#introducing-std-bind-adapting-callables-by-example" id="id12">Introducing <code class="docutils literal notranslate"><span class="pre">std::bind</span></code>: Adapting Callables, By Example</a></p></li>
-<li><p><a class="reference internal" href="#applying-std-bind-1" id="id13">Applying <code class="docutils literal notranslate"><span class="pre">std::bind</span></code> (1)</a></p></li>
-<li><p><a class="reference internal" href="#applying-std-bind-2" id="id14">Applying <code class="docutils literal notranslate"><span class="pre">std::bind</span></code> (2)</a></p></li>
-<li><p><a class="reference internal" href="#std-bind-vs-lambda" id="id15"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code> vs. Lambda</a></p></li>
-<li><p><a class="reference internal" href="#a-bigger-picture-types" id="id16">A Bigger Picture: Types</a></p></li>
+<li><p><a class="reference internal" href="#why-what-s-the-problem" id="id11">Why? What’s The Problem?</a></p></li>
+<li><p><a class="reference internal" href="#sample-program-all-done-manually" id="id12">Sample Program: All Done Manually</a></p></li>
+<li><p><a class="reference internal" href="#sideway-std-transform" id="id13">Sideway: <code class="docutils literal notranslate"><span class="pre">std::transform</span></code></a></p></li>
+<li><p><a class="reference internal" href="#sample-program-using-std-transform" id="id14">Sample Program: Using <code class="docutils literal notranslate"><span class="pre">std::transform</span></code></a></p></li>
+<li><p><a class="reference internal" href="#std-bind-null-adaptation-pointlessly" id="id15"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>: Null Adaptation, Pointlessly</a></p></li>
+<li><p><a class="reference internal" href="#std-bind-adapting-one-parameter-to-no-parameter" id="id16"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>: Adapting One Parameter To No Parameter</a></p></li>
+<li><p><a class="reference internal" href="#std-bind-hardcoding-parameters" id="id17"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>: Hardcoding Parameters</a></p></li>
+<li><p><a class="reference internal" href="#std-bind-swapping-parameters-longrightarrow-std-placeholders" id="id18"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>: Swapping Parameters ⟶ <code class="docutils literal notranslate"><span class="pre">std::placeholders</span></code></a></p></li>
+<li><p><a class="reference internal" href="#std-bind-hardcoding-only-first-parameter-longrightarrow-std-placeholders" id="id19"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>: Hardcoding Only First Parameter ⟶ <code class="docutils literal notranslate"><span class="pre">std::placeholders</span></code></a></p></li>
+<li><p><a class="reference internal" href="#std-bind-functor-is-a-callable" id="id20"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>: Functor (Is-A Callable)</a></p></li>
+<li><p><a class="reference internal" href="#std-bind-lambda-is-a-callable" id="id21"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>: Lambda (Is-A Callable)</a></p></li>
+<li><p><a class="reference internal" href="#sample-program-using-std-transform-with-std-bind" id="id22">Sample Program: Using <code class="docutils literal notranslate"><span class="pre">std::transform</span></code> With <code class="docutils literal notranslate"><span class="pre">std::bind</span></code></a></p></li>
+<li><p><a class="reference internal" href="#summary" id="id23">Summary</a></p></li>
 </ul>
 </div>
 <aside class="sidebar">
@@ -168,8 +174,8 @@
 <li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/utility/functional/bind">std::bind</a></p></li>
 </ul>
 </aside>
-<section id="std-bind-why-what-s-the-problem">
-<h2><a class="toc-backref" href="#id10"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>: Why? What’s The Problem?</a><a class="headerlink" href="#std-bind-why-what-s-the-problem" title="Permalink to this headline">¶</a></h2>
+<section id="why-what-s-the-problem">
+<h2><a class="toc-backref" href="#id11">Why? What’s The Problem?</a><a class="headerlink" href="#why-what-s-the-problem" title="Permalink to this headline">¶</a></h2>
 <p>Clumsy code like below …</p>
 <ul class="simple">
 <li><p>One-time functions, only used to do one stupid little thing
@@ -178,6 +184,9 @@
 <li><p>Function definition in places which are far off their call sites
 ⟶ <em>readability suffers!</em></p></li>
 </ul>
+</section>
+<section id="sample-program-all-done-manually">
+<h2><a class="toc-backref" href="#id12">Sample Program: All Done Manually</a><a class="headerlink" href="#sample-program-all-done-manually" title="Permalink to this headline">¶</a></h2>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/1fbb0eca33160f0233bf5676ade87866/c%2B%2B11-bind-distances-origin-manual.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/c++11-bind-distances-origin-manual.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cmath&gt;</span><span class="cp"></span>
@@ -223,7 +232,7 @@
 </div>
 </section>
 <section id="sideway-std-transform">
-<h2><a class="toc-backref" href="#id11">Sideway: <code class="docutils literal notranslate"><span class="pre">std::transform</span></code></a><a class="headerlink" href="#sideway-std-transform" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">Sideway: <code class="docutils literal notranslate"><span class="pre">std::transform</span></code></a><a class="headerlink" href="#sideway-std-transform" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>Documentation</strong></p>
 <ul class="simple">
@@ -244,7 +253,11 @@ something else</p></li>
 </ul>
 </li>
 </ul>
-<p>Here’s a version of the above program that uses <code class="docutils literal notranslate"><span class="pre">std::transform</span></code> …</p>
+</section>
+<section id="sample-program-using-std-transform">
+<h2><a class="toc-backref" href="#id14">Sample Program: Using <code class="docutils literal notranslate"><span class="pre">std::transform</span></code></a><a class="headerlink" href="#sample-program-using-std-transform" title="Permalink to this headline">¶</a></h2>
+<p>Still using the one-time function <code class="docutils literal notranslate"><span class="pre">double</span> <span class="pre">distance_origin(Point</span> <span class="pre">p)</span></code>
+though …</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/11bc71f24c61967cf2d349e6552a94ec/c%2B%2B11-bind-distances-origin-transform.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/c++11-bind-distances-origin-transform.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cmath&gt;</span><span class="cp"></span>
@@ -289,9 +302,8 @@ something else</p></li>
 </div>
 </div>
 </section>
-<section id="introducing-std-bind-adapting-callables-by-example">
-<h2><a class="toc-backref" href="#id12">Introducing <code class="docutils literal notranslate"><span class="pre">std::bind</span></code>: Adapting Callables, By Example</a><a class="headerlink" href="#introducing-std-bind-adapting-callables-by-example" title="Permalink to this headline">¶</a></h2>
-<p><strong>Null adaptation, pointlessly</strong></p>
+<section id="std-bind-null-adaptation-pointlessly">
+<h2><a class="toc-backref" href="#id15"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>: Null Adaptation, Pointlessly</a><a class="headerlink" href="#std-bind-null-adaptation-pointlessly" title="Permalink to this headline">¶</a></h2>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/b9c18a5765b43981665eb9f61304b28d/c%2B%2B11-bind-null-adaptation.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/c++11-bind-null-adaptation.cpp</span></code></a></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
@@ -310,7 +322,9 @@ something else</p></li>
 </pre></div>
 </div>
 </div>
-<p><strong>Adapting one parameter to no parameter</strong></p>
+</section>
+<section id="std-bind-adapting-one-parameter-to-no-parameter">
+<h2><a class="toc-backref" href="#id16"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>: Adapting One Parameter To No Parameter</a><a class="headerlink" href="#std-bind-adapting-one-parameter-to-no-parameter" title="Permalink to this headline">¶</a></h2>
 <div class="literal-block-wrapper docutils container" id="id4">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/f42b9cec62fcbc18c5ef5d256151a522/c%2B%2B11-bind-one-to-zero-adaptation.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/c++11-bind-one-to-zero-adaptation.cpp</span></code></a></span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
@@ -329,7 +343,9 @@ something else</p></li>
 </pre></div>
 </div>
 </div>
-<p><strong>Hardcoding parameters</strong></p>
+</section>
+<section id="std-bind-hardcoding-parameters">
+<h2><a class="toc-backref" href="#id17"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>: Hardcoding Parameters</a><a class="headerlink" href="#std-bind-hardcoding-parameters" title="Permalink to this headline">¶</a></h2>
 <div class="literal-block-wrapper docutils container" id="id5">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/a46fd8e954609219b5c53d60a4ed3146/c%2B%2B11-bind-minus-hardcoded.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/c++11-bind-minus-hardcoded.cpp</span></code></a></span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
@@ -348,7 +364,9 @@ something else</p></li>
 </pre></div>
 </div>
 </div>
-<p><strong>Swapping parameters</strong> ⟶ <code class="docutils literal notranslate"><span class="pre">std::placeholders</span></code></p>
+</section>
+<section id="std-bind-swapping-parameters-longrightarrow-std-placeholders">
+<h2><a class="toc-backref" href="#id18"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>: Swapping Parameters ⟶ <code class="docutils literal notranslate"><span class="pre">std::placeholders</span></code></a><a class="headerlink" href="#std-bind-swapping-parameters-longrightarrow-std-placeholders" title="Permalink to this headline">¶</a></h2>
 <div class="literal-block-wrapper docutils container" id="id6">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/de684b52c3c4de676ab4f547aa30a594/c%2B%2B11-bind-minus-swap-params.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/c++11-bind-minus-swap-params.cpp</span></code></a></span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
@@ -367,10 +385,9 @@ something else</p></li>
 </pre></div>
 </div>
 </div>
-<dl class="simple">
-<dt><strong>Hardcoding only first parameter</strong> ⟶</dt><dd><p><code class="docutils literal notranslate"><span class="pre">std::placeholders</span></code></p>
-</dd>
-</dl>
+</section>
+<section id="std-bind-hardcoding-only-first-parameter-longrightarrow-std-placeholders">
+<h2><a class="toc-backref" href="#id19"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>: Hardcoding Only First Parameter ⟶ <code class="docutils literal notranslate"><span class="pre">std::placeholders</span></code></a><a class="headerlink" href="#std-bind-hardcoding-only-first-parameter-longrightarrow-std-placeholders" title="Permalink to this headline">¶</a></h2>
 <div class="literal-block-wrapper docutils container" id="id7">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/b8a960a4873fb439f0f231fc18d0136d/c%2B%2B11-bind-minus-hardcode-first.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/c++11-bind-minus-hardcode-first.cpp</span></code></a></span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
@@ -389,78 +406,120 @@ something else</p></li>
 </pre></div>
 </div>
 </div>
-<p>jjjjjjjj weiter mit transform zeug -&gt; bind</p>
 </section>
-<section id="applying-std-bind-1">
-<h2><a class="toc-backref" href="#id13">Applying <code class="docutils literal notranslate"><span class="pre">std::bind</span></code> (1)</a><a class="headerlink" href="#applying-std-bind-1" title="Permalink to this headline">¶</a></h2>
-<p><strong>So how does this apply to our ``std::transform`` problem?</strong></p>
-<ul class="simple">
-<li><p>Readability: we want to eliminate those annoying extra helper functions</p></li>
-<li><p>Want to wrap existing <code class="docutils literal notranslate"><span class="pre">double</span> <span class="pre">distance(Point,</span> <span class="pre">Point)</span></code> which is
-similar in purpose but does not fit exactly</p></li>
-</ul>
-<p><strong>What we have …</strong></p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">Point</span><span class="w"> </span><span class="p">{...};</span><span class="w"></span>
-<span class="kt">double</span><span class="w"> </span><span class="nf">distance</span><span class="p">(</span><span class="n">Point</span><span class="p">,</span><span class="w"> </span><span class="n">Point</span><span class="p">);</span><span class="w"></span>
-</pre></div>
-</div>
-<p><strong>What we want …</strong></p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">transform</span><span class="p">(</span><span class="n">swarm</span><span class="p">,</span><span class="w"> </span><span class="n">swarm</span><span class="o">+</span><span class="k">sizeof</span><span class="p">(</span><span class="n">swarm</span><span class="p">)</span><span class="o">/</span><span class="k">sizeof</span><span class="p">(</span><span class="n">Point</span><span class="p">),</span><span class="w"></span>
-<span class="w">               </span><span class="n">distances_point</span><span class="p">,</span><span class="w"></span>
-<span class="w">               </span><span class="n">SOMETHING</span><span class="w"> </span><span class="n">WHICH</span><span class="w"> </span><span class="n">TAKES</span><span class="w"> </span><span class="n">ONE</span><span class="w"> </span><span class="n">POINT</span><span class="p">);</span><span class="w"></span>
-</pre></div>
-</div>
-</section>
-<section id="applying-std-bind-2">
-<h2><a class="toc-backref" href="#id14">Applying <code class="docutils literal notranslate"><span class="pre">std::bind</span></code> (2)</a><a class="headerlink" href="#applying-std-bind-2" title="Permalink to this headline">¶</a></h2>
+<section id="std-bind-functor-is-a-callable">
+<h2><a class="toc-backref" href="#id20"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>: Functor (Is-A Callable)</a><a class="headerlink" href="#std-bind-functor-is-a-callable" title="Permalink to this headline">¶</a></h2>
 <div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Distances from origin</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">transform</span><span class="p">(</span><span class="n">swarm</span><span class="p">,</span><span class="w"> </span><span class="n">swarm</span><span class="o">+</span><span class="k">sizeof</span><span class="p">(</span><span class="n">swarm</span><span class="p">)</span><span class="o">/</span><span class="k">sizeof</span><span class="p">(</span><span class="n">Point</span><span class="p">),</span><span class="w"></span>
-<span class="w">               </span><span class="n">distances_origin</span><span class="p">,</span><span class="w"></span>
-<span class="w">               </span><span class="n">std</span><span class="o">::</span><span class="n">bind</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span><span class="w"> </span><span class="n">Point</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">},</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">placeholders</span><span class="o">::</span><span class="n">_1</span><span class="p">));</span><span class="w"></span>
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/2b04ce5a69f09fce4605c01628cc91f2/c%2B%2B11-bind-functor.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/c++11-bind-functor.cpp</span></code></a></span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;functional&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+
+<span class="k">class</span> <span class="nc">Functor</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">Functor</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">_i</span><span class="p">{</span><span class="n">i</span><span class="p">}</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="k">operator</span><span class="p">()(</span><span class="kt">int</span><span class="w"> </span><span class="n">addend</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">addend</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
+<span class="k">private</span><span class="o">:</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">_i</span><span class="p">;</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">bind_suite</span><span class="p">,</span><span class="w"> </span><span class="n">functor</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">Functor</span><span class="w"> </span><span class="n">func</span><span class="p">{</span><span class="mi">42</span><span class="p">};</span><span class="w"></span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">funcfunc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">bind</span><span class="p">(</span><span class="n">func</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">funcfunc</span><span class="p">(),</span><span class="w"> </span><span class="mi">43</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
+</section>
+<section id="std-bind-lambda-is-a-callable">
+<h2><a class="toc-backref" href="#id21"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>: Lambda (Is-A Callable)</a><a class="headerlink" href="#std-bind-lambda-is-a-callable" title="Permalink to this headline">¶</a></h2>
 <div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Distances from any point</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// this is exactly the same as above</span>
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/6305aa5433f388b750d2350b147c9ce9/c%2B%2B11-bind-lambda.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/c++11-bind-lambda.cpp</span></code></a></span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;functional&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">bind_suite</span><span class="p">,</span><span class="w"> </span><span class="n">lambda</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">func</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">val</span><span class="o">=</span><span class="mi">42</span><span class="p">](</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">){</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">val</span><span class="o">+</span><span class="n">i</span><span class="p">;</span><span class="w"> </span><span class="p">};</span><span class="w"></span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">funcfunc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">bind</span><span class="p">(</span><span class="n">func</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">funcfunc</span><span class="p">(),</span><span class="w"> </span><span class="mi">43</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
-<p><strong>Summary</strong></p>
+</section>
+<section id="sample-program-using-std-transform-with-std-bind">
+<h2><a class="toc-backref" href="#id22">Sample Program: Using <code class="docutils literal notranslate"><span class="pre">std::transform</span></code> With <code class="docutils literal notranslate"><span class="pre">std::bind</span></code></a><a class="headerlink" href="#sample-program-using-std-transform-with-std-bind" title="Permalink to this headline">¶</a></h2>
+<p>See how we can eliminate the one-time function <code class="docutils literal notranslate"><span class="pre">double</span>
+<span class="pre">distance_origin(Point</span> <span class="pre">p)</span></code> …</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/a3852e715ea8c1c7be358f35462fb909/c%2B%2B11-bind-distances-origin-transform-bind.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/c++11-bind-distances-origin-transform-bind.cpp</span></code></a></span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cmath&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;algorithm&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;functional&gt;</span><span class="cp"></span>
+
+
+<span class="k">struct</span> <span class="nc">Point</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">Point</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"></span>
+<span class="w">      </span><span class="o">:</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="w"> </span><span class="n">y</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">;</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+
+<span class="kt">double</span><span class="w"> </span><span class="nf">distance</span><span class="p">(</span><span class="n">Point</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">Point</span><span class="w"> </span><span class="n">q</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">sqrt</span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">x</span><span class="o">-</span><span class="n">q</span><span class="p">.</span><span class="n">x</span><span class="p">),</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"></span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">y</span><span class="o">-</span><span class="n">q</span><span class="p">.</span><span class="n">y</span><span class="p">),</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">Point</span><span class="w"> </span><span class="n">points</span><span class="p">[]{{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">}};</span><span class="w"></span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">origin_distances</span><span class="p">[</span><span class="k">sizeof</span><span class="p">(</span><span class="n">points</span><span class="p">)</span><span class="o">/</span><span class="k">sizeof</span><span class="p">(</span><span class="n">Point</span><span class="p">)];</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1">// compute origin-distances of points</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">transform</span><span class="p">(</span><span class="n">points</span><span class="p">,</span><span class="w"> </span><span class="n">points</span><span class="o">+</span><span class="k">sizeof</span><span class="p">(</span><span class="n">points</span><span class="p">)</span><span class="o">/</span><span class="k">sizeof</span><span class="p">(</span><span class="n">Point</span><span class="p">),</span><span class="w"> </span><span class="n">origin_distances</span><span class="p">,</span><span class="w"> </span>
+<span class="w">                   </span><span class="n">std</span><span class="o">::</span><span class="n">bind</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">placeholders</span><span class="o">::</span><span class="n">_1</span><span class="p">,</span><span class="w"> </span><span class="n">Point</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">}));</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="nl">dist</span><span class="p">:</span><span class="w"> </span><span class="n">origin_distances</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">dist</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="summary">
+<h2><a class="toc-backref" href="#id23">Summary</a><a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Readability: what remains unreadable is only the language itself</p></li>
 <li><p>Have to get used to <code class="docutils literal notranslate"><span class="pre">std::bind</span></code></p></li>
 </ul>
-</section>
-<section id="std-bind-vs-lambda">
-<h2><a class="toc-backref" href="#id15"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code> vs. Lambda</a><a class="headerlink" href="#std-bind-vs-lambda" title="Permalink to this headline">¶</a></h2>
+<p><strong>What about types?</strong></p>
 <aside class="sidebar">
 <p><strong>See also</strong></p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../../020-new-language-features/lambda/group.html"><span class="doc">Lambda</span></a></p></li>
+<li><p><a class="reference internal" href="../020-function/topic.html"><span class="doc">std::function</span></a></p></li>
 </ul>
 </aside>
-<p><strong>Lambdas are usually a better alternative</strong> …</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">transform</span><span class="p">(</span><span class="n">swarm</span><span class="p">,</span><span class="w"> </span><span class="n">swarm</span><span class="o">+</span><span class="k">sizeof</span><span class="p">(</span><span class="n">swarm</span><span class="p">)</span><span class="o">/</span><span class="k">sizeof</span><span class="p">(</span><span class="n">Point</span><span class="p">),</span><span class="w"></span>
-<span class="w">               </span><span class="n">distances_origin</span><span class="p">,</span><span class="w"></span>
-<span class="w">               </span><span class="p">[](</span><span class="n">Point</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">distance</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">},</span><span class="w"> </span><span class="n">p</span><span class="p">);</span><span class="w"> </span><span class="p">});</span><span class="w"></span>
-</pre></div>
-</div>
-<div class="admonition-a-more-advanced-exercise admonition">
-<p class="admonition-title">A more advanced exercise</p>
-<p>Use <code class="docutils literal notranslate"><span class="pre">std::sort</span></code> to sort an array of points by their distance to a
-given point.</p>
-</div>
-</section>
-<section id="a-bigger-picture-types">
-<h2><a class="toc-backref" href="#id16">A Bigger Picture: Types</a><a class="headerlink" href="#a-bigger-picture-types" title="Permalink to this headline">¶</a></h2>
-<p><strong>What about types?</strong></p>
 <ul class="simple">
 <li><p>Goal is to have <em>no runtime overhead</em></p></li>
 <li><p>⟶ <em>Late binding (polymorphism)</em> ruled out</p></li>
 <li><p>⟶ No common base class</p></li>
 <li><p>Only the call signatures (parameter and return types) are the same</p></li>
+<li><p>If you want to define interfaces (i.e. share a type), use
+<a class="reference internal" href="../020-function/topic.html"><span class="doc">std::function</span></a></p></li>
 </ul>
 <p><strong>What does this mean?</strong></p>
 <ul class="simple">
@@ -468,6 +527,17 @@ given point.</p>
 <li><p>Have to be careful when code size is important</p></li>
 <li><p>Client code has to be instantiated with the type</p></li>
 <li><p><strong>Tradeoff</strong>: speed, code size, elegance, design, taste …</p></li>
+</ul>
+<p><strong>And Lambdas?</strong></p>
+<aside class="sidebar">
+<p><strong>See also</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../020-new-language-features/lambda/group.html"><span class="doc">Lambda</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Lambdas are usually a better alternative</p></li>
+<li><p>⟶ more readable (?)</p></li>
 </ul>
 </section>
 </section>
