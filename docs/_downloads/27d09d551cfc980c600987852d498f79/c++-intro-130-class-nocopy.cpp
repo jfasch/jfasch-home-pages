@@ -12,6 +12,10 @@ using namespace std::chrono_literals;
 class TodoList
 {
 public:
+    TodoList() = default;
+    TodoList(const TodoList&) = delete;
+    TodoList& operator=(const TodoList&) = delete;
+
     void add_item(const std::string& name, std::function<void()> func)
     {
         _list[name] = todo_item(func);
@@ -19,12 +23,12 @@ public:
 
     void start()
     {
-        for (auto& [name, item]: tdl)
+        for (auto& [name, item]: _list)
             item = std::make_shared<std::thread>(std::get<0>(item));
     }
     void wait()
     {
-        for (auto& [name, item]: tdl)
+        for (auto& [name, item]: _list)
             std::get<1>(item)->join();
     }
 
@@ -38,21 +42,23 @@ private:
 int main()
 {
     TodoList tdl;
-    tdl.add("up 1 to 10",
-            [](){
-                for (int i=1; i<=10; i++) {
-                    std::cout << "UP: " << i << std::endl;
-                    std::this_thread::sleep_for(1s);
-                }
-            });
-    tdl.add("down 1000 to 980",
-            [](){
-                for (int i=1000; i>=980; i--) {
-                    std::cout << "DOWN: " << i << std::endl;
-                    std::this_thread::sleep_for(0.5s);
-                }
-            });
-
+    tdl.add_item(
+        "up 1 to 10",
+        [](){
+            for (int i=1; i<=10; i++) {
+                std::cout << "UP: " << i << std::endl;
+                std::this_thread::sleep_for(1s);
+            }
+        });
+    tdl.add_item(
+        "down 1000 to 980",
+        [](){
+            for (int i=1000; i>=980; i--) {
+                std::cout << "DOWN: " << i << std::endl;
+                std::this_thread::sleep_for(0.5s);
+            }
+        });
+    
     tdl.start();
     tdl.wait();
 
