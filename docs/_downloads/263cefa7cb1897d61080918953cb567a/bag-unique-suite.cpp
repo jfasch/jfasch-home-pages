@@ -8,7 +8,9 @@ TEST(bag_unique_suite, find_by_int_ok)
     bag.insert(std::make_unique<BagUnique::Item>("something", 42));
     bag.insert(std::make_unique<BagUnique::Item>("anything", 666));
 
-    auto item = bag.find_by_int(42);
+    const BagUnique& constbag = bag;
+
+    auto item = constbag.find_by_int(42);
     ASSERT_NE(item, nullptr);
     ASSERT_EQ(item->first, "something");
     ASSERT_EQ(item->second, 42);
