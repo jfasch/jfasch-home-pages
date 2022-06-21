@@ -22,7 +22,7 @@
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx03/030-functions-and-methods/050-references/topic.html" />
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../search.html" />
-    <link rel="next" title="static" href="../060-static/topic.html" />
+    <link rel="next" title="static Methods" href="../060-static/topic.html" />
     <link rel="prev" title="this" href="../040-this/topic.html" /> 
    
   <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
@@ -114,7 +114,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../030-const/topic.html"><code class="docutils literal notranslate"><span class="pre">const</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../040-this/topic.html"><code class="docutils literal notranslate"><span class="pre">this</span></code></a></li>
 <li class="toctree-l5 current"><a class="current reference internal" href="#">References</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../060-static/topic.html"><code class="docutils literal notranslate"><span class="pre">static</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../060-static/topic.html"><code class="docutils literal notranslate"><span class="pre">static</span></code> Methods</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../070-operators/topic.html">Operator Overloading</a></li>
 </ul>
 </li>
@@ -161,135 +161,233 @@
           <div class="body" role="main">
              <section id="references">
 <h1>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h1>
-<section id="pointers-seen-differently-references-1">
-<h2>Pointers, Seen Differently: References (1)<a class="headerlink" href="#pointers-seen-differently-references-1" title="Permalink to this headline">¶</a></h2>
-<p><strong>Problem</strong></p>
+<div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p>Passing parameters <em>by copy</em> is expensive</p></li>
-<li><p>Especially when objects are large (well, a <code class="docutils literal notranslate"><span class="pre">point</span></code> is not so
-large, but you get the point)</p></li>
+<li><p><a class="reference internal" href="#pass-by-copy-reference" id="id8">Pass By Copy/Reference</a></p></li>
+<li><p><a class="reference internal" href="#copy-reference-c-pointers" id="id9">Copy? Reference? C? Pointers!</a></p></li>
+<li><p><a class="reference internal" href="#c-true-references" id="id10">C++: True References</a></p></li>
+<li><p><a class="reference internal" href="#and-const-pointers" id="id11">And <code class="docutils literal notranslate"><span class="pre">const</span></code>? Pointers?</a></p></li>
+<li><p><a class="reference internal" href="#const-references" id="id12"><code class="docutils literal notranslate"><span class="pre">const</span></code> References</a></p></li>
+<li><p><a class="reference internal" href="#const-reference-substitute-for-pass-by-copy" id="id13"><code class="docutils literal notranslate"><span class="pre">const</span></code> Reference: Substitute For “Pass by Copy”</a></p></li>
 </ul>
-<table class="docutils align-left">
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">point</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="k">public</span><span class="o">:</span><span class="w"></span>
-<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">distance</span><span class="p">(</span><span class="n">point</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">dx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">abs</span><span class="p">(</span><span class="n">_x</span><span class="o">-</span><span class="n">p</span><span class="p">.</span><span class="n">_x</span><span class="p">);</span><span class="w"></span>
-<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">dy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">abs</span><span class="p">(</span><span class="n">_y</span><span class="o">-</span><span class="n">p</span><span class="p">.</span><span class="n">_y</span><span class="p">);</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">sqrt</span><span class="p">(</span><span class="n">dx</span><span class="o">*</span><span class="n">dx</span><span class="o">+</span><span class="n">dy</span><span class="o">*</span><span class="n">dy</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
-</pre></div>
 </div>
-</td>
-<td><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">point</span><span class="w"> </span><span class="nf">a</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
-<span class="n">point</span><span class="w"> </span><span class="nf">b</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w"></span>
-<span class="kt">float</span><span class="w"> </span><span class="n">dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">distance</span><span class="p">(</span><span class="n">b</span><span class="p">);</span><span class="w"></span>
-</pre></div>
-</div>
-<p><strong>Problem</strong></p>
+<section id="pass-by-copy-reference">
+<h2><a class="toc-backref" href="#id8">Pass By Copy/Reference</a><a class="headerlink" href="#pass-by-copy-reference" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p><strong>Links</strong></p>
 <ul class="simple">
-<li><p>Parameter is a <code class="docutils literal notranslate"><span class="pre">copy</span></code></p></li>
+<li><p><a class="reference external" href="https://en.wikipedia.org/wiki/Evaluation_strategy#Strict_binding_strategies">Wikipedia</a></p></li>
+<li><p><a class="reference external" href="https://en.wikipedia.org/wiki/Pascal_(programming_language)">Pascal</a></p></li>
 </ul>
-<p><strong>Solution</strong></p>
+</aside>
 <ul class="simple">
-<li><p>Pass by pointer</p></li>
-<li><p>Even better: <code class="docutils literal notranslate"><span class="pre">const</span></code> pointer</p></li>
+<li><p>Computer literature has terminology for different ways of parameter
+passing</p></li>
+<li><p>Terms: “Pass by copy”, “pass by reference”</p></li>
+<li><p>Terms: “input parameter”, “output parameter”, “input/output
+parameter”</p></li>
+<li><p>Pass by copy: callee receives a copy of caller’s value
+(⟶ function cannot modify caller’s value)</p></li>
+<li><p>Pass by reference: callee receives a reference to caller’s value
+(⟶ callee <em>can</em> modify caller’s value)</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+<p>This terminology is language independent (<a class="reference external" href="https://en.wikipedia.org/wiki/Pascal_(programming_language)">Pascal</a>?)</p>
 </section>
-<section id="pointers-seen-differently-references-2">
-<h2>Pointers, Seen Differently: References (2)<a class="headerlink" href="#pointers-seen-differently-references-2" title="Permalink to this headline">¶</a></h2>
-<table class="docutils align-left">
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>Definition</p></td>
-<td><p>Usage</p></td>
-</tr>
-<tr class="row-even"><td><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">point</span><span class="w"></span>
+<section id="copy-reference-c-pointers">
+<h2><a class="toc-backref" href="#id9">Copy? Reference? C? Pointers!</a><a class="headerlink" href="#copy-reference-c-pointers" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>In C, parameters are passed <em>by copy only</em></p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/8abce02aaea4c071b9e015027b4a91ac/pass-by-copy.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/pass-by-copy.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">pass_by_copy</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
-<span class="k">public</span><span class="o">:</span><span class="w"></span>
-<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">distance</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">point</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">dx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">abs</span><span class="p">(</span><span class="n">_x</span><span class="o">-</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">_x</span><span class="p">);</span><span class="w"></span>
-<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">dy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">abs</span><span class="p">(</span><span class="n">_y</span><span class="o">-</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">_y</span><span class="p">);</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">sqrt</span><span class="p">(</span><span class="n">dx</span><span class="o">*</span><span class="n">dx</span><span class="o">+</span><span class="n">dy</span><span class="o">*</span><span class="n">dy</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<span class="w">    </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">666</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">references_suite</span><span class="p">,</span><span class="w"> </span><span class="n">copy</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">pass_by_copy</span><span class="p">(</span><span class="n">i</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</td>
-<td><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">point</span><span class="w"> </span><span class="nf">a</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
-<span class="n">point</span><span class="w"> </span><span class="nf">b</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w"></span>
-<span class="kt">float</span><span class="w"> </span><span class="n">dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">distance</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="p">);</span><span class="w"></span>
+</div>
+</li>
+<li><p>But: there are addresses (pointers) that can be passed (by copy
+🤨)</p>
+<ul class="simple">
+<li><p>Voila, done!</p></li>
+<li><p>As long as one can handle those <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> and <code class="docutils literal notranslate"><span class="pre">*</span></code>, everything is ok</p></li>
+<li><p>A little tedious though: take address (<code class="docutils literal notranslate"><span class="pre">&amp;</span></code>), dereference address
+(<code class="docutils literal notranslate"><span class="pre">*</span></code>)</p></li>
+<li><p>⟶ error prone</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/85f983ed1f7d57224f3e0431f12d370c/pass-by-pointer.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/pass-by-pointer.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">pass_by_pointer</span><span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="o">*</span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">666</span><span class="p">;</span><span class="w">              </span><span class="c1">// &lt;--- dereference j explicitly </span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">references_suite</span><span class="p">,</span><span class="w"> </span><span class="n">pointer</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">pass_by_pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="n">i</span><span class="p">);</span><span class="w">   </span><span class="c1">// &lt;--- take address of i explicitly</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">666</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-<p><strong>Problem</strong></p>
-<ul class="simple">
-<li><p>User has to take the address</p></li>
-<li><p>Pointers can easily be <code class="docutils literal notranslate"><span class="pre">NULL</span></code></p></li>
+</div>
+</li>
 </ul>
-<p><strong>Solution</strong></p>
-<ul class="simple">
-<li><p>References</p></li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
 </section>
-<section id="pointers-seen-differently-references-3">
-<h2>Pointers, Seen Differently: References (3)<a class="headerlink" href="#pointers-seen-differently-references-3" title="Permalink to this headline">¶</a></h2>
-<table class="docutils align-left">
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>Definition</p></td>
-<td><p>Usage</p></td>
-</tr>
-<tr class="row-even"><td><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">point</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="k">public</span><span class="o">:</span><span class="w"></span>
-<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">distance</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">point</span><span class="w"> </span><span class="o">&amp;</span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">dx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">abs</span><span class="p">(</span><span class="n">_x</span><span class="o">-</span><span class="n">p</span><span class="p">.</span><span class="n">_x</span><span class="p">);</span><span class="w"></span>
-<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">dy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">abs</span><span class="p">(</span><span class="n">_y</span><span class="o">-</span><span class="n">p</span><span class="p">.</span><span class="n">_y</span><span class="p">);</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">sqrt</span><span class="p">(</span><span class="n">dx</span><span class="o">*</span><span class="n">dx</span><span class="o">+</span><span class="n">dy</span><span class="o">*</span><span class="n">dy</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
-</pre></div>
-</div>
-</td>
-<td><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">point</span><span class="w"> </span><span class="nf">a</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
-<span class="n">point</span><span class="w"> </span><span class="nf">b</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w"></span>
-<span class="kt">float</span><span class="w"> </span><span class="n">dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">distance</span><span class="p">(</span><span class="n">b</span><span class="p">);</span><span class="w"></span>
-</pre></div>
-</div>
-<p><strong>Pretty, because …</strong></p>
+<section id="c-true-references">
+<h2><a class="toc-backref" href="#id10">C++: True References</a><a class="headerlink" href="#c-true-references" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Looks like ordinary parameter passing</p></li>
-<li><p><em>Compiler</em> takes the address ⟶ physically, a
-pointer is passed</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">NULL</span></code> pointer passing (nearly) impossible</p></li>
+<li><p>C++ adds another meaning to the <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> operator: <em>reference</em></p></li>
+<li><p>Used in function declaration <em>only</em></p></li>
+<li><p>Every use looks like regular variable/parameter access</p></li>
+<li><p>Internally addresses are taken, just like pointers - only easier</p></li>
+<li><p>Advantage: references cannot (easily) dangle, or be <code class="docutils literal notranslate"><span class="pre">NULL</span></code></p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/0bfe0f9a78e11dcbd42bc09134be488f/pass-by-reference.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/pass-by-reference.cpp</span></code></a></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">pass_by_reference</span><span class="p">(</span><span class="kt">int</span><span class="o">&amp;</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">666</span><span class="p">;</span><span class="w">                 </span><span class="c1">// &lt;--- dereference j implicitly</span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">references_suite</span><span class="p">,</span><span class="w"> </span><span class="n">reference</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">pass_by_reference</span><span class="p">(</span><span class="n">i</span><span class="p">);</span><span class="w">    </span><span class="c1">// &lt;--- take address of i implicitly</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">666</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="and-const-pointers">
+<h2><a class="toc-backref" href="#id11">And <code class="docutils literal notranslate"><span class="pre">const</span></code>? Pointers?</a><a class="headerlink" href="#and-const-pointers" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>In C, there is the <code class="docutils literal notranslate"><span class="pre">const</span></code> keyword which can be applied to
+pointers too</p></li>
+<li><p>Meaning: “this is the address of something that must not be
+modified”</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/1727d35e19af406f15e90ec511294cae/pass-by-const-pointer.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/pass-by-const-pointer.cpp</span></code></a></span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">pass_by_const_pointer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="o">*</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="o">*</span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">666</span><span class="p">;</span><span class="w">              </span><span class="c1">// &lt;--- error: *j is const</span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">references_suite</span><span class="p">,</span><span class="w"> </span><span class="n">const_pointer</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">pass_by_const_pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="n">i</span><span class="p">);</span><span class="w">   </span><span class="c1">// &lt;--- pass address to *const* i</span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">code/pass-by-const-pointer.cpp:5:8: error: assignment of read-only location ‘* j’</span>
+<span class="go">    5 |     *j = 666;              // &lt;--- error: *j is const</span>
+<span class="go">      |     ~~~^~~~~</span>
+</pre></div>
+</div>
+</section>
+<section id="const-references">
+<h2><a class="toc-backref" href="#id12"><code class="docutils literal notranslate"><span class="pre">const</span></code> References</a><a class="headerlink" href="#const-references" title="Permalink to this headline">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/11f2b746d1911a6cbf19ad8fb8e02ffb/pass-by-const-reference.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/pass-by-const-reference.cpp</span></code></a></span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">pass_by_const_reference</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="o">&amp;</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">666</span><span class="p">;</span><span class="w">                 </span><span class="c1">// &lt;--- error: j is const</span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">references_suite</span><span class="p">,</span><span class="w"> </span><span class="n">const_reference</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">pass_by_const_reference</span><span class="p">(</span><span class="n">i</span><span class="p">);</span><span class="w">    </span><span class="c1">// &lt;--- pass reference to const i</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">666</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">code/pass-by-const-reference.cpp:5:7: error: assignment of read-only reference ‘j’</span>
+<span class="go">    5 |     j = 666;                 // &lt;--- error: j is const</span>
+<span class="go">      |     ~~^~~~~</span>
+</pre></div>
+</div>
+</section>
+<section id="const-reference-substitute-for-pass-by-copy">
+<h2><a class="toc-backref" href="#id13"><code class="docutils literal notranslate"><span class="pre">const</span></code> Reference: Substitute For “Pass by Copy”</a><a class="headerlink" href="#const-reference-substitute-for-pass-by-copy" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>Pass by copy protects from accidental modification</p></li>
+<li><p>Can be expensive though</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/de737f29ca12dd621c2cf9f204a3ae92/pass-by-copy-expensive.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/pass-by-copy-expensive.cpp</span></code></a></span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+
+<span class="k">struct</span> <span class="nc">person</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">firstname</span><span class="p">[</span><span class="mi">128</span><span class="p">];</span><span class="w"></span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">lastname</span><span class="p">[</span><span class="mi">128</span><span class="p">];</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">pass_by_copy_expensive</span><span class="p">(</span><span class="n">person</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ... do something with p, read-only ...</span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">references_suite</span><span class="p">,</span><span class="w"> </span><span class="n">copy_expensive</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">person</span><span class="w"> </span><span class="n">p</span><span class="p">{</span><span class="s">&quot;Joerg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Faschingbauer&quot;</span><span class="p">};</span><span class="w"></span>
+<span class="w">    </span><span class="n">pass_by_copy_expensive</span><span class="p">(</span><span class="n">p</span><span class="p">);</span><span class="w">   </span><span class="c1">// &lt;--- copying 256 bytes to callee</span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">const</span></code> references to the rescue</p></li>
+<li><p>Amount of bytes copied is the size of a pointer, no matter what the
+target type is</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/dbdea9556fe070922c64674a2d0412b1/pass-by-const-reference-cheap.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/pass-by-const-reference-cheap.cpp</span></code></a></span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+
+<span class="k">struct</span> <span class="nc">person</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">firstname</span><span class="p">[</span><span class="mi">128</span><span class="p">];</span><span class="w"></span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">lastname</span><span class="p">[</span><span class="mi">128</span><span class="p">];</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">pass_by_const_reference_cheap</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">person</span><span class="o">&amp;</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ... do something with &amp;p, read-only ...</span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">references_suite</span><span class="p">,</span><span class="w"> </span><span class="n">const_reference_cheap</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">person</span><span class="w"> </span><span class="n">p</span><span class="p">{</span><span class="s">&quot;Joerg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Faschingbauer&quot;</span><span class="p">};</span><span class="w"></span>
+<span class="w">    </span><span class="n">pass_by_const_reference_cheap</span><span class="p">(</span><span class="n">p</span><span class="p">);</span><span class="w">   </span><span class="c1">// &lt;--- copying 8 bytes (a pointer) to callee</span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</li>
+</ul>
 </section>
 </section>
 
