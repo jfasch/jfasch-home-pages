@@ -167,27 +167,23 @@
 <h1>Object Copy (And Resource Management): There Be Dragons<a class="headerlink" href="#object-copy-and-resource-management-there-be-dragons" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#copy-in-c" id="id1">Copy in C</a></p></li>
-<li><p><a class="reference internal" href="#copy-constructor" id="id2">Copy Constructor</a></p></li>
-<li><p><a class="reference internal" href="#copy-constructor-and-pointer-members-1" id="id3">Copy Constructor and Pointer Members (1)</a></p></li>
-<li><p><a class="reference internal" href="#copy-constructor-and-pointer-members-2" id="id4">Copy Constructor and Pointer Members (2)</a></p></li>
-<li><p><a class="reference internal" href="#copy-constructor-and-pointer-members-3" id="id5">Copy Constructor and Pointer Members (3)</a></p></li>
-<li><p><a class="reference internal" href="#copy-constructor-recursive-memberwise" id="id6">Copy Constructor: Recursive/Memberwise</a></p></li>
-<li><p><a class="reference internal" href="#assignment-operator" id="id7">Assignment Operator</a></p></li>
-<li><p><a class="reference internal" href="#assignment-operator-and-pointer-members-memory-leak" id="id8">Assignment Operator and Pointer Members: Memory Leak</a></p></li>
-<li><p><a class="reference internal" href="#assignment-operator-and-pointer-members-memory-leak-straighforward-fix" id="id9">Assignment Operator and Pointer Members: Memory Leak, Straighforward Fix</a></p></li>
-<li><p><a class="reference internal" href="#assignment-operator-and-pointer-members-self-assignment" id="id10">Assignment Operator and Pointer Members: <em>Self-Assignment</em></a></p></li>
-<li><p><a class="reference internal" href="#assignment-operator-self-assignment-correctly-implemented" id="id11">Assignment Operator: <em>Self Assignment</em>, Correctly Implemented</a></p></li>
+<li><p><a class="reference internal" href="#copy-in-c" id="id5">Copy in C</a></p></li>
+<li><p><a class="reference internal" href="#copy-constructor" id="id6">Copy Constructor</a></p></li>
+<li><p><a class="reference internal" href="#pointer-members-and-compiler-generated-copy" id="id7">Pointer Members, And Compiler Generated Copy</a></p></li>
+<li><p><a class="reference internal" href="#why-dragons-everywhere" id="id8">Why? Dragons Everywhere!</a></p></li>
+<li><p><a class="reference internal" href="#solution-write-copy-constructor-manually" id="id9">Solution: Write Copy Constructor Manually</a></p></li>
+<li><p><a class="reference internal" href="#copy-constructor-recursive-memberwise" id="id10">Copy Constructor: Recursive/Memberwise</a></p></li>
+<li><p><a class="reference internal" href="#assignment-operator" id="id11">Assignment Operator</a></p></li>
+<li><p><a class="reference internal" href="#assignment-operator-and-pointer-members-memory-leak" id="id12">Assignment Operator and Pointer Members: Memory Leak</a></p></li>
+<li><p><a class="reference internal" href="#assignment-operator-and-pointer-members-memory-leak-straighforward-fix" id="id13">Assignment Operator and Pointer Members: Memory Leak, Straighforward Fix</a></p></li>
+<li><p><a class="reference internal" href="#assignment-operator-and-pointer-members-self-assignment" id="id14">Assignment Operator and Pointer Members: <em>Self-Assignment</em></a></p></li>
+<li><p><a class="reference internal" href="#assignment-operator-self-assignment-correctly-implemented" id="id15">Assignment Operator: <em>Self Assignment</em>, Correctly Implemented</a></p></li>
 </ul>
 </div>
 <section id="copy-in-c">
-<h2><a class="toc-backref" href="#id1">Copy in C</a><a class="headerlink" href="#copy-in-c" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">Copy in C</a><a class="headerlink" href="#copy-in-c" title="Permalink to this headline">¶</a></h2>
 <p><strong>Copy of objects in C</strong>: <code class="docutils literal notranslate"><span class="pre">struct</span></code></p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
+<table class="colwidths-auto docutils align-left">
 <tbody>
 <tr class="row-odd"><td><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">point</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
@@ -213,17 +209,16 @@
 </ul>
 </section>
 <section id="copy-constructor">
-<h2><a class="toc-backref" href="#id2">Copy Constructor</a><a class="headerlink" href="#copy-constructor" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">Copy Constructor</a><a class="headerlink" href="#copy-constructor" title="Permalink to this headline">¶</a></h2>
 <p><strong>Copying objects in C</strong>: similar to C++</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
+<table class="colwidths-auto docutils align-left">
 <tbody>
 <tr class="row-odd"><td><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">point</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="c1">// ...</span>
+<span class="k">private</span><span class="o">:</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">;</span><span class="w"></span>
 <span class="p">};</span><span class="w"></span>
 <span class="p">...</span><span class="w"></span>
 <span class="n">point</span><span class="w"> </span><span class="n">p1</span><span class="p">;</span><span class="w"></span>
@@ -240,92 +235,235 @@
 </tr>
 </tbody>
 </table>
-<p><strong>But …</strong></p>
+<p>That was simple. <strong>But …</strong></p>
 </section>
-<section id="copy-constructor-and-pointer-members-1">
-<h2><a class="toc-backref" href="#id3">Copy Constructor and Pointer Members (1)</a><a class="headerlink" href="#copy-constructor-and-pointer-members-1" title="Permalink to this headline">¶</a></h2>
-<p><strong>Caution, Trap</strong>: pointer members</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">String</span><span class="w"></span>
+<section id="pointer-members-and-compiler-generated-copy">
+<h2><a class="toc-backref" href="#id7">Pointer Members, And Compiler Generated Copy</a><a class="headerlink" href="#pointer-members-and-compiler-generated-copy" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p><strong>See also</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../c/090-program-sanity/080-valgrind/topic.html"><span class="doc">valgrind</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Compiler-generated copy constructor (and assignment operator) does
+member-wise copy</p></li>
+<li><p>Pointers are members just like any other member</p></li>
+</ul>
+<p>That <code class="docutils literal notranslate"><span class="pre">String</span></code> class is missing something …</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/81ea188bd92c7e9a3dea45856830a568/string-10.h"><code class="xref download docutils literal notranslate"><span class="pre">code/string-10.h</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifndef STRING_H</span>
+<span class="cp">#define STRING_H</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstring&gt;</span><span class="cp"></span>
+
+<span class="k">class</span> <span class="nc">String</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="k">public</span><span class="o">:</span><span class="w"></span>
-<span class="w">    </span><span class="n">String</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">c_str</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">String</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">_c_str</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="kt">char</span><span class="p">[</span><span class="n">strlen</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">strcpy</span><span class="p">(</span><span class="n">_c_str</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">    </span><span class="o">~</span><span class="n">String</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">delete</span><span class="p">[]</span><span class="w"> </span><span class="n">_c_str</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
 <span class="k">private</span><span class="o">:</span><span class="w"></span>
-<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">_c_str</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">_c_str</span><span class="p">;</span><span class="w"></span>
 <span class="p">};</span><span class="w"></span>
+
+<span class="cp">#endif</span>
 </pre></div>
 </div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">String</span><span class="w"> </span><span class="nf">s1</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="n">String</span><span class="w"> </span><span class="n">s2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s1</span><span class="p">;</span><span class="w"> </span><span class="c1">// ctor!</span>
+</div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/023d1f49aa7eb4263598558e24647c4e/c%2B%2B03-copy-string-10.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/c++03-copy-string-10.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;string-10.h&quot;</span><span class="cp"></span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">s1</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">s2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s1</span><span class="p">;</span><span class="w">     </span><span class="c1">// &lt;--- compiler-generated copy ctor</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</td>
-<td><img alt="../../../../../_images/02-02-00-pointer-member.svg" src="../../../../../_images/02-02-00-pointer-member.svg" /></td>
-</tr>
-</tbody>
-</table>
+</div>
+<p>Crashes on execution …</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./code/c++03-copy-string-10
+<span class="go">free(): double free detected in tcache 2</span>
+<span class="go">Aborted (core dumped)</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="../../c/090-program-sanity/080-valgrind/topic.html"><span class="doc">Valgrind</span></a>
+complains loudly …</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>valgrind ./code/c++03-copy-string-10
+<span class="go">==221601== Memcheck, a memory error detector</span>
+<span class="go">==221601== Copyright (C) 2002-2017, and GNU GPL&#39;d, by Julian Seward et al.</span>
+<span class="go">==221601== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info</span>
+<span class="go">==221601== Command: ./code/c++03-copy-string-10</span>
+<span class="go">==221601==</span>
+<span class="go">==221601== Invalid free() / delete / delete[] / realloc()</span>
+<span class="go">==221601==    at 0x484465B: operator delete[](void*) (vg_replace_malloc.c:1103)</span>
+<span class="go">==221601==    by 0x401210: String::~String() (string-10.h:17)</span>
+<span class="go">==221601==    by 0x401194: main (c++03-copy-string-10.cpp:8)</span>
+<span class="go">==221601==  Address 0x4dc8c80 is 0 bytes inside a block of size 6 free&#39;d</span>
+<span class="go">==221601==    at 0x484465B: operator delete[](void*) (vg_replace_malloc.c:1103)</span>
+<span class="go">==221601==    by 0x401210: String::~String() (string-10.h:17)</span>
+<span class="go">==221601==    by 0x401188: main (c++03-copy-string-10.cpp:8)</span>
+<span class="go">==221601==  Block was alloc&#39;d at</span>
+<span class="go">==221601==    at 0x484222F: operator new[](unsigned long) (vg_replace_malloc.c:640)</span>
+<span class="go">==221601==    by 0x4011C5: String::String(char const*) (string-10.h:10)</span>
+<span class="go">==221601==    by 0x40116F: main (c++03-copy-string-10.cpp:5)</span>
+<span class="go">==221601==</span>
+<span class="go">==221601==</span>
+<span class="go">==221601== HEAP SUMMARY:</span>
+<span class="go">==221601==     in use at exit: 0 bytes in 0 blocks</span>
+<span class="go">==221601==   total heap usage: 2 allocs, 3 frees, 72,710 bytes allocated</span>
+<span class="go">==221601==</span>
+<span class="go">==221601== All heap blocks were freed -- no leaks are possible</span>
+<span class="go">==221601==</span>
+<span class="go">==221601== For lists of detected and suppressed errors, rerun with: -s</span>
+<span class="go">==221601== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)</span>
+</pre></div>
+</div>
 </section>
-<section id="copy-constructor-and-pointer-members-2">
-<h2><a class="toc-backref" href="#id4">Copy Constructor and Pointer Members (2)</a><a class="headerlink" href="#copy-constructor-and-pointer-members-2" title="Permalink to this headline">¶</a></h2>
-<p><strong>Segmentation Fault</strong> in the best of all cases …</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><ul class="simple">
+<section id="why-dragons-everywhere">
+<h2><a class="toc-backref" href="#id8">Why? Dragons Everywhere!</a><a class="headerlink" href="#why-dragons-everywhere" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
 <li><p>Pointer member is to compiler simply <em>a pointer</em></p></li>
 <li><p>Pointers are copied</p></li>
 <li><p>But not what they point to</p></li>
 <li><p>The first of both objects that is destroyed frees memory</p></li>
 <li><p><em>How should the compiler know!</em></p></li>
 </ul>
+<table class="colwidths-auto docutils align-left">
+<tbody>
+<tr class="row-odd"><td><ul class="simple">
+<li><p>Pointer to string is simply copied</p></li>
+<li><p>Both point to <em>same</em> string</p></li>
+</ul>
+<a class="reference internal image-reference" href="../../../../../_images/02-02-00-pointer-member.svg"><img alt="../../../../../_images/02-02-00-pointer-member.svg" height="279" src="../../../../../_images/02-02-00-pointer-member.svg" width="257" /></a>
 </td>
-<td><img alt="../../../../../_images/02-02-00-pointer-member-segfault.svg" src="../../../../../_images/02-02-00-pointer-member-segfault.svg" /></td>
+<td><ul class="simple">
+<li><p>First destructor frees memory</p></li>
+<li><p>Second ⟶ <strong>double-free</strong></p></li>
+</ul>
+<a class="reference internal image-reference" href="../../../../../_images/02-02-00-pointer-member-segfault.svg"><img alt="../../../../../_images/02-02-00-pointer-member-segfault.svg" height="287" src="../../../../../_images/02-02-00-pointer-member-segfault.svg" width="257" /></a>
+</td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="copy-constructor-and-pointer-members-3">
-<h2><a class="toc-backref" href="#id5">Copy Constructor and Pointer Members (3)</a><a class="headerlink" href="#copy-constructor-and-pointer-members-3" title="Permalink to this headline">¶</a></h2>
-<p><strong>Solution</strong></p>
-<ul class="simple">
-<li><p>Explicit copy constructor</p></li>
-<li><p>Copy the memory pointed to</p></li>
-</ul>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
+<section id="solution-write-copy-constructor-manually">
+<h2><a class="toc-backref" href="#id9">Solution: Write Copy Constructor Manually</a><a class="headerlink" href="#solution-write-copy-constructor-manually" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-auto docutils align-left">
+<thead>
+<tr class="row-odd"><th class="head"><p>C++ pre 11</p></th>
+<th class="head"><p>C++ 11 onwards</p></th>
+</tr>
+</thead>
 <tbody>
-<tr class="row-odd"><td><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">String</span><span class="o">::</span><span class="n">String</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">String</span><span class="o">&amp;</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"></span>
+<tr class="row-even"><td><ul class="simple">
+<li><p>Copy ctor is a duplicate of <code class="docutils literal notranslate"><span class="pre">String(const</span> <span class="pre">char*)</span></code></p></li>
+<li><p>Solution: write clumsy helper function</p></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li><p>Simply call the other ctor</p></li>
+<li><p>⟶
+<a class="reference internal" href="../../cxx11/020-new-language-features/050-delegating-ctor/topic.html"><span class="doc">Delegating Constructor</span></a></p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/990bac31171f894387b8681791a40ab1/string-20-03.h"><code class="xref download docutils literal notranslate"><span class="pre">code/string-20-03.h</span></code></a></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifndef STRING_H</span>
+<span class="cp">#define STRING_H</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstring&gt;</span><span class="cp"></span>
+
+<span class="k">class</span> <span class="nc">String</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">_c_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">char</span><span class="p">[</span><span class="w"></span>
-<span class="w">         </span><span class="n">strlen</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">_c_str</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span><span class="w"></span>
-<span class="w">    </span><span class="n">strcpy</span><span class="p">(</span><span class="n">_c_str</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">_c_str</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">String</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">_c_str</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="kt">char</span><span class="p">[</span><span class="n">strlen</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">strcpy</span><span class="p">(</span><span class="n">_c_str</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">String</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">String</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w">    </span><span class="c1">// &lt;--- duplicate of String(const char*)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">_c_str</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="kt">char</span><span class="p">[</span><span class="n">strlen</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">_c_str</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">strcpy</span><span class="p">(</span><span class="n">_c_str</span><span class="p">,</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">_c_str</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">    </span><span class="o">~</span><span class="n">String</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">delete</span><span class="p">[]</span><span class="w"> </span><span class="n">_c_str</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
+<span class="k">private</span><span class="o">:</span><span class="w"></span>
+<span class="w">    </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">_c_str</span><span class="p">;</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+
+<span class="cp">#endif</span>
 </pre></div>
 </div>
+</div>
 </td>
-<td><img alt="../../../../../_images/02-02-00-pointer-member-2.svg" src="../../../../../_images/02-02-00-pointer-member-2.svg" /></td>
+<td><div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/8b5080681c0f6db6317079cd1ac79c8e/string-20-11.h"><code class="xref download docutils literal notranslate"><span class="pre">code/string-20-11.h</span></code></a></span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifndef STRING_H</span>
+<span class="cp">#define STRING_H</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstring&gt;</span><span class="cp"></span>
+
+<span class="k">class</span> <span class="nc">String</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">String</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">_c_str</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="kt">char</span><span class="p">[</span><span class="n">strlen</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">strcpy</span><span class="p">(</span><span class="n">_c_str</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">String</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">String</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">String</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">_c_str</span><span class="p">)</span><span class="w">       </span><span class="c1">// &lt;--- re-use String(const char*)</span>
+<span class="w">    </span><span class="p">{}</span><span class="w"></span>
+
+<span class="w">    </span><span class="o">~</span><span class="n">String</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">delete</span><span class="p">[]</span><span class="w"> </span><span class="n">_c_str</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
+<span class="k">private</span><span class="o">:</span><span class="w"></span>
+<span class="w">    </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">_c_str</span><span class="p">;</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+</div>
+</td>
 </tr>
 </tbody>
 </table>
+<a class="reference internal image-reference" href="../../../../../_images/02-02-00-pointer-member-2.svg"><img alt="../../../../../_images/02-02-00-pointer-member-2.svg" height="279" src="../../../../../_images/02-02-00-pointer-member-2.svg" width="257" /></a>
+<p>Valgrind is happy …</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>valgrind ./code/c++03-copy-string-20-11
+<span class="go">...</span>
+<span class="go">==221807== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)</span>
+</pre></div>
+</div>
 </section>
 <section id="copy-constructor-recursive-memberwise">
-<h2><a class="toc-backref" href="#id6">Copy Constructor: Recursive/Memberwise</a><a class="headerlink" href="#copy-constructor-recursive-memberwise" title="Permalink to this headline">¶</a></h2>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
+<h2><a class="toc-backref" href="#id10">Copy Constructor: Recursive/Memberwise</a><a class="headerlink" href="#copy-constructor-recursive-memberwise" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-auto docutils align-left">
 <tbody>
 <tr class="row-odd"><td><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">TwoStrings</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
@@ -352,7 +490,7 @@
 </table>
 </section>
 <section id="assignment-operator">
-<h2><a class="toc-backref" href="#id7">Assignment Operator</a><a class="headerlink" href="#assignment-operator" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id11">Assignment Operator</a><a class="headerlink" href="#assignment-operator" title="Permalink to this headline">¶</a></h2>
 <p><strong>Second way of copying objects:</strong> overwrite an existing object</p>
 <table class="docutils align-default">
 <colgroup>
@@ -363,16 +501,19 @@
 <tr class="row-odd"><td><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">point</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="c1">// ...</span>
+<span class="k">private</span><span class="o">:</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">;</span><span class="w"></span>
 <span class="p">};</span><span class="w"></span>
 
 <span class="n">point</span><span class="w"> </span><span class="n">p1</span><span class="p">,</span><span class="w"> </span><span class="n">p2</span><span class="p">;</span><span class="w"></span>
 <span class="c1">// ...</span>
-<span class="n">p2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p1</span><span class="p">;</span><span class="w"> </span><span class="c1">// assignment!</span>
+<span class="n">p2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p1</span><span class="p">;</span><span class="w">         </span><span class="c1">// &lt;--- assignment!</span>
 </pre></div>
 </div>
 </td>
 <td><ul class="simple">
-<li><p>Like <em>Copy Constructor</em> generated by compiler</p></li>
+<li><p>Generated by compiler, just like copy constructor</p></li>
 <li><p>⟶ Member by member</p></li>
 <li><p>⟶ simple data types just as in C</p></li>
 </ul>
@@ -388,7 +529,7 @@ involved</p></li>
 </ul>
 </section>
 <section id="assignment-operator-and-pointer-members-memory-leak">
-<h2><a class="toc-backref" href="#id8">Assignment Operator and Pointer Members: Memory Leak</a><a class="headerlink" href="#assignment-operator-and-pointer-members-memory-leak" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">Assignment Operator and Pointer Members: Memory Leak</a><a class="headerlink" href="#assignment-operator-and-pointer-members-memory-leak" title="Permalink to this headline">¶</a></h2>
 <p><strong>Caution, naively buggy!</strong></p>
 <table class="docutils align-default">
 <colgroup>
@@ -407,22 +548,23 @@ involved</p></li>
 
 <span class="n">String</span><span class="w"> </span><span class="n">s1</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">);</span><span class="w"></span>
 <span class="n">String</span><span class="w"> </span><span class="nf">s2</span><span class="p">(</span><span class="s">&quot;hallo&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="n">s2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s1</span><span class="p">;</span><span class="w">     </span><span class="c1">// LEAK!</span>
+<span class="n">s2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s1</span><span class="p">;</span><span class="w">              </span><span class="c1">// &lt;--- LEAK!</span>
 </pre></div>
 </div>
 </td>
-<td><img alt="../../../../../_images/02-02-00-pointer-member-assignment-operator.svg" src="../../../../../_images/02-02-00-pointer-member-assignment-operator.svg" /></td>
+<td><a class="reference internal image-reference" href="../../../../../_images/02-02-00-pointer-member-assignment-operator.svg"><img alt="../../../../../_images/02-02-00-pointer-member-assignment-operator.svg" height="309" src="../../../../../_images/02-02-00-pointer-member-assignment-operator.svg" width="279" /></a>
+</td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="assignment-operator-and-pointer-members-memory-leak-straighforward-fix">
-<h2><a class="toc-backref" href="#id9">Assignment Operator and Pointer Members: Memory Leak, Straighforward Fix</a><a class="headerlink" href="#assignment-operator-and-pointer-members-memory-leak-straighforward-fix" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">Assignment Operator and Pointer Members: Memory Leak, Straighforward Fix</a><a class="headerlink" href="#assignment-operator-and-pointer-members-memory-leak-straighforward-fix" title="Permalink to this headline">¶</a></h2>
 <p><strong>Caution, still naively buggy!</strong></p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">String</span><span class="o">&amp;</span><span class="w"> </span><span class="n">String</span><span class="o">::</span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="w"></span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">String</span><span class="o">&amp;</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">delete</span><span class="p">[]</span><span class="w"> </span><span class="n">_c_str</span><span class="p">;</span><span class="w">        </span><span class="c1">// BUG!!</span>
+<span class="w">    </span><span class="k">delete</span><span class="p">[]</span><span class="w"> </span><span class="n">_c_str</span><span class="p">;</span><span class="w">        </span><span class="c1">// &lt;--- BUG!!</span>
 <span class="w">    </span><span class="n">_c_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">char</span><span class="p">[</span><span class="w"></span>
 <span class="w">        </span><span class="n">strlen</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">_c_str</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span><span class="w"></span>
 <span class="w">    </span><span class="n">strcpy</span><span class="p">(</span><span class="n">_c_str</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">_c_str</span><span class="p">);</span><span class="w"></span>
@@ -433,7 +575,7 @@ involved</p></li>
 <p><strong>WTF, why could this be a bug??</strong></p>
 </section>
 <section id="assignment-operator-and-pointer-members-self-assignment">
-<h2><a class="toc-backref" href="#id10">Assignment Operator and Pointer Members: <em>Self-Assignment</em></a><a class="headerlink" href="#assignment-operator-and-pointer-members-self-assignment" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id14">Assignment Operator and Pointer Members: <em>Self-Assignment</em></a><a class="headerlink" href="#assignment-operator-and-pointer-members-self-assignment" title="Permalink to this headline">¶</a></h2>
 <p>Correct nonsense …</p>
 <ul class="simple">
 <li><p>Why would somebody want to write this?</p></li>
@@ -451,7 +593,7 @@ involved</p></li>
 </div>
 </td>
 <td><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">String</span><span class="w"> </span><span class="nf">s</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">;</span><span class="w">      </span><span class="c1">// SEGFAULT!! (if you&#39;re lucky)</span>
+<span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">;</span><span class="w">             </span><span class="c1">// &lt;--- SEGFAULT!! (if you&#39;re lucky)</span>
 </pre></div>
 </div>
 </td>
@@ -465,12 +607,12 @@ involved</p></li>
 </ul>
 </section>
 <section id="assignment-operator-self-assignment-correctly-implemented">
-<h2><a class="toc-backref" href="#id11">Assignment Operator: <em>Self Assignment</em>, Correctly Implemented</a><a class="headerlink" href="#assignment-operator-self-assignment-correctly-implemented" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id15">Assignment Operator: <em>Self Assignment</em>, Correctly Implemented</a><a class="headerlink" href="#assignment-operator-self-assignment-correctly-implemented" title="Permalink to this headline">¶</a></h2>
 <p><strong>Ultimate Fix</strong>: <em>Self Assignment Check</em></p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">String</span><span class="o">&amp;</span><span class="w"> </span><span class="n">String</span><span class="o">::</span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="w"></span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">String</span><span class="o">&amp;</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">s</span><span class="p">)}</span><span class="w"> </span><span class="p">{</span><span class="w">        </span><span class="c1">// SELF ASSIGNMENT CHECK!!</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">s</span><span class="p">)}</span><span class="w"> </span><span class="p">{</span><span class="w">        </span><span class="c1">// &lt;--- self assignment check</span>
 <span class="w">        </span><span class="k">delete</span><span class="p">[]</span><span class="w"> </span><span class="n">_c_str</span><span class="p">;</span><span class="w"></span>
 <span class="w">        </span><span class="n">_c_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">char</span><span class="p">[</span><span class="w"></span>
 <span class="w">            </span><span class="n">strlen</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">_c_str</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span><span class="w"></span>
