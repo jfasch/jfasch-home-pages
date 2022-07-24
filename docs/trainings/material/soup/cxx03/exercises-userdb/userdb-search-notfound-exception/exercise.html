@@ -1,0 +1,866 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Exercise: Search, “User Not Found” Exception &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx03/exercises-userdb/userdb-search-notfound-exception/exercise.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="Exercises: Miscellaneous" href="../../exercises-misc/group.html" />
+    <link rel="prev" title="Exercise: Search a User By Lastname (std::find_if)" href="../userdb-search-find_if/exercise.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">C++ 03</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../001-introduction/topic.html">Introduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../020-data-encapsulation/group.html">Data Encapsulation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../030-functions-and-methods/group.html">Functions and Methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../040-exceptions/group.html">Exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../050-templates/group.html">Templates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../060-stl/group.html">Standard Template Library</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../070-dynamic-memory/group.html">Dynamic Memory Allocation, Resource Management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../100-inheritance-oo-design/group.html">Inheritance and Object Oriented Design</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../900-standard-library-miscellanea/group.html">The Standard Library: Miscellaneous Topics</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../group.html">Exercises: User Database</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../user-to-cxx-ctor/exercise.html">Exercise: Transform <code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">User</span></code> Into A Class</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../user-const-members/exercise.html">Exercise: <code class="docutils literal notranslate"><span class="pre">const</span></code> Members</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../user-simple-method/exercise.html">Exercise: Simple Method (Users Age By <code class="docutils literal notranslate"><span class="pre">n</span></code> Years)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../user-access-methods/exercise.html">Exercise: Access Methods for Members</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../user-const/exercise.html">Exercise: Use <code class="docutils literal notranslate"><span class="pre">const</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../user-default-ctor/exercise.html">Exercise: Default Constructor (was: Arrays of Objects)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../userdb-vector/exercise.html">Exercise: Use std::vector in UserDB</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../userdb-insert/exercise.html">Exercise: Insert a User into UserDB</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../userdb-search/exercise.html">Exercise: Search a User By Lastname</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../userdb-search-find_if/exercise.html">Exercise: Search a User By Lastname (<code class="docutils literal notranslate"><span class="pre">std::find_if</span></code>)</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">Exercise: Search, “User Not Found” Exception</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../exercises-misc/group.html">Exercises: Miscellaneous</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="exercise-search-user-not-found-exception">
+<h1>Exercise: Search, “User Not Found” Exception<a class="headerlink" href="#exercise-search-user-not-found-exception" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#what-s-wrong" id="id2">What’s Wrong?</a></p></li>
+<li><p><a class="reference internal" href="#exercise" id="id3">Exercise</a></p></li>
+<li><p><a class="reference internal" href="#dependencies" id="id4">Dependencies</a></p></li>
+</ul>
+</div>
+<section id="what-s-wrong">
+<h2><a class="toc-backref" href="#id2">What’s Wrong?</a><a class="headerlink" href="#what-s-wrong" title="Permalink to this headline">¶</a></h2>
+<p>In
+<a class="reference internal" href="../userdb-search/exercise.html"><span class="doc">Exercise: Search a User By Lastname</span></a>
+we chose to implement the <code class="docutils literal notranslate"><span class="pre">UserDB::search_by_lastname()</span></code> method to
+return an instance of <code class="docutils literal notranslate"><span class="pre">User</span></code>,</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">UserDB</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">    </span><span class="p">...</span><span class="w"></span>
+<span class="w">    </span><span class="n">User</span><span class="w"> </span><span class="n">search_by_lastname</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lastname</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">...</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This leads to unnatural coding in the <em>not-found</em> case: an
+empty/invalid user has to be returned:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">User</span><span class="w"> </span><span class="nf">UserDB::search_by_lastname</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lastname</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">_users</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">_users</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">lastname</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">lastname</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">_users</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="w">    </span><span class="c1">// ok, we have something that we can return</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">User</span><span class="p">();</span><span class="w">    </span><span class="c1">// unnatural: what user is that?</span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p><em>Why is that unnatural?</em></p>
+<ul>
+<li><p>I only want to give something that I own. If that was possible, I
+could return a <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">User&amp;</span></code> instead of a fat copy of something
+that I artificially create (and destroy soon thereafter).</p></li>
+<li><p>If the caller wants to differentiate between “found” and “not found”
+(occasionally callers exhibit such desires), currently this has to
+be done by checking the validity of the returned object (using
+wrinkles such as <code class="docutils literal notranslate"><span class="pre">User::isvalid()</span></code>):</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">User</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">db</span><span class="p">.</span><span class="n">search_by_lastname</span><span class="p">(</span><span class="s">&quot;Faschingbauer&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">user</span><span class="p">.</span><span class="n">isvalid</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// do something with it</span>
+<span class="p">}</span><span class="w"></span>
+<span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// error handling, possibly</span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="exercise">
+<h2><a class="toc-backref" href="#id3">Exercise</a><a class="headerlink" href="#exercise" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Create a new file, <code class="docutils literal notranslate"><span class="pre">errors.h</span></code> (which will hold all future
+<em>exception</em> classes).</p></li>
+<li><p>In that file, implement (inline only) a custom exception, <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">UserNotFound</span></code> (see
+<a class="reference internal" href="../../040-exceptions/020-try-catch/topic.html"><span class="doc">here</span></a>
+for how to create a custom exception).</p></li>
+<li><p>Modify <code class="docutils literal notranslate"><span class="pre">UserDB::search_by_lastname()</span></code> to throw an instance of it
+in the not-found case.</p></li>
+<li><p>Test this using the program below (feel free to use your own version
+of it):</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/4354bf0669d50a6ad8010a6211e5958c/test-userdb-search-notfound.cpp"><code class="xref download docutils literal notranslate"><span class="pre">test-userdb-search-notfound.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include &quot;userdb.h&quot;</span>
+<span class="c1">#include &lt;iostream&gt;</span>
+
+<span class="nb">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">UserDB</span> <span class="n">db</span><span class="p">;</span>
+
+    <span class="k">try</span> <span class="p">{</span>
+        <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">search_by_lastname</span><span class="p">(</span><span class="s2">&quot;Faschingbauer&quot;</span><span class="p">);</span>
+
+        <span class="o">//</span> <span class="n">unreached</span> <span class="n">because</span> <span class="n">database</span> <span class="ow">is</span> <span class="n">empty</span>
+        <span class="n">std</span><span class="p">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;yay!&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">user</span><span class="o">.</span><span class="n">lastname</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="p">::</span><span class="n">endl</span><span class="p">;</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">const</span> <span class="n">UserNotFound</span><span class="o">&amp;</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">std</span><span class="p">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;argh: no </span><span class="se">\&quot;</span><span class="s2">Faschingbauer</span><span class="se">\&quot;</span><span class="s2"> in there&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="p">::</span><span class="n">endl</span><span class="p">;</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="dependencies">
+<h2><a class="toc-backref" href="#id4">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<svg 
+ viewBox="0.00 0.00 770.00 1670.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1666)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-1666 766,-1666 766,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_cxx03</title>
+<path fill="none" stroke="black" d="M20,-130C20,-130 742,-130 742,-130 748,-130 754,-136 754,-142 754,-142 754,-1642 754,-1642 754,-1648 748,-1654 742,-1654 742,-1654 20,-1654 20,-1654 14,-1654 8,-1648 8,-1642 8,-1642 8,-142 8,-142 8,-136 14,-130 20,-130"/>
+<text text-anchor="middle" x="381" y="-1638.8" font-family="Times,serif" font-size="14.00">C++ 03</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_cxx03_functions_and_methods</title>
+<path fill="none" stroke="black" d="M132,-346C132,-346 300,-346 300,-346 306,-346 312,-352 312,-358 312,-358 312,-855 312,-855 312,-861 306,-867 300,-867 300,-867 132,-867 132,-867 126,-867 120,-861 120,-855 120,-855 120,-358 120,-358 120,-352 126,-346 132,-346"/>
+<text text-anchor="middle" x="216" y="-851.8" font-family="Times,serif" font-size="14.00">Functions and Methods</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_cxx03_exercises_userdb</title>
+<path fill="none" stroke="black" d="M332,-792C332,-792 734,-792 734,-792 740,-792 746,-798 746,-804 746,-804 746,-1611 746,-1611 746,-1617 740,-1623 734,-1623 734,-1623 332,-1623 332,-1623 326,-1623 320,-1617 320,-1611 320,-1611 320,-804 320,-804 320,-798 326,-792 332,-792"/>
+<text text-anchor="middle" x="533" y="-1607.8" font-family="Times,serif" font-size="14.00">Exercises: User Database</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_cxx03_templates</title>
+<path fill="none" stroke="black" d="M40,-1030C40,-1030 194,-1030 194,-1030 200,-1030 206,-1036 206,-1042 206,-1042 206,-1165 206,-1165 206,-1171 200,-1177 194,-1177 194,-1177 40,-1177 40,-1177 34,-1177 28,-1171 28,-1165 28,-1165 28,-1042 28,-1042 28,-1036 34,-1030 40,-1030"/>
+<text text-anchor="middle" x="117" y="-1161.8" font-family="Times,serif" font-size="14.00">Templates</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_cxx03_data_encapsulation</title>
+<path fill="none" stroke="black" d="M371,-202C371,-202 709,-202 709,-202 715,-202 721,-208 721,-214 721,-214 721,-553 721,-553 721,-559 715,-565 709,-565 709,-565 371,-565 371,-565 365,-565 359,-559 359,-553 359,-553 359,-214 359,-214 359,-208 365,-202 371,-202"/>
+<text text-anchor="middle" x="540" y="-549.8" font-family="Times,serif" font-size="14.00">Data Encapsulation</text>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_cxx03_standard_library_miscellanea</title>
+<path fill="none" stroke="black" d="M384,-709C384,-709 619,-709 619,-709 625,-709 631,-715 631,-721 631,-721 631,-772 631,-772 631,-778 625,-784 619,-784 619,-784 384,-784 384,-784 378,-784 372,-778 372,-772 372,-772 372,-721 372,-721 372,-715 378,-709 384,-709"/>
+<text text-anchor="middle" x="501.5" y="-768.8" font-family="Times,serif" font-size="14.00">The Standard Library: Miscellaneous Topics</text>
+</g>
+<g id="clust7" class="cluster">
+<title>cluster_cxx03_exceptions</title>
+<path fill="none" stroke="black" d="M132,-875C132,-875 218,-875 218,-875 224,-875 230,-881 230,-887 230,-887 230,-1010 230,-1010 230,-1016 224,-1022 218,-1022 218,-1022 132,-1022 132,-1022 126,-1022 120,-1016 120,-1010 120,-1010 120,-887 120,-887 120,-881 126,-875 132,-875"/>
+<text text-anchor="middle" x="175" y="-1006.8" font-family="Times,serif" font-size="14.00">Exceptions</text>
+</g>
+<g id="clust8" class="cluster">
+<title>cluster_cxx03_stl</title>
+<path fill="none" stroke="black" d="M40,-1185C40,-1185 300,-1185 300,-1185 306,-1185 312,-1191 312,-1197 312,-1197 312,-1248 312,-1248 312,-1254 306,-1260 300,-1260 300,-1260 40,-1260 40,-1260 34,-1260 28,-1254 28,-1248 28,-1248 28,-1197 28,-1197 28,-1191 34,-1185 40,-1185"/>
+<text text-anchor="middle" x="170" y="-1244.8" font-family="Times,serif" font-size="14.00">Standard Template Library</text>
+</g>
+<g id="clust9" class="cluster">
+<title>cluster_c</title>
+<path fill="none" stroke="black" d="M519,-8C519,-8 682,-8 682,-8 688,-8 694,-14 694,-20 694,-20 694,-110 694,-110 694,-116 688,-122 682,-122 682,-122 519,-122 519,-122 513,-122 507,-116 507,-110 507,-110 507,-20 507,-20 507,-14 513,-8 519,-8"/>
+<text text-anchor="middle" x="600.5" y="-106.8" font-family="Times,serif" font-size="14.00">The C Programming Language</text>
+</g>
+<g id="clust10" class="cluster">
+<title>cluster_c_introduction</title>
+<path fill="none" stroke="black" d="M554,-16C554,-16 646,-16 646,-16 652,-16 658,-22 658,-28 658,-28 658,-79 658,-79 658,-85 652,-91 646,-91 646,-91 554,-91 554,-91 548,-91 542,-85 542,-79 542,-79 542,-28 542,-28 542,-22 548,-16 554,-16"/>
+<text text-anchor="middle" x="600" y="-75.8" font-family="Times,serif" font-size="14.00">Introduction</text>
+</g>
+<!-- cxx03_introduction -->
+<g id="node1" class="node">
+<title>cxx03_introduction</title>
+<g id="a_node1"><a xlink:href="../../001-introduction/topic.html" xlink:title="Introduction">
+<ellipse fill="#dcdcdc" stroke="black" cx="600" cy="-156" rx="53.89" ry="18"/>
+<text text-anchor="middle" x="600" y="-152.3" font-family="Times,serif" font-size="14.00">Introduction</text>
+</a>
+</g>
+</g>
+<!-- c_introduction_installation -->
+<g id="node31" class="node">
+<title>c_introduction_installation</title>
+<g id="a_node31"><a xlink:href="../../../c/010-introduction/000-installation/topic.html" xlink:title="Installation">
+<ellipse fill="#dcdcdc" stroke="black" cx="600" cy="-42" rx="50.09" ry="18"/>
+<text text-anchor="middle" x="600" y="-38.3" font-family="Times,serif" font-size="14.00">Installation</text>
+</a>
+</g>
+</g>
+<!-- cxx03_introduction&#45;&gt;c_introduction_installation -->
+<g id="edge35" class="edge">
+<title>cxx03_introduction&#45;&gt;c_introduction_installation</title>
+<path fill="none" stroke="black" d="M600,-137.99C600,-120.06 600,-91.56 600,-70.44"/>
+<polygon fill="black" stroke="black" points="603.5,-70.17 600,-60.17 596.5,-70.17 603.5,-70.17"/>
+</g>
+<!-- cxx03_functions_and_methods_const -->
+<g id="node2" class="node">
+<title>cxx03_functions_and_methods_const</title>
+<g id="a_node2"><a xlink:href="../../030-functions-and-methods/030-const/topic.html" xlink:title="const">
+<ellipse fill="#dcdcdc" stroke="black" cx="188" cy="-516" rx="29.5" ry="18"/>
+<text text-anchor="middle" x="188" y="-512.3" font-family="Times,serif" font-size="14.00">const</text>
+</a>
+</g>
+</g>
+<!-- cxx03_functions_and_methods_methods -->
+<g id="node7" class="node">
+<title>cxx03_functions_and_methods_methods</title>
+<g id="a_node7"><a xlink:href="../../030-functions-and-methods/020-methods/topic.html" xlink:title="Methods">
+<ellipse fill="#dcdcdc" stroke="black" cx="255" cy="-444" rx="42.49" ry="18"/>
+<text text-anchor="middle" x="255" y="-440.3" font-family="Times,serif" font-size="14.00">Methods</text>
+</a>
+</g>
+</g>
+<!-- cxx03_functions_and_methods_const&#45;&gt;cxx03_functions_and_methods_methods -->
+<g id="edge1" class="edge">
+<title>cxx03_functions_and_methods_const&#45;&gt;cxx03_functions_and_methods_methods</title>
+<path fill="none" stroke="black" d="M202.21,-500.15C210.99,-490.98 222.45,-479.01 232.44,-468.56"/>
+<polygon fill="black" stroke="black" points="235.02,-470.93 239.41,-461.29 229.96,-466.09 235.02,-470.93"/>
+</g>
+<!-- cxx03_functions_and_methods_operators -->
+<g id="node3" class="node">
+<title>cxx03_functions_and_methods_operators</title>
+<g id="a_node3"><a xlink:href="../../030-functions-and-methods/070-operators/topic.html" xlink:title="Operator Overloading">
+<ellipse fill="#dcdcdc" stroke="black" cx="216" cy="-818" rx="88.28" ry="18"/>
+<text text-anchor="middle" x="216" y="-814.3" font-family="Times,serif" font-size="14.00">Operator Overloading</text>
+</a>
+</g>
+</g>
+<!-- cxx03_functions_and_methods_static -->
+<g id="node6" class="node">
+<title>cxx03_functions_and_methods_static</title>
+<g id="a_node6"><a xlink:href="../../030-functions-and-methods/060-static/topic.html" xlink:title="static Methods">
+<ellipse fill="#dcdcdc" stroke="black" cx="207" cy="-735" rx="63.09" ry="18"/>
+<text text-anchor="middle" x="207" y="-731.3" font-family="Times,serif" font-size="14.00">static Methods</text>
+</a>
+</g>
+</g>
+<!-- cxx03_functions_and_methods_operators&#45;&gt;cxx03_functions_and_methods_static -->
+<g id="edge2" class="edge">
+<title>cxx03_functions_and_methods_operators&#45;&gt;cxx03_functions_and_methods_static</title>
+<path fill="none" stroke="black" d="M214.09,-799.82C212.91,-789.19 211.37,-775.31 210.02,-763.2"/>
+<polygon fill="black" stroke="black" points="213.49,-762.71 208.91,-753.15 206.53,-763.48 213.49,-762.71"/>
+</g>
+<!-- cxx03_functions_and_methods_overloading -->
+<g id="node4" class="node">
+<title>cxx03_functions_and_methods_overloading</title>
+<g id="a_node4"><a xlink:href="../../030-functions-and-methods/010-overloading/topic.html" xlink:title="Overloading">
+<ellipse fill="#dcdcdc" stroke="black" cx="249" cy="-372" rx="54.69" ry="18"/>
+<text text-anchor="middle" x="249" y="-368.3" font-family="Times,serif" font-size="14.00">Overloading</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_classes_objects -->
+<g id="node22" class="node">
+<title>cxx03_data_encapsulation_classes_objects</title>
+<g id="a_node22"><a xlink:href="../../020-data-encapsulation/cpp-introduction.html" xlink:title="Classes and Objects">
+<ellipse fill="#dcdcdc" stroke="black" cx="548" cy="-300" rx="81.49" ry="18"/>
+<text text-anchor="middle" x="548" y="-296.3" font-family="Times,serif" font-size="14.00">Classes and Objects</text>
+</a>
+</g>
+</g>
+<!-- cxx03_functions_and_methods_overloading&#45;&gt;cxx03_data_encapsulation_classes_objects -->
+<g id="edge6" class="edge">
+<title>cxx03_functions_and_methods_overloading&#45;&gt;cxx03_data_encapsulation_classes_objects</title>
+<path fill="none" stroke="black" d="M292.06,-360.82C311.31,-356.27 334.29,-350.86 355,-346 398.05,-335.9 446.51,-324.6 484.11,-315.85"/>
+<polygon fill="black" stroke="black" points="484.97,-319.25 493.92,-313.57 483.38,-312.43 484.97,-319.25"/>
+</g>
+<!-- cxx03_functions_and_methods_references -->
+<g id="node5" class="node">
+<title>cxx03_functions_and_methods_references</title>
+<g id="a_node5"><a xlink:href="../../030-functions-and-methods/050-references/topic.html" xlink:title="References">
+<ellipse fill="#dcdcdc" stroke="black" cx="188" cy="-663" rx="50.09" ry="18"/>
+<text text-anchor="middle" x="188" y="-659.3" font-family="Times,serif" font-size="14.00">References</text>
+</a>
+</g>
+</g>
+<!-- cxx03_functions_and_methods_this -->
+<g id="node8" class="node">
+<title>cxx03_functions_and_methods_this</title>
+<g id="a_node8"><a xlink:href="../../030-functions-and-methods/040-this/topic.html" xlink:title="this">
+<ellipse fill="#dcdcdc" stroke="black" cx="188" cy="-591" rx="27" ry="18"/>
+<text text-anchor="middle" x="188" y="-587.3" font-family="Times,serif" font-size="14.00">this</text>
+</a>
+</g>
+</g>
+<!-- cxx03_functions_and_methods_references&#45;&gt;cxx03_functions_and_methods_this -->
+<g id="edge18" class="edge">
+<title>cxx03_functions_and_methods_references&#45;&gt;cxx03_functions_and_methods_this</title>
+<path fill="none" stroke="black" d="M188,-644.7C188,-636.98 188,-627.71 188,-619.11"/>
+<polygon fill="black" stroke="black" points="191.5,-619.1 188,-609.1 184.5,-619.1 191.5,-619.1"/>
+</g>
+<!-- cxx03_functions_and_methods_static&#45;&gt;cxx03_functions_and_methods_references -->
+<g id="edge20" class="edge">
+<title>cxx03_functions_and_methods_static&#45;&gt;cxx03_functions_and_methods_references</title>
+<path fill="none" stroke="black" d="M202.3,-716.7C200.19,-708.9 197.64,-699.51 195.28,-690.83"/>
+<polygon fill="black" stroke="black" points="198.64,-689.84 192.64,-681.1 191.88,-691.67 198.64,-689.84"/>
+</g>
+<!-- cxx03_functions_and_methods_methods&#45;&gt;cxx03_functions_and_methods_overloading -->
+<g id="edge40" class="edge">
+<title>cxx03_functions_and_methods_methods&#45;&gt;cxx03_functions_and_methods_overloading</title>
+<path fill="none" stroke="black" d="M253.52,-425.7C252.86,-417.98 252.06,-408.71 251.32,-400.11"/>
+<polygon fill="black" stroke="black" points="254.81,-399.77 250.47,-390.1 247.83,-400.37 254.81,-399.77"/>
+</g>
+<!-- cxx03_functions_and_methods_this&#45;&gt;cxx03_functions_and_methods_const -->
+<g id="edge41" class="edge">
+<title>cxx03_functions_and_methods_this&#45;&gt;cxx03_functions_and_methods_const</title>
+<path fill="none" stroke="black" d="M188,-572.7C188,-564.25 188,-553.87 188,-544.37"/>
+<polygon fill="black" stroke="black" points="191.5,-544.18 188,-534.18 184.5,-544.18 191.5,-544.18"/>
+</g>
+<!-- cxx03_exercises_userdb_user_access_methods -->
+<g id="node9" class="node">
+<title>cxx03_exercises_userdb_user_access_methods</title>
+<g id="a_node9"><a xlink:href="../user-access-methods/exercise.html" xlink:title="Exercise: Access Methods for Members">
+<ellipse fill="red" stroke="black" cx="481" cy="-1056" rx="153.27" ry="18"/>
+<text text-anchor="middle" x="481" y="-1052.3" font-family="Times,serif" font-size="14.00">Exercise: Access Methods for Members</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_user_access_methods&#45;&gt;cxx03_functions_and_methods_methods -->
+<g id="edge4" class="edge">
+<title>cxx03_exercises_userdb_user_access_methods&#45;&gt;cxx03_functions_and_methods_methods</title>
+<path fill="none" stroke="black" d="M382.5,-1042.13C360.03,-1037.21 340.53,-1030.63 333,-1022 297.82,-981.67 323,-955.52 323,-902 323,-902 323,-902 323,-590 323,-544.09 294.71,-497.07 274.62,-469.48"/>
+<polygon fill="black" stroke="black" points="277.23,-467.14 268.43,-461.24 271.63,-471.34 277.23,-467.14"/>
+</g>
+<!-- cxx03_exercises_userdb_user_simple_method -->
+<g id="node15" class="node">
+<title>cxx03_exercises_userdb_user_simple_method</title>
+<g id="a_node15"><a xlink:href="../user-simple-method/exercise.html" xlink:title="Exercise: Simple Method (Users Age By n Years)">
+<ellipse fill="red" stroke="black" cx="530" cy="-973" rx="187.67" ry="18"/>
+<text text-anchor="middle" x="530" y="-969.3" font-family="Times,serif" font-size="14.00">Exercise: Simple Method (Users Age By n Years)</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_user_access_methods&#45;&gt;cxx03_exercises_userdb_user_simple_method -->
+<g id="edge3" class="edge">
+<title>cxx03_exercises_userdb_user_access_methods&#45;&gt;cxx03_exercises_userdb_user_simple_method</title>
+<path fill="none" stroke="black" d="M491.39,-1037.82C498.08,-1026.76 506.9,-1012.18 514.43,-999.75"/>
+<polygon fill="black" stroke="black" points="517.44,-1001.52 519.62,-991.15 511.45,-997.9 517.44,-1001.52"/>
+</g>
+<!-- cxx03_exercises_userdb_userdb_search -->
+<g id="node10" class="node">
+<title>cxx03_exercises_userdb_userdb_search</title>
+<g id="a_node10"><a xlink:href="../userdb-search/exercise.html" xlink:title="Exercise: Search a User By Lastname">
+<ellipse fill="red" stroke="black" cx="496" cy="-1430" rx="144.87" ry="18"/>
+<text text-anchor="middle" x="496" y="-1426.3" font-family="Times,serif" font-size="14.00">Exercise: Search a User By Lastname</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_userdb_insert -->
+<g id="node19" class="node">
+<title>cxx03_exercises_userdb_userdb_insert</title>
+<g id="a_node19"><a xlink:href="../userdb-insert/exercise.html" xlink:title="Exercise: Insert a User into UserDB">
+<ellipse fill="red" stroke="black" cx="482" cy="-1358" rx="138.38" ry="18"/>
+<text text-anchor="middle" x="482" y="-1354.3" font-family="Times,serif" font-size="14.00">Exercise: Insert a User into UserDB</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_userdb_search&#45;&gt;cxx03_exercises_userdb_userdb_insert -->
+<g id="edge5" class="edge">
+<title>cxx03_exercises_userdb_userdb_search&#45;&gt;cxx03_exercises_userdb_userdb_insert</title>
+<path fill="none" stroke="black" d="M492.54,-1411.7C491,-1403.98 489.14,-1394.71 487.42,-1386.11"/>
+<polygon fill="black" stroke="black" points="490.81,-1385.22 485.42,-1376.1 483.95,-1386.6 490.81,-1385.22"/>
+</g>
+<!-- cxx03_exercises_userdb_user_const_members -->
+<g id="node11" class="node">
+<title>cxx03_exercises_userdb_user_const_members</title>
+<g id="a_node11"><a xlink:href="../user-const-members/exercise.html" xlink:title="Exercise: const Members">
+<ellipse fill="red" stroke="black" cx="530" cy="-901" rx="100.98" ry="18"/>
+<text text-anchor="middle" x="530" y="-897.3" font-family="Times,serif" font-size="14.00">Exercise: const Members</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_user_ctor -->
+<g id="node14" class="node">
+<title>cxx03_exercises_userdb_user_ctor</title>
+<g id="a_node14"><a xlink:href="../user-to-cxx-ctor/exercise.html" xlink:title="Exercise: Transform struct User Into A Class">
+<ellipse fill="red" stroke="black" cx="552" cy="-818" rx="169.77" ry="18"/>
+<text text-anchor="middle" x="552" y="-814.3" font-family="Times,serif" font-size="14.00">Exercise: Transform struct User Into A Class</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_user_const_members&#45;&gt;cxx03_exercises_userdb_user_ctor -->
+<g id="edge9" class="edge">
+<title>cxx03_exercises_userdb_user_const_members&#45;&gt;cxx03_exercises_userdb_user_ctor</title>
+<path fill="none" stroke="black" d="M534.67,-882.82C537.58,-872.08 541.4,-858.03 544.71,-845.84"/>
+<polygon fill="black" stroke="black" points="548.1,-846.72 547.34,-836.15 541.34,-844.89 548.1,-846.72"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_dtor -->
+<g id="node25" class="node">
+<title>cxx03_data_encapsulation_ctor_dtor</title>
+<g id="a_node25"><a xlink:href="../../020-data-encapsulation/ctor-dtor.html" xlink:title="More Constructors, Destructors">
+<ellipse fill="#dcdcdc" stroke="black" cx="494" cy="-516" rx="122.68" ry="18"/>
+<text text-anchor="middle" x="494" y="-512.3" font-family="Times,serif" font-size="14.00">More Constructors, Destructors</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_user_const_members&#45;&gt;cxx03_data_encapsulation_ctor_dtor -->
+<g id="edge10" class="edge">
+<title>cxx03_exercises_userdb_user_const_members&#45;&gt;cxx03_data_encapsulation_ctor_dtor</title>
+<path fill="none" stroke="black" d="M444.91,-891.28C413.51,-886.23 383.1,-878.52 373,-867 334.5,-823.1 363,-794.39 363,-736 363,-736 363,-736 363,-662 363,-607.04 415.47,-563.57 453.99,-539.06"/>
+<polygon fill="black" stroke="black" points="456.28,-541.76 462.95,-533.53 452.61,-535.8 456.28,-541.76"/>
+</g>
+<!-- cxx03_exercises_userdb_userdb_search_find_if -->
+<g id="node12" class="node">
+<title>cxx03_exercises_userdb_userdb_search_find_if</title>
+<g id="a_node12"><a xlink:href="../userdb-search-find_if/exercise.html" xlink:title="Exercise: Search a User By Lastname (std::find_if)">
+<ellipse fill="red" stroke="black" cx="520" cy="-1502" rx="192.27" ry="18"/>
+<text text-anchor="middle" x="520" y="-1498.3" font-family="Times,serif" font-size="14.00">Exercise: Search a User By Lastname (std::find_if)</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_userdb_search_find_if&#45;&gt;cxx03_exercises_userdb_userdb_search -->
+<g id="edge13" class="edge">
+<title>cxx03_exercises_userdb_userdb_search_find_if&#45;&gt;cxx03_exercises_userdb_userdb_search</title>
+<path fill="none" stroke="black" d="M514.07,-1483.7C511.39,-1475.9 508.17,-1466.51 505.2,-1457.83"/>
+<polygon fill="black" stroke="black" points="508.42,-1456.43 501.86,-1448.1 501.8,-1458.7 508.42,-1456.43"/>
+</g>
+<!-- cxx03_exercises_userdb_user_default_ctor -->
+<g id="node13" class="node">
+<title>cxx03_exercises_userdb_user_default_ctor</title>
+<g id="a_node13"><a xlink:href="../user-default-ctor/exercise.html" xlink:title="Exercise: Default Constructor (was: Arrays of Objects)">
+<ellipse fill="red" stroke="black" cx="533" cy="-1211" rx="205.26" ry="18"/>
+<text text-anchor="middle" x="533" y="-1207.3" font-family="Times,serif" font-size="14.00">Exercise: Default Constructor (was: Arrays of Objects)</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_user_const -->
+<g id="node16" class="node">
+<title>cxx03_exercises_userdb_user_const</title>
+<g id="a_node16"><a xlink:href="../user-const/exercise.html" xlink:title="Exercise: Use const">
+<ellipse fill="red" stroke="black" cx="445" cy="-1128" rx="80.69" ry="18"/>
+<text text-anchor="middle" x="445" y="-1124.3" font-family="Times,serif" font-size="14.00">Exercise: Use const</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_user_default_ctor&#45;&gt;cxx03_exercises_userdb_user_const -->
+<g id="edge14" class="edge">
+<title>cxx03_exercises_userdb_user_default_ctor&#45;&gt;cxx03_exercises_userdb_user_const</title>
+<path fill="none" stroke="black" d="M514.34,-1192.82C501.57,-1181.07 484.48,-1165.34 470.46,-1152.43"/>
+<polygon fill="black" stroke="black" points="472.76,-1149.8 463.03,-1145.6 468.02,-1154.95 472.76,-1149.8"/>
+</g>
+<!-- cxx03_exercises_userdb_user_default_ctor&#45;&gt;cxx03_data_encapsulation_ctor_dtor -->
+<g id="edge15" class="edge">
+<title>cxx03_exercises_userdb_user_default_ctor&#45;&gt;cxx03_data_encapsulation_ctor_dtor</title>
+<path fill="none" stroke="black" d="M593.16,-1193.78C654.59,-1173.15 741,-1130.97 741,-1057 741,-1057 741,-1057 741,-662 741,-586.61 654.36,-549.66 583.71,-532.06"/>
+<polygon fill="black" stroke="black" points="584.39,-528.62 573.85,-529.7 582.76,-535.43 584.39,-528.62"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_custom -->
+<g id="node24" class="node">
+<title>cxx03_data_encapsulation_ctor_custom</title>
+<g id="a_node24"><a xlink:href="../../020-data-encapsulation/ctor-custom.html" xlink:title="Custom Constructor">
+<ellipse fill="#dcdcdc" stroke="black" cx="563" cy="-372" rx="82.59" ry="18"/>
+<text text-anchor="middle" x="563" y="-368.3" font-family="Times,serif" font-size="14.00">Custom Constructor</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_user_ctor&#45;&gt;cxx03_data_encapsulation_ctor_custom -->
+<g id="edge16" class="edge">
+<title>cxx03_exercises_userdb_user_ctor&#45;&gt;cxx03_data_encapsulation_ctor_custom</title>
+<path fill="none" stroke="black" d="M615.22,-801.25C622.93,-796.84 629.89,-791.21 635,-784 665.89,-740.46 640,-717.38 640,-664 640,-664 640,-664 640,-515 640,-469.25 608.74,-424.15 586.05,-397.45"/>
+<polygon fill="black" stroke="black" points="588.55,-394.99 579.33,-389.77 583.28,-399.6 588.55,-394.99"/>
+</g>
+<!-- cxx03_standard_library_miscellanea_string -->
+<g id="node27" class="node">
+<title>cxx03_standard_library_miscellanea_string</title>
+<g id="a_node27"><a xlink:href="../../900-standard-library-miscellanea/string/topic.html" xlink:title="std::string">
+<ellipse fill="#dcdcdc" stroke="black" cx="552" cy="-735" rx="46.29" ry="18"/>
+<text text-anchor="middle" x="552" y="-731.3" font-family="Times,serif" font-size="14.00">std::string</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_user_ctor&#45;&gt;cxx03_standard_library_miscellanea_string -->
+<g id="edge17" class="edge">
+<title>cxx03_exercises_userdb_user_ctor&#45;&gt;cxx03_standard_library_miscellanea_string</title>
+<path fill="none" stroke="black" d="M552,-799.82C552,-789.19 552,-775.31 552,-763.2"/>
+<polygon fill="black" stroke="black" points="555.5,-763.15 552,-753.15 548.5,-763.15 555.5,-763.15"/>
+</g>
+<!-- cxx03_exercises_userdb_user_simple_method&#45;&gt;cxx03_functions_and_methods_methods -->
+<g id="edge23" class="edge">
+<title>cxx03_exercises_userdb_user_simple_method&#45;&gt;cxx03_functions_and_methods_methods</title>
+<path fill="none" stroke="black" d="M471.96,-955.72C429.36,-940.39 374.49,-912.78 348,-867 337.26,-848.44 343,-840.45 343,-819 343,-819 343,-819 343,-590 343,-548.57 349.73,-533.27 328,-498 319.1,-483.56 304.67,-471.86 290.98,-463.15"/>
+<polygon fill="black" stroke="black" points="292.53,-460 282.16,-457.87 288.94,-466.01 292.53,-460"/>
+</g>
+<!-- cxx03_exercises_userdb_user_simple_method&#45;&gt;cxx03_exercises_userdb_user_const_members -->
+<g id="edge22" class="edge">
+<title>cxx03_exercises_userdb_user_simple_method&#45;&gt;cxx03_exercises_userdb_user_const_members</title>
+<path fill="none" stroke="black" d="M530,-954.7C530,-946.98 530,-937.71 530,-929.11"/>
+<polygon fill="black" stroke="black" points="533.5,-929.1 530,-919.1 526.5,-929.1 533.5,-929.1"/>
+</g>
+<!-- cxx03_exercises_userdb_user_const&#45;&gt;cxx03_functions_and_methods_const -->
+<g id="edge27" class="edge">
+<title>cxx03_exercises_userdb_user_const&#45;&gt;cxx03_functions_and_methods_const</title>
+<path fill="none" stroke="black" d="M376.38,-1118.45C319.26,-1109.97 243.88,-1095.17 222,-1074 207.43,-1059.9 225.68,-1042.85 210,-1030 190.02,-1013.62 112.02,-1040.52 94,-1022 56.77,-983.74 89,-955.38 89,-902 89,-902 89,-902 89,-662 89,-609.9 133.14,-562.73 162.47,-537.13"/>
+<polygon fill="black" stroke="black" points="164.93,-539.63 170.3,-530.5 160.41,-534.29 164.93,-539.63"/>
+</g>
+<!-- cxx03_exercises_userdb_user_const&#45;&gt;cxx03_functions_and_methods_references -->
+<g id="edge28" class="edge">
+<title>cxx03_exercises_userdb_user_const&#45;&gt;cxx03_functions_and_methods_references</title>
+<path fill="none" stroke="black" d="M408.22,-1111.84C383.03,-1101.39 348.9,-1087.07 319,-1074 275.62,-1055.04 267.86,-1041.74 222,-1030 210.56,-1027.07 124.28,-1030.42 116,-1022 78.55,-983.9 109,-955.42 109,-902 109,-902 109,-902 109,-817 109,-767.63 109.13,-751.05 135,-709 140.5,-700.06 148.39,-691.99 156.4,-685.25"/>
+<polygon fill="black" stroke="black" points="158.69,-687.9 164.37,-678.95 154.35,-682.4 158.69,-687.9"/>
+</g>
+<!-- cxx03_exercises_userdb_user_const&#45;&gt;cxx03_exercises_userdb_user_access_methods -->
+<g id="edge26" class="edge">
+<title>cxx03_exercises_userdb_user_const&#45;&gt;cxx03_exercises_userdb_user_access_methods</title>
+<path fill="none" stroke="black" d="M453.71,-1110.05C457.85,-1102.01 462.89,-1092.2 467.51,-1083.23"/>
+<polygon fill="black" stroke="black" points="470.65,-1084.77 472.12,-1074.28 464.43,-1081.57 470.65,-1084.77"/>
+</g>
+<!-- cxx03_exercises_userdb_userdb_search_notfound_exception -->
+<g id="node17" class="node">
+<title>cxx03_exercises_userdb_userdb_search_notfound_exception</title>
+<ellipse fill="red" stroke="black" stroke-width="3" cx="512" cy="-1574" rx="177.37" ry="18"/>
+<text text-anchor="middle" x="512" y="-1570.3" font-family="Times,serif" font-size="14.00">Exercise: Search, “User Not Found” Exception</text>
+</g>
+<!-- cxx03_exercises_userdb_userdb_search_notfound_exception&#45;&gt;cxx03_exercises_userdb_userdb_search_find_if -->
+<g id="edge29" class="edge">
+<title>cxx03_exercises_userdb_userdb_search_notfound_exception&#45;&gt;cxx03_exercises_userdb_userdb_search_find_if</title>
+<path fill="none" stroke="black" d="M513.98,-1555.7C514.86,-1547.98 515.92,-1538.71 516.9,-1530.11"/>
+<polygon fill="black" stroke="black" points="520.39,-1530.44 518.05,-1520.1 513.43,-1529.64 520.39,-1530.44"/>
+</g>
+<!-- cxx03_exceptions_try_catch -->
+<g id="node29" class="node">
+<title>cxx03_exceptions_try_catch</title>
+<g id="a_node29"><a xlink:href="../../040-exceptions/020-try-catch/topic.html" xlink:title="try &#45; catch">
+<ellipse fill="#dcdcdc" stroke="black" cx="175" cy="-973" rx="46.59" ry="18"/>
+<text text-anchor="middle" x="175" y="-969.3" font-family="Times,serif" font-size="14.00">try &#45; catch</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_userdb_search_notfound_exception&#45;&gt;cxx03_exceptions_try_catch -->
+<g id="edge30" class="edge">
+<title>cxx03_exercises_userdb_userdb_search_notfound_exception&#45;&gt;cxx03_exceptions_try_catch</title>
+<path fill="none" stroke="black" d="M383.24,-1561.57C236.57,-1544.9 17,-1507.22 17,-1431 17,-1431 17,-1431 17,-1127 17,-1083.78 -1.95,-1064.57 24,-1030 46.36,-1000.21 86.34,-986.26 119.54,-979.73"/>
+<polygon fill="black" stroke="black" points="120.38,-983.14 129.61,-977.93 119.15,-976.25 120.38,-983.14"/>
+</g>
+<!-- cxx03_exercises_userdb_userdb_vector_basic -->
+<g id="node18" class="node">
+<title>cxx03_exercises_userdb_userdb_vector_basic</title>
+<g id="a_node18"><a xlink:href="../userdb-vector/exercise.html" xlink:title="Exercise: Use std::vector in UserDB">
+<ellipse fill="red" stroke="black" cx="482" cy="-1286" rx="139.98" ry="18"/>
+<text text-anchor="middle" x="482" y="-1282.3" font-family="Times,serif" font-size="14.00">Exercise: Use std::vector in UserDB</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_userdb_vector_basic&#45;&gt;cxx03_exercises_userdb_user_default_ctor -->
+<g id="edge33" class="edge">
+<title>cxx03_exercises_userdb_userdb_vector_basic&#45;&gt;cxx03_exercises_userdb_user_default_ctor</title>
+<path fill="none" stroke="black" d="M494.09,-1267.7C500.37,-1258.7 508.18,-1247.52 515.15,-1237.55"/>
+<polygon fill="black" stroke="black" points="518.14,-1239.38 521,-1229.18 512.4,-1235.37 518.14,-1239.38"/>
+</g>
+<!-- cxx03_stl_basics -->
+<g id="node30" class="node">
+<title>cxx03_stl_basics</title>
+<g id="a_node30"><a xlink:href="../../060-stl/010-basics/topic.html" xlink:title="Standard Template Library: Basics">
+<ellipse fill="#dcdcdc" stroke="black" cx="170" cy="-1211" rx="133.78" ry="18"/>
+<text text-anchor="middle" x="170" y="-1207.3" font-family="Times,serif" font-size="14.00">Standard Template Library: Basics</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exercises_userdb_userdb_vector_basic&#45;&gt;cxx03_stl_basics -->
+<g id="edge34" class="edge">
+<title>cxx03_exercises_userdb_userdb_vector_basic&#45;&gt;cxx03_stl_basics</title>
+<path fill="none" stroke="black" d="M384.04,-1273.04C361.55,-1269.52 337.83,-1265.19 316,-1260 284.3,-1252.46 249.63,-1241.19 222.03,-1231.47"/>
+<polygon fill="black" stroke="black" points="223.17,-1228.16 212.58,-1228.1 220.82,-1234.76 223.17,-1228.16"/>
+</g>
+<!-- cxx03_exercises_userdb_userdb_insert&#45;&gt;cxx03_exercises_userdb_userdb_vector_basic -->
+<g id="edge36" class="edge">
+<title>cxx03_exercises_userdb_userdb_insert&#45;&gt;cxx03_exercises_userdb_userdb_vector_basic</title>
+<path fill="none" stroke="black" d="M482,-1339.7C482,-1331.98 482,-1322.71 482,-1314.11"/>
+<polygon fill="black" stroke="black" points="485.5,-1314.1 482,-1304.1 478.5,-1314.1 485.5,-1314.1"/>
+</g>
+<!-- cxx03_exercises_userdb_userdb_insert&#45;&gt;cxx03_stl_basics -->
+<g id="edge37" class="edge">
+<title>cxx03_exercises_userdb_userdb_insert&#45;&gt;cxx03_stl_basics</title>
+<path fill="none" stroke="black" d="M430.8,-1341.21C401.64,-1331.62 364.73,-1318.47 333,-1304 287.33,-1283.17 237.42,-1253.98 205.02,-1234.11"/>
+<polygon fill="black" stroke="black" points="206.72,-1231.04 196.37,-1228.76 203.04,-1236.99 206.72,-1231.04"/>
+</g>
+<!-- cxx03_templates_class_templates -->
+<g id="node20" class="node">
+<title>cxx03_templates_class_templates</title>
+<g id="a_node20"><a xlink:href="../../050-templates/020-class-templates/topic.html" xlink:title="Class Templates">
+<ellipse fill="#dcdcdc" stroke="black" cx="123" cy="-1128" rx="68.49" ry="18"/>
+<text text-anchor="middle" x="123" y="-1124.3" font-family="Times,serif" font-size="14.00">Class Templates</text>
+</a>
+</g>
+</g>
+<!-- cxx03_templates_function_templates -->
+<g id="node21" class="node">
+<title>cxx03_templates_function_templates</title>
+<g id="a_node21"><a xlink:href="../../050-templates/010-function-templates/topic.html" xlink:title="Function Templates">
+<ellipse fill="#dcdcdc" stroke="black" cx="117" cy="-1056" rx="80.69" ry="18"/>
+<text text-anchor="middle" x="117" y="-1052.3" font-family="Times,serif" font-size="14.00">Function Templates</text>
+</a>
+</g>
+</g>
+<!-- cxx03_templates_class_templates&#45;&gt;cxx03_templates_function_templates -->
+<g id="edge7" class="edge">
+<title>cxx03_templates_class_templates&#45;&gt;cxx03_templates_function_templates</title>
+<path fill="none" stroke="black" d="M121.52,-1109.7C120.86,-1101.98 120.06,-1092.71 119.32,-1084.11"/>
+<polygon fill="black" stroke="black" points="122.81,-1083.77 118.47,-1074.1 115.83,-1084.37 122.81,-1083.77"/>
+</g>
+<!-- cxx03_templates_function_templates&#45;&gt;cxx03_exceptions_try_catch -->
+<g id="edge8" class="edge">
+<title>cxx03_templates_function_templates&#45;&gt;cxx03_exceptions_try_catch</title>
+<path fill="none" stroke="black" d="M129.3,-1037.82C137.41,-1026.5 148.15,-1011.5 157.19,-998.88"/>
+<polygon fill="black" stroke="black" points="160.14,-1000.77 163.11,-990.6 154.45,-996.69 160.14,-1000.77"/>
+</g>
+<!-- cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_introduction -->
+<g id="edge11" class="edge">
+<title>cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_introduction</title>
+<path fill="none" stroke="black" d="M626.74,-295.35C661.77,-289.31 700.01,-275.69 722,-246 733.64,-230.29 733.18,-218.04 722,-202 707.94,-181.82 683.75,-170.67 660.6,-164.51"/>
+<polygon fill="black" stroke="black" points="661.32,-161.09 650.78,-162.17 659.69,-167.9 661.32,-161.09"/>
+</g>
+<!-- cxx03_data_encapsulation_c -->
+<g id="node26" class="node">
+<title>cxx03_data_encapsulation_c</title>
+<g id="a_node26"><a xlink:href="../../020-data-encapsulation/c.html" xlink:title="Object Oriented Programming In Good Ol’ C">
+<ellipse fill="#dcdcdc" stroke="black" cx="540" cy="-228" rx="172.77" ry="18"/>
+<text text-anchor="middle" x="540" y="-224.3" font-family="Times,serif" font-size="14.00">Object Oriented Programming In Good Ol’ C</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_data_encapsulation_c -->
+<g id="edge12" class="edge">
+<title>cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_data_encapsulation_c</title>
+<path fill="none" stroke="black" d="M546.02,-281.7C545.14,-273.98 544.08,-264.71 543.1,-256.11"/>
+<polygon fill="black" stroke="black" points="546.57,-255.64 541.95,-246.1 539.61,-256.44 546.57,-255.64"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_default -->
+<g id="node23" class="node">
+<title>cxx03_data_encapsulation_ctor_default</title>
+<g id="a_node23"><a xlink:href="../../020-data-encapsulation/ctor-default.html" xlink:title="Default Constructor">
+<ellipse fill="#dcdcdc" stroke="black" cx="471" cy="-444" rx="81.49" ry="18"/>
+<text text-anchor="middle" x="471" y="-440.3" font-family="Times,serif" font-size="14.00">Default Constructor</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_ctor_default&#45;&gt;cxx03_data_encapsulation_ctor_custom -->
+<g id="edge19" class="edge">
+<title>cxx03_data_encapsulation_ctor_default&#45;&gt;cxx03_data_encapsulation_ctor_custom</title>
+<path fill="none" stroke="black" d="M492.8,-426.41C504.83,-417.26 519.95,-405.76 533.07,-395.77"/>
+<polygon fill="black" stroke="black" points="535.51,-398.31 541.35,-389.47 531.28,-392.74 535.51,-398.31"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_custom&#45;&gt;cxx03_data_encapsulation_classes_objects -->
+<g id="edge25" class="edge">
+<title>cxx03_data_encapsulation_ctor_custom&#45;&gt;cxx03_data_encapsulation_classes_objects</title>
+<path fill="none" stroke="black" d="M559.29,-353.7C557.64,-345.98 555.65,-336.71 553.81,-328.11"/>
+<polygon fill="black" stroke="black" points="557.18,-327.15 551.67,-318.1 550.34,-328.62 557.18,-327.15"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_default -->
+<g id="edge31" class="edge">
+<title>cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_default</title>
+<path fill="none" stroke="black" d="M488.31,-497.7C485.75,-489.9 482.67,-480.51 479.82,-471.83"/>
+<polygon fill="black" stroke="black" points="483.07,-470.51 476.62,-462.1 476.42,-472.7 483.07,-470.51"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_custom -->
+<g id="edge32" class="edge">
+<title>cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_custom</title>
+<path fill="none" stroke="black" d="M525.67,-498.37C539.1,-489.51 553.4,-477.27 561,-462 570.5,-442.92 570.35,-418.56 568.18,-400.15"/>
+<polygon fill="black" stroke="black" points="571.62,-399.49 566.73,-390.09 564.69,-400.49 571.62,-399.49"/>
+</g>
+<!-- cxx03_data_encapsulation_c&#45;&gt;cxx03_introduction -->
+<g id="edge39" class="edge">
+<title>cxx03_data_encapsulation_c&#45;&gt;cxx03_introduction</title>
+<path fill="none" stroke="black" d="M554.52,-210.05C561.89,-201.46 570.98,-190.86 579.09,-181.4"/>
+<polygon fill="black" stroke="black" points="581.76,-183.66 585.61,-173.79 576.44,-179.1 581.76,-183.66"/>
+</g>
+<!-- cxx03_exceptions_basics -->
+<g id="node28" class="node">
+<title>cxx03_exceptions_basics</title>
+<g id="a_node28"><a xlink:href="../../040-exceptions/010-basics/topic.html" xlink:title="Basics">
+<ellipse fill="#dcdcdc" stroke="black" cx="181" cy="-901" rx="33.6" ry="18"/>
+<text text-anchor="middle" x="181" y="-897.3" font-family="Times,serif" font-size="14.00">Basics</text>
+</a>
+</g>
+</g>
+<!-- cxx03_exceptions_basics&#45;&gt;cxx03_functions_and_methods_operators -->
+<g id="edge21" class="edge">
+<title>cxx03_exceptions_basics&#45;&gt;cxx03_functions_and_methods_operators</title>
+<path fill="none" stroke="black" d="M188.25,-883.22C192.96,-872.32 199.2,-857.89 204.56,-845.47"/>
+<polygon fill="black" stroke="black" points="207.88,-846.61 208.64,-836.04 201.46,-843.83 207.88,-846.61"/>
+</g>
+<!-- cxx03_exceptions_try_catch&#45;&gt;cxx03_exceptions_basics -->
+<g id="edge38" class="edge">
+<title>cxx03_exceptions_try_catch&#45;&gt;cxx03_exceptions_basics</title>
+<path fill="none" stroke="black" d="M176.48,-954.7C177.14,-946.98 177.94,-937.71 178.68,-929.11"/>
+<polygon fill="black" stroke="black" points="182.17,-929.37 179.53,-919.1 175.19,-928.77 182.17,-929.37"/>
+</g>
+<!-- cxx03_stl_basics&#45;&gt;cxx03_templates_class_templates -->
+<g id="edge24" class="edge">
+<title>cxx03_stl_basics&#45;&gt;cxx03_templates_class_templates</title>
+<path fill="none" stroke="black" d="M160.03,-1192.82C153.63,-1181.79 145.2,-1167.27 138,-1154.86"/>
+<polygon fill="black" stroke="black" points="140.84,-1152.77 132.79,-1145.88 134.78,-1156.28 140.84,-1152.77"/>
+</g>
+</g>
+</svg>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2022 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/cxx03/exercises-userdb/userdb-search-notfound-exception/exercise.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

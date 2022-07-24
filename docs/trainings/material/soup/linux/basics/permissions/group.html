@@ -1,0 +1,618 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>File System Permissions &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/basics/permissions/group.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="Permissions: Mode, User and Group Ownership" href="basics.html" />
+    <link rel="prev" title="FH/Moodle Quiz: Shell" href="../shell/exercises/fh-questions.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">Linux</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../group.html">Linux Basics</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../intro/group.html">Introduction: Concepts and Terminology</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../shell/group.html">The Shell (Bash - “Bourne Again Shell”)</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">File System Permissions</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="basics.html">Permissions: Mode, User and Group Ownership</a></li>
+<li class="toctree-l6"><a class="reference internal" href="setuid.html">SetUID Programs: <code class="docutils literal notranslate"><span class="pre">passwd</span></code>, <code class="docutils literal notranslate"><span class="pre">sudo</span></code>, …</a></li>
+<li class="toctree-l6"><a class="reference internal" href="setuid-livedemo.html">SetUID: Live Demo</a></li>
+<li class="toctree-l6"><a class="reference internal" href="umask.html">Default Permissions: <code class="docutils literal notranslate"><span class="pre">umask</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="sticky.html">Ugly Hack: Sticky Bit</a></li>
+<li class="toctree-l6"><a class="reference internal" href="exercises/group.html">Exercises: File System Permissions</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../archiving-compression/group.html">Archiving and Compression</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../io-redirection-pipes/group.html">I/O Redirection And Pipes</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../exercises/group.html">Exercises: Linux Basics</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../ssh/group.html">SSH: Secure Shell Remote Login</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../toolchain/group.html">Toolchain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../sysprog/group.html">Linux Systems Programming</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../hardware/group.html">Linux Hardware Interfaces</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../drafts/group.html">Drafts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="file-system-permissions">
+<h1>File System Permissions<a class="headerlink" href="#file-system-permissions" title="Permalink to this headline">¶</a></h1>
+<p><strong>Topics</strong></p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basics.html">Permissions: Mode, User and Group Ownership</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setuid.html">SetUID Programs: <code class="docutils literal notranslate"><span class="pre">passwd</span></code>, <code class="docutils literal notranslate"><span class="pre">sudo</span></code>, …</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setuid-livedemo.html">SetUID: Live Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="umask.html">Default Permissions: <code class="docutils literal notranslate"><span class="pre">umask</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="sticky.html">Ugly Hack: Sticky Bit</a></li>
+</ul>
+</div>
+<p><strong>Exercises</strong></p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="exercises/group.html">Exercises: File System Permissions</a></li>
+</ul>
+</div>
+<p><strong>Dependencies</strong></p>
+<svg 
+ viewBox="0.00 0.00 1983.00 798.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 794)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-794 1979,-794 1979,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_linux</title>
+<path fill="none" stroke="black" d="M20,-8C20,-8 1955,-8 1955,-8 1961,-8 1967,-14 1967,-20 1967,-20 1967,-770 1967,-770 1967,-776 1961,-782 1955,-782 1955,-782 20,-782 20,-782 14,-782 8,-776 8,-770 8,-770 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="987.5" y="-766.8" font-family="Times,serif" font-size="14.00">Linux</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_linux_basics</title>
+<path fill="none" stroke="black" d="M28,-16C28,-16 1947,-16 1947,-16 1953,-16 1959,-22 1959,-28 1959,-28 1959,-739 1959,-739 1959,-745 1953,-751 1947,-751 1947,-751 28,-751 28,-751 22,-751 16,-745 16,-739 16,-739 16,-28 16,-28 16,-22 22,-16 28,-16"/>
+<text text-anchor="middle" x="987.5" y="-735.8" font-family="Times,serif" font-size="14.00">Linux Basics</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_linux_basics_permissions</title>
+<path fill="none" stroke="black" d="M36,-398C36,-398 1939,-398 1939,-398 1945,-398 1951,-404 1951,-410 1951,-410 1951,-708 1951,-708 1951,-714 1945,-720 1939,-720 1939,-720 36,-720 36,-720 30,-720 24,-714 24,-708 24,-708 24,-410 24,-410 24,-404 30,-398 36,-398"/>
+<text text-anchor="middle" x="987.5" y="-704.8" font-family="Times,serif" font-size="14.00">File System Permissions</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_linux_basics_permissions_exercises</title>
+<path fill="none" stroke="black" d="M1105,-470C1105,-470 1931,-470 1931,-470 1937,-470 1943,-476 1943,-482 1943,-482 1943,-677 1943,-677 1943,-683 1937,-689 1931,-689 1931,-689 1105,-689 1105,-689 1099,-689 1093,-683 1093,-677 1093,-677 1093,-482 1093,-482 1093,-476 1099,-470 1105,-470"/>
+<text text-anchor="middle" x="1518" y="-673.8" font-family="Times,serif" font-size="14.00">Exercises: File System Permissions</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_linux_basics_shell</title>
+<path fill="none" stroke="black" d="M456,-96C456,-96 1097,-96 1097,-96 1103,-96 1109,-102 1109,-108 1109,-108 1109,-378 1109,-378 1109,-384 1103,-390 1097,-390 1097,-390 456,-390 456,-390 450,-390 444,-384 444,-378 444,-378 444,-108 444,-108 444,-102 450,-96 456,-96"/>
+<text text-anchor="middle" x="776.5" y="-374.8" font-family="Times,serif" font-size="14.00">The Shell (Bash &#45; “Bourne Again Shell”)</text>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_linux_basics_intro</title>
+<path fill="none" stroke="black" d="M1129,-24C1129,-24 1439,-24 1439,-24 1445,-24 1451,-30 1451,-36 1451,-36 1451,-303 1451,-303 1451,-309 1445,-315 1439,-315 1439,-315 1129,-315 1129,-315 1123,-315 1117,-309 1117,-303 1117,-303 1117,-36 1117,-36 1117,-30 1123,-24 1129,-24"/>
+<text text-anchor="middle" x="1284" y="-299.8" font-family="Times,serif" font-size="14.00">Introduction: Concepts and Terminology</text>
+</g>
+<!-- linux_basics_permissions_basics -->
+<g id="node1" class="node">
+<title>linux_basics_permissions_basics</title>
+<g id="a_node1"><a xlink:href="basics.html" xlink:title="Permissions: Mode, User and Group Ownership">
+<ellipse fill="#dcdcdc" stroke="black" cx="445" cy="-424" rx="181.97" ry="18"/>
+<text text-anchor="middle" x="445" y="-420.3" font-family="Times,serif" font-size="14.00">Permissions: Mode, User and Group Ownership</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_ls -->
+<g id="node14" class="node">
+<title>linux_basics_shell_ls</title>
+<g id="a_node14"><a xlink:href="../shell/ls.html" xlink:title="Directory Listings: The ls Command">
+<ellipse fill="#dcdcdc" stroke="black" cx="594" cy="-341" rx="141.88" ry="18"/>
+<text text-anchor="middle" x="594" y="-337.3" font-family="Times,serif" font-size="14.00">Directory Listings: The ls Command</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_permissions_basics&#45;&gt;linux_basics_shell_ls -->
+<g id="edge4" class="edge">
+<title>linux_basics_permissions_basics&#45;&gt;linux_basics_shell_ls</title>
+<path fill="none" stroke="black" d="M475.87,-406.22C498.62,-393.85 529.76,-376.92 554.35,-363.56"/>
+<polygon fill="black" stroke="black" points="556.31,-366.47 563.42,-358.62 552.96,-360.32 556.31,-366.47"/>
+</g>
+<!-- linux_basics_permissions_setuid -->
+<g id="node2" class="node">
+<title>linux_basics_permissions_setuid</title>
+<g id="a_node2"><a xlink:href="setuid.html" xlink:title="SetUID Programs: passwd, sudo, …">
+<ellipse fill="#dcdcdc" stroke="black" cx="172" cy="-496" rx="140.28" ry="18"/>
+<text text-anchor="middle" x="172" y="-492.3" font-family="Times,serif" font-size="14.00">SetUID Programs: passwd, sudo, …</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_permissions_setuid&#45;&gt;linux_basics_permissions_basics -->
+<g id="edge16" class="edge">
+<title>linux_basics_permissions_setuid&#45;&gt;linux_basics_permissions_basics</title>
+<path fill="none" stroke="black" d="M231.91,-479.64C273.5,-468.97 329.11,-454.72 373.09,-443.44"/>
+<polygon fill="black" stroke="black" points="374.04,-446.81 382.86,-440.93 372.31,-440.03 374.04,-446.81"/>
+</g>
+<!-- linux_basics_permissions_fh_moodle_quiz -->
+<g id="node3" class="node">
+<title>linux_basics_permissions_fh_moodle_quiz</title>
+<g id="a_node3"><a xlink:href="exercises/fh-questions.html" xlink:title="FH/Moodle Quiz: Permissions">
+<ellipse fill="red" stroke="black" cx="727" cy="-496" rx="119.68" ry="18"/>
+<text text-anchor="middle" x="727" y="-492.3" font-family="Times,serif" font-size="14.00">FH/Moodle Quiz: Permissions</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_permissions_fh_moodle_quiz&#45;&gt;linux_basics_permissions_basics -->
+<g id="edge25" class="edge">
+<title>linux_basics_permissions_fh_moodle_quiz&#45;&gt;linux_basics_permissions_basics</title>
+<path fill="none" stroke="black" d="M667.88,-480.33C624.46,-469.55 565.18,-454.83 518.67,-443.29"/>
+<polygon fill="black" stroke="black" points="519.49,-439.89 508.95,-440.87 517.81,-446.68 519.49,-439.89"/>
+</g>
+<!-- linux_basics_permissions_setuid_livedemo -->
+<g id="node4" class="node">
+<title>linux_basics_permissions_setuid_livedemo</title>
+<g id="a_node4"><a xlink:href="setuid-livedemo.html" xlink:title="SetUID: Live Demo">
+<ellipse fill="#dcdcdc" stroke="black" cx="172" cy="-568" rx="83.39" ry="18"/>
+<text text-anchor="middle" x="172" y="-564.3" font-family="Times,serif" font-size="14.00">SetUID: Live Demo</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_permissions_setuid_livedemo&#45;&gt;linux_basics_permissions_setuid -->
+<g id="edge26" class="edge">
+<title>linux_basics_permissions_setuid_livedemo&#45;&gt;linux_basics_permissions_setuid</title>
+<path fill="none" stroke="black" d="M172,-549.7C172,-541.98 172,-532.71 172,-524.11"/>
+<polygon fill="black" stroke="black" points="175.5,-524.1 172,-514.1 168.5,-524.1 175.5,-524.1"/>
+</g>
+<!-- linux_basics_permissions_sticky -->
+<g id="node5" class="node">
+<title>linux_basics_permissions_sticky</title>
+<g id="a_node5"><a xlink:href="sticky.html" xlink:title="Ugly Hack: Sticky Bit">
+<ellipse fill="#dcdcdc" stroke="black" cx="500" cy="-496" rx="89.88" ry="18"/>
+<text text-anchor="middle" x="500" y="-492.3" font-family="Times,serif" font-size="14.00">Ugly Hack: Sticky Bit</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_permissions_sticky&#45;&gt;linux_basics_permissions_basics -->
+<g id="edge27" class="edge">
+<title>linux_basics_permissions_sticky&#45;&gt;linux_basics_permissions_basics</title>
+<path fill="none" stroke="black" d="M486.69,-478.05C480.16,-469.75 472.17,-459.58 464.94,-450.38"/>
+<polygon fill="black" stroke="black" points="467.5,-447.98 458.57,-442.28 462,-452.3 467.5,-447.98"/>
+</g>
+<!-- linux_basics_permissions_umasks -->
+<g id="node6" class="node">
+<title>linux_basics_permissions_umasks</title>
+<g id="a_node6"><a xlink:href="umask.html" xlink:title="Default Permissions: umask">
+<ellipse fill="#dcdcdc" stroke="black" cx="975" cy="-496" rx="110.48" ry="18"/>
+<text text-anchor="middle" x="975" y="-492.3" font-family="Times,serif" font-size="14.00">Default Permissions: umask</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_permissions_umasks&#45;&gt;linux_basics_permissions_basics -->
+<g id="edge30" class="edge">
+<title>linux_basics_permissions_umasks&#45;&gt;linux_basics_permissions_basics</title>
+<path fill="none" stroke="black" d="M913.76,-480.93C895.27,-477.01 874.87,-473.01 856,-470 767.63,-455.91 667.86,-444.88 588.75,-437.26"/>
+<polygon fill="black" stroke="black" points="589,-433.77 578.71,-436.3 588.34,-440.73 589,-433.77"/>
+</g>
+<!-- linux_basics_shell_file_dir_create_rm -->
+<g id="node16" class="node">
+<title>linux_basics_shell_file_dir_create_rm</title>
+<g id="a_node16"><a xlink:href="../shell/file_dir_create_rm.html" xlink:title="Creating And Removing Files and Directories">
+<ellipse fill="#dcdcdc" stroke="black" cx="927" cy="-341" rx="173.57" ry="18"/>
+<text text-anchor="middle" x="927" y="-337.3" font-family="Times,serif" font-size="14.00">Creating And Removing Files and Directories</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_permissions_umasks&#45;&gt;linux_basics_shell_file_dir_create_rm -->
+<g id="edge31" class="edge">
+<title>linux_basics_permissions_umasks&#45;&gt;linux_basics_shell_file_dir_create_rm</title>
+<path fill="none" stroke="black" d="M969.59,-477.75C961.3,-451.35 945.41,-400.69 935.56,-369.28"/>
+<polygon fill="black" stroke="black" points="938.8,-367.92 932.47,-359.43 932.12,-370.01 938.8,-367.92"/>
+</g>
+<!-- linux_basics_permissions_exercises_private_directory -->
+<g id="node7" class="node">
+<title>linux_basics_permissions_exercises_private_directory</title>
+<g id="a_node7"><a xlink:href="exercises/private-directory.html" xlink:title="Exercise: Create Private Directory">
+<ellipse fill="red" stroke="black" cx="1803" cy="-568" rx="131.88" ry="18"/>
+<text text-anchor="middle" x="1803" y="-564.3" font-family="Times,serif" font-size="14.00">Exercise: Create Private Directory</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_permissions_exercises_private_directory&#45;&gt;linux_basics_permissions_basics -->
+<g id="edge2" class="edge">
+<title>linux_basics_permissions_exercises_private_directory&#45;&gt;linux_basics_permissions_basics</title>
+<path fill="none" stroke="black" d="M1712.48,-554.85C1695.72,-552.95 1678.35,-551.22 1662,-550 1592.11,-544.8 449.84,-564.26 401,-514 387.37,-499.98 393.62,-488.11 401,-470 404.07,-462.46 409.09,-455.49 414.65,-449.41"/>
+<polygon fill="black" stroke="black" points="417.28,-451.74 421.89,-442.2 412.33,-446.78 417.28,-451.74"/>
+</g>
+<!-- linux_basics_permissions_exercises_credentials -->
+<g id="node8" class="node">
+<title>linux_basics_permissions_exercises_credentials</title>
+<g id="a_node8"><a xlink:href="exercises/credentials.html" xlink:title="Exercise: Determine Your User Credentials">
+<ellipse fill="red" stroke="black" cx="1284" cy="-496" rx="164.37" ry="18"/>
+<text text-anchor="middle" x="1284" y="-492.3" font-family="Times,serif" font-size="14.00">Exercise: Determine Your User Credentials</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_permissions_exercises_private_directory&#45;&gt;linux_basics_permissions_exercises_credentials -->
+<g id="edge1" class="edge">
+<title>linux_basics_permissions_exercises_private_directory&#45;&gt;linux_basics_permissions_exercises_credentials</title>
+<path fill="none" stroke="black" d="M1712.89,-554.85C1624.02,-542.86 1488.07,-524.52 1393.13,-511.72"/>
+<polygon fill="black" stroke="black" points="1393.59,-508.25 1383.21,-510.38 1392.65,-515.19 1393.59,-508.25"/>
+</g>
+<!-- linux_basics_permissions_exercises_credentials&#45;&gt;linux_basics_permissions_basics -->
+<g id="edge5" class="edge">
+<title>linux_basics_permissions_exercises_credentials&#45;&gt;linux_basics_permissions_basics</title>
+<path fill="none" stroke="black" d="M1196.98,-480.68C1170.98,-476.78 1142.39,-472.84 1116,-470 946.98,-451.79 753.15,-439.73 617.42,-432.73"/>
+<polygon fill="black" stroke="black" points="617.51,-429.23 607.34,-432.21 617.15,-436.22 617.51,-429.23"/>
+</g>
+<!-- linux_basics_intro_login -->
+<g id="node20" class="node">
+<title>linux_basics_intro_login</title>
+<g id="a_node20"><a xlink:href="../intro/login.html" xlink:title="Login? What Is That?">
+<ellipse fill="#dcdcdc" stroke="black" cx="1284" cy="-266" rx="87.99" ry="18"/>
+<text text-anchor="middle" x="1284" y="-262.3" font-family="Times,serif" font-size="14.00">Login? What Is That?</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_permissions_exercises_credentials&#45;&gt;linux_basics_intro_login -->
+<g id="edge6" class="edge">
+<title>linux_basics_permissions_exercises_credentials&#45;&gt;linux_basics_intro_login</title>
+<path fill="none" stroke="black" d="M1284,-477.86C1284,-438.57 1284,-341.7 1284,-294.18"/>
+<polygon fill="black" stroke="black" points="1287.5,-294.02 1284,-284.02 1280.5,-294.02 1287.5,-294.02"/>
+</g>
+<!-- linux_basics_permissions_exercises_public_directory_question -->
+<g id="node9" class="node">
+<title>linux_basics_permissions_exercises_public_directory_question</title>
+<g id="a_node9"><a xlink:href="exercises/public-directory-question.html" xlink:title="Question: Public Directory">
+<ellipse fill="red" stroke="black" cx="1442" cy="-640" rx="105.88" ry="18"/>
+<text text-anchor="middle" x="1442" y="-636.3" font-family="Times,serif" font-size="14.00">Question: Public Directory</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_permissions_exercises_public_directory -->
+<g id="node11" class="node">
+<title>linux_basics_permissions_exercises_public_directory</title>
+<g id="a_node11"><a xlink:href="exercises/public-directory.html" xlink:title="Exercise: Create Public Directory">
+<ellipse fill="red" stroke="black" cx="1231" cy="-568" rx="129.98" ry="18"/>
+<text text-anchor="middle" x="1231" y="-564.3" font-family="Times,serif" font-size="14.00">Exercise: Create Public Directory</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_permissions_exercises_public_directory_question&#45;&gt;linux_basics_permissions_exercises_public_directory -->
+<g id="edge7" class="edge">
+<title>linux_basics_permissions_exercises_public_directory_question&#45;&gt;linux_basics_permissions_exercises_public_directory</title>
+<path fill="none" stroke="black" d="M1395.96,-623.72C1364.39,-613.25 1322.28,-599.28 1288.51,-588.08"/>
+<polygon fill="black" stroke="black" points="1289.37,-584.68 1278.78,-584.85 1287.16,-591.32 1289.37,-584.68"/>
+</g>
+<!-- linux_basics_permissions_exercises_private_directory_question -->
+<g id="node10" class="node">
+<title>linux_basics_permissions_exercises_private_directory_question</title>
+<g id="a_node10"><a xlink:href="exercises/private-directory-question.html" xlink:title="Question: Private Directory">
+<ellipse fill="red" stroke="black" cx="1210" cy="-640" rx="108.58" ry="18"/>
+<text text-anchor="middle" x="1210" y="-636.3" font-family="Times,serif" font-size="14.00">Question: Private Directory</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_permissions_exercises_private_directory_question&#45;&gt;linux_basics_permissions_basics -->
+<g id="edge13" class="edge">
+<title>linux_basics_permissions_exercises_private_directory_question&#45;&gt;linux_basics_permissions_basics</title>
+<path fill="none" stroke="black" d="M1101.27,-639.95C892.88,-639.2 449.4,-624.35 354,-514 341.21,-499.21 343.68,-486.61 354,-470 360.19,-460.04 369.3,-452.22 379.4,-446.1"/>
+<polygon fill="black" stroke="black" points="381.38,-449 388.49,-441.14 378.03,-442.86 381.38,-449"/>
+</g>
+<!-- linux_basics_permissions_exercises_private_directory_question&#45;&gt;linux_basics_permissions_exercises_private_directory -->
+<g id="edge12" class="edge">
+<title>linux_basics_permissions_exercises_private_directory_question&#45;&gt;linux_basics_permissions_exercises_private_directory</title>
+<path fill="none" stroke="black" d="M1287.35,-627.35C1300.57,-625.47 1314.17,-623.62 1327,-622 1475.57,-603.23 1513.22,-602.96 1662,-586 1673.67,-584.67 1685.89,-583.24 1698.04,-581.81"/>
+<polygon fill="black" stroke="black" points="1698.7,-585.25 1708.21,-580.6 1697.87,-578.3 1698.7,-585.25"/>
+</g>
+<!-- linux_basics_permissions_exercises_public_directory&#45;&gt;linux_basics_permissions_basics -->
+<g id="edge15" class="edge">
+<title>linux_basics_permissions_exercises_public_directory&#45;&gt;linux_basics_permissions_basics</title>
+<path fill="none" stroke="black" d="M1142.45,-554.79C1127.31,-552.98 1111.72,-551.29 1097,-550 1056.5,-546.44 394.04,-543.45 366,-514 352.52,-499.84 356.17,-486.91 366,-470 371.53,-460.49 379.9,-452.83 389.15,-446.7"/>
+<polygon fill="black" stroke="black" points="391.06,-449.64 397.85,-441.51 387.47,-443.63 391.06,-449.64"/>
+</g>
+<!-- linux_basics_permissions_exercises_public_directory&#45;&gt;linux_basics_permissions_exercises_credentials -->
+<g id="edge14" class="edge">
+<title>linux_basics_permissions_exercises_public_directory&#45;&gt;linux_basics_permissions_exercises_credentials</title>
+<path fill="none" stroke="black" d="M1243.83,-550.05C1250.12,-541.75 1257.82,-531.58 1264.79,-522.38"/>
+<polygon fill="black" stroke="black" points="1267.67,-524.36 1270.92,-514.28 1262.09,-520.14 1267.67,-524.36"/>
+</g>
+<!-- linux_basics_permissions_exercises_shared_file -->
+<g id="node12" class="node">
+<title>linux_basics_permissions_exercises_shared_file</title>
+<g id="a_node12"><a xlink:href="exercises/shared-file.html" xlink:title="Exercise: Create Group&#45;Shared File">
+<ellipse fill="red" stroke="black" cx="1516" cy="-568" rx="137.28" ry="18"/>
+<text text-anchor="middle" x="1516" y="-564.3" font-family="Times,serif" font-size="14.00">Exercise: Create Group&#45;Shared File</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_permissions_exercises_shared_file&#45;&gt;linux_basics_permissions_basics -->
+<g id="edge22" class="edge">
+<title>linux_basics_permissions_exercises_shared_file&#45;&gt;linux_basics_permissions_basics</title>
+<path fill="none" stroke="black" d="M1421.47,-554.88C1404.36,-553.01 1386.67,-551.27 1370,-550 1315.46,-545.83 423.97,-553.38 386,-514 372.43,-499.92 377.33,-487.53 386,-470 390.2,-461.52 396.84,-454.2 404.18,-448.08"/>
+<polygon fill="black" stroke="black" points="406.48,-450.73 412.34,-441.9 402.26,-445.15 406.48,-450.73"/>
+</g>
+<!-- linux_basics_permissions_exercises_shared_file&#45;&gt;linux_basics_permissions_exercises_credentials -->
+<g id="edge23" class="edge">
+<title>linux_basics_permissions_exercises_shared_file&#45;&gt;linux_basics_permissions_exercises_credentials</title>
+<path fill="none" stroke="black" d="M1463.93,-551.29C1429.35,-540.86 1383.74,-527.09 1347.1,-516.04"/>
+<polygon fill="black" stroke="black" points="1348.09,-512.68 1337.5,-513.14 1346.06,-519.38 1348.09,-512.68"/>
+</g>
+<!-- linux_basics_shell_commandline -->
+<g id="node13" class="node">
+<title>linux_basics_shell_commandline</title>
+<g id="a_node13"><a xlink:href="../shell/commandline.html" xlink:title="Commandline">
+<ellipse fill="#dcdcdc" stroke="black" cx="963" cy="-122" rx="61.99" ry="18"/>
+<text text-anchor="middle" x="963" y="-118.3" font-family="Times,serif" font-size="14.00">Commandline</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_intro_overview -->
+<g id="node18" class="node">
+<title>linux_basics_intro_overview</title>
+<g id="a_node18"><a xlink:href="../intro/overview.html" xlink:title="Overview">
+<ellipse fill="#dcdcdc" stroke="black" cx="1170" cy="-50" rx="45.49" ry="18"/>
+<text text-anchor="middle" x="1170" y="-46.3" font-family="Times,serif" font-size="14.00">Overview</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_commandline&#45;&gt;linux_basics_intro_overview -->
+<g id="edge3" class="edge">
+<title>linux_basics_shell_commandline&#45;&gt;linux_basics_intro_overview</title>
+<path fill="none" stroke="black" d="M1001.94,-107.83C1037.52,-95.8 1090.06,-78.03 1126.9,-65.58"/>
+<polygon fill="black" stroke="black" points="1128.02,-68.89 1136.37,-62.37 1125.78,-62.26 1128.02,-68.89"/>
+</g>
+<!-- linux_basics_shell_paths -->
+<g id="node15" class="node">
+<title>linux_basics_shell_paths</title>
+<g id="a_node15"><a xlink:href="../shell/paths.html" xlink:title="Absolute and Relative Paths">
+<ellipse fill="#dcdcdc" stroke="black" cx="834" cy="-194" rx="110.48" ry="18"/>
+<text text-anchor="middle" x="834" y="-190.3" font-family="Times,serif" font-size="14.00">Absolute and Relative Paths</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_ls&#45;&gt;linux_basics_shell_paths -->
+<g id="edge9" class="edge">
+<title>linux_basics_shell_ls&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M623.9,-323.19C628.63,-320.48 633.46,-317.68 638,-315 694.63,-281.59 759.57,-241.47 798.65,-217.12"/>
+<polygon fill="black" stroke="black" points="800.9,-219.84 807.54,-211.58 797.2,-213.9 800.9,-219.84"/>
+</g>
+<!-- linux_basics_shell_cwd -->
+<g id="node17" class="node">
+<title>linux_basics_shell_cwd</title>
+<g id="a_node17"><a xlink:href="../shell/cwd.html" xlink:title="Current Working Directory">
+<ellipse fill="#dcdcdc" stroke="black" cx="960" cy="-266" rx="106.68" ry="18"/>
+<text text-anchor="middle" x="960" y="-262.3" font-family="Times,serif" font-size="14.00">Current Working Directory</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_ls&#45;&gt;linux_basics_shell_cwd -->
+<g id="edge8" class="edge">
+<title>linux_basics_shell_ls&#45;&gt;linux_basics_shell_cwd</title>
+<path fill="none" stroke="black" d="M675.2,-326.24C695.11,-322.71 716.35,-318.83 736,-315 787.24,-305 844.83,-292.64 888.79,-282.96"/>
+<polygon fill="black" stroke="black" points="889.79,-286.32 898.8,-280.75 888.28,-279.49 889.79,-286.32"/>
+</g>
+<!-- linux_basics_shell_ls&#45;&gt;linux_basics_intro_overview -->
+<g id="edge10" class="edge">
+<title>linux_basics_shell_ls&#45;&gt;linux_basics_intro_overview</title>
+<path fill="none" stroke="black" d="M600.05,-322.67C607.28,-303.35 620.63,-271.7 638,-248 665.7,-210.21 676.02,-202 715,-176 786.82,-128.1 809.34,-120.89 892,-96 967.8,-73.17 1058.93,-61.22 1115.67,-55.52"/>
+<polygon fill="black" stroke="black" points="1116.24,-58.98 1125.86,-54.52 1115.57,-52.01 1116.24,-58.98"/>
+</g>
+<!-- linux_basics_shell_paths&#45;&gt;linux_basics_shell_commandline -->
+<g id="edge11" class="edge">
+<title>linux_basics_shell_paths&#45;&gt;linux_basics_shell_commandline</title>
+<path fill="none" stroke="black" d="M864.24,-176.59C882.76,-166.54 906.58,-153.62 926.19,-142.98"/>
+<polygon fill="black" stroke="black" points="928.03,-145.96 935.15,-138.11 924.69,-139.81 928.03,-145.96"/>
+</g>
+<!-- linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_paths -->
+<g id="edge18" class="edge">
+<title>linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M854.16,-324.41C850.38,-321.74 846.94,-318.63 844,-315 823.07,-289.15 824.29,-249.09 828.22,-222.46"/>
+<polygon fill="black" stroke="black" points="831.72,-222.74 829.94,-212.29 824.82,-221.57 831.72,-222.74"/>
+</g>
+<!-- linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_cwd -->
+<g id="edge17" class="edge">
+<title>linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_cwd</title>
+<path fill="none" stroke="black" d="M934.82,-322.7C938.77,-313.97 943.64,-303.2 948.04,-293.46"/>
+<polygon fill="black" stroke="black" points="951.31,-294.73 952.24,-284.18 944.93,-291.85 951.31,-294.73"/>
+</g>
+<!-- linux_basics_shell_cwd&#45;&gt;linux_basics_shell_commandline -->
+<g id="edge19" class="edge">
+<title>linux_basics_shell_cwd&#45;&gt;linux_basics_shell_commandline</title>
+<path fill="none" stroke="black" d="M960.36,-247.87C960.87,-223.67 961.81,-179.21 962.42,-150.39"/>
+<polygon fill="black" stroke="black" points="965.92,-150.26 962.64,-140.19 958.93,-150.11 965.92,-150.26"/>
+</g>
+<!-- linux_basics_shell_cwd&#45;&gt;linux_basics_shell_paths -->
+<g id="edge21" class="edge">
+<title>linux_basics_shell_cwd&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M930.46,-248.59C913.21,-239 891.24,-226.8 872.63,-216.46"/>
+<polygon fill="black" stroke="black" points="874.23,-213.35 863.79,-211.55 870.83,-219.47 874.23,-213.35"/>
+</g>
+<!-- linux_basics_intro_process -->
+<g id="node19" class="node">
+<title>linux_basics_intro_process</title>
+<g id="a_node19"><a xlink:href="../intro/process.html" xlink:title="Processes, Scheduling, Address Spaces">
+<ellipse fill="#dcdcdc" stroke="black" cx="1274" cy="-122" rx="149.47" ry="18"/>
+<text text-anchor="middle" x="1274" y="-118.3" font-family="Times,serif" font-size="14.00">Processes, Scheduling, Address Spaces</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_cwd&#45;&gt;linux_basics_intro_process -->
+<g id="edge20" class="edge">
+<title>linux_basics_shell_cwd&#45;&gt;linux_basics_intro_process</title>
+<path fill="none" stroke="black" d="M985.41,-248.44C1015.64,-229.24 1068.05,-197.47 1116,-176 1145.65,-162.72 1179.7,-150.89 1208.57,-141.8"/>
+<polygon fill="black" stroke="black" points="1209.64,-145.13 1218.15,-138.82 1207.56,-138.45 1209.64,-145.13"/>
+</g>
+<!-- linux_basics_intro_process&#45;&gt;linux_basics_intro_overview -->
+<g id="edge24" class="edge">
+<title>linux_basics_intro_process&#45;&gt;linux_basics_intro_overview</title>
+<path fill="none" stroke="black" d="M1249.09,-104.23C1234.62,-94.5 1216.27,-82.15 1200.89,-71.79"/>
+<polygon fill="black" stroke="black" points="1202.48,-68.64 1192.23,-65.96 1198.57,-74.45 1202.48,-68.64"/>
+</g>
+<!-- linux_basics_intro_process_tree -->
+<g id="node21" class="node">
+<title>linux_basics_intro_process_tree</title>
+<g id="a_node21"><a xlink:href="../intro/process-tree.html" xlink:title="Process Hierarchy (Parent, Child Process)">
+<ellipse fill="#dcdcdc" stroke="black" cx="1284" cy="-194" rx="159.47" ry="18"/>
+<text text-anchor="middle" x="1284" y="-190.3" font-family="Times,serif" font-size="14.00">Process Hierarchy (Parent, Child Process)</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_intro_login&#45;&gt;linux_basics_intro_process_tree -->
+<g id="edge28" class="edge">
+<title>linux_basics_intro_login&#45;&gt;linux_basics_intro_process_tree</title>
+<path fill="none" stroke="black" d="M1284,-247.7C1284,-239.98 1284,-230.71 1284,-222.11"/>
+<polygon fill="black" stroke="black" points="1287.5,-222.1 1284,-212.1 1280.5,-222.1 1287.5,-222.1"/>
+</g>
+<!-- linux_basics_intro_process_tree&#45;&gt;linux_basics_intro_process -->
+<g id="edge29" class="edge">
+<title>linux_basics_intro_process_tree&#45;&gt;linux_basics_intro_process</title>
+<path fill="none" stroke="black" d="M1281.53,-175.7C1280.43,-167.98 1279.1,-158.71 1277.87,-150.11"/>
+<polygon fill="black" stroke="black" points="1281.32,-149.51 1276.44,-140.1 1274.39,-150.5 1281.32,-149.51"/>
+</g>
+</g>
+</svg>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2022 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/linux/basics/permissions/group.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

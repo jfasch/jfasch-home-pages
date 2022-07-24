@@ -1,0 +1,532 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Coding: Fix Sleep While Atomic &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/kernel/spinlock-coding/topic.html" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="Coding: Fix Sleep While Atomic (Slideshow)" href="slides.html" />
+    <link rel="prev" title="Rasperry Pi: Kernel Build" href="../raspi-kernel-build/story.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../index.html">
+    <img class="logo" src="../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../group.html">Linux Kernel Driver Development</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../cdev-auto/topic.html">Modern Character Devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cdev-file-operations/topic.html">File Operations on Character Devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cdev-first-functionality/topic.html">Coding: First Functionality</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cdev-manual/topic.html">Character Device Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cdev-multiple-devices/topic.html">Coding: Multiple Devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cdev-refactoring/topic.html">Coding: Refactoring</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dma/topic.html">DMA</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../fedora-kernel-build/topic.html">Fedora: Building the Kernel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../fedora-module-build/topic.html">Fedora: Building External Kernel Modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../hello-world/topic.html">Module Loading, Hello World</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../interrupt-coding/topic.html">Coding: Raspi GPIO Interrupts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../interrupt/topic.html">Interrupts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../iomemory/topic.html">IO Memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../kmalloc/topic.html">Dynamic Memory: <code class="docutils literal notranslate"><span class="pre">kmalloc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../list/topic.html">Doubly Linked Lists</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../mutex-coding/topic.html">Coding: Fix Race Condition (Mutex)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../mutex/topic.html">Mutex (and RT Mutex)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../netdev/topic.html">Network Devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pci/topic.html">PCI</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../process-vs-atomic/topic.html">Process vs.Atomic Context</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../raspi-kernel-build/topic.html">Raspberry Pi: Building the Kernel</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Coding: Fix <em>Sleep While Atomic</em></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="slides.html">Coding: Fix <em>Sleep While Atomic</em> (Slideshow)</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../spinlock/topic.html">Spinlock (vs. Mutex)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stub-sysprog-dup/topic.html"><code class="docutils literal notranslate"><span class="pre">dup()</span></code>, <code class="docutils literal notranslate"><span class="pre">fork()</span></code>, and Reference Counting (Stub)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../time_timer-coding/topic.html">Coding: Timed Event</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../time_timer/topic.html">Timer Management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../usermem/topic.html">Accessing Userspace Memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../waitqueue/topic.html">Waiting for Something</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../workqueue/topic.html">Workqueue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sample-project.html">Sample Code Maintenance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../todo.html">To Do List</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="coding-fix-sleep-while-atomic">
+<h1>Coding: Fix <em>Sleep While Atomic</em><a class="headerlink" href="#coding-fix-sleep-while-atomic" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="slides.html">Coding: Fix <em>Sleep While Atomic</em> (Slideshow)</a></li>
+</ul>
+</div>
+<svg 
+ viewBox="0.00 0.00 860.00 930.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 926)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-926 856,-926 856,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_linux</title>
+<path fill="none" stroke="black" d="M20,-8C20,-8 832,-8 832,-8 838,-8 844,-14 844,-20 844,-20 844,-902 844,-902 844,-908 838,-914 832,-914 832,-914 20,-914 20,-914 14,-914 8,-908 8,-902 8,-902 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="426" y="-898.8" font-family="Times,serif" font-size="14.00">Linux</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_linux_kernel</title>
+<path fill="none" stroke="black" d="M28,-16C28,-16 824,-16 824,-16 830,-16 836,-22 836,-28 836,-28 836,-871 836,-871 836,-877 830,-883 824,-883 824,-883 28,-883 28,-883 22,-883 16,-877 16,-871 16,-871 16,-28 16,-28 16,-22 22,-16 28,-16"/>
+<text text-anchor="middle" x="426" y="-867.8" font-family="Times,serif" font-size="14.00">Linux Kernel Driver Development</text>
+</g>
+<!-- linux_kernel_process_vs_atomic -->
+<g id="node1" class="node">
+<title>linux_kernel_process_vs_atomic</title>
+<g id="a_node1"><a xlink:href="../process-vs-atomic/topic.html" xlink:title="Process vs.Atomic Context">
+<ellipse fill="#dcdcdc" stroke="black" cx="721" cy="-330" rx="107.48" ry="18"/>
+<text text-anchor="middle" x="721" y="-326.3" font-family="Times,serif" font-size="14.00">Process vs.Atomic Context</text>
+</a>
+</g>
+</g>
+<!-- linux_kernel_fedora_kernel_build -->
+<g id="node2" class="node">
+<title>linux_kernel_fedora_kernel_build</title>
+<g id="a_node2"><a xlink:href="../fedora-kernel-build/topic.html" xlink:title="Fedora: Building the Kernel">
+<ellipse fill="#dcdcdc" stroke="black" cx="489" cy="-42" rx="110.48" ry="18"/>
+<text text-anchor="middle" x="489" y="-38.3" font-family="Times,serif" font-size="14.00">Fedora: Building the Kernel</text>
+</a>
+</g>
+</g>
+<!-- linux_kernel_raspi_kernel_build -->
+<g id="node3" class="node">
+<title>linux_kernel_raspi_kernel_build</title>
+<g id="a_node3"><a xlink:href="../raspi-kernel-build/topic.html" xlink:title="Raspberry Pi: Building the Kernel">
+<ellipse fill="#dcdcdc" stroke="black" cx="676" cy="-690" rx="131.88" ry="18"/>
+<text text-anchor="middle" x="676" y="-686.3" font-family="Times,serif" font-size="14.00">Raspberry Pi: Building the Kernel</text>
+</a>
+</g>
+</g>
+<!-- linux_kernel_kmalloc -->
+<g id="node4" class="node">
+<title>linux_kernel_kmalloc</title>
+<g id="a_node4"><a xlink:href="../kmalloc/topic.html" xlink:title="Dynamic Memory: kmalloc()">
+<ellipse fill="#dcdcdc" stroke="black" cx="446" cy="-402" rx="116.18" ry="18"/>
+<text text-anchor="middle" x="446" y="-398.3" font-family="Times,serif" font-size="14.00">Dynamic Memory: kmalloc()</text>
+</a>
+</g>
+</g>
+<!-- linux_kernel_kmalloc&#45;&gt;linux_kernel_process_vs_atomic -->
+<g id="edge1" class="edge">
+<title>linux_kernel_kmalloc&#45;&gt;linux_kernel_process_vs_atomic</title>
+<path fill="none" stroke="black" d="M503.65,-386.33C547.67,-375.12 608.4,-359.66 654.47,-347.93"/>
+<polygon fill="black" stroke="black" points="655.54,-351.27 664.37,-345.42 653.81,-344.49 655.54,-351.27"/>
+</g>
+<!-- linux_kernel_interrupt_coding -->
+<g id="node5" class="node">
+<title>linux_kernel_interrupt_coding</title>
+<g id="a_node5"><a xlink:href="../interrupt-coding/topic.html" xlink:title="Coding: Raspi GPIO Interrupts">
+<ellipse fill="red" stroke="black" cx="569" cy="-762" rx="120.78" ry="18"/>
+<text text-anchor="middle" x="569" y="-758.3" font-family="Times,serif" font-size="14.00">Coding: Raspi GPIO Interrupts</text>
+</a>
+</g>
+</g>
+<!-- linux_kernel_interrupt_coding&#45;&gt;linux_kernel_raspi_kernel_build -->
+<g id="edge2" class="edge">
+<title>linux_kernel_interrupt_coding&#45;&gt;linux_kernel_raspi_kernel_build</title>
+<path fill="none" stroke="black" d="M594.63,-744.23C608.69,-735.04 626.31,-723.51 641.55,-713.54"/>
+<polygon fill="black" stroke="black" points="643.76,-716.28 650.21,-707.87 639.92,-710.42 643.76,-716.28"/>
+</g>
+<!-- linux_kernel_mutex_coding -->
+<g id="node7" class="node">
+<title>linux_kernel_mutex_coding</title>
+<g id="a_node7"><a xlink:href="../mutex-coding/topic.html" xlink:title="Coding: Fix Race Condition (Mutex)">
+<ellipse fill="red" stroke="black" cx="364" cy="-690" rx="142.17" ry="18"/>
+<text text-anchor="middle" x="364" y="-686.3" font-family="Times,serif" font-size="14.00">Coding: Fix Race Condition (Mutex)</text>
+</a>
+</g>
+</g>
+<!-- linux_kernel_interrupt_coding&#45;&gt;linux_kernel_mutex_coding -->
+<g id="edge3" class="edge">
+<title>linux_kernel_interrupt_coding&#45;&gt;linux_kernel_mutex_coding</title>
+<path fill="none" stroke="black" d="M522.99,-745.29C492.72,-734.95 452.88,-721.35 420.65,-710.35"/>
+<polygon fill="black" stroke="black" points="421.51,-706.94 410.92,-707.02 419.25,-713.56 421.51,-706.94"/>
+</g>
+<!-- linux_kernel_interrupt -->
+<g id="node12" class="node">
+<title>linux_kernel_interrupt</title>
+<g id="a_node12"><a xlink:href="../interrupt/topic.html" xlink:title="Interrupts">
+<ellipse fill="#dcdcdc" stroke="black" cx="728" cy="-474" rx="44.69" ry="18"/>
+<text text-anchor="middle" x="728" y="-470.3" font-family="Times,serif" font-size="14.00">Interrupts</text>
+</a>
+</g>
+</g>
+<!-- linux_kernel_interrupt_coding&#45;&gt;linux_kernel_interrupt -->
+<g id="edge4" class="edge">
+<title>linux_kernel_interrupt_coding&#45;&gt;linux_kernel_interrupt</title>
+<path fill="none" stroke="black" d="M553.61,-744.14C538.41,-725.37 519.52,-694.68 535,-672 559.75,-635.73 599.04,-669.85 627,-636 658.09,-598.37 619.95,-568.64 647,-528 657.2,-512.68 673.49,-500.77 688.8,-492.15"/>
+<polygon fill="black" stroke="black" points="690.45,-495.24 697.65,-487.46 687.17,-489.05 690.45,-495.24"/>
+</g>
+<!-- linux_kernel_spinlock -->
+<g id="node6" class="node">
+<title>linux_kernel_spinlock</title>
+<g id="a_node6"><a xlink:href="../spinlock/topic.html" xlink:title="Spinlock (vs. Mutex)">
+<ellipse fill="#dcdcdc" stroke="black" cx="742" cy="-546" rx="86.38" ry="18"/>
+<text text-anchor="middle" x="742" y="-542.3" font-family="Times,serif" font-size="14.00">Spinlock (vs. Mutex)</text>
+</a>
+</g>
+</g>
+<!-- linux_kernel_spinlock&#45;&gt;linux_kernel_process_vs_atomic -->
+<g id="edge5" class="edge">
+<title>linux_kernel_spinlock&#45;&gt;linux_kernel_process_vs_atomic</title>
+<path fill="none" stroke="black" d="M759.32,-528.07C767.93,-518.41 777.46,-505.55 782,-492 787.67,-475.08 785.68,-398.34 779,-384 773.64,-372.51 764.53,-362.37 755.09,-354.12"/>
+<polygon fill="black" stroke="black" points="757.12,-351.26 747.16,-347.65 752.7,-356.68 757.12,-351.26"/>
+</g>
+<!-- linux_kernel_multiple_devices -->
+<g id="node8" class="node">
+<title>linux_kernel_multiple_devices</title>
+<g id="a_node8"><a xlink:href="../cdev-multiple-devices/topic.html" xlink:title="Coding: Multiple Devices">
+<ellipse fill="red" stroke="black" cx="309" cy="-618" rx="102.88" ry="18"/>
+<text text-anchor="middle" x="309" y="-614.3" font-family="Times,serif" font-size="14.00">Coding: Multiple Devices</text>
+</a>
+</g>
+</g>
+<!-- linux_kernel_mutex_coding&#45;&gt;linux_kernel_multiple_devices -->
+<g id="edge6" class="edge">
+<title>linux_kernel_mutex_coding&#45;&gt;linux_kernel_multiple_devices</title>
+<path fill="none" stroke="black" d="M350.69,-672.05C344.16,-663.75 336.17,-653.58 328.94,-644.38"/>
+<polygon fill="black" stroke="black" points="331.5,-641.98 322.57,-636.28 326,-646.3 331.5,-641.98"/>
+</g>
+<!-- linux_kernel_mutex -->
+<g id="node13" class="node">
+<title>linux_kernel_mutex</title>
+<g id="a_node13"><a xlink:href="../mutex/topic.html" xlink:title="Mutex (and RT Mutex)">
+<ellipse fill="#dcdcdc" stroke="black" cx="524" cy="-618" rx="94.48" ry="18"/>
+<text text-anchor="middle" x="524" y="-614.3" font-family="Times,serif" font-size="14.00">Mutex (and RT Mutex)</text>
+</a>
+</g>
+</g>
+<!-- linux_kernel_mutex_coding&#45;&gt;linux_kernel_mutex -->
+<g id="edge7" class="edge">
+<title>linux_kernel_mutex_coding&#45;&gt;linux_kernel_mutex</title>
+<path fill="none" stroke="black" d="M401.51,-672.59C424.59,-662.49 454.31,-649.49 478.7,-638.82"/>
+<polygon fill="black" stroke="black" points="480.34,-641.92 488.1,-634.71 477.53,-635.51 480.34,-641.92"/>
+</g>
+<!-- linux_kernel_cdev_refactoring -->
+<g id="node10" class="node">
+<title>linux_kernel_cdev_refactoring</title>
+<g id="a_node10"><a xlink:href="../cdev-refactoring/topic.html" xlink:title="Coding: Refactoring">
+<ellipse fill="red" stroke="black" cx="343" cy="-546" rx="83.39" ry="18"/>
+<text text-anchor="middle" x="343" y="-542.3" font-family="Times,serif" font-size="14.00">Coding: Refactoring</text>
+</a>
+</g>
+</g>
+<!-- linux_kernel_multiple_devices&#45;&gt;linux_kernel_cdev_refactoring -->
+<g id="edge8" class="edge">
+<title>linux_kernel_multiple_devices&#45;&gt;linux_kernel_cdev_refactoring</title>
+<path fill="none" stroke="black" d="M317.23,-600.05C321.1,-592.09 325.8,-582.41 330.12,-573.51"/>
+<polygon fill="black" stroke="black" points="333.39,-574.8 334.61,-564.28 327.09,-571.74 333.39,-574.8"/>
+</g>
+<!-- linux_kernel_modules_hello_world -->
+<g id="node9" class="node">
+<title>linux_kernel_modules_hello_world</title>
+<g id="a_node9"><a xlink:href="../hello-world/topic.html" xlink:title="Module Loading, Hello World">
+<ellipse fill="#dcdcdc" stroke="black" cx="489" cy="-186" rx="118.08" ry="18"/>
+<text text-anchor="middle" x="489" y="-182.3" font-family="Times,serif" font-size="14.00">Module Loading, Hello World</text>
+</a>
+</g>
+</g>
+<!-- linux_kernel_fedora_module_build -->
+<g id="node20" class="node">
+<title>linux_kernel_fedora_module_build</title>
+<g id="a_node20"><a xlink:href="../fedora-module-build/topic.html" xlink:title="Fedora: Building External Kernel Modules">
+<ellipse fill="#dcdcdc" stroke="black" cx="489" cy="-114" rx="163.27" ry="18"/>
+<text text-anchor="middle" x="489" y="-110.3" font-family="Times,serif" font-size="14.00">Fedora: Building External Kernel Modules</text>
+</a>
+</g>
+</g>
+<!-- linux_kernel_modules_hello_world&#45;&gt;linux_kernel_fedora_module_build -->
+<g id="edge9" class="edge">
+<title>linux_kernel_modules_hello_world&#45;&gt;linux_kernel_fedora_module_build</title>
+<path fill="none" stroke="black" d="M489,-167.7C489,-159.98 489,-150.71 489,-142.11"/>
+<polygon fill="black" stroke="black" points="492.5,-142.1 489,-132.1 485.5,-142.1 492.5,-142.1"/>
+</g>
+<!-- linux_kernel_cdev_first_functionality -->
+<g id="node15" class="node">
+<title>linux_kernel_cdev_first_functionality</title>
+<g id="a_node15"><a xlink:href="../cdev-first-functionality/topic.html" xlink:title="Coding: First Functionality">
+<ellipse fill="red" stroke="black" cx="411" cy="-474" rx="106.68" ry="18"/>
+<text text-anchor="middle" x="411" y="-470.3" font-family="Times,serif" font-size="14.00">Coding: First Functionality</text>
+</a>
+</g>
+</g>
+<!-- linux_kernel_cdev_refactoring&#45;&gt;linux_kernel_cdev_first_functionality -->
+<g id="edge10" class="edge">
+<title>linux_kernel_cdev_refactoring&#45;&gt;linux_kernel_cdev_first_functionality</title>
+<path fill="none" stroke="black" d="M359.46,-528.05C367.9,-519.37 378.32,-508.64 387.58,-499.11"/>
+<polygon fill="black" stroke="black" points="390.23,-501.4 394.69,-491.79 385.21,-496.52 390.23,-501.4"/>
+</g>
+<!-- linux_kernel_spinlock_coding -->
+<g id="node11" class="node">
+<title>linux_kernel_spinlock_coding</title>
+<ellipse fill="red" stroke="black" stroke-width="3" cx="656" cy="-834" rx="128.08" ry="18"/>
+<text text-anchor="middle" x="656" y="-830.3" font-family="Times,serif" font-size="14.00">Coding: Fix Sleep While Atomic</text>
+</g>
+<!-- linux_kernel_spinlock_coding&#45;&gt;linux_kernel_interrupt_coding -->
+<g id="edge11" class="edge">
+<title>linux_kernel_spinlock_coding&#45;&gt;linux_kernel_interrupt_coding</title>
+<path fill="none" stroke="black" d="M634.94,-816.05C623.83,-807.11 610.02,-796.01 597.92,-786.27"/>
+<polygon fill="black" stroke="black" points="599.85,-783.33 589.87,-779.79 595.46,-788.78 599.85,-783.33"/>
+</g>
+<!-- linux_kernel_spinlock_coding&#45;&gt;linux_kernel_spinlock -->
+<g id="edge12" class="edge">
+<title>linux_kernel_spinlock_coding&#45;&gt;linux_kernel_spinlock</title>
+<path fill="none" stroke="black" d="M692.83,-816.72C731.86,-797.21 791.32,-760.44 817,-708 840.5,-660 797.81,-603.2 767.77,-571.52"/>
+<polygon fill="black" stroke="black" points="769.95,-568.73 760.46,-564.02 764.94,-573.62 769.95,-568.73"/>
+</g>
+<!-- linux_kernel_interrupt&#45;&gt;linux_kernel_process_vs_atomic -->
+<g id="edge13" class="edge">
+<title>linux_kernel_interrupt&#45;&gt;linux_kernel_process_vs_atomic</title>
+<path fill="none" stroke="black" d="M746.1,-457.3C755.8,-447.65 766.8,-434.4 772,-420 777.43,-404.95 777.98,-398.84 772,-384 767.53,-372.92 759.52,-362.85 751.14,-354.55"/>
+<polygon fill="black" stroke="black" points="753.49,-351.94 743.77,-347.72 748.73,-357.08 753.49,-351.94"/>
+</g>
+<!-- linux_kernel_mutex&#45;&gt;linux_kernel_process_vs_atomic -->
+<g id="edge14" class="edge">
+<title>linux_kernel_mutex&#45;&gt;linux_kernel_process_vs_atomic</title>
+<path fill="none" stroke="black" d="M536.2,-599.78C559.67,-567.72 614.09,-498.32 674,-456 706.84,-432.8 734.94,-453.62 757,-420 770.09,-400.06 757.3,-374.61 743.47,-356.03"/>
+<polygon fill="black" stroke="black" points="746.08,-353.7 737.13,-348.03 740.59,-358.04 746.08,-353.7"/>
+</g>
+<!-- linux_kernel_cdev_manual -->
+<g id="node14" class="node">
+<title>linux_kernel_cdev_manual</title>
+<g id="a_node14"><a xlink:href="../cdev-manual/topic.html" xlink:title="Character Device Basics">
+<ellipse fill="#dcdcdc" stroke="black" cx="489" cy="-258" rx="97.48" ry="18"/>
+<text text-anchor="middle" x="489" y="-254.3" font-family="Times,serif" font-size="14.00">Character Device Basics</text>
+</a>
+</g>
+</g>
+<!-- linux_kernel_cdev_manual&#45;&gt;linux_kernel_modules_hello_world -->
+<g id="edge15" class="edge">
+<title>linux_kernel_cdev_manual&#45;&gt;linux_kernel_modules_hello_world</title>
+<path fill="none" stroke="black" d="M489,-239.7C489,-231.98 489,-222.71 489,-214.11"/>
+<polygon fill="black" stroke="black" points="492.5,-214.1 489,-204.1 485.5,-214.1 492.5,-214.1"/>
+</g>
+<!-- linux_kernel_cdev_first_functionality&#45;&gt;linux_kernel_kmalloc -->
+<g id="edge17" class="edge">
+<title>linux_kernel_cdev_first_functionality&#45;&gt;linux_kernel_kmalloc</title>
+<path fill="none" stroke="black" d="M419.47,-456.05C423.5,-448.01 428.4,-438.2 432.89,-429.23"/>
+<polygon fill="black" stroke="black" points="436.02,-430.78 437.36,-420.28 429.76,-427.65 436.02,-430.78"/>
+</g>
+<!-- linux_kernel_cdev_file_operations -->
+<g id="node16" class="node">
+<title>linux_kernel_cdev_file_operations</title>
+<g id="a_node16"><a xlink:href="../cdev-file-operations/topic.html" xlink:title="File Operations on Character Devices">
+<ellipse fill="#dcdcdc" stroke="black" cx="168" cy="-402" rx="143.77" ry="18"/>
+<text text-anchor="middle" x="168" y="-398.3" font-family="Times,serif" font-size="14.00">File Operations on Character Devices</text>
+</a>
+</g>
+</g>
+<!-- linux_kernel_cdev_first_functionality&#45;&gt;linux_kernel_cdev_file_operations -->
+<g id="edge16" class="edge">
+<title>linux_kernel_cdev_first_functionality&#45;&gt;linux_kernel_cdev_file_operations</title>
+<path fill="none" stroke="black" d="M359.47,-458.15C322.27,-447.44 271.8,-432.9 232.02,-421.44"/>
+<polygon fill="black" stroke="black" points="232.99,-418.08 222.41,-418.67 231.05,-424.81 232.99,-418.08"/>
+</g>
+<!-- linux_kernel_list -->
+<g id="node18" class="node">
+<title>linux_kernel_list</title>
+<g id="a_node18"><a xlink:href="../list/topic.html" xlink:title="Doubly Linked Lists">
+<ellipse fill="#dcdcdc" stroke="black" cx="664" cy="-402" rx="83.69" ry="18"/>
+<text text-anchor="middle" x="664" y="-398.3" font-family="Times,serif" font-size="14.00">Doubly Linked Lists</text>
+</a>
+</g>
+</g>
+<!-- linux_kernel_cdev_first_functionality&#45;&gt;linux_kernel_list -->
+<g id="edge18" class="edge">
+<title>linux_kernel_cdev_first_functionality&#45;&gt;linux_kernel_list</title>
+<path fill="none" stroke="black" d="M464.04,-458.33C505.17,-446.94 562.17,-431.18 604.79,-419.38"/>
+<polygon fill="black" stroke="black" points="605.77,-422.74 614.47,-416.7 603.9,-416 605.77,-422.74"/>
+</g>
+<!-- linux_kernel_stub_sysprog_dup -->
+<g id="node17" class="node">
+<title>linux_kernel_stub_sysprog_dup</title>
+<g id="a_node17"><a xlink:href="../stub-sysprog-dup/topic.html" xlink:title="dup(), fork(), and Reference Counting (Stub)">
+<ellipse fill="#dcdcdc" stroke="black" cx="194" cy="-330" rx="170.07" ry="18"/>
+<text text-anchor="middle" x="194" y="-326.3" font-family="Times,serif" font-size="14.00">dup(), fork(), and Reference Counting (Stub)</text>
+</a>
+</g>
+</g>
+<!-- linux_kernel_cdev_file_operations&#45;&gt;linux_kernel_stub_sysprog_dup -->
+<g id="edge20" class="edge">
+<title>linux_kernel_cdev_file_operations&#45;&gt;linux_kernel_stub_sysprog_dup</title>
+<path fill="none" stroke="black" d="M174.43,-383.7C177.36,-375.81 180.89,-366.3 184.14,-357.55"/>
+<polygon fill="black" stroke="black" points="187.45,-358.7 187.65,-348.1 180.88,-356.26 187.45,-358.7"/>
+</g>
+<!-- linux_kernel_cdev_auto -->
+<g id="node19" class="node">
+<title>linux_kernel_cdev_auto</title>
+<g id="a_node19"><a xlink:href="../cdev-auto/topic.html" xlink:title="Modern Character Devices">
+<ellipse fill="#dcdcdc" stroke="black" cx="489" cy="-330" rx="106.68" ry="18"/>
+<text text-anchor="middle" x="489" y="-326.3" font-family="Times,serif" font-size="14.00">Modern Character Devices</text>
+</a>
+</g>
+</g>
+<!-- linux_kernel_cdev_file_operations&#45;&gt;linux_kernel_cdev_auto -->
+<g id="edge19" class="edge">
+<title>linux_kernel_cdev_file_operations&#45;&gt;linux_kernel_cdev_auto</title>
+<path fill="none" stroke="black" d="M236.47,-386.07C289.51,-374.5 362.81,-358.52 416.78,-346.75"/>
+<polygon fill="black" stroke="black" points="417.59,-350.15 426.62,-344.6 416.1,-343.31 417.59,-350.15"/>
+</g>
+<!-- linux_kernel_cdev_auto&#45;&gt;linux_kernel_cdev_manual -->
+<g id="edge21" class="edge">
+<title>linux_kernel_cdev_auto&#45;&gt;linux_kernel_cdev_manual</title>
+<path fill="none" stroke="black" d="M489,-311.7C489,-303.98 489,-294.71 489,-286.11"/>
+<polygon fill="black" stroke="black" points="492.5,-286.1 489,-276.1 485.5,-286.1 492.5,-286.1"/>
+</g>
+<!-- linux_kernel_fedora_module_build&#45;&gt;linux_kernel_fedora_kernel_build -->
+<g id="edge22" class="edge">
+<title>linux_kernel_fedora_module_build&#45;&gt;linux_kernel_fedora_kernel_build</title>
+<path fill="none" stroke="black" d="M489,-95.7C489,-87.98 489,-78.71 489,-70.11"/>
+<polygon fill="black" stroke="black" points="492.5,-70.1 489,-60.1 485.5,-70.1 492.5,-70.1"/>
+</g>
+</g>
+</svg>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2022 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../_sources/trainings/material/soup/kernel/spinlock-coding/topic.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

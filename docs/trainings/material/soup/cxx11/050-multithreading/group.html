@@ -1,0 +1,1185 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Multithreading &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx11/050-multithreading/group.html" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="Threads Inroduction" href="010-introduction/topic.html" />
+    <link rel="prev" title="std::function" href="../040-bind-function/020-function/topic.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../index.html">
+    <img class="logo" src="../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../group.html">C++ 11</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../010-introduction/group.html">Introduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../020-new-language-features/group.html">New Language Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../030-smart-pointers/group.html">Smart Pointers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../040-bind-function/group.html">Functions, Functions</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Multithreading</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="010-introduction/topic.html">Threads Inroduction</a></li>
+<li class="toctree-l5"><a class="reference internal" href="020-thread/topic.html">Threads in C++</a></li>
+<li class="toctree-l5"><a class="reference internal" href="030-race-conditions/topic.html">Race Conditions</a></li>
+<li class="toctree-l5"><a class="reference internal" href="040-locking-atomics/mutex.html"><code class="docutils literal notranslate"><span class="pre">std::mutex</span></code> And Friends</a></li>
+<li class="toctree-l5"><a class="reference internal" href="040-locking-atomics/scoped-locking.html">Scoped Locking</a></li>
+<li class="toctree-l5"><a class="reference internal" href="040-locking-atomics/atomics.html"><code class="docutils literal notranslate"><span class="pre">std::atomic</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="promise-future.html"><code class="docutils literal notranslate"><span class="pre">std::promise</span></code> and <code class="docutils literal notranslate"><span class="pre">std::future</span></code> (And Some <code class="docutils literal notranslate"><span class="pre">std::chrono</span></code>) (Some Live Hacking)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="condition-variable.html"><code class="docutils literal notranslate"><span class="pre">std::condition_variable</span></code> (Live Hacking Multithreaded Queue)</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../100-miscellaneous/group.html">Miscellaneous</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../exercises/group.html">Introduction</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="multithreading">
+<h1>Multithreading<a class="headerlink" href="#multithreading" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#topics" id="id1">Topics</a></p></li>
+<li><p><a class="reference internal" href="#group-description" id="id2">Group Description</a></p></li>
+</ul>
+</div>
+<section id="topics">
+<h2><a class="toc-backref" href="#id1">Topics</a><a class="headerlink" href="#topics" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="010-introduction/topic.html">Threads Inroduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="020-thread/topic.html">Threads in C++</a></li>
+<li class="toctree-l1"><a class="reference internal" href="030-race-conditions/topic.html">Race Conditions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="040-locking-atomics/mutex.html"><code class="docutils literal notranslate"><span class="pre">std::mutex</span></code> And Friends</a></li>
+<li class="toctree-l1"><a class="reference internal" href="040-locking-atomics/scoped-locking.html">Scoped Locking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="040-locking-atomics/atomics.html"><code class="docutils literal notranslate"><span class="pre">std::atomic</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="promise-future.html"><code class="docutils literal notranslate"><span class="pre">std::promise</span></code> and <code class="docutils literal notranslate"><span class="pre">std::future</span></code> (And Some <code class="docutils literal notranslate"><span class="pre">std::chrono</span></code>) (Some Live Hacking)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="condition-variable.html"><code class="docutils literal notranslate"><span class="pre">std::condition_variable</span></code> (Live Hacking Multithreaded Queue)</a></li>
+</ul>
+</div>
+</section>
+<section id="group-description">
+<h2><a class="toc-backref" href="#id2">Group Description</a><a class="headerlink" href="#group-description" title="Permalink to this headline">¶</a></h2>
+<svg 
+ viewBox="0.00 0.00 1989.00 1898.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1894)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-1894 1985,-1894 1985,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_cxx03</title>
+<path fill="none" stroke="black" d="M120,-130C120,-130 747,-130 747,-130 753,-130 759,-136 759,-142 759,-142 759,-742 759,-742 759,-748 753,-754 747,-754 747,-754 120,-754 120,-754 114,-754 108,-748 108,-742 108,-742 108,-142 108,-142 108,-136 114,-130 120,-130"/>
+<text text-anchor="middle" x="433.5" y="-738.8" font-family="Times,serif" font-size="14.00">C++ 03</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_cxx03_data_encapsulation</title>
+<path fill="none" stroke="black" d="M128,-202C128,-202 586,-202 586,-202 592,-202 598,-208 598,-214 598,-214 598,-628 598,-628 598,-634 592,-640 586,-640 586,-640 128,-640 128,-640 122,-640 116,-634 116,-628 116,-628 116,-214 116,-214 116,-208 122,-202 128,-202"/>
+<text text-anchor="middle" x="357" y="-624.8" font-family="Times,serif" font-size="14.00">Data Encapsulation</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_cxx03_functions_and_methods</title>
+<path fill="none" stroke="black" d="M618,-346C618,-346 739,-346 739,-346 745,-346 751,-352 751,-358 751,-358 751,-711 751,-711 751,-717 745,-723 739,-723 739,-723 618,-723 618,-723 612,-723 606,-717 606,-711 606,-711 606,-358 606,-358 606,-352 612,-346 618,-346"/>
+<text text-anchor="middle" x="678.5" y="-707.8" font-family="Times,serif" font-size="14.00">Functions and Methods</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_linux</title>
+<path fill="none" stroke="black" d="M784,-258C784,-258 1961,-258 1961,-258 1967,-258 1973,-264 1973,-270 1973,-270 1973,-1764 1973,-1764 1973,-1770 1967,-1776 1961,-1776 1961,-1776 784,-1776 784,-1776 778,-1776 772,-1770 772,-1764 772,-1764 772,-270 772,-270 772,-264 778,-258 784,-258"/>
+<text text-anchor="middle" x="1372.5" y="-1760.8" font-family="Times,serif" font-size="14.00">Linux</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_linux_sysprog</title>
+<path fill="none" stroke="black" d="M792,-770C792,-770 1190,-770 1190,-770 1196,-770 1202,-776 1202,-782 1202,-782 1202,-1733 1202,-1733 1202,-1739 1196,-1745 1190,-1745 1190,-1745 792,-1745 792,-1745 786,-1745 780,-1739 780,-1733 780,-1733 780,-782 780,-782 780,-776 786,-770 792,-770"/>
+<text text-anchor="middle" x="991" y="-1729.8" font-family="Times,serif" font-size="14.00">Linux Systems Programming</text>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_linux_sysprog_scheduling</title>
+<path fill="none" stroke="black" d="M859,-1185C859,-1185 1089,-1185 1089,-1185 1095,-1185 1101,-1191 1101,-1197 1101,-1197 1101,-1248 1101,-1248 1101,-1254 1095,-1260 1089,-1260 1089,-1260 859,-1260 859,-1260 853,-1260 847,-1254 847,-1248 847,-1248 847,-1197 847,-1197 847,-1191 853,-1185 859,-1185"/>
+<text text-anchor="middle" x="974" y="-1244.8" font-family="Times,serif" font-size="14.00">Scheduling</text>
+</g>
+<g id="clust7" class="cluster">
+<title>cluster_linux_sysprog_posix_threads</title>
+<path fill="none" stroke="black" d="M800,-1268C800,-1268 1114,-1268 1114,-1268 1120,-1268 1126,-1274 1126,-1280 1126,-1280 1126,-1702 1126,-1702 1126,-1708 1120,-1714 1114,-1714 1114,-1714 800,-1714 800,-1714 794,-1714 788,-1708 788,-1702 788,-1702 788,-1280 788,-1280 788,-1274 794,-1268 800,-1268"/>
+<text text-anchor="middle" x="957" y="-1698.8" font-family="Times,serif" font-size="14.00">POSIX Threads</text>
+</g>
+<g id="clust8" class="cluster">
+<title>cluster_linux_sysprog_basics</title>
+<path fill="none" stroke="black" d="M826,-778C826,-778 1106,-778 1106,-778 1112,-778 1118,-784 1118,-790 1118,-790 1118,-999 1118,-999 1118,-1005 1112,-1011 1106,-1011 1106,-1011 826,-1011 826,-1011 820,-1011 814,-1005 814,-999 814,-999 814,-790 814,-790 814,-784 820,-778 826,-778"/>
+<text text-anchor="middle" x="966" y="-995.8" font-family="Times,serif" font-size="14.00">Linux Systems Programming: Basics</text>
+</g>
+<g id="clust9" class="cluster">
+<title>cluster_linux_sysprog_fileio</title>
+<path fill="none" stroke="black" d="M929,-1019C929,-1019 1053,-1019 1053,-1019 1059,-1019 1065,-1025 1065,-1031 1065,-1031 1065,-1082 1065,-1082 1065,-1088 1059,-1094 1053,-1094 1053,-1094 929,-1094 929,-1094 923,-1094 917,-1088 917,-1082 917,-1082 917,-1031 917,-1031 917,-1025 923,-1019 929,-1019"/>
+<text text-anchor="middle" x="991" y="-1078.8" font-family="Times,serif" font-size="14.00">File I/O</text>
+</g>
+<g id="clust10" class="cluster">
+<title>cluster_linux_sysprog_blocking_io</title>
+<path fill="none" stroke="black" d="M800,-1102C800,-1102 1182,-1102 1182,-1102 1188,-1102 1194,-1108 1194,-1114 1194,-1114 1194,-1165 1194,-1165 1194,-1171 1188,-1177 1182,-1177 1182,-1177 800,-1177 800,-1177 794,-1177 788,-1171 788,-1165 788,-1165 788,-1114 788,-1114 788,-1108 794,-1102 800,-1102"/>
+<text text-anchor="middle" x="991" y="-1161.8" font-family="Times,serif" font-size="14.00">Blocking I/O: What Is That?</text>
+</g>
+<g id="clust11" class="cluster">
+<title>cluster_linux_basics</title>
+<path fill="none" stroke="black" d="M962,-266C962,-266 1953,-266 1953,-266 1959,-266 1965,-272 1965,-278 1965,-278 1965,-742 1965,-742 1965,-748 1959,-754 1953,-754 1953,-754 962,-754 962,-754 956,-754 950,-748 950,-742 950,-742 950,-278 950,-278 950,-272 956,-266 962,-266"/>
+<text text-anchor="middle" x="1457.5" y="-738.8" font-family="Times,serif" font-size="14.00">Linux Basics</text>
+</g>
+<g id="clust12" class="cluster">
+<title>cluster_linux_basics_shell</title>
+<path fill="none" stroke="black" d="M970,-346C970,-346 1611,-346 1611,-346 1617,-346 1623,-352 1623,-358 1623,-358 1623,-628 1623,-628 1623,-634 1617,-640 1611,-640 1611,-640 970,-640 970,-640 964,-640 958,-634 958,-628 958,-628 958,-358 958,-358 958,-352 964,-346 970,-346"/>
+<text text-anchor="middle" x="1290.5" y="-624.8" font-family="Times,serif" font-size="14.00">The Shell (Bash &#45; “Bourne Again Shell”)</text>
+</g>
+<g id="clust13" class="cluster">
+<title>cluster_linux_basics_permissions</title>
+<path fill="none" stroke="black" d="M1190,-648C1190,-648 1546,-648 1546,-648 1552,-648 1558,-654 1558,-660 1558,-660 1558,-711 1558,-711 1558,-717 1552,-723 1546,-723 1546,-723 1190,-723 1190,-723 1184,-723 1178,-717 1178,-711 1178,-711 1178,-660 1178,-660 1178,-654 1184,-648 1190,-648"/>
+<text text-anchor="middle" x="1368" y="-707.8" font-family="Times,serif" font-size="14.00">File System Permissions</text>
+</g>
+<g id="clust14" class="cluster">
+<title>cluster_linux_basics_intro</title>
+<path fill="none" stroke="black" d="M1643,-274C1643,-274 1933,-274 1933,-274 1939,-274 1945,-280 1945,-286 1945,-286 1945,-409 1945,-409 1945,-415 1939,-421 1933,-421 1933,-421 1643,-421 1643,-421 1637,-421 1631,-415 1631,-409 1631,-409 1631,-286 1631,-286 1631,-280 1637,-274 1643,-274"/>
+<text text-anchor="middle" x="1788" y="-405.8" font-family="Times,serif" font-size="14.00">Introduction: Concepts and Terminology</text>
+</g>
+<g id="clust15" class="cluster">
+<title>cluster_linux_toolchain</title>
+<path fill="none" stroke="black" d="M792,-648C792,-648 930,-648 930,-648 936,-648 942,-654 942,-660 942,-660 942,-711 942,-711 942,-717 936,-723 930,-723 930,-723 792,-723 792,-723 786,-723 780,-717 780,-711 780,-711 780,-660 780,-660 780,-654 786,-648 792,-648"/>
+<text text-anchor="middle" x="861" y="-707.8" font-family="Times,serif" font-size="14.00">Toolchain</text>
+</g>
+<g id="clust16" class="cluster">
+<title>cluster_cxx11</title>
+<path fill="none" stroke="black" d="M20,-762C20,-762 752,-762 752,-762 758,-762 764,-768 764,-774 764,-774 764,-1870 764,-1870 764,-1876 758,-1882 752,-1882 752,-1882 20,-1882 20,-1882 14,-1882 8,-1876 8,-1870 8,-1870 8,-774 8,-774 8,-768 14,-762 20,-762"/>
+<text text-anchor="middle" x="386" y="-1866.8" font-family="Times,serif" font-size="14.00">C++ 11</text>
+</g>
+<g id="clust17" class="cluster">
+<title>cluster_cxx11_smart_pointers</title>
+<path fill="none" stroke="black" d="M512,-936C512,-936 744,-936 744,-936 750,-936 756,-942 756,-948 756,-948 756,-1248 756,-1248 756,-1254 750,-1260 744,-1260 744,-1260 512,-1260 512,-1260 506,-1260 500,-1254 500,-1248 500,-1248 500,-948 500,-948 500,-942 506,-936 512,-936"/>
+<text text-anchor="middle" x="628" y="-1244.8" font-family="Times,serif" font-size="14.00">Smart Pointers</text>
+</g>
+<g id="clust18" class="cluster">
+<title>cluster_cxx11_new_language_features</title>
+<path fill="none" stroke="black" d="M425,-770C425,-770 741,-770 741,-770 747,-770 753,-776 753,-782 753,-782 753,-916 753,-916 753,-922 747,-928 741,-928 741,-928 425,-928 425,-928 419,-928 413,-922 413,-916 413,-916 413,-782 413,-782 413,-776 419,-770 425,-770"/>
+<text text-anchor="middle" x="583" y="-912.8" font-family="Times,serif" font-size="14.00">New Language Features</text>
+</g>
+<g id="clust19" class="cluster">
+<title>cluster_cxx11_new_language_features_move</title>
+<path fill="none" stroke="black" d="M433,-778C433,-778 733,-778 733,-778 739,-778 745,-784 745,-790 745,-790 745,-841 745,-841 745,-847 739,-853 733,-853 733,-853 433,-853 433,-853 427,-853 421,-847 421,-841 421,-841 421,-790 421,-790 421,-784 427,-778 433,-778"/>
+<text text-anchor="middle" x="583" y="-837.8" font-family="Times,serif" font-size="14.00">Move Semantics/Rvalue References</text>
+</g>
+<g id="clust20" class="cluster">
+<title>cluster_cxx11_multithreading</title>
+<path fill="none" stroke="black" d="M28,-1423C28,-1423 744,-1423 744,-1423 750,-1423 756,-1429 756,-1435 756,-1435 756,-1839 756,-1839 756,-1845 750,-1851 744,-1851 744,-1851 28,-1851 28,-1851 22,-1851 16,-1845 16,-1839 16,-1839 16,-1435 16,-1435 16,-1429 22,-1423 28,-1423"/>
+<text text-anchor="middle" x="386" y="-1835.8" font-family="Times,serif" font-size="14.00">Multithreading</text>
+</g>
+<g id="clust21" class="cluster">
+<title>cluster_cxx11_functions_functions</title>
+<path fill="none" stroke="black" d="M584,-1268C584,-1268 691,-1268 691,-1268 697,-1268 703,-1274 703,-1280 703,-1280 703,-1403 703,-1403 703,-1409 697,-1415 691,-1415 691,-1415 584,-1415 584,-1415 578,-1415 572,-1409 572,-1403 572,-1403 572,-1280 572,-1280 572,-1274 578,-1268 584,-1268"/>
+<text text-anchor="middle" x="637.5" y="-1399.8" font-family="Times,serif" font-size="14.00">Functions, Functions</text>
+</g>
+<g id="clust22" class="cluster">
+<title>cluster_c</title>
+<path fill="none" stroke="black" d="M372,-8C372,-8 535,-8 535,-8 541,-8 547,-14 547,-20 547,-20 547,-110 547,-110 547,-116 541,-122 535,-122 535,-122 372,-122 372,-122 366,-122 360,-116 360,-110 360,-110 360,-20 360,-20 360,-14 366,-8 372,-8"/>
+<text text-anchor="middle" x="453.5" y="-106.8" font-family="Times,serif" font-size="14.00">The C Programming Language</text>
+</g>
+<g id="clust23" class="cluster">
+<title>cluster_c_introduction</title>
+<path fill="none" stroke="black" d="M407,-16C407,-16 499,-16 499,-16 505,-16 511,-22 511,-28 511,-28 511,-79 511,-79 511,-85 505,-91 499,-91 499,-91 407,-91 407,-91 401,-91 395,-85 395,-79 395,-79 395,-28 395,-28 395,-22 401,-16 407,-16"/>
+<text text-anchor="middle" x="453" y="-75.8" font-family="Times,serif" font-size="14.00">Introduction</text>
+</g>
+<!-- cxx03_introduction -->
+<g id="node1" class="node">
+<title>cxx03_introduction</title>
+<g id="a_node1"><a xlink:href="../../cxx03/001-introduction/topic.html" xlink:title="Introduction">
+<ellipse fill="#dcdcdc" stroke="black" cx="453" cy="-156" rx="53.89" ry="18"/>
+<text text-anchor="middle" x="453" y="-152.3" font-family="Times,serif" font-size="14.00">Introduction</text>
+</a>
+</g>
+</g>
+<!-- c_introduction_installation -->
+<g id="node51" class="node">
+<title>c_introduction_installation</title>
+<g id="a_node51"><a xlink:href="../../c/010-introduction/000-installation/topic.html" xlink:title="Installation">
+<ellipse fill="#dcdcdc" stroke="black" cx="453" cy="-42" rx="50.09" ry="18"/>
+<text text-anchor="middle" x="453" y="-38.3" font-family="Times,serif" font-size="14.00">Installation</text>
+</a>
+</g>
+</g>
+<!-- cxx03_introduction&#45;&gt;c_introduction_installation -->
+<g id="edge59" class="edge">
+<title>cxx03_introduction&#45;&gt;c_introduction_installation</title>
+<path fill="none" stroke="black" d="M453,-137.99C453,-120.06 453,-91.56 453,-70.44"/>
+<polygon fill="black" stroke="black" points="456.5,-70.17 453,-60.17 449.5,-70.17 456.5,-70.17"/>
+</g>
+<!-- cxx03_data_encapsulation_object_copy -->
+<g id="node2" class="node">
+<title>cxx03_data_encapsulation_object_copy</title>
+<g id="a_node2"><a xlink:href="../../cxx03/020-data-encapsulation/object-copy.html" xlink:title="Object Copy (And Resource Management): There Be Dragons">
+<ellipse fill="#dcdcdc" stroke="black" cx="357" cy="-591" rx="232.86" ry="18"/>
+<text text-anchor="middle" x="357" y="-587.3" font-family="Times,serif" font-size="14.00">Object Copy (And Resource Management): There Be Dragons</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_ctor_dtor -->
+<g id="node6" class="node">
+<title>cxx03_data_encapsulation_ctor_dtor</title>
+<g id="a_node6"><a xlink:href="../../cxx03/020-data-encapsulation/ctor-dtor.html" xlink:title="More Constructors, Destructors">
+<ellipse fill="#dcdcdc" stroke="black" cx="370" cy="-519" rx="122.68" ry="18"/>
+<text text-anchor="middle" x="370" y="-515.3" font-family="Times,serif" font-size="14.00">More Constructors, Destructors</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_object_copy&#45;&gt;cxx03_data_encapsulation_ctor_dtor -->
+<g id="edge1" class="edge">
+<title>cxx03_data_encapsulation_object_copy&#45;&gt;cxx03_data_encapsulation_ctor_dtor</title>
+<path fill="none" stroke="black" d="M360.21,-572.7C361.65,-564.98 363.37,-555.71 364.96,-547.11"/>
+<polygon fill="black" stroke="black" points="368.44,-547.58 366.82,-537.1 361.56,-546.3 368.44,-547.58"/>
+</g>
+<!-- cxx03_data_encapsulation_classes_objects -->
+<g id="node3" class="node">
+<title>cxx03_data_encapsulation_classes_objects</title>
+<g id="a_node3"><a xlink:href="../../cxx03/020-data-encapsulation/cpp-introduction.html" xlink:title="Classes and Objects">
+<ellipse fill="#dcdcdc" stroke="black" cx="496" cy="-300" rx="81.49" ry="18"/>
+<text text-anchor="middle" x="496" y="-296.3" font-family="Times,serif" font-size="14.00">Classes and Objects</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_introduction -->
+<g id="edge24" class="edge">
+<title>cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_introduction</title>
+<path fill="none" stroke="black" d="M514.59,-282.3C523.85,-272.72 534.09,-259.85 539,-246 545.54,-227.57 549.13,-218.73 539,-202 530.84,-188.52 517.16,-178.88 503.09,-172.08"/>
+<polygon fill="black" stroke="black" points="504.41,-168.83 493.84,-168.01 501.59,-175.24 504.41,-168.83"/>
+</g>
+<!-- cxx03_data_encapsulation_c -->
+<g id="node7" class="node">
+<title>cxx03_data_encapsulation_c</title>
+<g id="a_node7"><a xlink:href="../../cxx03/020-data-encapsulation/c.html" xlink:title="Object Oriented Programming In Good Ol’ C">
+<ellipse fill="#dcdcdc" stroke="black" cx="357" cy="-228" rx="172.77" ry="18"/>
+<text text-anchor="middle" x="357" y="-224.3" font-family="Times,serif" font-size="14.00">Object Oriented Programming In Good Ol’ C</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_data_encapsulation_c -->
+<g id="edge25" class="edge">
+<title>cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_data_encapsulation_c</title>
+<path fill="none" stroke="black" d="M464.81,-283.29C445.56,-273.6 420.62,-261.04 399.57,-250.44"/>
+<polygon fill="black" stroke="black" points="401.02,-247.25 390.52,-245.88 397.88,-253.5 401.02,-247.25"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_default -->
+<g id="node4" class="node">
+<title>cxx03_data_encapsulation_ctor_default</title>
+<g id="a_node4"><a xlink:href="../../cxx03/020-data-encapsulation/ctor-default.html" xlink:title="Default Constructor">
+<ellipse fill="#dcdcdc" stroke="black" cx="370" cy="-447" rx="81.49" ry="18"/>
+<text text-anchor="middle" x="370" y="-443.3" font-family="Times,serif" font-size="14.00">Default Constructor</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_ctor_custom -->
+<g id="node5" class="node">
+<title>cxx03_data_encapsulation_ctor_custom</title>
+<g id="a_node5"><a xlink:href="../../cxx03/020-data-encapsulation/ctor-custom.html" xlink:title="Custom Constructor">
+<ellipse fill="#dcdcdc" stroke="black" cx="470" cy="-372" rx="82.59" ry="18"/>
+<text text-anchor="middle" x="470" y="-368.3" font-family="Times,serif" font-size="14.00">Custom Constructor</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_ctor_default&#45;&gt;cxx03_data_encapsulation_ctor_custom -->
+<g id="edge31" class="edge">
+<title>cxx03_data_encapsulation_ctor_default&#45;&gt;cxx03_data_encapsulation_ctor_custom</title>
+<path fill="none" stroke="black" d="M392.69,-429.44C406.37,-419.45 423.99,-406.59 438.95,-395.67"/>
+<polygon fill="black" stroke="black" points="441.39,-398.22 447.4,-389.5 437.26,-392.57 441.39,-398.22"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_custom&#45;&gt;cxx03_data_encapsulation_classes_objects -->
+<g id="edge38" class="edge">
+<title>cxx03_data_encapsulation_ctor_custom&#45;&gt;cxx03_data_encapsulation_classes_objects</title>
+<path fill="none" stroke="black" d="M476.43,-353.7C479.36,-345.81 482.89,-336.3 486.14,-327.55"/>
+<polygon fill="black" stroke="black" points="489.45,-328.7 489.65,-318.1 482.88,-326.26 489.45,-328.7"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_default -->
+<g id="edge48" class="edge">
+<title>cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_default</title>
+<path fill="none" stroke="black" d="M370,-500.7C370,-492.98 370,-483.71 370,-475.11"/>
+<polygon fill="black" stroke="black" points="373.5,-475.1 370,-465.1 366.5,-475.1 373.5,-475.1"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_custom -->
+<g id="edge49" class="edge">
+<title>cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_custom</title>
+<path fill="none" stroke="black" d="M414.34,-502.07C431.37,-493.68 449.28,-481.6 460,-465 472.36,-445.87 474.09,-419.72 473.19,-400.19"/>
+<polygon fill="black" stroke="black" points="476.67,-399.82 472.46,-390.1 469.69,-400.33 476.67,-399.82"/>
+</g>
+<!-- cxx03_data_encapsulation_c&#45;&gt;cxx03_introduction -->
+<g id="edge63" class="edge">
+<title>cxx03_data_encapsulation_c&#45;&gt;cxx03_introduction</title>
+<path fill="none" stroke="black" d="M380.24,-210.05C393.2,-200.61 409.47,-188.74 423.34,-178.63"/>
+<polygon fill="black" stroke="black" points="425.6,-181.31 431.62,-172.59 421.47,-175.66 425.6,-181.31"/>
+</g>
+<!-- cxx03_functions_and_methods_const -->
+<g id="node8" class="node">
+<title>cxx03_functions_and_methods_const</title>
+<g id="a_node8"><a xlink:href="../../cxx03/030-functions-and-methods/030-const/topic.html" xlink:title="const">
+<ellipse fill="#dcdcdc" stroke="black" cx="667" cy="-519" rx="29.5" ry="18"/>
+<text text-anchor="middle" x="667" y="-515.3" font-family="Times,serif" font-size="14.00">const</text>
+</a>
+</g>
+</g>
+<!-- cxx03_functions_and_methods_methods -->
+<g id="node11" class="node">
+<title>cxx03_functions_and_methods_methods</title>
+<g id="a_node11"><a xlink:href="../../cxx03/030-functions-and-methods/020-methods/topic.html" xlink:title="Methods">
+<ellipse fill="#dcdcdc" stroke="black" cx="668" cy="-447" rx="42.49" ry="18"/>
+<text text-anchor="middle" x="668" y="-443.3" font-family="Times,serif" font-size="14.00">Methods</text>
+</a>
+</g>
+</g>
+<!-- cxx03_functions_and_methods_const&#45;&gt;cxx03_functions_and_methods_methods -->
+<g id="edge4" class="edge">
+<title>cxx03_functions_and_methods_const&#45;&gt;cxx03_functions_and_methods_methods</title>
+<path fill="none" stroke="black" d="M667.25,-500.7C667.36,-492.98 667.49,-483.71 667.61,-475.11"/>
+<polygon fill="black" stroke="black" points="671.11,-475.15 667.76,-465.1 664.11,-475.05 671.11,-475.15"/>
+</g>
+<!-- cxx03_functions_and_methods_overloading -->
+<g id="node9" class="node">
+<title>cxx03_functions_and_methods_overloading</title>
+<g id="a_node9"><a xlink:href="../../cxx03/030-functions-and-methods/010-overloading/topic.html" xlink:title="Overloading">
+<ellipse fill="#dcdcdc" stroke="black" cx="669" cy="-372" rx="54.69" ry="18"/>
+<text text-anchor="middle" x="669" y="-368.3" font-family="Times,serif" font-size="14.00">Overloading</text>
+</a>
+</g>
+</g>
+<!-- cxx03_functions_and_methods_overloading&#45;&gt;cxx03_data_encapsulation_classes_objects -->
+<g id="edge14" class="edge">
+<title>cxx03_functions_and_methods_overloading&#45;&gt;cxx03_data_encapsulation_classes_objects</title>
+<path fill="none" stroke="black" d="M635.64,-357.5C609.27,-346.83 572.13,-331.8 542.78,-319.93"/>
+<polygon fill="black" stroke="black" points="543.74,-316.54 533.15,-316.03 541.11,-323.03 543.74,-316.54"/>
+</g>
+<!-- cxx03_functions_and_methods_references -->
+<g id="node10" class="node">
+<title>cxx03_functions_and_methods_references</title>
+<g id="a_node10"><a xlink:href="../../cxx03/030-functions-and-methods/050-references/topic.html" xlink:title="References">
+<ellipse fill="#dcdcdc" stroke="black" cx="666" cy="-674" rx="50.09" ry="18"/>
+<text text-anchor="middle" x="666" y="-670.3" font-family="Times,serif" font-size="14.00">References</text>
+</a>
+</g>
+</g>
+<!-- cxx03_functions_and_methods_this -->
+<g id="node12" class="node">
+<title>cxx03_functions_and_methods_this</title>
+<g id="a_node12"><a xlink:href="../../cxx03/030-functions-and-methods/040-this/topic.html" xlink:title="this">
+<ellipse fill="#dcdcdc" stroke="black" cx="666" cy="-591" rx="27" ry="18"/>
+<text text-anchor="middle" x="666" y="-587.3" font-family="Times,serif" font-size="14.00">this</text>
+</a>
+</g>
+</g>
+<!-- cxx03_functions_and_methods_references&#45;&gt;cxx03_functions_and_methods_this -->
+<g id="edge27" class="edge">
+<title>cxx03_functions_and_methods_references&#45;&gt;cxx03_functions_and_methods_this</title>
+<path fill="none" stroke="black" d="M666,-655.82C666,-645.19 666,-631.31 666,-619.2"/>
+<polygon fill="black" stroke="black" points="669.5,-619.15 666,-609.15 662.5,-619.15 669.5,-619.15"/>
+</g>
+<!-- cxx03_functions_and_methods_methods&#45;&gt;cxx03_functions_and_methods_overloading -->
+<g id="edge64" class="edge">
+<title>cxx03_functions_and_methods_methods&#45;&gt;cxx03_functions_and_methods_overloading</title>
+<path fill="none" stroke="black" d="M668.24,-428.7C668.35,-420.25 668.49,-409.87 668.63,-400.37"/>
+<polygon fill="black" stroke="black" points="672.13,-400.22 668.76,-390.18 665.13,-400.13 672.13,-400.22"/>
+</g>
+<!-- cxx03_functions_and_methods_this&#45;&gt;cxx03_functions_and_methods_const -->
+<g id="edge66" class="edge">
+<title>cxx03_functions_and_methods_this&#45;&gt;cxx03_functions_and_methods_const</title>
+<path fill="none" stroke="black" d="M666.25,-572.7C666.36,-564.98 666.49,-555.71 666.61,-547.11"/>
+<polygon fill="black" stroke="black" points="670.11,-547.15 666.76,-537.1 663.11,-547.05 670.11,-547.15"/>
+</g>
+<!-- linux_sysprog_scheduling_basics -->
+<g id="node13" class="node">
+<title>linux_sysprog_scheduling_basics</title>
+<g id="a_node13"><a xlink:href="../../linux/sysprog/scheduling/basics.html" xlink:title="Scheduling (and Multitasking)">
+<ellipse fill="#dcdcdc" stroke="black" cx="974" cy="-1211" rx="118.88" ry="18"/>
+<text text-anchor="middle" x="974" y="-1207.3" font-family="Times,serif" font-size="14.00">Scheduling (and Multitasking)</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_blocking_io_blocking_io -->
+<g id="node24" class="node">
+<title>linux_sysprog_blocking_io_blocking_io</title>
+<g id="a_node24"><a xlink:href="../../linux/sysprog/blocking-io/blocking-io.html" xlink:title="Blocking I/O: What is That? (“Everything is a file”)">
+<ellipse fill="#dcdcdc" stroke="black" cx="991" cy="-1128" rx="194.97" ry="18"/>
+<text text-anchor="middle" x="991" y="-1124.3" font-family="Times,serif" font-size="14.00">Blocking I/O: What is That? (“Everything is a file”)</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_scheduling_basics&#45;&gt;linux_sysprog_blocking_io_blocking_io -->
+<g id="edge2" class="edge">
+<title>linux_sysprog_scheduling_basics&#45;&gt;linux_sysprog_blocking_io_blocking_io</title>
+<path fill="none" stroke="black" d="M977.61,-1192.82C979.84,-1182.19 982.75,-1168.31 985.29,-1156.2"/>
+<polygon fill="black" stroke="black" points="988.77,-1156.66 987.4,-1146.15 981.92,-1155.22 988.77,-1156.66"/>
+</g>
+<!-- linux_sysprog_posix_threads_condition_variable -->
+<g id="node14" class="node">
+<title>linux_sysprog_posix_threads_condition_variable</title>
+<g id="a_node14"><a xlink:href="../../linux/sysprog/posix-threads/060-condition-variable/topic.html" xlink:title="Communication: Condition Variable">
+<ellipse fill="#dcdcdc" stroke="black" cx="946" cy="-1665" rx="139.98" ry="18"/>
+<text text-anchor="middle" x="946" y="-1661.3" font-family="Times,serif" font-size="14.00">Communication: Condition Variable</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_posix_threads_exercise_mutex -->
+<g id="node17" class="node">
+<title>linux_sysprog_posix_threads_exercise_mutex</title>
+<g id="a_node17"><a xlink:href="../../linux/sysprog/posix-threads/050-exercise-mutex/topic.html" xlink:title="Mutex: Solve Load/Modify/Store Conflict">
+<ellipse fill="red" stroke="black" cx="957" cy="-1593" rx="161.37" ry="18"/>
+<text text-anchor="middle" x="957" y="-1589.3" font-family="Times,serif" font-size="14.00">Mutex: Solve Load/Modify/Store Conflict</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_posix_threads_condition_variable&#45;&gt;linux_sysprog_posix_threads_exercise_mutex -->
+<g id="edge8" class="edge">
+<title>linux_sysprog_posix_threads_condition_variable&#45;&gt;linux_sysprog_posix_threads_exercise_mutex</title>
+<path fill="none" stroke="black" d="M948.72,-1646.7C949.93,-1638.98 951.39,-1629.71 952.74,-1621.11"/>
+<polygon fill="black" stroke="black" points="956.22,-1621.53 954.31,-1611.1 949.3,-1620.44 956.22,-1621.53"/>
+</g>
+<!-- linux_sysprog_posix_threads_mutex -->
+<g id="node15" class="node">
+<title>linux_sysprog_posix_threads_mutex</title>
+<g id="a_node15"><a xlink:href="../../linux/sysprog/posix-threads/040-mutex/topic.html" xlink:title="Synchronization">
+<ellipse fill="#dcdcdc" stroke="black" cx="924" cy="-1521" rx="68.49" ry="18"/>
+<text text-anchor="middle" x="924" y="-1517.3" font-family="Times,serif" font-size="14.00">Synchronization</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_posix_threads_exercise_pthcreate_racecondition -->
+<g id="node18" class="node">
+<title>linux_sysprog_posix_threads_exercise_pthcreate_racecondition</title>
+<g id="a_node18"><a xlink:href="../../linux/sysprog/posix-threads/030-exercise-pthcreate-race-condition/topic.html" xlink:title="Thread Creation, Race Condition">
+<ellipse fill="red" stroke="black" cx="924" cy="-1449" rx="128.08" ry="18"/>
+<text text-anchor="middle" x="924" y="-1445.3" font-family="Times,serif" font-size="14.00">Thread Creation, Race Condition</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_posix_threads_mutex&#45;&gt;linux_sysprog_posix_threads_exercise_pthcreate_racecondition -->
+<g id="edge37" class="edge">
+<title>linux_sysprog_posix_threads_mutex&#45;&gt;linux_sysprog_posix_threads_exercise_pthcreate_racecondition</title>
+<path fill="none" stroke="black" d="M924,-1502.7C924,-1494.98 924,-1485.71 924,-1477.11"/>
+<polygon fill="black" stroke="black" points="927.5,-1477.1 924,-1467.1 920.5,-1477.1 927.5,-1477.1"/>
+</g>
+<!-- linux_sysprog_posix_threads_lifecycle -->
+<g id="node16" class="node">
+<title>linux_sysprog_posix_threads_lifecycle</title>
+<g id="a_node16"><a xlink:href="../../linux/sysprog/posix-threads/020-lifecycle/topic.html" xlink:title="Thread Life Cycle">
+<ellipse fill="#dcdcdc" stroke="black" cx="924" cy="-1366" rx="75.29" ry="18"/>
+<text text-anchor="middle" x="924" y="-1362.3" font-family="Times,serif" font-size="14.00">Thread Life Cycle</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_posix_threads_basics -->
+<g id="node19" class="node">
+<title>linux_sysprog_posix_threads_basics</title>
+<g id="a_node19"><a xlink:href="../../linux/sysprog/posix-threads/010-introduction/topic.html" xlink:title="Basics">
+<ellipse fill="#dcdcdc" stroke="black" cx="941" cy="-1294" rx="33.6" ry="18"/>
+<text text-anchor="middle" x="941" y="-1290.3" font-family="Times,serif" font-size="14.00">Basics</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_posix_threads_lifecycle&#45;&gt;linux_sysprog_posix_threads_basics -->
+<g id="edge42" class="edge">
+<title>linux_sysprog_posix_threads_lifecycle&#45;&gt;linux_sysprog_posix_threads_basics</title>
+<path fill="none" stroke="black" d="M928.2,-1347.7C930.1,-1339.9 932.38,-1330.51 934.48,-1321.83"/>
+<polygon fill="black" stroke="black" points="937.89,-1322.65 936.85,-1312.1 931.08,-1321 937.89,-1322.65"/>
+</g>
+<!-- linux_sysprog_posix_threads_exercise_mutex&#45;&gt;linux_sysprog_posix_threads_mutex -->
+<g id="edge47" class="edge">
+<title>linux_sysprog_posix_threads_exercise_mutex&#45;&gt;linux_sysprog_posix_threads_mutex</title>
+<path fill="none" stroke="black" d="M948.84,-1574.7C945.09,-1566.73 940.55,-1557.1 936.38,-1548.26"/>
+<polygon fill="black" stroke="black" points="939.49,-1546.66 932.06,-1539.1 933.16,-1549.64 939.49,-1546.66"/>
+</g>
+<!-- linux_sysprog_posix_threads_exercise_pthcreate_racecondition&#45;&gt;linux_sysprog_posix_threads_lifecycle -->
+<g id="edge51" class="edge">
+<title>linux_sysprog_posix_threads_exercise_pthcreate_racecondition&#45;&gt;linux_sysprog_posix_threads_lifecycle</title>
+<path fill="none" stroke="black" d="M924,-1430.82C924,-1420.19 924,-1406.31 924,-1394.2"/>
+<polygon fill="black" stroke="black" points="927.5,-1394.15 924,-1384.15 920.5,-1394.15 927.5,-1394.15"/>
+</g>
+<!-- linux_sysprog_posix_threads_basics&#45;&gt;linux_sysprog_scheduling_basics -->
+<g id="edge56" class="edge">
+<title>linux_sysprog_posix_threads_basics&#45;&gt;linux_sysprog_scheduling_basics</title>
+<path fill="none" stroke="black" d="M947.84,-1276.22C952.28,-1265.32 958.16,-1250.89 963.22,-1238.47"/>
+<polygon fill="black" stroke="black" points="966.53,-1239.62 967.06,-1229.04 960.04,-1236.98 966.53,-1239.62"/>
+</g>
+<!-- linux_sysprog_basics_errorhandling -->
+<g id="node20" class="node">
+<title>linux_sysprog_basics_errorhandling</title>
+<g id="a_node20"><a xlink:href="../../linux/sysprog/basics/errorhandling.html" xlink:title="Error Handling">
+<ellipse fill="#dcdcdc" stroke="black" cx="922" cy="-879" rx="64.19" ry="18"/>
+<text text-anchor="middle" x="922" y="-875.3" font-family="Times,serif" font-size="14.00">Error Handling</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_basics_syscalls -->
+<g id="node22" class="node">
+<title>linux_sysprog_basics_syscalls</title>
+<g id="a_node22"><a xlink:href="../../linux/sysprog/basics/syscalls.html" xlink:title="System Calls vs. Library Functions">
+<ellipse fill="#dcdcdc" stroke="black" cx="958" cy="-804" rx="135.68" ry="18"/>
+<text text-anchor="middle" x="958" y="-800.3" font-family="Times,serif" font-size="14.00">System Calls vs. Library Functions</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_basics_errorhandling&#45;&gt;linux_sysprog_basics_syscalls -->
+<g id="edge13" class="edge">
+<title>linux_sysprog_basics_errorhandling&#45;&gt;linux_sysprog_basics_syscalls</title>
+<path fill="none" stroke="black" d="M930.35,-861.07C934.73,-852.2 940.18,-841.13 945.09,-831.18"/>
+<polygon fill="black" stroke="black" points="948.29,-832.61 949.57,-822.09 942.01,-829.51 948.29,-832.61"/>
+</g>
+<!-- linux_sysprog_basics_groupnode -->
+<g id="node21" class="node">
+<title>linux_sysprog_basics_groupnode</title>
+<g id="a_node21"><a xlink:href="../../linux/sysprog/basics/group.html" xlink:title="Linux Systems Programming: Basics">
+<ellipse fill="#dcdcdc" stroke="black" cx="966" cy="-962" rx="143.77" ry="18"/>
+<text text-anchor="middle" x="966" y="-958.3" font-family="Times,serif" font-size="14.00">Linux Systems Programming: Basics</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_basics_groupnode&#45;&gt;linux_sysprog_basics_errorhandling -->
+<g id="edge16" class="edge">
+<title>linux_sysprog_basics_groupnode&#45;&gt;linux_sysprog_basics_errorhandling</title>
+<path fill="none" stroke="black" d="M956.67,-943.82C950.68,-932.79 942.79,-918.27 936.05,-905.86"/>
+<polygon fill="black" stroke="black" points="939.02,-903.99 931.17,-896.88 932.86,-907.33 939.02,-903.99"/>
+</g>
+<!-- linux_sysprog_basics_groupnode&#45;&gt;linux_sysprog_basics_syscalls -->
+<g id="edge15" class="edge">
+<title>linux_sysprog_basics_groupnode&#45;&gt;linux_sysprog_basics_syscalls</title>
+<path fill="none" stroke="black" d="M984.92,-944.1C989.03,-939.34 992.79,-933.85 995,-928 1005.5,-900.14 1003.57,-889.52 995,-861 991.75,-850.18 985.65,-839.51 979.32,-830.45"/>
+<polygon fill="black" stroke="black" points="982.05,-828.24 973.28,-822.29 976.42,-832.41 982.05,-828.24"/>
+</g>
+<!-- linux_toolchain_basics -->
+<g id="node33" class="node">
+<title>linux_toolchain_basics</title>
+<g id="a_node33"><a xlink:href="../../linux/toolchain/basics/topic.html" xlink:title="Toolchain: Basics">
+<ellipse fill="#dcdcdc" stroke="black" cx="861" cy="-674" rx="73.39" ry="18"/>
+<text text-anchor="middle" x="861" y="-670.3" font-family="Times,serif" font-size="14.00">Toolchain: Basics</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_basics_syscalls&#45;&gt;linux_toolchain_basics -->
+<g id="edge28" class="edge">
+<title>linux_sysprog_basics_syscalls&#45;&gt;linux_toolchain_basics</title>
+<path fill="none" stroke="black" d="M945.12,-786C928.45,-764.01 899.27,-725.5 880.04,-700.13"/>
+<polygon fill="black" stroke="black" points="882.76,-697.92 873.93,-692.07 877.18,-702.15 882.76,-697.92"/>
+</g>
+<!-- linux_sysprog_fileio_basics -->
+<g id="node23" class="node">
+<title>linux_sysprog_fileio_basics</title>
+<g id="a_node23"><a xlink:href="../../linux/sysprog/file-io/basics.html" xlink:title="File I/O: Basics">
+<ellipse fill="#dcdcdc" stroke="black" cx="991" cy="-1045" rx="66.09" ry="18"/>
+<text text-anchor="middle" x="991" y="-1041.3" font-family="Times,serif" font-size="14.00">File I/O: Basics</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_fileio_basics&#45;&gt;linux_sysprog_basics_groupnode -->
+<g id="edge29" class="edge">
+<title>linux_sysprog_fileio_basics&#45;&gt;linux_sysprog_basics_groupnode</title>
+<path fill="none" stroke="black" d="M985.7,-1026.82C982.38,-1016.08 978.04,-1002.03 974.28,-989.84"/>
+<polygon fill="black" stroke="black" points="977.59,-988.68 971.29,-980.15 970.9,-990.74 977.59,-988.68"/>
+</g>
+<!-- linux_basics_permissions_basics -->
+<g id="node30" class="node">
+<title>linux_basics_permissions_basics</title>
+<g id="a_node30"><a xlink:href="../../linux/basics/permissions/basics.html" xlink:title="Permissions: Mode, User and Group Ownership">
+<ellipse fill="#dcdcdc" stroke="black" cx="1368" cy="-674" rx="181.97" ry="18"/>
+<text text-anchor="middle" x="1368" y="-670.3" font-family="Times,serif" font-size="14.00">Permissions: Mode, User and Group Ownership</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_fileio_basics&#45;&gt;linux_basics_permissions_basics -->
+<g id="edge30" class="edge">
+<title>linux_sysprog_fileio_basics&#45;&gt;linux_basics_permissions_basics</title>
+<path fill="none" stroke="black" d="M1051.65,-1037.66C1075.13,-1033.01 1101.28,-1024.95 1122,-1011 1243.8,-928.95 1327.19,-765.56 1356.44,-701.57"/>
+<polygon fill="black" stroke="black" points="1359.76,-702.74 1360.67,-692.18 1353.37,-699.87 1359.76,-702.74"/>
+</g>
+<!-- linux_sysprog_blocking_io_blocking_io&#45;&gt;linux_sysprog_fileio_basics -->
+<g id="edge46" class="edge">
+<title>linux_sysprog_blocking_io_blocking_io&#45;&gt;linux_sysprog_fileio_basics</title>
+<path fill="none" stroke="black" d="M991,-1109.82C991,-1099.19 991,-1085.31 991,-1073.2"/>
+<polygon fill="black" stroke="black" points="994.5,-1073.15 991,-1063.15 987.5,-1073.15 994.5,-1073.15"/>
+</g>
+<!-- linux_basics_shell_commandline -->
+<g id="node25" class="node">
+<title>linux_basics_shell_commandline</title>
+<g id="a_node25"><a xlink:href="../../linux/basics/shell/commandline.html" xlink:title="Commandline">
+<ellipse fill="#dcdcdc" stroke="black" cx="1493" cy="-372" rx="61.99" ry="18"/>
+<text text-anchor="middle" x="1493" y="-368.3" font-family="Times,serif" font-size="14.00">Commandline</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_intro_overview -->
+<g id="node31" class="node">
+<title>linux_basics_intro_overview</title>
+<g id="a_node31"><a xlink:href="../../linux/basics/intro/overview.html" xlink:title="Overview">
+<ellipse fill="#dcdcdc" stroke="black" cx="1788" cy="-300" rx="45.49" ry="18"/>
+<text text-anchor="middle" x="1788" y="-296.3" font-family="Times,serif" font-size="14.00">Overview</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_commandline&#45;&gt;linux_basics_intro_overview -->
+<g id="edge3" class="edge">
+<title>linux_basics_shell_commandline&#45;&gt;linux_basics_intro_overview</title>
+<path fill="none" stroke="black" d="M1539.42,-359.99C1594.1,-347.01 1684.5,-325.56 1739.91,-312.41"/>
+<polygon fill="black" stroke="black" points="1740.91,-315.77 1749.83,-310.06 1739.29,-308.96 1740.91,-315.77"/>
+</g>
+<!-- linux_basics_shell_ls -->
+<g id="node26" class="node">
+<title>linux_basics_shell_ls</title>
+<g id="a_node26"><a xlink:href="../../linux/basics/shell/ls.html" xlink:title="Directory Listings: The ls Command">
+<ellipse fill="#dcdcdc" stroke="black" cx="1473" cy="-591" rx="141.88" ry="18"/>
+<text text-anchor="middle" x="1473" y="-587.3" font-family="Times,serif" font-size="14.00">Directory Listings: The ls Command</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_paths -->
+<g id="node27" class="node">
+<title>linux_basics_shell_paths</title>
+<g id="a_node27"><a xlink:href="../../linux/basics/shell/paths.html" xlink:title="Absolute and Relative Paths">
+<ellipse fill="#dcdcdc" stroke="black" cx="1364" cy="-447" rx="110.48" ry="18"/>
+<text text-anchor="middle" x="1364" y="-443.3" font-family="Times,serif" font-size="14.00">Absolute and Relative Paths</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_ls&#45;&gt;linux_basics_shell_paths -->
+<g id="edge18" class="edge">
+<title>linux_basics_shell_ls&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M1422.29,-574.12C1404.2,-565.91 1385.48,-553.95 1374,-537 1361.77,-518.95 1359.94,-493.96 1360.78,-475.06"/>
+<polygon fill="black" stroke="black" points="1364.28,-475.22 1361.5,-465 1357.3,-474.72 1364.28,-475.22"/>
+</g>
+<!-- linux_basics_shell_cwd -->
+<g id="node29" class="node">
+<title>linux_basics_shell_cwd</title>
+<g id="a_node29"><a xlink:href="../../linux/basics/shell/cwd.html" xlink:title="Current Working Directory">
+<ellipse fill="#dcdcdc" stroke="black" cx="1490" cy="-519" rx="106.68" ry="18"/>
+<text text-anchor="middle" x="1490" y="-515.3" font-family="Times,serif" font-size="14.00">Current Working Directory</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_ls&#45;&gt;linux_basics_shell_cwd -->
+<g id="edge17" class="edge">
+<title>linux_basics_shell_ls&#45;&gt;linux_basics_shell_cwd</title>
+<path fill="none" stroke="black" d="M1477.2,-572.7C1479.1,-564.9 1481.38,-555.51 1483.48,-546.83"/>
+<polygon fill="black" stroke="black" points="1486.89,-547.65 1485.85,-537.1 1480.08,-546 1486.89,-547.65"/>
+</g>
+<!-- linux_basics_shell_ls&#45;&gt;linux_basics_intro_overview -->
+<g id="edge19" class="edge">
+<title>linux_basics_shell_ls&#45;&gt;linux_basics_intro_overview</title>
+<path fill="none" stroke="black" d="M1601.05,-583.24C1712.69,-569.76 1868.52,-530.96 1946,-421 1965.2,-393.75 1966.08,-372.6 1946,-346 1933.06,-328.86 1880.68,-316.32 1839.73,-308.89"/>
+<polygon fill="black" stroke="black" points="1840.31,-305.44 1829.86,-307.16 1839.1,-312.33 1840.31,-305.44"/>
+</g>
+<!-- linux_basics_shell_paths&#45;&gt;linux_basics_shell_commandline -->
+<g id="edge23" class="edge">
+<title>linux_basics_shell_paths&#45;&gt;linux_basics_shell_commandline</title>
+<path fill="none" stroke="black" d="M1392.95,-429.62C1411.89,-418.9 1436.77,-404.82 1456.99,-393.38"/>
+<polygon fill="black" stroke="black" points="1458.93,-396.3 1465.91,-388.33 1455.48,-390.21 1458.93,-396.3"/>
+</g>
+<!-- linux_basics_shell_file_dir_create_rm -->
+<g id="node28" class="node">
+<title>linux_basics_shell_file_dir_create_rm</title>
+<g id="a_node28"><a xlink:href="../../linux/basics/shell/file_dir_create_rm.html" xlink:title="Creating And Removing Files and Directories">
+<ellipse fill="#dcdcdc" stroke="black" cx="1140" cy="-591" rx="173.57" ry="18"/>
+<text text-anchor="middle" x="1140" y="-587.3" font-family="Times,serif" font-size="14.00">Creating And Removing Files and Directories</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_paths -->
+<g id="edge33" class="edge">
+<title>linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M1166.58,-573.15C1207.1,-547.46 1284.36,-498.49 1329.27,-470.01"/>
+<polygon fill="black" stroke="black" points="1331.23,-472.92 1337.81,-464.61 1327.49,-467 1331.23,-472.92"/>
+</g>
+<!-- linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_cwd -->
+<g id="edge32" class="edge">
+<title>linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_cwd</title>
+<path fill="none" stroke="black" d="M1215.94,-574.81C1274.58,-563.08 1355.33,-546.93 1413.98,-535.2"/>
+<polygon fill="black" stroke="black" points="1414.81,-538.61 1423.93,-533.21 1413.44,-531.74 1414.81,-538.61"/>
+</g>
+<!-- linux_basics_shell_cwd&#45;&gt;linux_basics_shell_commandline -->
+<g id="edge34" class="edge">
+<title>linux_basics_shell_cwd&#45;&gt;linux_basics_shell_commandline</title>
+<path fill="none" stroke="black" d="M1490.36,-500.8C1490.87,-475.94 1491.83,-429.74 1492.44,-400.23"/>
+<polygon fill="black" stroke="black" points="1495.94,-400.25 1492.64,-390.18 1488.94,-400.11 1495.94,-400.25"/>
+</g>
+<!-- linux_basics_shell_cwd&#45;&gt;linux_basics_shell_paths -->
+<g id="edge36" class="edge">
+<title>linux_basics_shell_cwd&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M1460.46,-501.59C1443.21,-492 1421.24,-479.8 1402.63,-469.46"/>
+<polygon fill="black" stroke="black" points="1404.23,-466.35 1393.79,-464.55 1400.83,-472.47 1404.23,-466.35"/>
+</g>
+<!-- linux_basics_intro_process -->
+<g id="node32" class="node">
+<title>linux_basics_intro_process</title>
+<g id="a_node32"><a xlink:href="../../linux/basics/intro/process.html" xlink:title="Processes, Scheduling, Address Spaces">
+<ellipse fill="#dcdcdc" stroke="black" cx="1788" cy="-372" rx="149.47" ry="18"/>
+<text text-anchor="middle" x="1788" y="-368.3" font-family="Times,serif" font-size="14.00">Processes, Scheduling, Address Spaces</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_cwd&#45;&gt;linux_basics_intro_process -->
+<g id="edge35" class="edge">
+<title>linux_basics_shell_cwd&#45;&gt;linux_basics_intro_process</title>
+<path fill="none" stroke="black" d="M1523.32,-501.79C1577.52,-475.41 1684.77,-423.23 1744.77,-394.03"/>
+<polygon fill="black" stroke="black" points="1746.52,-397.07 1753.98,-389.55 1743.46,-390.78 1746.52,-397.07"/>
+</g>
+<!-- linux_basics_permissions_basics&#45;&gt;linux_basics_shell_ls -->
+<g id="edge5" class="edge">
+<title>linux_basics_permissions_basics&#45;&gt;linux_basics_shell_ls</title>
+<path fill="none" stroke="black" d="M1390.01,-656.02C1405.41,-644.14 1426.17,-628.13 1443.07,-615.09"/>
+<polygon fill="black" stroke="black" points="1445.24,-617.84 1451.02,-608.96 1440.96,-612.29 1445.24,-617.84"/>
+</g>
+<!-- linux_basics_intro_process&#45;&gt;linux_basics_intro_overview -->
+<g id="edge39" class="edge">
+<title>linux_basics_intro_process&#45;&gt;linux_basics_intro_overview</title>
+<path fill="none" stroke="black" d="M1788,-353.7C1788,-345.98 1788,-336.71 1788,-328.11"/>
+<polygon fill="black" stroke="black" points="1791.5,-328.1 1788,-318.1 1784.5,-328.1 1791.5,-328.1"/>
+</g>
+<!-- linux_toolchain_basics&#45;&gt;linux_basics_shell_file_dir_create_rm -->
+<g id="edge60" class="edge">
+<title>linux_toolchain_basics&#45;&gt;linux_basics_shell_file_dir_create_rm</title>
+<path fill="none" stroke="black" d="M906.45,-659.81C952.14,-646.54 1023.04,-625.96 1074.74,-610.95"/>
+<polygon fill="black" stroke="black" points="1075.85,-614.27 1084.48,-608.12 1073.9,-607.55 1075.85,-614.27"/>
+</g>
+<!-- cxx11_smart_pointers_shared_ptr -->
+<g id="node34" class="node">
+<title>cxx11_smart_pointers_shared_ptr</title>
+<g id="a_node34"><a xlink:href="../030-smart-pointers/sharedptr.html" xlink:title="std::shared_ptr">
+<ellipse fill="#dcdcdc" stroke="black" cx="578" cy="-1128" rx="63.09" ry="18"/>
+<text text-anchor="middle" x="578" y="-1124.3" font-family="Times,serif" font-size="14.00">std::shared_ptr</text>
+</a>
+</g>
+</g>
+<!-- cxx11_smart_pointers_introduction -->
+<g id="node35" class="node">
+<title>cxx11_smart_pointers_introduction</title>
+<g id="a_node35"><a xlink:href="../030-smart-pointers/introduction.html" xlink:title="Introduction">
+<ellipse fill="#dcdcdc" stroke="black" cx="579" cy="-962" rx="53.89" ry="18"/>
+<text text-anchor="middle" x="579" y="-958.3" font-family="Times,serif" font-size="14.00">Introduction</text>
+</a>
+</g>
+</g>
+<!-- cxx11_smart_pointers_shared_ptr&#45;&gt;cxx11_smart_pointers_introduction -->
+<g id="edge6" class="edge">
+<title>cxx11_smart_pointers_shared_ptr&#45;&gt;cxx11_smart_pointers_introduction</title>
+<path fill="none" stroke="black" d="M578.11,-1109.76C578.28,-1081.26 578.63,-1024.12 578.83,-990.16"/>
+<polygon fill="black" stroke="black" points="582.34,-990.03 578.9,-980.01 575.34,-989.99 582.34,-990.03"/>
+</g>
+<!-- cxx11_smart_pointers_unique_ptr -->
+<g id="node36" class="node">
+<title>cxx11_smart_pointers_unique_ptr</title>
+<g id="a_node36"><a xlink:href="../030-smart-pointers/uniqueptr.html" xlink:title="std::unique_ptr">
+<ellipse fill="#dcdcdc" stroke="black" cx="660" cy="-1045" rx="63.89" ry="18"/>
+<text text-anchor="middle" x="660" y="-1041.3" font-family="Times,serif" font-size="14.00">std::unique_ptr</text>
+</a>
+</g>
+</g>
+<!-- cxx11_smart_pointers_shared_ptr&#45;&gt;cxx11_smart_pointers_unique_ptr -->
+<g id="edge7" class="edge">
+<title>cxx11_smart_pointers_shared_ptr&#45;&gt;cxx11_smart_pointers_unique_ptr</title>
+<path fill="none" stroke="black" d="M594.59,-1110.61C606.41,-1098.94 622.47,-1083.07 635.73,-1069.98"/>
+<polygon fill="black" stroke="black" points="638.49,-1072.16 643.15,-1062.65 633.58,-1067.18 638.49,-1072.16"/>
+</g>
+<!-- cxx11_new_language_features_miscellaneous -->
+<g id="node38" class="node">
+<title>cxx11_new_language_features_miscellaneous</title>
+<g id="a_node38"><a xlink:href="../020-new-language-features/070-miscellaneous/topic.html" xlink:title="Miscellaneous">
+<ellipse fill="#dcdcdc" stroke="black" cx="579" cy="-879" rx="61.99" ry="18"/>
+<text text-anchor="middle" x="579" y="-875.3" font-family="Times,serif" font-size="14.00">Miscellaneous</text>
+</a>
+</g>
+</g>
+<!-- cxx11_smart_pointers_introduction&#45;&gt;cxx11_new_language_features_miscellaneous -->
+<g id="edge26" class="edge">
+<title>cxx11_smart_pointers_introduction&#45;&gt;cxx11_new_language_features_miscellaneous</title>
+<path fill="none" stroke="black" d="M579,-943.82C579,-933.19 579,-919.31 579,-907.2"/>
+<polygon fill="black" stroke="black" points="582.5,-907.15 579,-897.15 575.5,-907.15 582.5,-907.15"/>
+</g>
+<!-- cxx11_smart_pointers_unique_ptr&#45;&gt;cxx11_smart_pointers_introduction -->
+<g id="edge52" class="edge">
+<title>cxx11_smart_pointers_unique_ptr&#45;&gt;cxx11_smart_pointers_introduction</title>
+<path fill="none" stroke="black" d="M643.22,-1027.22C631.44,-1015.44 615.53,-999.53 602.5,-986.5"/>
+<polygon fill="black" stroke="black" points="604.76,-983.81 595.21,-979.21 599.81,-988.76 604.76,-983.81"/>
+</g>
+<!-- cxx11_smart_pointers_closing_words -->
+<g id="node37" class="node">
+<title>cxx11_smart_pointers_closing_words</title>
+<g id="a_node37"><a xlink:href="../030-smart-pointers/040-closing-words/topic.html" xlink:title="Smart Pointers: Closing Words">
+<ellipse fill="#dcdcdc" stroke="black" cx="628" cy="-1211" rx="120.48" ry="18"/>
+<text text-anchor="middle" x="628" y="-1207.3" font-family="Times,serif" font-size="14.00">Smart Pointers: Closing Words</text>
+</a>
+</g>
+</g>
+<!-- cxx11_smart_pointers_closing_words&#45;&gt;cxx11_smart_pointers_shared_ptr -->
+<g id="edge61" class="edge">
+<title>cxx11_smart_pointers_closing_words&#45;&gt;cxx11_smart_pointers_shared_ptr</title>
+<path fill="none" stroke="black" d="M617.4,-1192.82C610.52,-1181.69 601.45,-1166.98 593.74,-1154.49"/>
+<polygon fill="black" stroke="black" points="596.65,-1152.55 588.42,-1145.88 590.69,-1156.22 596.65,-1152.55"/>
+</g>
+<!-- cxx11_smart_pointers_closing_words&#45;&gt;cxx11_smart_pointers_unique_ptr -->
+<g id="edge62" class="edge">
+<title>cxx11_smart_pointers_closing_words&#45;&gt;cxx11_smart_pointers_unique_ptr</title>
+<path fill="none" stroke="black" d="M641.67,-1193.08C644.95,-1188.16 648.07,-1182.6 650,-1177 661.83,-1142.7 662.82,-1100.44 661.87,-1073.36"/>
+<polygon fill="black" stroke="black" points="665.36,-1072.92 661.39,-1063.09 658.36,-1073.25 665.36,-1072.92"/>
+</g>
+<!-- cxx11_new_language_features_move_overview -->
+<g id="node39" class="node">
+<title>cxx11_new_language_features_move_overview</title>
+<g id="a_node39"><a xlink:href="../020-new-language-features/060-move/overview.html" xlink:title="Overview (Lvalues, Rvalues, And Such)">
+<ellipse fill="#dcdcdc" stroke="black" cx="583" cy="-804" rx="154.07" ry="18"/>
+<text text-anchor="middle" x="583" y="-800.3" font-family="Times,serif" font-size="14.00">Overview (Lvalues, Rvalues, And Such)</text>
+</a>
+</g>
+</g>
+<!-- cxx11_new_language_features_miscellaneous&#45;&gt;cxx11_new_language_features_move_overview -->
+<g id="edge50" class="edge">
+<title>cxx11_new_language_features_miscellaneous&#45;&gt;cxx11_new_language_features_move_overview</title>
+<path fill="none" stroke="black" d="M579.95,-860.7C580.41,-852.25 580.98,-841.87 581.5,-832.37"/>
+<polygon fill="black" stroke="black" points="585.01,-832.35 582.06,-822.18 578.02,-831.97 585.01,-832.35"/>
+</g>
+<!-- cxx11_new_language_features_move_overview&#45;&gt;cxx03_data_encapsulation_object_copy -->
+<g id="edge11" class="edge">
+<title>cxx11_new_language_features_move_overview&#45;&gt;cxx03_data_encapsulation_object_copy</title>
+<path fill="none" stroke="black" d="M564.89,-786.09C524.89,-748.74 428.89,-659.12 382.7,-615.99"/>
+<polygon fill="black" stroke="black" points="384.9,-613.26 375.2,-608.99 380.12,-618.37 384.9,-613.26"/>
+</g>
+<!-- cxx11_new_language_features_move_overview&#45;&gt;cxx03_functions_and_methods_references -->
+<g id="edge10" class="edge">
+<title>cxx11_new_language_features_move_overview&#45;&gt;cxx03_functions_and_methods_references</title>
+<path fill="none" stroke="black" d="M594.02,-786C608.24,-764.08 633.09,-725.75 649.55,-700.37"/>
+<polygon fill="black" stroke="black" points="652.69,-701.96 655.2,-691.66 646.82,-698.15 652.69,-701.96"/>
+</g>
+<!-- cxx11_new_language_features_move_overview&#45;&gt;cxx11_smart_pointers_unique_ptr -->
+<g id="edge9" class="edge">
+<title>cxx11_new_language_features_move_overview&#45;&gt;cxx11_smart_pointers_unique_ptr</title>
+<path fill="none" stroke="black" d="M615.85,-821.74C630.61,-831.13 646.56,-844.33 655,-861 680.41,-911.2 673.07,-979.48 666.12,-1016.83"/>
+<polygon fill="black" stroke="black" points="662.63,-1016.45 664.11,-1026.94 669.49,-1017.82 662.63,-1016.45"/>
+</g>
+<!-- cxx11_multithreading_introduction -->
+<g id="node40" class="node">
+<title>cxx11_multithreading_introduction</title>
+<g id="a_node40"><a xlink:href="010-introduction/topic.html" xlink:title="Threads Inroduction">
+<ellipse fill="#dcdcdc" stroke="black" cx="651" cy="-1449" rx="82.59" ry="18"/>
+<text text-anchor="middle" x="651" y="-1445.3" font-family="Times,serif" font-size="14.00">Threads Inroduction</text>
+</a>
+</g>
+</g>
+<!-- cxx11_functions_functions_function -->
+<g id="node49" class="node">
+<title>cxx11_functions_functions_function</title>
+<g id="a_node49"><a xlink:href="../040-bind-function/020-function/topic.html" xlink:title="std::function">
+<ellipse fill="#dcdcdc" stroke="black" cx="637" cy="-1366" rx="55.49" ry="18"/>
+<text text-anchor="middle" x="637" y="-1362.3" font-family="Times,serif" font-size="14.00">std::function</text>
+</a>
+</g>
+</g>
+<!-- cxx11_multithreading_introduction&#45;&gt;cxx11_functions_functions_function -->
+<g id="edge12" class="edge">
+<title>cxx11_multithreading_introduction&#45;&gt;cxx11_functions_functions_function</title>
+<path fill="none" stroke="black" d="M648.03,-1430.82C646.19,-1420.19 643.79,-1406.31 641.7,-1394.2"/>
+<polygon fill="black" stroke="black" points="645.12,-1393.41 639.96,-1384.15 638.22,-1394.6 645.12,-1393.41"/>
+</g>
+<!-- cxx11_multithreading_condition_variable -->
+<g id="node41" class="node">
+<title>cxx11_multithreading_condition_variable</title>
+<g id="a_node41"><a xlink:href="condition-variable.html" xlink:title="std::condition_variable (Live Hacking Multithreaded Queue)">
+<ellipse fill="#dcdcdc" stroke="black" cx="250" cy="-1802" rx="226.36" ry="18"/>
+<text text-anchor="middle" x="250" y="-1798.3" font-family="Times,serif" font-size="14.00">std::condition_variable (Live Hacking Multithreaded Queue)</text>
+</a>
+</g>
+</g>
+<!-- cxx11_multithreading_condition_variable&#45;&gt;linux_sysprog_posix_threads_condition_variable -->
+<g id="edge22" class="edge">
+<title>cxx11_multithreading_condition_variable&#45;&gt;linux_sysprog_posix_threads_condition_variable</title>
+<path fill="none" stroke="black" d="M404.79,-1788.85C431.53,-1787.02 459.06,-1785.32 485,-1784 515.53,-1782.45 730.64,-1784.49 760,-1776 820.96,-1758.37 882.58,-1716 917.36,-1689.3"/>
+<polygon fill="black" stroke="black" points="919.87,-1691.78 925.61,-1682.87 915.57,-1686.25 919.87,-1691.78"/>
+</g>
+<!-- cxx11_multithreading_promise_future -->
+<g id="node45" class="node">
+<title>cxx11_multithreading_promise_future</title>
+<g id="a_node45"><a xlink:href="promise-future.html" xlink:title="std::promise and std::future (And Some std::chrono) (Some Live Hacking)">
+<ellipse fill="#dcdcdc" stroke="black" cx="300" cy="-1593" rx="276.45" ry="18"/>
+<text text-anchor="middle" x="300" y="-1589.3" font-family="Times,serif" font-size="14.00">std::promise and std::future (And Some std::chrono) (Some Live Hacking)</text>
+</a>
+</g>
+</g>
+<!-- cxx11_multithreading_condition_variable&#45;&gt;cxx11_multithreading_promise_future -->
+<g id="edge21" class="edge">
+<title>cxx11_multithreading_condition_variable&#45;&gt;cxx11_multithreading_promise_future</title>
+<path fill="none" stroke="black" d="M254.18,-1783.71C262.89,-1747.62 283.07,-1664.07 293.5,-1620.9"/>
+<polygon fill="black" stroke="black" points="296.92,-1621.64 295.87,-1611.1 290.12,-1620 296.92,-1621.64"/>
+</g>
+<!-- cxx11_multithreading_mutex -->
+<g id="node46" class="node">
+<title>cxx11_multithreading_mutex</title>
+<g id="a_node46"><a xlink:href="040-locking-atomics/mutex.html" xlink:title="std::mutex And Friends">
+<ellipse fill="#dcdcdc" stroke="black" cx="654" cy="-1665" rx="94.48" ry="18"/>
+<text text-anchor="middle" x="654" y="-1661.3" font-family="Times,serif" font-size="14.00">std::mutex And Friends</text>
+</a>
+</g>
+</g>
+<!-- cxx11_multithreading_condition_variable&#45;&gt;cxx11_multithreading_mutex -->
+<g id="edge20" class="edge">
+<title>cxx11_multithreading_condition_variable&#45;&gt;cxx11_multithreading_mutex</title>
+<path fill="none" stroke="black" d="M407.68,-1789.09C478.59,-1783.52 547.39,-1777.74 551,-1776 589.34,-1757.45 620.57,-1718.01 638.23,-1691.75"/>
+<polygon fill="black" stroke="black" points="641.36,-1693.35 643.9,-1683.06 635.5,-1689.52 641.36,-1693.35"/>
+</g>
+<!-- cxx11_multithreading_thread -->
+<g id="node42" class="node">
+<title>cxx11_multithreading_thread</title>
+<g id="a_node42"><a xlink:href="020-thread/topic.html" xlink:title="Threads in C++">
+<ellipse fill="#dcdcdc" stroke="black" cx="657" cy="-1521" rx="67.69" ry="18"/>
+<text text-anchor="middle" x="657" y="-1517.3" font-family="Times,serif" font-size="14.00">Threads in C++</text>
+</a>
+</g>
+</g>
+<!-- cxx11_multithreading_thread&#45;&gt;linux_sysprog_posix_threads_lifecycle -->
+<g id="edge41" class="edge">
+<title>cxx11_multithreading_thread&#45;&gt;linux_sysprog_posix_threads_lifecycle</title>
+<path fill="none" stroke="black" d="M685.6,-1504.62C702.88,-1494.79 724.98,-1481.25 743,-1467 764.7,-1449.85 763.97,-1438.31 787,-1423 812.05,-1406.35 842.83,-1393.22 868.87,-1383.87"/>
+<polygon fill="black" stroke="black" points="870.3,-1387.07 878.59,-1380.47 868,-1380.47 870.3,-1387.07"/>
+</g>
+<!-- cxx11_multithreading_thread&#45;&gt;cxx11_multithreading_introduction -->
+<g id="edge40" class="edge">
+<title>cxx11_multithreading_thread&#45;&gt;cxx11_multithreading_introduction</title>
+<path fill="none" stroke="black" d="M655.52,-1502.7C654.86,-1494.98 654.06,-1485.71 653.32,-1477.11"/>
+<polygon fill="black" stroke="black" points="656.81,-1476.77 652.47,-1467.1 649.83,-1477.37 656.81,-1476.77"/>
+</g>
+<!-- cxx11_multithreading_atomics -->
+<g id="node43" class="node">
+<title>cxx11_multithreading_atomics</title>
+<g id="a_node43"><a xlink:href="040-locking-atomics/atomics.html" xlink:title="std::atomic">
+<ellipse fill="#dcdcdc" stroke="black" cx="492" cy="-1665" rx="50.09" ry="18"/>
+<text text-anchor="middle" x="492" y="-1661.3" font-family="Times,serif" font-size="14.00">std::atomic</text>
+</a>
+</g>
+</g>
+<!-- cxx11_multithreading_race_conditions -->
+<g id="node47" class="node">
+<title>cxx11_multithreading_race_conditions</title>
+<g id="a_node47"><a xlink:href="030-race-conditions/topic.html" xlink:title="Race Conditions">
+<ellipse fill="#dcdcdc" stroke="black" cx="664" cy="-1593" rx="69.59" ry="18"/>
+<text text-anchor="middle" x="664" y="-1589.3" font-family="Times,serif" font-size="14.00">Race Conditions</text>
+</a>
+</g>
+</g>
+<!-- cxx11_multithreading_atomics&#45;&gt;cxx11_multithreading_race_conditions -->
+<g id="edge45" class="edge">
+<title>cxx11_multithreading_atomics&#45;&gt;cxx11_multithreading_race_conditions</title>
+<path fill="none" stroke="black" d="M523.95,-1651C550.69,-1640.12 589.15,-1624.46 619,-1612.31"/>
+<polygon fill="black" stroke="black" points="620.42,-1615.51 628.36,-1608.5 617.78,-1609.03 620.42,-1615.51"/>
+</g>
+<!-- cxx11_multithreading_chrono -->
+<g id="node44" class="node">
+<title>cxx11_multithreading_chrono</title>
+<g id="a_node44"><a xlink:href="../100-miscellaneous/010-chrono/topic.html" xlink:title="std::chrono">
+<ellipse fill="#dcdcdc" stroke="black" cx="544" cy="-1802" rx="50.09" ry="18"/>
+<text text-anchor="middle" x="544" y="-1798.3" font-family="Times,serif" font-size="14.00">std::chrono</text>
+</a>
+</g>
+</g>
+<!-- cxx11_multithreading_promise_future&#45;&gt;cxx11_multithreading_thread -->
+<g id="edge53" class="edge">
+<title>cxx11_multithreading_promise_future&#45;&gt;cxx11_multithreading_thread</title>
+<path fill="none" stroke="black" d="M382.8,-1575.76C447.35,-1563.11 535.6,-1545.8 594.36,-1534.28"/>
+<polygon fill="black" stroke="black" points="595.11,-1537.7 604.25,-1532.34 593.76,-1530.83 595.11,-1537.7"/>
+</g>
+<!-- cxx11_multithreading_mutex&#45;&gt;linux_sysprog_posix_threads_mutex -->
+<g id="edge55" class="edge">
+<title>cxx11_multithreading_mutex&#45;&gt;linux_sysprog_posix_threads_mutex</title>
+<path fill="none" stroke="black" d="M683.54,-1647.87C701.21,-1637.88 723.86,-1624.42 743,-1611 763.69,-1596.5 765.17,-1587.72 787,-1575 813.18,-1559.75 844.58,-1547.24 870.7,-1538.21"/>
+<polygon fill="black" stroke="black" points="872.08,-1541.44 880.43,-1534.92 869.84,-1534.8 872.08,-1541.44"/>
+</g>
+<!-- cxx11_multithreading_mutex&#45;&gt;cxx11_multithreading_race_conditions -->
+<g id="edge54" class="edge">
+<title>cxx11_multithreading_mutex&#45;&gt;cxx11_multithreading_race_conditions</title>
+<path fill="none" stroke="black" d="M656.47,-1646.7C657.57,-1638.98 658.9,-1629.71 660.13,-1621.11"/>
+<polygon fill="black" stroke="black" points="663.61,-1621.5 661.56,-1611.1 656.68,-1620.51 663.61,-1621.5"/>
+</g>
+<!-- cxx11_multithreading_race_conditions&#45;&gt;linux_sysprog_posix_threads_exercise_pthcreate_racecondition -->
+<g id="edge57" class="edge">
+<title>cxx11_multithreading_race_conditions&#45;&gt;linux_sysprog_posix_threads_exercise_pthcreate_racecondition</title>
+<path fill="none" stroke="black" d="M692.32,-1576.53C738.88,-1551.1 831.7,-1500.41 884.63,-1471.5"/>
+<polygon fill="black" stroke="black" points="886.62,-1474.41 893.71,-1466.54 883.26,-1468.26 886.62,-1474.41"/>
+</g>
+<!-- cxx11_multithreading_race_conditions&#45;&gt;cxx11_multithreading_thread -->
+<g id="edge58" class="edge">
+<title>cxx11_multithreading_race_conditions&#45;&gt;cxx11_multithreading_thread</title>
+<path fill="none" stroke="black" d="M662.27,-1574.7C661.5,-1566.98 660.57,-1557.71 659.71,-1549.11"/>
+<polygon fill="black" stroke="black" points="663.19,-1548.71 658.71,-1539.1 656.22,-1549.4 663.19,-1548.71"/>
+</g>
+<!-- cxx11_multithreading_scoped_locking -->
+<g id="node48" class="node">
+<title>cxx11_multithreading_scoped_locking</title>
+<g id="a_node48"><a xlink:href="040-locking-atomics/scoped-locking.html" xlink:title="Scoped Locking">
+<ellipse fill="#dcdcdc" stroke="black" cx="680" cy="-1802" rx="68.49" ry="18"/>
+<text text-anchor="middle" x="680" y="-1798.3" font-family="Times,serif" font-size="14.00">Scoped Locking</text>
+</a>
+</g>
+</g>
+<!-- cxx11_multithreading_scoped_locking&#45;&gt;cxx11_multithreading_mutex -->
+<g id="edge65" class="edge">
+<title>cxx11_multithreading_scoped_locking&#45;&gt;cxx11_multithreading_mutex</title>
+<path fill="none" stroke="black" d="M676.71,-1783.9C672.32,-1761.1 664.49,-1720.48 659.27,-1693.39"/>
+<polygon fill="black" stroke="black" points="662.68,-1692.54 657.35,-1683.39 655.8,-1693.87 662.68,-1692.54"/>
+</g>
+<!-- cxx11_functions_functions_bind -->
+<g id="node50" class="node">
+<title>cxx11_functions_functions_bind</title>
+<g id="a_node50"><a xlink:href="../040-bind-function/010-bind/topic.html" xlink:title="std::bind">
+<ellipse fill="#dcdcdc" stroke="black" cx="630" cy="-1294" rx="41.69" ry="18"/>
+<text text-anchor="middle" x="630" y="-1290.3" font-family="Times,serif" font-size="14.00">std::bind</text>
+</a>
+</g>
+</g>
+<!-- cxx11_functions_functions_function&#45;&gt;cxx11_functions_functions_bind -->
+<g id="edge43" class="edge">
+<title>cxx11_functions_functions_function&#45;&gt;cxx11_functions_functions_bind</title>
+<path fill="none" stroke="black" d="M635.27,-1347.7C634.5,-1339.98 633.57,-1330.71 632.71,-1322.11"/>
+<polygon fill="black" stroke="black" points="636.19,-1321.71 631.71,-1312.1 629.22,-1322.4 636.19,-1321.71"/>
+</g>
+<!-- cxx11_functions_functions_bind&#45;&gt;cxx11_smart_pointers_closing_words -->
+<g id="edge44" class="edge">
+<title>cxx11_functions_functions_bind&#45;&gt;cxx11_smart_pointers_closing_words</title>
+<path fill="none" stroke="black" d="M629.58,-1275.82C629.31,-1265.19 628.97,-1251.31 628.67,-1239.2"/>
+<polygon fill="black" stroke="black" points="632.17,-1239.06 628.42,-1229.15 625.17,-1239.24 632.17,-1239.06"/>
+</g>
+</g>
+</svg>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2022 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../_sources/trainings/material/soup/cxx11/050-multithreading/group.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

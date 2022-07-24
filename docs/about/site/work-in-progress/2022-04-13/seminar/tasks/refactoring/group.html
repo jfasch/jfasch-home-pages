@@ -1,0 +1,339 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Refactoring &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../../" id="documentation_options" src="../../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/about/site/work-in-progress/2022-04-13/seminar/tasks/refactoring/group.html" />
+    <link rel="index" title="Index" href="../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../search.html" />
+    <link rel="next" title="UserDB::{read,write}(): bool, Really?" href="store-enum-switch.html" />
+    <link rel="prev" title="Search By Other Indexes" href="../features/other-indexes.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../../index.html">
+    <img class="logo" src="../../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../trainings/index.html">Kursangebot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../trainings/material/index.html">Unterlagen &amp; Download</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../trainings/org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../trainings/codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../trainings/log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../myself/index.html">Über Mich</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../index.html">About This Site</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../../../opentraining/index.html">OpenTraining</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../index.html">Work in Progress</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../../web.html">Learning The Web</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../python-training.html">Python Training Improvements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../stacks.html">Stacks (Hanging)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../seo.html">SEO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../blog-queue/index.html">Blog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../todo-misc.html">Miscellaneous To Do</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../git.html">Git Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../screencast.html">Creating Screencasts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../fh-joanneum/index.html">Embedded Computing (FH Joanneum Graz)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../project-xxx/index.html">I2S Audio for a Kontron SMARC Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../packaging/index.html">Packaging this Site on PyPI</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../../index.html">Seminar on “Clean Code” (2022-04-13)</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html">Is Software A Craft? Software Is A Craft!</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../../craft-sw.html">What’s There? What Have We Accomplished?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../block-before-googletest.html">Live Hacking Before (Formal) Unit Testing</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../enter-googletest.html">Live Hacking: Switch To <code class="docutils literal notranslate"><span class="pre">googletest</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../clean-code-craftsmanship.html">Clean Code: Messages From The Book</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="../group.html">Backlog: What Needs To Change, Or We Will All Die</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="../bugs/group.html">Bugs</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../features/group.html">Features</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">Refactoring</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="store-enum-switch.html"><code class="docutils literal notranslate"><span class="pre">UserDB::{read,write}()</span></code>: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, Really?</a></li>
+<li class="toctree-l7"><a class="reference internal" href="backingstore-monolithic.html"><code class="docutils literal notranslate"><span class="pre">UserDB</span></code> Has Too Many Responsibilities ⟶ <code class="docutils literal notranslate"><span class="pre">BackingStore</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="backingstore-interface.html"><code class="docutils literal notranslate"><span class="pre">BackingStore</span></code> Has Too Many Responsibilities ⟶ Interface</a></li>
+<li class="toctree-l7"><a class="reference internal" href="pass-store-in-ctor.html">Load From BackingStore in Constructor</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../agendae/index.html">Past Agendae, Etc.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../recipes/index.html">Recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../courses/index.html">Course Material</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../org/index.html">Orgstuff, Unwanted</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="refactoring">
+<h1>Refactoring<a class="headerlink" href="#refactoring" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="store-enum-switch.html"><code class="docutils literal notranslate"><span class="pre">UserDB::{read,write}()</span></code>: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, Really?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backingstore-monolithic.html"><code class="docutils literal notranslate"><span class="pre">UserDB</span></code> Has Too Many Responsibilities ⟶ <code class="docutils literal notranslate"><span class="pre">BackingStore</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="backingstore-interface.html"><code class="docutils literal notranslate"><span class="pre">BackingStore</span></code> Has Too Many Responsibilities ⟶ Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pass-store-in-ctor.html">Load From BackingStore in Constructor</a></li>
+</ul>
+</div>
+<svg 
+ viewBox="0.00 0.00 1105.00 368.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 364)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-364 1101,-364 1101,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_clean_code</title>
+<path fill="none" stroke="black" d="M20,-8C20,-8 1077,-8 1077,-8 1083,-8 1089,-14 1089,-20 1089,-20 1089,-340 1089,-340 1089,-346 1083,-352 1077,-352 1077,-352 20,-352 20,-352 14,-352 8,-346 8,-340 8,-340 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="548.5" y="-336.8" font-family="Times,serif" font-size="14.00">Backlog: What Needs To Change, Or We Will All Die</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_clean_code_features</title>
+<path fill="none" stroke="black" d="M330,-16C330,-16 574,-16 574,-16 580,-16 586,-22 586,-28 586,-28 586,-79 586,-79 586,-85 580,-91 574,-91 574,-91 330,-91 330,-91 324,-91 318,-85 318,-79 318,-79 318,-28 318,-28 318,-22 324,-16 330,-16"/>
+<text text-anchor="middle" x="452" y="-75.8" font-family="Times,serif" font-size="14.00">Features</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_clean_code_refactoring</title>
+<path fill="none" stroke="black" d="M28,-99C28,-99 617,-99 617,-99 623,-99 629,-105 629,-111 629,-111 629,-309 629,-309 629,-315 623,-321 617,-321 617,-321 28,-321 28,-321 22,-321 16,-315 16,-309 16,-309 16,-111 16,-111 16,-105 22,-99 28,-99"/>
+<text text-anchor="middle" x="322.5" y="-305.8" font-family="Times,serif" font-size="14.00">Refactoring</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_clean_code_bugs</title>
+<path fill="none" stroke="black" d="M649,-99C649,-99 1069,-99 1069,-99 1075,-99 1081,-105 1081,-111 1081,-111 1081,-162 1081,-162 1081,-168 1075,-174 1069,-174 1069,-174 649,-174 649,-174 643,-174 637,-168 637,-162 637,-162 637,-111 637,-111 637,-105 643,-99 649,-99"/>
+<text text-anchor="middle" x="859" y="-158.8" font-family="Times,serif" font-size="14.00">Bugs</text>
+</g>
+<!-- clean_code_features_csv -->
+<g id="node1" class="node">
+<title>clean_code_features_csv</title>
+<g id="a_node1"><a xlink:href="../features/csv.html" xlink:title="UserDB: Alternative Output Format &#45; CSV">
+<polygon fill="lightgrey" stroke="black" points="577.5,-60 326.5,-60 326.5,-24 577.5,-24 577.5,-60"/>
+<text text-anchor="start" x="334.5" y="-38.3" font-family="Times,serif" font-size="14.00">UserDB: Alternative Output Format &#45; CSV</text>
+</a>
+</g>
+</g>
+<!-- clean_code_refactoring_store_enum_switch -->
+<g id="node2" class="node">
+<title>clean_code_refactoring_store_enum_switch</title>
+<g id="a_node2"><a xlink:href="store-enum-switch.html" xlink:title="UserDB::{read,write}(): bool, Really?">
+<polygon fill="lightgrey" stroke="black" points="565,-143 339,-143 339,-107 565,-107 565,-143"/>
+<text text-anchor="start" x="347" y="-121.3" font-family="Times,serif" font-size="14.00">UserDB::{read,write}(): bool, Really?</text>
+</a>
+</g>
+</g>
+<!-- clean_code_refactoring_store_enum_switch&#45;&gt;clean_code_features_csv -->
+<g id="edge1" class="edge">
+<title>clean_code_refactoring_store_enum_switch&#45;&gt;clean_code_features_csv</title>
+<path fill="none" stroke="black" d="M452,-106.82C452,-96.19 452,-82.31 452,-70.2"/>
+<polygon fill="black" stroke="black" points="455.5,-70.15 452,-60.15 448.5,-70.15 455.5,-70.15"/>
+</g>
+<!-- clean_code_refactoring_pass_store_in_ctor -->
+<g id="node3" class="node">
+<title>clean_code_refactoring_pass_store_in_ctor</title>
+<g id="a_node3"><a xlink:href="pass-store-in-ctor.html" xlink:title="Load From BackingStore in Constructor">
+<polygon fill="lightgrey" stroke="black" points="620.5,-290 383.5,-290 383.5,-254 620.5,-254 620.5,-290"/>
+<text text-anchor="start" x="391.5" y="-268.3" font-family="Times,serif" font-size="14.00">Load From BackingStore in Constructor</text>
+</a>
+</g>
+</g>
+<!-- clean_code_refactoring_backingstore_monolithic -->
+<g id="node4" class="node">
+<title>clean_code_refactoring_backingstore_monolithic</title>
+<g id="a_node4"><a xlink:href="backingstore-monolithic.html" xlink:title="UserDB Has Too Many Responsibilities ⟶ BackingStore">
+<polygon fill="lightgrey" stroke="black" points="620.5,-218 283.5,-218 283.5,-182 620.5,-182 620.5,-218"/>
+<text text-anchor="start" x="291.5" y="-196.3" font-family="Times,serif" font-size="14.00">UserDB Has Too Many Responsibilities ⟶ BackingStore</text>
+</a>
+</g>
+</g>
+<!-- clean_code_refactoring_pass_store_in_ctor&#45;&gt;clean_code_refactoring_backingstore_monolithic -->
+<g id="edge2" class="edge">
+<title>clean_code_refactoring_pass_store_in_ctor&#45;&gt;clean_code_refactoring_backingstore_monolithic</title>
+<path fill="none" stroke="black" d="M489.64,-253.7C483.77,-245.47 476.63,-235.48 470.16,-226.42"/>
+<polygon fill="black" stroke="black" points="472.88,-224.21 464.22,-218.1 467.18,-228.28 472.88,-224.21"/>
+</g>
+<!-- clean_code_bugs_overwrite_existing_files -->
+<g id="node6" class="node">
+<title>clean_code_bugs_overwrite_existing_files</title>
+<g id="a_node6"><a xlink:href="../bugs/overwrite-existing-files.html" xlink:title="Existing Files Are Overwritten">
+<polygon fill="lightgrey" stroke="black" points="829,-143 645,-143 645,-107 829,-107 829,-143"/>
+<text text-anchor="start" x="653" y="-121.3" font-family="Times,serif" font-size="14.00">Existing Files Are Overwritten</text>
+</a>
+</g>
+</g>
+<!-- clean_code_refactoring_pass_store_in_ctor&#45;&gt;clean_code_bugs_overwrite_existing_files -->
+<g id="edge3" class="edge">
+<title>clean_code_refactoring_pass_store_in_ctor&#45;&gt;clean_code_bugs_overwrite_existing_files</title>
+<path fill="none" stroke="black" d="M553.65,-253.9C577.73,-244.87 606.23,-232.62 630,-218 661.27,-198.77 692.6,-170.53 713.2,-150.41"/>
+<polygon fill="black" stroke="black" points="715.9,-152.66 720.55,-143.14 710.98,-147.69 715.9,-152.66"/>
+</g>
+<!-- clean_code_bugs_overwrite_store_content_on_read -->
+<g id="node7" class="node">
+<title>clean_code_bugs_overwrite_store_content_on_read</title>
+<g id="a_node7"><a xlink:href="../bugs/overwrite-store-content-on-read.html" xlink:title="UserDB::read(): What If Done Twice?">
+<polygon fill="lightgrey" stroke="black" points="1072.5,-143 847.5,-143 847.5,-107 1072.5,-107 1072.5,-143"/>
+<text text-anchor="start" x="855.5" y="-121.3" font-family="Times,serif" font-size="14.00">UserDB::read(): What If Done Twice?</text>
+</a>
+</g>
+</g>
+<!-- clean_code_refactoring_pass_store_in_ctor&#45;&gt;clean_code_bugs_overwrite_store_content_on_read -->
+<g id="edge4" class="edge">
+<title>clean_code_refactoring_pass_store_in_ctor&#45;&gt;clean_code_bugs_overwrite_store_content_on_read</title>
+<path fill="none" stroke="black" d="M567.92,-253.93C636.08,-235.83 745.31,-205.53 838,-174 861.93,-165.86 888.06,-155.75 909.98,-146.91"/>
+<polygon fill="black" stroke="black" points="911.46,-150.08 919.41,-143.08 908.83,-143.6 911.46,-150.08"/>
+</g>
+<!-- clean_code_refactoring_backingstore_monolithic&#45;&gt;clean_code_refactoring_store_enum_switch -->
+<g id="edge5" class="edge">
+<title>clean_code_refactoring_backingstore_monolithic&#45;&gt;clean_code_refactoring_store_enum_switch</title>
+<path fill="none" stroke="black" d="M452,-181.7C452,-173.25 452,-162.87 452,-153.37"/>
+<polygon fill="black" stroke="black" points="455.5,-153.18 452,-143.18 448.5,-153.18 455.5,-153.18"/>
+</g>
+<!-- clean_code_refactoring_backingstore_monolithic&#45;&gt;clean_code_bugs_overwrite_existing_files -->
+<g id="edge6" class="edge">
+<title>clean_code_refactoring_backingstore_monolithic&#45;&gt;clean_code_bugs_overwrite_existing_files</title>
+<path fill="none" stroke="black" d="M601.4,-181.94C612.17,-179.62 622.8,-176.99 633,-174 654.98,-167.57 678.23,-157.21 697.16,-147.76"/>
+<polygon fill="black" stroke="black" points="698.76,-150.87 706.08,-143.21 695.58,-144.63 698.76,-150.87"/>
+</g>
+<!-- clean_code_refactoring_backingstore_monolithic&#45;&gt;clean_code_bugs_overwrite_store_content_on_read -->
+<g id="edge7" class="edge">
+<title>clean_code_refactoring_backingstore_monolithic&#45;&gt;clean_code_bugs_overwrite_store_content_on_read</title>
+<path fill="none" stroke="black" d="M620.62,-193.2C704.79,-189.27 797.2,-183.11 838,-174 864.63,-168.05 893.07,-157.15 915.79,-147.24"/>
+<polygon fill="black" stroke="black" points="917.44,-150.33 925.15,-143.07 914.59,-143.94 917.44,-150.33"/>
+</g>
+<!-- clean_code_refactoring_backingstore_interface -->
+<g id="node5" class="node">
+<title>clean_code_refactoring_backingstore_interface</title>
+<g id="a_node5"><a xlink:href="backingstore-interface.html" xlink:title="BackingStore Has Too Many Responsibilities ⟶ Interface">
+<polygon fill="lightgrey" stroke="black" points="365.5,-290 24.5,-290 24.5,-254 365.5,-254 365.5,-290"/>
+<text text-anchor="start" x="32.5" y="-268.3" font-family="Times,serif" font-size="14.00">BackingStore Has Too Many Responsibilities ⟶ Interface</text>
+</a>
+</g>
+</g>
+<!-- clean_code_refactoring_backingstore_interface&#45;&gt;clean_code_refactoring_backingstore_monolithic -->
+<g id="edge8" class="edge">
+<title>clean_code_refactoring_backingstore_interface&#45;&gt;clean_code_refactoring_backingstore_monolithic</title>
+<path fill="none" stroke="black" d="M257.54,-253.97C294.23,-243.97 340.76,-231.3 379.11,-220.85"/>
+<polygon fill="black" stroke="black" points="380.45,-224.12 389.18,-218.11 378.61,-217.36 380.45,-224.12"/>
+</g>
+</g>
+</svg>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2022 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../../_sources/about/site/work-in-progress/2022-04-13/seminar/tasks/refactoring/group.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

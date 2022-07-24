@@ -1,0 +1,602 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Move Semantics/Rvalue References &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx11/020-new-language-features/060-move/group.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="Overview (Lvalues, Rvalues, And Such)" href="overview.html" />
+    <link rel="prev" title="Delegating Constructor" href="../050-delegating-ctor/topic.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">C++ 11</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../010-introduction/group.html">Introduction</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../group.html">New Language Features</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../050-delegating-ctor/topic.html">Delegating Constructor</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">Move Semantics/Rvalue References</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="overview.html">Overview (Lvalues, Rvalues, And Such)</a></li>
+<li class="toctree-l6"><a class="reference internal" href="livehack-string-move.html">Implementing Move Semantics (<code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">String</span></code>, Live Hacked)</a></li>
+<li class="toctree-l6"><a class="reference internal" href="livehack-using-string-move.html">Using Move Semantics In Own Code</a></li>
+<li class="toctree-l6"><a class="reference internal" href="afterword.html">Afterword, Further Reading</a></li>
+<li class="toctree-l6"><a class="reference internal" href="livehack-smartptr-move.html"><code class="docutils literal notranslate"><span class="pre">SmartPtr</span></code> With Move Semantics</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../range-based-for.html">Range Based <code class="docutils literal notranslate"><span class="pre">for</span></code> Loops: Introduction</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../range-based-for-map.html">Case Study: Range Based <code class="docutils literal notranslate"><span class="pre">for</span></code> On <code class="docutils literal notranslate"><span class="pre">std::map</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../070-miscellaneous/topic.html">Miscellaneous</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../010-strongly-typed-enums/topic.html">Strongly Typed <code class="docutils literal notranslate"><span class="pre">enum</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../030-brace-initialization/group.html">Brace Initialization (Uniform Initialization)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../structured-binding.html">Structured Binding</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../auto.html"><code class="docutils literal notranslate"><span class="pre">auto</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../lambda/group.html">Lambda</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../override.html"><code class="docutils literal notranslate"><span class="pre">override</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../final.html"><code class="docutils literal notranslate"><span class="pre">final</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../delete.html"><code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">delete</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../default.html"><code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">default</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../030-smart-pointers/group.html">Smart Pointers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../040-bind-function/group.html">Functions, Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../050-multithreading/group.html">Multithreading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../100-miscellaneous/group.html">Miscellaneous</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../exercises/group.html">Introduction</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="move-semantics-rvalue-references">
+<h1>Move Semantics/Rvalue References<a class="headerlink" href="#move-semantics-rvalue-references" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#topics" id="id1">Topics</a></p></li>
+<li><p><a class="reference internal" href="#alternative-livehacking" id="id2">Alternative Livehacking</a></p></li>
+<li><p><a class="reference internal" href="#dependencies" id="id3">Dependencies</a></p></li>
+</ul>
+</div>
+<section id="topics">
+<h2><a class="toc-backref" href="#id1">Topics</a><a class="headerlink" href="#topics" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview (Lvalues, Rvalues, And Such)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="livehack-string-move.html">Implementing Move Semantics (<code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">String</span></code>, Live Hacked)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="livehack-using-string-move.html">Using Move Semantics In Own Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="afterword.html">Afterword, Further Reading</a></li>
+</ul>
+</div>
+</section>
+<section id="alternative-livehacking">
+<h2><a class="toc-backref" href="#id2">Alternative Livehacking</a><a class="headerlink" href="#alternative-livehacking" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="livehack-smartptr-move.html"><code class="docutils literal notranslate"><span class="pre">SmartPtr</span></code> With Move Semantics</a></li>
+</ul>
+</div>
+</section>
+<section id="dependencies">
+<h2><a class="toc-backref" href="#id3">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<svg 
+ viewBox="0.00 0.00 1331.00 1128.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1124)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-1124 1327,-1124 1327,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_cxx11</title>
+<path fill="none" stroke="black" d="M20,-554C20,-554 644,-554 644,-554 650,-554 656,-560 656,-566 656,-566 656,-1100 656,-1100 656,-1106 650,-1112 644,-1112 644,-1112 20,-1112 20,-1112 14,-1112 8,-1106 8,-1100 8,-1100 8,-566 8,-566 8,-560 14,-554 20,-554"/>
+<text text-anchor="middle" x="332" y="-1096.8" font-family="Times,serif" font-size="14.00">C++ 11</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_cxx11_new_language_features</title>
+<path fill="none" stroke="black" d="M28,-751C28,-751 636,-751 636,-751 642,-751 648,-757 648,-763 648,-763 648,-1069 648,-1069 648,-1075 642,-1081 636,-1081 636,-1081 28,-1081 28,-1081 22,-1081 16,-1075 16,-1069 16,-1069 16,-763 16,-763 16,-757 22,-751 28,-751"/>
+<text text-anchor="middle" x="332" y="-1065.8" font-family="Times,serif" font-size="14.00">New Language Features</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_cxx11_new_language_features_move</title>
+<path fill="none" stroke="black" d="M170,-759C170,-759 628,-759 628,-759 634,-759 640,-765 640,-771 640,-771 640,-1038 640,-1038 640,-1044 634,-1050 628,-1050 628,-1050 170,-1050 170,-1050 164,-1050 158,-1044 158,-1038 158,-1038 158,-771 158,-771 158,-765 164,-759 170,-759"/>
+<text text-anchor="middle" x="399" y="-1034.8" font-family="Times,serif" font-size="14.00">Move Semantics/Rvalue References</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_cxx11_smart_pointers</title>
+<path fill="none" stroke="black" d="M295,-562C295,-562 415,-562 415,-562 421,-562 427,-568 427,-574 427,-574 427,-700 427,-700 427,-706 421,-712 415,-712 415,-712 295,-712 295,-712 289,-712 283,-706 283,-700 283,-700 283,-574 283,-574 283,-568 289,-562 295,-562"/>
+<text text-anchor="middle" x="355" y="-696.8" font-family="Times,serif" font-size="14.00">Smart Pointers</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_cxx03</title>
+<path fill="none" stroke="black" d="M676,-130C676,-130 1303,-130 1303,-130 1309,-130 1315,-136 1315,-142 1315,-142 1315,-731 1315,-731 1315,-737 1309,-743 1303,-743 1303,-743 676,-743 676,-743 670,-743 664,-737 664,-731 664,-731 664,-142 664,-142 664,-136 670,-130 676,-130"/>
+<text text-anchor="middle" x="989.5" y="-727.8" font-family="Times,serif" font-size="14.00">C++ 03</text>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_cxx03_data_encapsulation</title>
+<path fill="none" stroke="black" d="M684,-202C684,-202 1142,-202 1142,-202 1148,-202 1154,-208 1154,-214 1154,-214 1154,-625 1154,-625 1154,-631 1148,-637 1142,-637 1142,-637 684,-637 684,-637 678,-637 672,-631 672,-625 672,-625 672,-214 672,-214 672,-208 678,-202 684,-202"/>
+<text text-anchor="middle" x="913" y="-621.8" font-family="Times,serif" font-size="14.00">Data Encapsulation</text>
+</g>
+<g id="clust7" class="cluster">
+<title>cluster_cxx03_functions_and_methods</title>
+<path fill="none" stroke="black" d="M1174,-346C1174,-346 1295,-346 1295,-346 1301,-346 1307,-352 1307,-358 1307,-358 1307,-700 1307,-700 1307,-706 1301,-712 1295,-712 1295,-712 1174,-712 1174,-712 1168,-712 1162,-706 1162,-700 1162,-700 1162,-358 1162,-358 1162,-352 1168,-346 1174,-346"/>
+<text text-anchor="middle" x="1234.5" y="-696.8" font-family="Times,serif" font-size="14.00">Functions and Methods</text>
+</g>
+<g id="clust8" class="cluster">
+<title>cluster_c</title>
+<path fill="none" stroke="black" d="M928,-8C928,-8 1091,-8 1091,-8 1097,-8 1103,-14 1103,-20 1103,-20 1103,-110 1103,-110 1103,-116 1097,-122 1091,-122 1091,-122 928,-122 928,-122 922,-122 916,-116 916,-110 916,-110 916,-20 916,-20 916,-14 922,-8 928,-8"/>
+<text text-anchor="middle" x="1009.5" y="-106.8" font-family="Times,serif" font-size="14.00">The C Programming Language</text>
+</g>
+<g id="clust9" class="cluster">
+<title>cluster_c_introduction</title>
+<path fill="none" stroke="black" d="M963,-16C963,-16 1055,-16 1055,-16 1061,-16 1067,-22 1067,-28 1067,-28 1067,-79 1067,-79 1067,-85 1061,-91 1055,-91 1055,-91 963,-91 963,-91 957,-91 951,-85 951,-79 951,-79 951,-28 951,-28 951,-22 957,-16 963,-16"/>
+<text text-anchor="middle" x="1009" y="-75.8" font-family="Times,serif" font-size="14.00">Introduction</text>
+</g>
+<!-- cxx11_new_language_features_miscellaneous -->
+<g id="node1" class="node">
+<title>cxx11_new_language_features_miscellaneous</title>
+<g id="a_node1"><a xlink:href="../070-miscellaneous/topic.html" xlink:title="Miscellaneous">
+<ellipse fill="#dcdcdc" stroke="black" cx="86" cy="-857" rx="61.99" ry="18"/>
+<text text-anchor="middle" x="86" y="-853.3" font-family="Times,serif" font-size="14.00">Miscellaneous</text>
+</a>
+</g>
+</g>
+<!-- cxx11_new_language_features_move_overview -->
+<g id="node3" class="node">
+<title>cxx11_new_language_features_move_overview</title>
+<g id="a_node3"><a xlink:href="overview.html" xlink:title="Overview (Lvalues, Rvalues, And Such)">
+<ellipse fill="#dcdcdc" stroke="black" cx="433" cy="-785" rx="154.07" ry="18"/>
+<text text-anchor="middle" x="433" y="-781.3" font-family="Times,serif" font-size="14.00">Overview (Lvalues, Rvalues, And Such)</text>
+</a>
+</g>
+</g>
+<!-- cxx11_new_language_features_miscellaneous&#45;&gt;cxx11_new_language_features_move_overview -->
+<g id="edge19" class="edge">
+<title>cxx11_new_language_features_miscellaneous&#45;&gt;cxx11_new_language_features_move_overview</title>
+<path fill="none" stroke="black" d="M130.54,-844.48C138.34,-842.57 146.39,-840.67 154,-839 216.11,-825.35 286.45,-812 340.96,-802.12"/>
+<polygon fill="black" stroke="black" points="341.74,-805.53 350.95,-800.31 340.49,-798.64 341.74,-805.53"/>
+</g>
+<!-- cxx11_new_language_features_move_livehack_string_move -->
+<g id="node2" class="node">
+<title>cxx11_new_language_features_move_livehack_string_move</title>
+<g id="a_node2"><a xlink:href="livehack-string-move.html" xlink:title="Implementing Move Semantics (class String, Live Hacked)">
+<ellipse fill="#dcdcdc" stroke="black" cx="389" cy="-857" rx="222.86" ry="18"/>
+<text text-anchor="middle" x="389" y="-853.3" font-family="Times,serif" font-size="14.00">Implementing Move Semantics (class String, Live Hacked)</text>
+</a>
+</g>
+</g>
+<!-- cxx11_new_language_features_move_livehack_string_move&#45;&gt;cxx11_new_language_features_move_overview -->
+<g id="edge1" class="edge">
+<title>cxx11_new_language_features_move_livehack_string_move&#45;&gt;cxx11_new_language_features_move_overview</title>
+<path fill="none" stroke="black" d="M399.88,-838.7C404.99,-830.56 411.2,-820.69 416.84,-811.7"/>
+<polygon fill="black" stroke="black" points="419.89,-813.43 422.25,-803.1 413.96,-809.71 419.89,-813.43"/>
+</g>
+<!-- cxx11_smart_pointers_unique_ptr -->
+<g id="node7" class="node">
+<title>cxx11_smart_pointers_unique_ptr</title>
+<g id="a_node7"><a xlink:href="../../030-smart-pointers/uniqueptr.html" xlink:title="std::unique_ptr">
+<ellipse fill="#dcdcdc" stroke="black" cx="355" cy="-663" rx="63.89" ry="18"/>
+<text text-anchor="middle" x="355" y="-659.3" font-family="Times,serif" font-size="14.00">std::unique_ptr</text>
+</a>
+</g>
+</g>
+<!-- cxx11_new_language_features_move_overview&#45;&gt;cxx11_smart_pointers_unique_ptr -->
+<g id="edge4" class="edge">
+<title>cxx11_new_language_features_move_overview&#45;&gt;cxx11_smart_pointers_unique_ptr</title>
+<path fill="none" stroke="black" d="M421.82,-766.81C408.66,-746.55 386.67,-712.72 371.53,-689.43"/>
+<polygon fill="black" stroke="black" points="374.29,-687.25 365.9,-680.77 368.42,-691.07 374.29,-687.25"/>
+</g>
+<!-- cxx03_data_encapsulation_object_copy -->
+<g id="node9" class="node">
+<title>cxx03_data_encapsulation_object_copy</title>
+<g id="a_node9"><a xlink:href="../../../cxx03/020-data-encapsulation/object-copy.html" xlink:title="Object Copy (And Resource Management): There Be Dragons">
+<ellipse fill="#dcdcdc" stroke="black" cx="913" cy="-588" rx="232.86" ry="18"/>
+<text text-anchor="middle" x="913" y="-584.3" font-family="Times,serif" font-size="14.00">Object Copy (And Resource Management): There Be Dragons</text>
+</a>
+</g>
+</g>
+<!-- cxx11_new_language_features_move_overview&#45;&gt;cxx03_data_encapsulation_object_copy -->
+<g id="edge6" class="edge">
+<title>cxx11_new_language_features_move_overview&#45;&gt;cxx03_data_encapsulation_object_copy</title>
+<path fill="none" stroke="black" d="M473.51,-767.54C560.81,-732.08 766.5,-648.52 862.28,-609.61"/>
+<polygon fill="black" stroke="black" points="863.8,-612.77 871.75,-605.76 861.17,-606.28 863.8,-612.77"/>
+</g>
+<!-- cxx03_functions_and_methods_references -->
+<g id="node17" class="node">
+<title>cxx03_functions_and_methods_references</title>
+<g id="a_node17"><a xlink:href="../../../cxx03/030-functions-and-methods/050-references/topic.html" xlink:title="References">
+<ellipse fill="#dcdcdc" stroke="black" cx="1222" cy="-663" rx="50.09" ry="18"/>
+<text text-anchor="middle" x="1222" y="-659.3" font-family="Times,serif" font-size="14.00">References</text>
+</a>
+</g>
+</g>
+<!-- cxx11_new_language_features_move_overview&#45;&gt;cxx03_functions_and_methods_references -->
+<g id="edge5" class="edge">
+<title>cxx11_new_language_features_move_overview&#45;&gt;cxx03_functions_and_methods_references</title>
+<path fill="none" stroke="black" d="M522.74,-770.35C687.09,-745.36 1031.86,-692.92 1166.48,-672.44"/>
+<polygon fill="black" stroke="black" points="1167.2,-675.87 1176.56,-670.91 1166.15,-668.95 1167.2,-675.87"/>
+</g>
+<!-- cxx11_new_language_features_move_livehack_using_string_move -->
+<g id="node4" class="node">
+<title>cxx11_new_language_features_move_livehack_using_string_move</title>
+<g id="a_node4"><a xlink:href="livehack-using-string-move.html" xlink:title="Using Move Semantics In Own Code">
+<ellipse fill="#dcdcdc" stroke="black" cx="438" cy="-929" rx="144.07" ry="18"/>
+<text text-anchor="middle" x="438" y="-925.3" font-family="Times,serif" font-size="14.00">Using Move Semantics In Own Code</text>
+</a>
+</g>
+</g>
+<!-- cxx11_new_language_features_move_livehack_using_string_move&#45;&gt;cxx11_new_language_features_move_livehack_string_move -->
+<g id="edge10" class="edge">
+<title>cxx11_new_language_features_move_livehack_using_string_move&#45;&gt;cxx11_new_language_features_move_livehack_string_move</title>
+<path fill="none" stroke="black" d="M426.14,-911.05C420.39,-902.84 413.35,-892.79 406.96,-883.66"/>
+<polygon fill="black" stroke="black" points="409.69,-881.46 401.09,-875.28 403.96,-885.47 409.69,-881.46"/>
+</g>
+<!-- cxx11_new_language_features_move_livehack_using_string_move&#45;&gt;cxx11_new_language_features_move_overview -->
+<g id="edge11" class="edge">
+<title>cxx11_new_language_features_move_livehack_using_string_move&#45;&gt;cxx11_new_language_features_move_overview</title>
+<path fill="none" stroke="black" d="M530.07,-915.09C589.97,-902.65 651.71,-879.56 621,-839 609.09,-823.26 569.14,-810.88 529.11,-802.05"/>
+<polygon fill="black" stroke="black" points="529.74,-798.61 519.23,-799.94 528.28,-805.45 529.74,-798.61"/>
+</g>
+<!-- cxx11_new_language_features_move_afterword -->
+<g id="node5" class="node">
+<title>cxx11_new_language_features_move_afterword</title>
+<g id="a_node5"><a xlink:href="afterword.html" xlink:title="Afterword, Further Reading">
+<ellipse fill="#dcdcdc" stroke="black" cx="438" cy="-1001" rx="109.68" ry="18"/>
+<text text-anchor="middle" x="438" y="-997.3" font-family="Times,serif" font-size="14.00">Afterword, Further Reading</text>
+</a>
+</g>
+</g>
+<!-- cxx11_new_language_features_move_afterword&#45;&gt;cxx11_new_language_features_move_livehack_using_string_move -->
+<g id="edge16" class="edge">
+<title>cxx11_new_language_features_move_afterword&#45;&gt;cxx11_new_language_features_move_livehack_using_string_move</title>
+<path fill="none" stroke="black" d="M438,-982.7C438,-974.98 438,-965.71 438,-957.11"/>
+<polygon fill="black" stroke="black" points="441.5,-957.1 438,-947.1 434.5,-957.1 441.5,-957.1"/>
+</g>
+<!-- cxx11_smart_pointers_introduction -->
+<g id="node6" class="node">
+<title>cxx11_smart_pointers_introduction</title>
+<g id="a_node6"><a xlink:href="../../030-smart-pointers/introduction.html" xlink:title="Introduction">
+<ellipse fill="#dcdcdc" stroke="black" cx="350" cy="-588" rx="53.89" ry="18"/>
+<text text-anchor="middle" x="350" y="-584.3" font-family="Times,serif" font-size="14.00">Introduction</text>
+</a>
+</g>
+</g>
+<!-- cxx11_smart_pointers_introduction&#45;&gt;cxx11_new_language_features_miscellaneous -->
+<g id="edge12" class="edge">
+<title>cxx11_smart_pointers_introduction&#45;&gt;cxx11_new_language_features_miscellaneous</title>
+<path fill="none" stroke="black" d="M330.64,-604.92C317.03,-616.12 298.39,-631.46 282,-645 225.05,-692.03 203.09,-695.81 154,-751 132.15,-775.57 112.37,-807.79 99.84,-830.03"/>
+<polygon fill="black" stroke="black" points="96.71,-828.45 94.93,-838.9 102.84,-831.84 96.71,-828.45"/>
+</g>
+<!-- cxx11_smart_pointers_unique_ptr&#45;&gt;cxx11_smart_pointers_introduction -->
+<g id="edge20" class="edge">
+<title>cxx11_smart_pointers_unique_ptr&#45;&gt;cxx11_smart_pointers_introduction</title>
+<path fill="none" stroke="black" d="M353.82,-644.7C353.24,-636.25 352.53,-625.87 351.87,-616.37"/>
+<polygon fill="black" stroke="black" points="355.35,-615.91 351.18,-606.18 348.37,-616.39 355.35,-615.91"/>
+</g>
+<!-- cxx03_introduction -->
+<g id="node8" class="node">
+<title>cxx03_introduction</title>
+<g id="a_node8"><a xlink:href="../../../cxx03/001-introduction/topic.html" xlink:title="Introduction">
+<ellipse fill="#dcdcdc" stroke="black" cx="1009" cy="-156" rx="53.89" ry="18"/>
+<text text-anchor="middle" x="1009" y="-152.3" font-family="Times,serif" font-size="14.00">Introduction</text>
+</a>
+</g>
+</g>
+<!-- c_introduction_installation -->
+<g id="node20" class="node">
+<title>c_introduction_installation</title>
+<g id="a_node20"><a xlink:href="../../../c/010-introduction/000-installation/topic.html" xlink:title="Installation">
+<ellipse fill="#dcdcdc" stroke="black" cx="1009" cy="-42" rx="50.09" ry="18"/>
+<text text-anchor="middle" x="1009" y="-38.3" font-family="Times,serif" font-size="14.00">Installation</text>
+</a>
+</g>
+</g>
+<!-- cxx03_introduction&#45;&gt;c_introduction_installation -->
+<g id="edge21" class="edge">
+<title>cxx03_introduction&#45;&gt;c_introduction_installation</title>
+<path fill="none" stroke="black" d="M1009,-137.99C1009,-120.06 1009,-91.56 1009,-70.44"/>
+<polygon fill="black" stroke="black" points="1012.5,-70.17 1009,-60.17 1005.5,-70.17 1012.5,-70.17"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_dtor -->
+<g id="node13" class="node">
+<title>cxx03_data_encapsulation_ctor_dtor</title>
+<g id="a_node13"><a xlink:href="../../../cxx03/020-data-encapsulation/ctor-dtor.html" xlink:title="More Constructors, Destructors">
+<ellipse fill="#dcdcdc" stroke="black" cx="926" cy="-516" rx="122.68" ry="18"/>
+<text text-anchor="middle" x="926" y="-512.3" font-family="Times,serif" font-size="14.00">More Constructors, Destructors</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_object_copy&#45;&gt;cxx03_data_encapsulation_ctor_dtor -->
+<g id="edge2" class="edge">
+<title>cxx03_data_encapsulation_object_copy&#45;&gt;cxx03_data_encapsulation_ctor_dtor</title>
+<path fill="none" stroke="black" d="M916.21,-569.7C917.65,-561.98 919.37,-552.71 920.96,-544.11"/>
+<polygon fill="black" stroke="black" points="924.44,-544.58 922.82,-534.1 917.56,-543.3 924.44,-544.58"/>
+</g>
+<!-- cxx03_data_encapsulation_classes_objects -->
+<g id="node10" class="node">
+<title>cxx03_data_encapsulation_classes_objects</title>
+<g id="a_node10"><a xlink:href="../../../cxx03/020-data-encapsulation/cpp-introduction.html" xlink:title="Classes and Objects">
+<ellipse fill="#dcdcdc" stroke="black" cx="1052" cy="-300" rx="81.49" ry="18"/>
+<text text-anchor="middle" x="1052" y="-296.3" font-family="Times,serif" font-size="14.00">Classes and Objects</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_introduction -->
+<g id="edge8" class="edge">
+<title>cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_introduction</title>
+<path fill="none" stroke="black" d="M1070.59,-282.3C1079.85,-272.72 1090.09,-259.85 1095,-246 1101.54,-227.57 1105.13,-218.73 1095,-202 1086.84,-188.52 1073.16,-178.88 1059.09,-172.08"/>
+<polygon fill="black" stroke="black" points="1060.41,-168.83 1049.84,-168.01 1057.59,-175.24 1060.41,-168.83"/>
+</g>
+<!-- cxx03_data_encapsulation_c -->
+<g id="node14" class="node">
+<title>cxx03_data_encapsulation_c</title>
+<g id="a_node14"><a xlink:href="../../../cxx03/020-data-encapsulation/c.html" xlink:title="Object Oriented Programming In Good Ol’ C">
+<ellipse fill="#dcdcdc" stroke="black" cx="913" cy="-228" rx="172.77" ry="18"/>
+<text text-anchor="middle" x="913" y="-224.3" font-family="Times,serif" font-size="14.00">Object Oriented Programming In Good Ol’ C</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_data_encapsulation_c -->
+<g id="edge9" class="edge">
+<title>cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_data_encapsulation_c</title>
+<path fill="none" stroke="black" d="M1020.81,-283.29C1001.56,-273.6 976.62,-261.04 955.57,-250.44"/>
+<polygon fill="black" stroke="black" points="957.02,-247.25 946.52,-245.88 953.88,-253.5 957.02,-247.25"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_default -->
+<g id="node11" class="node">
+<title>cxx03_data_encapsulation_ctor_default</title>
+<g id="a_node11"><a xlink:href="../../../cxx03/020-data-encapsulation/ctor-default.html" xlink:title="Default Constructor">
+<ellipse fill="#dcdcdc" stroke="black" cx="926" cy="-444" rx="81.49" ry="18"/>
+<text text-anchor="middle" x="926" y="-440.3" font-family="Times,serif" font-size="14.00">Default Constructor</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_ctor_custom -->
+<g id="node12" class="node">
+<title>cxx03_data_encapsulation_ctor_custom</title>
+<g id="a_node12"><a xlink:href="../../../cxx03/020-data-encapsulation/ctor-custom.html" xlink:title="Custom Constructor">
+<ellipse fill="#dcdcdc" stroke="black" cx="1026" cy="-372" rx="82.59" ry="18"/>
+<text text-anchor="middle" x="1026" y="-368.3" font-family="Times,serif" font-size="14.00">Custom Constructor</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_ctor_default&#45;&gt;cxx03_data_encapsulation_ctor_custom -->
+<g id="edge14" class="edge">
+<title>cxx03_data_encapsulation_ctor_default&#45;&gt;cxx03_data_encapsulation_ctor_custom</title>
+<path fill="none" stroke="black" d="M949.45,-426.59C962.86,-417.2 979.87,-405.29 994.45,-395.09"/>
+<polygon fill="black" stroke="black" points="996.52,-397.91 1002.7,-389.31 992.5,-392.18 996.52,-397.91"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_custom&#45;&gt;cxx03_data_encapsulation_classes_objects -->
+<g id="edge15" class="edge">
+<title>cxx03_data_encapsulation_ctor_custom&#45;&gt;cxx03_data_encapsulation_classes_objects</title>
+<path fill="none" stroke="black" d="M1032.43,-353.7C1035.36,-345.81 1038.89,-336.3 1042.14,-327.55"/>
+<polygon fill="black" stroke="black" points="1045.45,-328.7 1045.65,-318.1 1038.88,-326.26 1045.45,-328.7"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_default -->
+<g id="edge17" class="edge">
+<title>cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_default</title>
+<path fill="none" stroke="black" d="M926,-497.7C926,-489.98 926,-480.71 926,-472.11"/>
+<polygon fill="black" stroke="black" points="929.5,-472.1 926,-462.1 922.5,-472.1 929.5,-472.1"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_custom -->
+<g id="edge18" class="edge">
+<title>cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_custom</title>
+<path fill="none" stroke="black" d="M970.31,-499.05C987.33,-490.65 1005.25,-478.58 1016,-462 1027.79,-443.81 1029.71,-419.04 1029,-400.25"/>
+<polygon fill="black" stroke="black" points="1032.5,-399.99 1028.37,-390.24 1025.51,-400.44 1032.5,-399.99"/>
+</g>
+<!-- cxx03_data_encapsulation_c&#45;&gt;cxx03_introduction -->
+<g id="edge22" class="edge">
+<title>cxx03_data_encapsulation_c&#45;&gt;cxx03_introduction</title>
+<path fill="none" stroke="black" d="M936.24,-210.05C949.2,-200.61 965.47,-188.74 979.34,-178.63"/>
+<polygon fill="black" stroke="black" points="981.6,-181.31 987.62,-172.59 977.47,-175.66 981.6,-181.31"/>
+</g>
+<!-- cxx03_functions_and_methods_const -->
+<g id="node15" class="node">
+<title>cxx03_functions_and_methods_const</title>
+<g id="a_node15"><a xlink:href="../../../cxx03/030-functions-and-methods/030-const/topic.html" xlink:title="const">
+<ellipse fill="#dcdcdc" stroke="black" cx="1223" cy="-516" rx="29.5" ry="18"/>
+<text text-anchor="middle" x="1223" y="-512.3" font-family="Times,serif" font-size="14.00">const</text>
+</a>
+</g>
+</g>
+<!-- cxx03_functions_and_methods_methods -->
+<g id="node18" class="node">
+<title>cxx03_functions_and_methods_methods</title>
+<g id="a_node18"><a xlink:href="../../../cxx03/030-functions-and-methods/020-methods/topic.html" xlink:title="Methods">
+<ellipse fill="#dcdcdc" stroke="black" cx="1224" cy="-444" rx="42.49" ry="18"/>
+<text text-anchor="middle" x="1224" y="-440.3" font-family="Times,serif" font-size="14.00">Methods</text>
+</a>
+</g>
+</g>
+<!-- cxx03_functions_and_methods_const&#45;&gt;cxx03_functions_and_methods_methods -->
+<g id="edge3" class="edge">
+<title>cxx03_functions_and_methods_const&#45;&gt;cxx03_functions_and_methods_methods</title>
+<path fill="none" stroke="black" d="M1223.25,-497.7C1223.36,-489.98 1223.49,-480.71 1223.61,-472.11"/>
+<polygon fill="black" stroke="black" points="1227.11,-472.15 1223.76,-462.1 1220.11,-472.05 1227.11,-472.15"/>
+</g>
+<!-- cxx03_functions_and_methods_overloading -->
+<g id="node16" class="node">
+<title>cxx03_functions_and_methods_overloading</title>
+<g id="a_node16"><a xlink:href="../../../cxx03/030-functions-and-methods/010-overloading/topic.html" xlink:title="Overloading">
+<ellipse fill="#dcdcdc" stroke="black" cx="1225" cy="-372" rx="54.69" ry="18"/>
+<text text-anchor="middle" x="1225" y="-368.3" font-family="Times,serif" font-size="14.00">Overloading</text>
+</a>
+</g>
+</g>
+<!-- cxx03_functions_and_methods_overloading&#45;&gt;cxx03_data_encapsulation_classes_objects -->
+<g id="edge7" class="edge">
+<title>cxx03_functions_and_methods_overloading&#45;&gt;cxx03_data_encapsulation_classes_objects</title>
+<path fill="none" stroke="black" d="M1191.64,-357.5C1165.27,-346.83 1128.13,-331.8 1098.78,-319.93"/>
+<polygon fill="black" stroke="black" points="1099.74,-316.54 1089.15,-316.03 1097.11,-323.03 1099.74,-316.54"/>
+</g>
+<!-- cxx03_functions_and_methods_this -->
+<g id="node19" class="node">
+<title>cxx03_functions_and_methods_this</title>
+<g id="a_node19"><a xlink:href="../../../cxx03/030-functions-and-methods/040-this/topic.html" xlink:title="this">
+<ellipse fill="#dcdcdc" stroke="black" cx="1222" cy="-588" rx="27" ry="18"/>
+<text text-anchor="middle" x="1222" y="-584.3" font-family="Times,serif" font-size="14.00">this</text>
+</a>
+</g>
+</g>
+<!-- cxx03_functions_and_methods_references&#45;&gt;cxx03_functions_and_methods_this -->
+<g id="edge13" class="edge">
+<title>cxx03_functions_and_methods_references&#45;&gt;cxx03_functions_and_methods_this</title>
+<path fill="none" stroke="black" d="M1222,-644.7C1222,-636.25 1222,-625.87 1222,-616.37"/>
+<polygon fill="black" stroke="black" points="1225.5,-616.18 1222,-606.18 1218.5,-616.18 1225.5,-616.18"/>
+</g>
+<!-- cxx03_functions_and_methods_methods&#45;&gt;cxx03_functions_and_methods_overloading -->
+<g id="edge23" class="edge">
+<title>cxx03_functions_and_methods_methods&#45;&gt;cxx03_functions_and_methods_overloading</title>
+<path fill="none" stroke="black" d="M1224.25,-425.7C1224.36,-417.98 1224.49,-408.71 1224.61,-400.11"/>
+<polygon fill="black" stroke="black" points="1228.11,-400.15 1224.76,-390.1 1221.11,-400.05 1228.11,-400.15"/>
+</g>
+<!-- cxx03_functions_and_methods_this&#45;&gt;cxx03_functions_and_methods_const -->
+<g id="edge24" class="edge">
+<title>cxx03_functions_and_methods_this&#45;&gt;cxx03_functions_and_methods_const</title>
+<path fill="none" stroke="black" d="M1222.25,-569.7C1222.36,-561.98 1222.49,-552.71 1222.61,-544.11"/>
+<polygon fill="black" stroke="black" points="1226.11,-544.15 1222.76,-534.1 1219.11,-544.05 1226.11,-544.15"/>
+</g>
+</g>
+</svg>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2022 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/cxx11/020-new-language-features/060-move/group.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,596 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Exercise: Copy Directory Tree &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../../../" id="documentation_options" src="../../../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/basics/shell/exercises/cp-mv-mkdir-rm/copy-tree.html" />
+    <link rel="index" title="Index" href="../../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../../search.html" />
+    <link rel="next" title="Exercise: Remove Directory Tree" href="rm-tree.html" />
+    <link rel="prev" title="Exercise: Verify, Repeat" href="verify-hierarchy.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../../../index.html">
+    <img class="logo" src="../../../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../../../group.html">Linux</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../../../group.html">Linux Basics</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../../../intro/group.html">Introduction: Concepts and Terminology</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="../../group.html">The Shell (Bash - “Bourne Again Shell”)</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="../../commandline.html">Commandline</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../paths.html">Absolute and Relative Paths</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../ls.html">Directory Listings: The <code class="docutils literal notranslate"><span class="pre">ls</span></code> Command</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../cwd.html">Current Working Directory</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../file_dir_create_rm.html">Creating And Removing Files and Directories</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../cp.html">Copying: <code class="docutils literal notranslate"><span class="pre">cp</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../mv.html">Moving and Renaming: <code class="docutils literal notranslate"><span class="pre">mv</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../links.html">Symbolic Links, Hard Links</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../configfiles.html">Shell Configuration File: <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code></a></li>
+<li class="toctree-l6 current"><a class="reference internal" href="../group.html">The Shell - Exercises</a><ul class="current">
+<li class="toctree-l7 current"><a class="reference internal" href="group.html">Exercises: Create/Copy/Move/Remove</a><ul class="current">
+<li class="toctree-l8"><a class="reference internal" href="mkdir-p-rm-r.html">Exercise: <code class="docutils literal notranslate"><span class="pre">mkdir</span></code>, <code class="docutils literal notranslate"><span class="pre">rm</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="echo-create-files.html">Exercise: Create Files (I/O Redirection)</a></li>
+<li class="toctree-l8"><a class="reference internal" href="echo-copy-files.html">Exercise: Copy Files</a></li>
+<li class="toctree-l8"><a class="reference internal" href="echo-move-files.html">Exercise: Move Files</a></li>
+<li class="toctree-l8"><a class="reference internal" href="verify-hierarchy.html">Exercise: Verify, Repeat</a></li>
+<li class="toctree-l8 current"><a class="current reference internal" href="#">Exercise: Copy Directory Tree</a></li>
+<li class="toctree-l8"><a class="reference internal" href="rm-tree.html">Exercise: Remove Directory Tree</a></li>
+<li class="toctree-l8"><a class="reference internal" href="rm-rf.html">Exercise: Funny Stuff</a></li>
+</ul>
+</li>
+<li class="toctree-l7"><a class="reference internal" href="../ls/group.html">Exercises: The <code class="docutils literal notranslate"><span class="pre">ls</span></code> Command</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../fh-questions.html">FH/Moodle Quiz: Shell</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../../../permissions/group.html">File System Permissions</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../archiving-compression/group.html">Archiving and Compression</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../io-redirection-pipes/group.html">I/O Redirection And Pipes</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../exercises/group.html">Exercises: Linux Basics</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../ssh/group.html">SSH: Secure Shell Remote Login</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../toolchain/group.html">Toolchain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../sysprog/group.html">Linux Systems Programming</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../hardware/group.html">Linux Hardware Interfaces</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../drafts/group.html">Drafts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="exercise-copy-directory-tree">
+<h1>Exercise: Copy Directory Tree<a class="headerlink" href="#exercise-copy-directory-tree" title="Permalink to this headline">¶</a></h1>
+<ul>
+<li><p>We just <a class="reference internal" href="verify-hierarchy.html"><span class="doc">had a look at</span></a> the directory tree
+at <code class="docutils literal notranslate"><span class="pre">/tmp/parent</span></code></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>tree /tmp/parent
+<span class="go">/tmp/parent</span>
+<span class="go">├── child</span>
+<span class="go">│   ├── business-card</span>
+<span class="go">│   ├── garbage1.txt</span>
+<span class="go">│   └── garbage2.txt</span>
+<span class="go">├── garbage1.txt</span>
+<span class="go">├── garbage2.txt</span>
+<span class="go">└── hello</span>
+</pre></div>
+</div>
+</li>
+<li><p><a class="reference internal" href="../../cp.html"><span class="doc">Copy</span></a> that tree into your home directory as
+<code class="docutils literal notranslate"><span class="pre">~/parent-copy</span></code> so that you see the following,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>tree ~/parent-copy/
+<span class="go">/home/&lt;you&gt;/parent-copy/</span>
+<span class="go">├── child</span>
+<span class="go">│   ├── business-card</span>
+<span class="go">│   ├── garbage1.txt</span>
+<span class="go">│   └── garbage2.txt</span>
+<span class="go">├── garbage1.txt</span>
+<span class="go">├── garbage2.txt</span>
+<span class="go">└── hello</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<svg 
+ viewBox="0.00 0.00 1135.00 890.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 886)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-886 1131,-886 1131,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_linux</title>
+<path fill="none" stroke="black" d="M20,-8C20,-8 1107,-8 1107,-8 1113,-8 1119,-14 1119,-20 1119,-20 1119,-862 1119,-862 1119,-868 1113,-874 1107,-874 1107,-874 20,-874 20,-874 14,-874 8,-868 8,-862 8,-862 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="563.5" y="-858.8" font-family="Times,serif" font-size="14.00">Linux</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_linux_basics</title>
+<path fill="none" stroke="black" d="M28,-16C28,-16 1099,-16 1099,-16 1105,-16 1111,-22 1111,-28 1111,-28 1111,-831 1111,-831 1111,-837 1105,-843 1099,-843 1099,-843 28,-843 28,-843 22,-843 16,-837 16,-831 16,-831 16,-28 16,-28 16,-22 22,-16 28,-16"/>
+<text text-anchor="middle" x="563.5" y="-827.8" font-family="Times,serif" font-size="14.00">Linux Basics</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_linux_basics_shell</title>
+<path fill="none" stroke="black" d="M36,-96C36,-96 757,-96 757,-96 763,-96 769,-102 769,-108 769,-108 769,-800 769,-800 769,-806 763,-812 757,-812 757,-812 36,-812 36,-812 30,-812 24,-806 24,-800 24,-800 24,-108 24,-108 24,-102 30,-96 36,-96"/>
+<text text-anchor="middle" x="396.5" y="-796.8" font-family="Times,serif" font-size="14.00">The Shell (Bash &#45; “Bourne Again Shell”)</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_linux_basics_shell_exercises</title>
+<path fill="none" stroke="black" d="M44,-379C44,-379 451,-379 451,-379 457,-379 463,-385 463,-391 463,-391 463,-769 463,-769 463,-775 457,-781 451,-781 451,-781 44,-781 44,-781 38,-781 32,-775 32,-769 32,-769 32,-391 32,-391 32,-385 38,-379 44,-379"/>
+<text text-anchor="middle" x="247.5" y="-765.8" font-family="Times,serif" font-size="14.00">The Shell &#45; Exercises</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_linux_basics_shell_exercises_cp_mv_mkdir_rm</title>
+<path fill="none" stroke="black" d="M52,-387C52,-387 443,-387 443,-387 449,-387 455,-393 455,-399 455,-399 455,-738 455,-738 455,-744 449,-750 443,-750 443,-750 52,-750 52,-750 46,-750 40,-744 40,-738 40,-738 40,-399 40,-399 40,-393 46,-387 52,-387"/>
+<text text-anchor="middle" x="247.5" y="-734.8" font-family="Times,serif" font-size="14.00">Exercises: Create/Copy/Move/Remove</text>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_linux_basics_intro</title>
+<path fill="none" stroke="black" d="M789,-24C789,-24 1079,-24 1079,-24 1085,-24 1091,-30 1091,-36 1091,-36 1091,-159 1091,-159 1091,-165 1085,-171 1079,-171 1079,-171 789,-171 789,-171 783,-171 777,-165 777,-159 777,-159 777,-36 777,-36 777,-30 783,-24 789,-24"/>
+<text text-anchor="middle" x="934" y="-155.8" font-family="Times,serif" font-size="14.00">Introduction: Concepts and Terminology</text>
+</g>
+<!-- linux_basics_shell_cp -->
+<g id="node1" class="node">
+<title>linux_basics_shell_cp</title>
+<g id="a_node1"><a xlink:href="../../cp.html" xlink:title="Copying: cp">
+<ellipse fill="#dcdcdc" stroke="black" cx="545" cy="-485" rx="53.89" ry="18"/>
+<text text-anchor="middle" x="545" y="-481.3" font-family="Times,serif" font-size="14.00">Copying: cp</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_file_dir_create_rm -->
+<g id="node2" class="node">
+<title>linux_basics_shell_file_dir_create_rm</title>
+<g id="a_node2"><a xlink:href="../../file_dir_create_rm.html" xlink:title="Creating And Removing Files and Directories">
+<ellipse fill="#dcdcdc" stroke="black" cx="266" cy="-341" rx="173.57" ry="18"/>
+<text text-anchor="middle" x="266" y="-337.3" font-family="Times,serif" font-size="14.00">Creating And Removing Files and Directories</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_cp&#45;&gt;linux_basics_shell_file_dir_create_rm -->
+<g id="edge1" class="edge">
+<title>linux_basics_shell_cp&#45;&gt;linux_basics_shell_file_dir_create_rm</title>
+<path fill="none" stroke="black" d="M536.18,-467.07C522.85,-443.31 495.24,-400.58 459,-379 441.81,-368.76 422.36,-361.28 402.6,-355.81"/>
+<polygon fill="black" stroke="black" points="403.43,-352.42 392.88,-353.29 401.68,-359.19 403.43,-352.42"/>
+</g>
+<!-- linux_basics_shell_paths -->
+<g id="node6" class="node">
+<title>linux_basics_shell_paths</title>
+<g id="a_node6"><a xlink:href="../../paths.html" xlink:title="Absolute and Relative Paths">
+<ellipse fill="#dcdcdc" stroke="black" cx="441" cy="-197" rx="110.48" ry="18"/>
+<text text-anchor="middle" x="441" y="-193.3" font-family="Times,serif" font-size="14.00">Absolute and Relative Paths</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_cp&#45;&gt;linux_basics_shell_paths -->
+<g id="edge2" class="edge">
+<title>linux_basics_shell_cp&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M584.72,-472.79C657.15,-450.29 798.89,-395.51 750,-323 703.66,-254.26 612.41,-223.31 541.03,-209.38"/>
+<polygon fill="black" stroke="black" points="541.57,-205.92 531.1,-207.53 540.29,-212.8 541.57,-205.92"/>
+</g>
+<!-- linux_basics_shell_cwd -->
+<g id="node3" class="node">
+<title>linux_basics_shell_cwd</title>
+<g id="a_node3"><a xlink:href="../../cwd.html" xlink:title="Current Working Directory">
+<ellipse fill="#dcdcdc" stroke="black" cx="312" cy="-269" rx="106.68" ry="18"/>
+<text text-anchor="middle" x="312" y="-265.3" font-family="Times,serif" font-size="14.00">Current Working Directory</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_cwd -->
+<g id="edge3" class="edge">
+<title>linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_cwd</title>
+<path fill="none" stroke="black" d="M277.37,-322.7C282.72,-314.56 289.2,-304.69 295.11,-295.7"/>
+<polygon fill="black" stroke="black" points="298.19,-297.38 300.76,-287.1 292.34,-293.54 298.19,-297.38"/>
+</g>
+<!-- linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_paths -->
+<g id="edge4" class="edge">
+<title>linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M365.44,-326.12C389.04,-318.26 411.99,-306.01 428,-287 442.26,-270.07 444.71,-244.6 444.06,-225.24"/>
+<polygon fill="black" stroke="black" points="447.55,-224.97 443.44,-215.21 440.57,-225.4 447.55,-224.97"/>
+</g>
+<!-- linux_basics_shell_commandline -->
+<g id="node4" class="node">
+<title>linux_basics_shell_commandline</title>
+<g id="a_node4"><a xlink:href="../../commandline.html" xlink:title="Commandline">
+<ellipse fill="#dcdcdc" stroke="black" cx="441" cy="-122" rx="61.99" ry="18"/>
+<text text-anchor="middle" x="441" y="-118.3" font-family="Times,serif" font-size="14.00">Commandline</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_cwd&#45;&gt;linux_basics_shell_commandline -->
+<g id="edge5" class="edge">
+<title>linux_basics_shell_cwd&#45;&gt;linux_basics_shell_commandline</title>
+<path fill="none" stroke="black" d="M309.3,-250.86C307.23,-231.55 306.88,-200.11 322,-179 336.71,-158.45 360.95,-145.2 383.72,-136.78"/>
+<polygon fill="black" stroke="black" points="385.05,-140.03 393.36,-133.46 382.77,-133.41 385.05,-140.03"/>
+</g>
+<!-- linux_basics_shell_cwd&#45;&gt;linux_basics_shell_paths -->
+<g id="edge7" class="edge">
+<title>linux_basics_shell_cwd&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M342.24,-251.59C359.91,-242 382.4,-229.8 401.46,-219.46"/>
+<polygon fill="black" stroke="black" points="403.38,-222.4 410.5,-214.55 400.04,-216.24 403.38,-222.4"/>
+</g>
+<!-- linux_basics_intro_process -->
+<g id="node14" class="node">
+<title>linux_basics_intro_process</title>
+<g id="a_node14"><a xlink:href="../../../intro/process.html" xlink:title="Processes, Scheduling, Address Spaces">
+<ellipse fill="#dcdcdc" stroke="black" cx="934" cy="-122" rx="149.47" ry="18"/>
+<text text-anchor="middle" x="934" y="-118.3" font-family="Times,serif" font-size="14.00">Processes, Scheduling, Address Spaces</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_cwd&#45;&gt;linux_basics_intro_process -->
+<g id="edge6" class="edge">
+<title>linux_basics_shell_cwd&#45;&gt;linux_basics_intro_process</title>
+<path fill="none" stroke="black" d="M381.14,-255.3C471.66,-238.24 635.06,-206.01 773,-171 806.93,-162.39 844.43,-151.3 874.7,-141.95"/>
+<polygon fill="black" stroke="black" points="875.74,-145.29 884.25,-138.99 873.67,-138.61 875.74,-145.29"/>
+</g>
+<!-- linux_basics_intro_overview -->
+<g id="node13" class="node">
+<title>linux_basics_intro_overview</title>
+<g id="a_node13"><a xlink:href="../../../intro/overview.html" xlink:title="Overview">
+<ellipse fill="#dcdcdc" stroke="black" cx="934" cy="-50" rx="45.49" ry="18"/>
+<text text-anchor="middle" x="934" y="-46.3" font-family="Times,serif" font-size="14.00">Overview</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_commandline&#45;&gt;linux_basics_intro_overview -->
+<g id="edge8" class="edge">
+<title>linux_basics_shell_commandline&#45;&gt;linux_basics_intro_overview</title>
+<path fill="none" stroke="black" d="M495.17,-113.31C590.64,-99.75 787.65,-71.78 881.75,-58.42"/>
+<polygon fill="black" stroke="black" points="882.48,-61.85 891.88,-56.98 881.49,-54.92 882.48,-61.85"/>
+</g>
+<!-- linux_basics_shell_ls -->
+<g id="node5" class="node">
+<title>linux_basics_shell_ls</title>
+<g id="a_node5"><a xlink:href="../../ls.html" xlink:title="Directory Listings: The ls Command">
+<ellipse fill="#dcdcdc" stroke="black" cx="599" cy="-341" rx="141.88" ry="18"/>
+<text text-anchor="middle" x="599" y="-337.3" font-family="Times,serif" font-size="14.00">Directory Listings: The ls Command</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_ls&#45;&gt;linux_basics_shell_cwd -->
+<g id="edge9" class="edge">
+<title>linux_basics_shell_ls&#45;&gt;linux_basics_shell_cwd</title>
+<path fill="none" stroke="black" d="M536.73,-324.81C490.55,-313.55 427.65,-298.21 380.13,-286.62"/>
+<polygon fill="black" stroke="black" points="380.79,-283.17 370.24,-284.21 379.13,-289.98 380.79,-283.17"/>
+</g>
+<!-- linux_basics_shell_ls&#45;&gt;linux_basics_shell_paths -->
+<g id="edge10" class="edge">
+<title>linux_basics_shell_ls&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M580.25,-323.15C552.22,-297.96 499.27,-250.37 467.35,-221.68"/>
+<polygon fill="black" stroke="black" points="469.5,-218.91 459.72,-214.82 464.82,-224.11 469.5,-218.91"/>
+</g>
+<!-- linux_basics_shell_ls&#45;&gt;linux_basics_intro_overview -->
+<g id="edge11" class="edge">
+<title>linux_basics_shell_ls&#45;&gt;linux_basics_intro_overview</title>
+<path fill="none" stroke="black" d="M732.57,-334.92C848.79,-322.57 1010.94,-284.47 1092,-171 1111.38,-143.88 1112.08,-122.6 1092,-96 1079.06,-78.86 1026.68,-66.32 985.73,-58.89"/>
+<polygon fill="black" stroke="black" points="986.31,-55.44 975.86,-57.16 985.1,-62.33 986.31,-55.44"/>
+</g>
+<!-- linux_basics_shell_paths&#45;&gt;linux_basics_shell_commandline -->
+<g id="edge16" class="edge">
+<title>linux_basics_shell_paths&#45;&gt;linux_basics_shell_commandline</title>
+<path fill="none" stroke="black" d="M441,-178.7C441,-170.25 441,-159.87 441,-150.37"/>
+<polygon fill="black" stroke="black" points="444.5,-150.18 441,-140.18 437.5,-150.18 444.5,-150.18"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_verify_hierarchy -->
+<g id="node7" class="node">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_verify_hierarchy</title>
+<g id="a_node7"><a xlink:href="verify-hierarchy.html" xlink:title="Exercise: Verify, Repeat">
+<ellipse fill="red" stroke="black" cx="172" cy="-629" rx="96.38" ry="18"/>
+<text text-anchor="middle" x="172" y="-625.3" font-family="Times,serif" font-size="14.00">Exercise: Verify, Repeat</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_move_files -->
+<g id="node8" class="node">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_move_files</title>
+<g id="a_node8"><a xlink:href="echo-move-files.html" xlink:title="Exercise: Move Files">
+<ellipse fill="red" stroke="black" cx="361" cy="-557" rx="86.38" ry="18"/>
+<text text-anchor="middle" x="361" y="-553.3" font-family="Times,serif" font-size="14.00">Exercise: Move Files</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_verify_hierarchy&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_move_files -->
+<g id="edge15" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_verify_hierarchy&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_move_files</title>
+<path fill="none" stroke="black" d="M213.48,-612.64C242.21,-602 280.6,-587.78 311.02,-576.51"/>
+<polygon fill="black" stroke="black" points="312.43,-579.72 320.59,-572.97 310,-573.16 312.43,-579.72"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files -->
+<g id="node9" class="node">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files</title>
+<g id="a_node9"><a xlink:href="echo-create-files.html" xlink:title="Exercise: Create Files (I/O Redirection)">
+<ellipse fill="red" stroke="black" cx="219" cy="-485" rx="151.37" ry="18"/>
+<text text-anchor="middle" x="219" y="-481.3" font-family="Times,serif" font-size="14.00">Exercise: Create Files (I/O Redirection)</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_verify_hierarchy&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files -->
+<g id="edge13" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_verify_hierarchy&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files</title>
+<path fill="none" stroke="black" d="M125.78,-613.19C107.89,-604.95 89.27,-592.67 79,-575 70.96,-561.17 69.91,-552.17 79,-539 90.13,-522.88 106.84,-511.66 124.88,-503.85"/>
+<polygon fill="black" stroke="black" points="126.41,-507.01 134.41,-500.07 123.83,-500.51 126.41,-507.01"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_copy_files -->
+<g id="node10" class="node">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_copy_files</title>
+<g id="a_node10"><a xlink:href="echo-copy-files.html" xlink:title="Exercise: Copy Files">
+<ellipse fill="red" stroke="black" cx="172" cy="-557" rx="84.49" ry="18"/>
+<text text-anchor="middle" x="172" y="-553.3" font-family="Times,serif" font-size="14.00">Exercise: Copy Files</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_verify_hierarchy&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_copy_files -->
+<g id="edge14" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_verify_hierarchy&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_copy_files</title>
+<path fill="none" stroke="black" d="M172,-610.7C172,-602.98 172,-593.71 172,-585.11"/>
+<polygon fill="black" stroke="black" points="175.5,-585.1 172,-575.1 168.5,-585.1 175.5,-585.1"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r -->
+<g id="node11" class="node">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r</title>
+<g id="a_node11"><a xlink:href="mkdir-p-rm-r.html" xlink:title="Exercise: mkdir, rm">
+<ellipse fill="red" stroke="black" cx="192" cy="-413" rx="81.79" ry="18"/>
+<text text-anchor="middle" x="192" y="-409.3" font-family="Times,serif" font-size="14.00">Exercise: mkdir, rm</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_verify_hierarchy&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r -->
+<g id="edge12" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_verify_hierarchy&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r</title>
+<path fill="none" stroke="black" d="M122.19,-613.56C102.61,-605.37 81.8,-593.05 69,-575 41.12,-535.68 31.95,-506.9 59,-467 72.43,-447.2 94.56,-434.79 116.95,-427.02"/>
+<polygon fill="black" stroke="black" points="118.07,-430.34 126.54,-423.97 115.95,-423.67 118.07,-430.34"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_move_files&#45;&gt;linux_basics_shell_cp -->
+<g id="edge20" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_move_files&#45;&gt;linux_basics_shell_cp</title>
+<path fill="none" stroke="black" d="M400.47,-540.98C430.11,-529.71 470.67,-514.28 501.29,-502.63"/>
+<polygon fill="black" stroke="black" points="502.75,-505.82 510.85,-498.99 500.26,-499.28 502.75,-505.82"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_move_files&#45;&gt;linux_basics_shell_ls -->
+<g id="edge21" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_move_files&#45;&gt;linux_basics_shell_ls</title>
+<path fill="none" stroke="black" d="M379.68,-539.21C421.72,-501.41 523.89,-409.53 572.48,-365.84"/>
+<polygon fill="black" stroke="black" points="574.99,-368.3 580.08,-359.01 570.31,-363.09 574.99,-368.3"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_move_files&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files -->
+<g id="edge19" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_move_files&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files</title>
+<path fill="none" stroke="black" d="M328.78,-540.12C309.1,-530.42 283.7,-517.9 262.29,-507.34"/>
+<polygon fill="black" stroke="black" points="263.59,-504.08 253.07,-502.8 260.5,-510.36 263.59,-504.08"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_move_files&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r -->
+<g id="edge18" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_move_files&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r</title>
+<path fill="none" stroke="black" d="M374.16,-538.95C387.29,-519.72 403.33,-488.36 387,-467 378.96,-456.48 312.54,-439.93 259.43,-428.12"/>
+<polygon fill="black" stroke="black" points="259.86,-424.63 249.34,-425.9 258.35,-431.47 259.86,-424.63"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files&#45;&gt;linux_basics_shell_file_dir_create_rm -->
+<g id="edge23" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files&#45;&gt;linux_basics_shell_file_dir_create_rm</title>
+<path fill="none" stroke="black" d="M249.43,-467.14C262.31,-458.23 275.94,-446.01 283,-431 292.31,-411.21 286.49,-386.67 279.24,-368.37"/>
+<polygon fill="black" stroke="black" points="282.44,-366.97 275.26,-359.18 276.02,-369.74 282.44,-366.97"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files&#45;&gt;linux_basics_shell_cwd -->
+<g id="edge25" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files&#45;&gt;linux_basics_shell_cwd</title>
+<path fill="none" stroke="black" d="M161.22,-468.28C140.01,-460.08 117.24,-448.1 101,-431 66.85,-395.05 41.96,-361.67 73,-323 90.6,-301.07 153.84,-287.65 210.85,-279.81"/>
+<polygon fill="black" stroke="black" points="211.59,-283.24 221.04,-278.45 210.67,-276.3 211.59,-283.24"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files&#45;&gt;linux_basics_shell_paths -->
+<g id="edge24" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M122.05,-471.09C98.3,-463.25 75.33,-450.78 60,-431 30.57,-393.02 29.91,-363.98 55,-323 86.9,-270.89 252.81,-232.01 356.47,-212.35"/>
+<polygon fill="black" stroke="black" points="357.42,-215.73 366.61,-210.45 356.13,-208.85 357.42,-215.73"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r -->
+<g id="edge22" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r</title>
+<path fill="none" stroke="black" d="M212.33,-466.7C209.29,-458.81 205.62,-449.3 202.24,-440.55"/>
+<polygon fill="black" stroke="black" points="205.46,-439.17 198.6,-431.1 198.93,-441.69 205.46,-439.17"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_copy_files&#45;&gt;linux_basics_shell_cp -->
+<g id="edge28" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_copy_files&#45;&gt;linux_basics_shell_cp</title>
+<path fill="none" stroke="black" d="M234.19,-544.75C292.35,-534.17 381.61,-517.79 459,-503 468.98,-501.09 479.6,-499.02 489.85,-497.01"/>
+<polygon fill="black" stroke="black" points="490.81,-500.39 499.94,-495.02 489.45,-493.52 490.81,-500.39"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_copy_files&#45;&gt;linux_basics_shell_file_dir_create_rm -->
+<g id="edge29" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_copy_files&#45;&gt;linux_basics_shell_file_dir_create_rm</title>
+<path fill="none" stroke="black" d="M234.07,-544.71C294.11,-533.17 377.41,-515.24 387,-503 425.27,-454.16 352.34,-395.67 303.99,-364.37"/>
+<polygon fill="black" stroke="black" points="305.6,-361.25 295.28,-358.86 301.85,-367.16 305.6,-361.25"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_copy_files&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files -->
+<g id="edge27" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_copy_files&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files</title>
+<path fill="none" stroke="black" d="M183.38,-539.05C188.89,-530.84 195.64,-520.79 201.77,-511.66"/>
+<polygon fill="black" stroke="black" points="204.73,-513.53 207.4,-503.28 198.92,-509.63 204.73,-513.53"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_copy_files&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r -->
+<g id="edge26" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_copy_files&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r</title>
+<path fill="none" stroke="black" d="M232.58,-544.39C290.33,-532.72 369.84,-514.8 379,-503 388.81,-490.36 388.65,-479.76 379,-467 371.37,-456.91 308.48,-440.44 257.71,-428.54"/>
+<polygon fill="black" stroke="black" points="258.27,-425.08 247.73,-426.23 256.68,-431.9 258.27,-425.08"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r&#45;&gt;linux_basics_shell_file_dir_create_rm -->
+<g id="edge30" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r&#45;&gt;linux_basics_shell_file_dir_create_rm</title>
+<path fill="none" stroke="black" d="M209.54,-395.41C218.8,-386.65 230.34,-375.73 240.57,-366.06"/>
+<polygon fill="black" stroke="black" points="243.22,-368.37 248.07,-358.96 238.4,-363.29 243.22,-368.37"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r&#45;&gt;linux_basics_shell_cwd -->
+<g id="edge31" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r&#45;&gt;linux_basics_shell_cwd</title>
+<path fill="none" stroke="black" d="M151.12,-397.36C123.59,-386.59 90.92,-371.66 83,-359 74.51,-345.44 73.04,-335.52 83,-323 99.65,-302.06 159.29,-288.67 213.53,-280.59"/>
+<polygon fill="black" stroke="black" points="214.19,-284.03 223.59,-279.14 213.19,-277.1 214.19,-284.03"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_copy_tree -->
+<g id="node12" class="node">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_copy_tree</title>
+<ellipse fill="red" stroke="black" stroke-width="3" cx="250" cy="-701" rx="118.88" ry="18"/>
+<text text-anchor="middle" x="250" y="-697.3" font-family="Times,serif" font-size="14.00">Exercise: Copy Directory Tree</text>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_copy_tree&#45;&gt;linux_basics_shell_cp -->
+<g id="edge33" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_copy_tree&#45;&gt;linux_basics_shell_cp</title>
+<path fill="none" stroke="black" d="M282.24,-683.57C324.15,-661.54 398.74,-619.94 456,-575 481.12,-555.29 506.56,-529.08 523.77,-510.22"/>
+<polygon fill="black" stroke="black" points="526.52,-512.39 530.62,-502.62 521.32,-507.71 526.52,-512.39"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_copy_tree&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_verify_hierarchy -->
+<g id="edge32" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_copy_tree&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_verify_hierarchy</title>
+<path fill="none" stroke="black" d="M231.12,-683.05C221.25,-674.2 209.02,-663.22 198.24,-653.55"/>
+<polygon fill="black" stroke="black" points="200.49,-650.86 190.71,-646.79 195.81,-656.07 200.49,-650.86"/>
+</g>
+<!-- linux_basics_intro_process&#45;&gt;linux_basics_intro_overview -->
+<g id="edge17" class="edge">
+<title>linux_basics_intro_process&#45;&gt;linux_basics_intro_overview</title>
+<path fill="none" stroke="black" d="M934,-103.7C934,-95.98 934,-86.71 934,-78.11"/>
+<polygon fill="black" stroke="black" points="937.5,-78.1 934,-68.1 930.5,-78.1 937.5,-78.1"/>
+</g>
+</g>
+</svg>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2022 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../../../_sources/trainings/material/soup/linux/basics/shell/exercises/cp-mv-mkdir-rm/copy-tree.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
