@@ -1,0 +1,347 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>https://www.faschingbauer.me</id>
+  <title>Jörg Faschingbauer - Posts in raspberry</title>
+  <updated>2022-09-25T18:01:08.213641+00:00</updated>
+  <link href="https://www.faschingbauer.me"/>
+  <link href="https://www.faschingbauer.me/blog/category/raspberry/atom.xml" rel="self"/>
+  <generator uri="https://ablog.readthedocs.org/" version="0.10.19">ABlog</generator>
+  <entry>
+    <id>https://www.faschingbauer.me/blog/2022/09/cross-raspi.html</id>
+    <title>Building A Cross Toolchain For The Raspberry Pi, Using crosstool-ng</title>
+    <updated>2022-09-23T00:00:00+02:00</updated>
+    <author>
+      <name>Jörg Faschingbauer</name>
+    </author>
+    <content type="html">&lt;section id="building-a-cross-toolchain-for-the-raspberry-pi-using-crosstool-ng"&gt;
+
+&lt;div class="contents local topic" id="contents"&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#why-this-article-why-not-use-a-prebuilt-toolchain" id="id9"&gt;Why This Article? Why Not Use A Prebuilt Toolchain?&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#installing-crosstool-ng" id="id10"&gt;Installing &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;crosstool-ng&lt;/span&gt;&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#prerequisites" id="id11"&gt;Prerequisites&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#download-build-install" id="id12"&gt;Download, Build, Install&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#configure-toolchain-build" id="id13"&gt;Configure Toolchain Build&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#base-configuration-for-the-raspberry" id="id14"&gt;Base Configuration For The Raspberry&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#important-glibc-version" id="id15"&gt;Important: &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;glibc&lt;/span&gt;&lt;/code&gt; Version&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#toolchain-build-install" id="id16"&gt;Toolchain Build/Install&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#test" id="id17"&gt;Test&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#simplest-c-stdio-h" id="id18"&gt;Simplest: C, &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#c-iostream" id="id19"&gt;C++, &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#c-thread" id="id20"&gt;C++, &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;&amp;lt;thread&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#packaging-distributing-the-toolchain" id="id21"&gt;Packaging/Distributing The Toolchain&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#afterword" id="id22"&gt;Afterword&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;section id="why-this-article-why-not-use-a-prebuilt-toolchain"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id9"&gt;Why This Article? Why Not Use A Prebuilt Toolchain?&lt;/a&gt;&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;There &lt;a class="reference external" href="https://github.com/raspberrypi/tools"&gt;used to be&lt;/a&gt; a
+toolchain for the Raspberry Pi, made by the &lt;a class="reference external" href="https://www.raspberrypi.com/software/"&gt;Raspberry Pi OS&lt;/a&gt; creators. Sadly, this
+repository has been dead since years.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;One popular toolchain, &lt;a class="reference external" href="https://snapshots.linaro.org/gnu-toolchain/"&gt;Linaro&lt;/a&gt;, is widely
+recommended for the Raspberry. It does not work for C++ though - its
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;libstdc++&lt;/span&gt;&lt;/code&gt; has an unsatisfied version dependency on
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;libpthread&lt;/span&gt;&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;A number of other Raspberry toolchains exist out there, but I either
+didn’t get them to work at all (see the &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;glibc&lt;/span&gt;&lt;/code&gt; &lt;a class="reference internal" href="../2022/09/cross-raspi.html#glibc-version"&gt;&lt;span class="std std-ref"&gt;version
+dependency&lt;/span&gt;&lt;/a&gt;), or didn’t get them to work for C++.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Let alone the bullshitting on the Internet where one asks,&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;&lt;em&gt;Where can I find a cross toolchain for the Pi?&lt;/em&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Responses …&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;&lt;em&gt;This does not work. Build on the Pi locally.&lt;/em&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;… and …&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;&lt;em&gt;Use distcc if one Pi is not enough.&lt;/em&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Prebuilt toolchains may work for C, but I failed to find one that
+works for C++. The amount of work that I invested in finding one was,
+in my opinion, totally wasted. Building a toolchain yourself is not at
+all hard, provided that you bring basic Linux understanding (which you
+should if you program for it).&lt;/p&gt;
+&lt;p&gt;In my opinion (feedback &lt;a class="reference internal" href="../../about/myself/contact.html"&gt;&lt;span class="doc"&gt;welcome&lt;/span&gt;&lt;/a&gt;), this
+article describes the most close-to-correct way to build a toolchain
+for a target that does not come with a toolchain. Although I describe
+the situation for the Raspberry (because that was my primary
+intention), it will sure work for &lt;em&gt;any&lt;/em&gt; target.&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id="installing-crosstool-ng"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id10"&gt;Installing &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;crosstool-ng&lt;/span&gt;&lt;/code&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Below is a writeup of how I installed &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;crosstool-ng&lt;/span&gt;&lt;/code&gt; (running
+Fedora, I chose to install from a released tarball) . Please read
+through their &lt;a class="reference external" href="https://crosstool-ng.github.io/docs/install/"&gt;installation documentation&lt;/a&gt; for your particular
+situation.&lt;/p&gt;
+&lt;section id="prerequisites"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id11"&gt;Prerequisites&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;crosstool-ng&lt;/span&gt;&lt;/code&gt; requires one to install a number of packages
+first. Thankfully, they do thorough testing in Docker, and the list of
+dependencies can be taken from the Docker file for your OS (see &lt;a class="reference external" href="https://github.com/crosstool-ng/crosstool-ng/tree/master/testing/docker"&gt;here&lt;/a&gt;).&lt;/p&gt;
+&lt;div class="literal-block-wrapper docutils container" id="id4"&gt;
+&lt;div class="code-block-caption"&gt;&lt;span class="caption-text"&gt;Dependencies for Fedora&lt;/span&gt;&lt;/div&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;root@host # &lt;/span&gt;dnf install autoconf gperf bison file flex texinfo help2man gcc-c++ libtool make patch &lt;span class="se"&gt;\&lt;/span&gt;
+    ncurses-devel python3-devel perl-Thread-Queue bzip2 git wget which xz unzip rsync diffutils &lt;span class="se"&gt;\&lt;/span&gt;
+    meson ninja-build
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/section&gt;
+&lt;section id="download-build-install"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id12"&gt;Download, Build, Install&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;I chose to install from a release tarball (&lt;a class="reference external" href="https://crosstool-ng.github.io/download/"&gt;here&lt;/a&gt;; current version as of
+this writing is &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;1.25.0&lt;/span&gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;me@host$ &lt;/span&gt;wget http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-1.25.0.tar.xz
+&lt;span class="gp"&gt;me@host$ &lt;/span&gt;tar xf crosstool-ng-1.25.0.tar.xz
+&lt;span class="gp"&gt;me@host$ &lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; crosstool-ng-1.25.0/
+&lt;span class="gp"&gt;me@host$ &lt;/span&gt;./configure --prefix&lt;span class="o"&gt;=&lt;/span&gt;/home/jfasch/cross
+&lt;span class="gp"&gt;me@host$ &lt;/span&gt;make
+&lt;span class="gp"&gt;me@host$ &lt;/span&gt;make install
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Add &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;ct-ng&lt;/span&gt;&lt;/code&gt; to &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;PATH&lt;/span&gt;&lt;/code&gt;,&lt;/p&gt;
+&lt;div class="literal-block-wrapper docutils container" id="id5"&gt;
+&lt;div class="code-block-caption"&gt;&lt;span class="caption-text"&gt;You may want to add this to &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;~/.bashrc&lt;/span&gt;&lt;/code&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;div class="highlight-shell notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;me@host$ &lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="nv"&gt;PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$HOME&lt;/span&gt;/cross/bin:&lt;span class="nv"&gt;$PATH&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Test if all is well,&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;me@host$ &lt;/span&gt;ct-ng &lt;span class="nb"&gt;help&lt;/span&gt;
+&lt;span class="go"&gt;This is crosstool-NG version 1.25.0&lt;/span&gt;
+
+&lt;span class="go"&gt;Copyright (C) 2008  Yann E. MORIN &amp;lt;yann.morin.1998@free.fr&amp;gt;&lt;/span&gt;
+&lt;span class="go"&gt;This is free software; see the source for copying conditions.&lt;/span&gt;
+&lt;span class="go"&gt;There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A&lt;/span&gt;
+&lt;span class="go"&gt;PARTICULAR PURPOSE.&lt;/span&gt;
+&lt;span class="go"&gt;...&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+&lt;section id="configure-toolchain-build"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id13"&gt;Configure Toolchain Build&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;ct-ng&lt;/span&gt;&lt;/code&gt; toolchain build configuration works a lot like the Linux
+kernel’s configuration system (a little less elaborate though). There
+are a number of base configurations to choose from (we need a
+Raspberry config), and, having chosen one, you can tune it to your
+needs.&lt;/p&gt;
+&lt;section id="base-configuration-for-the-raspberry"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id14"&gt;Base Configuration For The Raspberry&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;me@host$ &lt;/span&gt;ct-ng list-samples&lt;span class="p"&gt;|&lt;/span&gt;grep rpi
+&lt;span class="go"&gt;[G...]   aarch64-rpi3-linux-gnu&lt;/span&gt;
+&lt;span class="go"&gt;[G...]   aarch64-rpi4-linux-gnu&lt;/span&gt;
+&lt;span class="go"&gt;[G...]   armv7-rpi2-linux-gnueabihf&lt;/span&gt;
+&lt;span class="go"&gt;[G...]   armv8-rpi3-linux-gnueabihf&lt;/span&gt;
+&lt;span class="go"&gt;[G...]   armv8-rpi4-linux-gnueabihf&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Mine is a Pi 4, still running the (still default) 32 bit version, so I
+create a &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;.config&lt;/span&gt;&lt;/code&gt; file for that,&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;me@host $ &lt;/span&gt;ct-ng armv8-rpi4-linux-gnueabihf
+&lt;span class="gp"&gt;me@host $ &lt;/span&gt;ls -l .config
+&lt;span class="go"&gt;-rw-r--r--. 1 jfasch jfasch 23179 Sep 23 08:18 .config&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/section&gt;
+&lt;section id="important-glibc-version"&gt;
+&lt;span id="glibc-version"&gt;&lt;/span&gt;&lt;h3&gt;&lt;a class="toc-backref" href="#id15"&gt;Important: &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;glibc&lt;/span&gt;&lt;/code&gt; Version&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Executables built by your toolchain won’t work if the toolchain links
+against a C library whose version is higher than what is present on
+the target. Continuing with the above default configuration, and just
+saying &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;ct-ng&lt;/span&gt; &lt;span class="pre"&gt;build&lt;/span&gt;&lt;/code&gt; will likely result in an error
+&lt;a class="footnote-reference brackets" href="#glibc-default-version" id="id1"&gt;3&lt;/a&gt;:&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;me@target $ &lt;/span&gt;./a.out
+&lt;span class="go"&gt;./a.out: /lib/arm-linux-gnueabihf/libc.so.6: version `GLIBC_2.34&amp;#39; not found (required by ./a.out)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Background is that &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;glibc&lt;/span&gt;&lt;/code&gt; employs &lt;a class="reference external" href="https://refspecs.linuxfoundation.org/LSB_3.0.0/LSB-PDA/LSB-PDA.junk/symversion.html"&gt;ELF symbol versioning&lt;/a&gt;
+a lot. Key point is that an executable which links against version,
+say, &lt;cite&gt;2.34&lt;/cite&gt; (which is the &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;ct-ng&lt;/span&gt;&lt;/code&gt; default), will require the symbol
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;GLIBC_2.34&lt;/span&gt;&lt;/code&gt; in the C library, and fail to load if the target
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;glibc&lt;/span&gt;&lt;/code&gt; version is, say, &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;2.28&lt;/span&gt;&lt;/code&gt; &lt;a class="footnote-reference brackets" href="#my-situation" id="id2"&gt;1&lt;/a&gt;. That version
+obviously cannot have &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;GLIBC_2.34&lt;/span&gt;&lt;/code&gt;, so the executable cannot load.&lt;/p&gt;
+&lt;p&gt;Find out location of &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;glibc&lt;/span&gt;&lt;/code&gt;,&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;me@target $ &lt;/span&gt;ldd /usr/bin/ls
+&lt;span class="go"&gt;        ...&lt;/span&gt;
+&lt;span class="go"&gt;        libc.so.6 =&amp;gt; /lib/arm-linux-gnueabihf/libc.so.6 (0xb6e06000)&lt;/span&gt;
+&lt;span class="go"&gt;        ...&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Simply &lt;em&gt;invoke&lt;/em&gt; (sic!) the library,&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;me@target $ &lt;/span&gt;/lib/arm-linux-gnueabihf/libc.so.6
+&lt;span class="go"&gt;GNU C Library (Debian GLIBC 2.28-10+rpt2+rpi1+deb10u1) stable release version 2.28.&lt;/span&gt;
+&lt;span class="go"&gt;...&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;So, it’s &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;2.28&lt;/span&gt;&lt;/code&gt;. Tune configuration,&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;me@host $ &lt;/span&gt;ct-ng menuconfig
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;In &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;C-library&lt;/span&gt; &lt;span class="pre"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="pre"&gt;Version&lt;/span&gt; &lt;span class="pre"&gt;of&lt;/span&gt; &lt;span class="pre"&gt;glibc&lt;/span&gt;&lt;/code&gt;, choose &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;2.28&lt;/span&gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;img alt="../../_images/glibc-version.png" src="../../_images/glibc-version.png" style="width: 477.0px; height: 255.5px;" /&gt;
+&lt;p&gt;Minor quirk: version &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;2.28&lt;/span&gt;&lt;/code&gt; does not build without warnings, so one
+has to disable &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;-Werror&lt;/span&gt;&lt;/code&gt; during its build,&lt;/p&gt;
+&lt;img alt="../../_images/werror.png" src="../../_images/werror.png" style="width: 477.0px; height: 255.5px;" /&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+&lt;section id="toolchain-build-install"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id16"&gt;Toolchain Build/Install&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;This is as simple as saying,&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;me@host $ &lt;/span&gt;ct-ng build
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;By default &lt;a class="footnote-reference brackets" href="#ct-prefix" id="id3"&gt;2&lt;/a&gt;, the toolchain is installed in
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;$HOME/x-tools/armv8-rpi4-linux-gnueabihf/&lt;/span&gt;&lt;/code&gt; (you may want to add
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;$HOME/x-tools/armv8-rpi4-linux-gnueabihf/bin/&lt;/span&gt;&lt;/code&gt; to &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;$PATH&lt;/span&gt;&lt;/code&gt;).&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id="test"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id17"&gt;Test&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;I tested the toolchain from a number of viewpoints that I describe
+below.&lt;/p&gt;
+&lt;section id="simplest-c-stdio-h"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id18"&gt;Simplest: C, &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Check for availability of &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;libc&lt;/span&gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;aside class="sidebar"&gt;
+&lt;p&gt;&lt;strong&gt;See also&lt;/strong&gt;&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="../../trainings/material/soup/linux/ssh/basics.html"&gt;&lt;span class="doc"&gt;SSH: Basics&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/aside&gt;
+&lt;div class="literal-block-wrapper docutils container" id="id6"&gt;
+&lt;div class="code-block-caption"&gt;&lt;span class="caption-text"&gt;&lt;a class="reference download internal" download="" href="../../_downloads/930da294b589e3c0ee18e29e9212dc93/c-stdio.c"&gt;&lt;code class="xref download docutils literal notranslate"&gt;&lt;span class="pre"&gt;c-stdio.c&lt;/span&gt;&lt;/code&gt;&lt;/a&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;div class="highlight-c notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cpf"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+
+&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Hello World&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;me@host $ &lt;/span&gt;~/x-tools/armv8-rpi4-linux-gnueabihf/bin/armv8-rpi4-linux-gnueabihf-gcc c-stdio.c
+&lt;span class="gp"&gt;me@host $ &lt;/span&gt;scp a.out &lt;span class="m"&gt;192&lt;/span&gt;.168.1.142:
+&lt;span class="gp"&gt;me@host $ &lt;/span&gt;ssh &lt;span class="m"&gt;192&lt;/span&gt;.168.1.142 ./a.out
+&lt;span class="go"&gt;Hello World&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/section&gt;
+&lt;section id="c-iostream"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id19"&gt;C++, &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Check for availability of &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;libstdc++&lt;/span&gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="literal-block-wrapper docutils container" id="id7"&gt;
+&lt;div class="code-block-caption"&gt;&lt;span class="caption-text"&gt;&lt;a class="reference download internal" download="" href="../../_downloads/1f44756998952fcb268db788f7cf730b/c%2B%2B-iostream.cpp"&gt;&lt;code class="xref download docutils literal notranslate"&gt;&lt;span class="pre"&gt;c++-iostream.cpp&lt;/span&gt;&lt;/code&gt;&lt;/a&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;div class="highlight-c++ notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cpf"&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+
+&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Hello World&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;me@host $ &lt;/span&gt;~/x-tools/armv8-rpi4-linux-gnueabihf/bin/armv8-rpi4-linux-gnueabihf-g++ c++-iostream.cpp
+&lt;span class="gp"&gt;me@host $ &lt;/span&gt;scp a.out &lt;span class="m"&gt;192&lt;/span&gt;.168.1.142:
+&lt;span class="gp"&gt;me@host $ &lt;/span&gt;ssh &lt;span class="m"&gt;192&lt;/span&gt;.168.1.142 ./a.out
+&lt;span class="go"&gt;Hello World&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/section&gt;
+&lt;section id="c-thread"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id20"&gt;C++, &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;&amp;lt;thread&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Check for availability of &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;libpthread&lt;/span&gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="literal-block-wrapper docutils container" id="id8"&gt;
+&lt;div class="code-block-caption"&gt;&lt;span class="caption-text"&gt;&lt;a class="reference download internal" download="" href="../../_downloads/59cbba0b5d6de2183a7a48be92ed635e/c%2B%2B-thread.cpp"&gt;&lt;code class="xref download docutils literal notranslate"&gt;&lt;span class="pre"&gt;c++-thread.cpp&lt;/span&gt;&lt;/code&gt;&lt;/a&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;div class="highlight-c++ notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cpf"&gt;&amp;lt;thread&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cpf"&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+
+&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="kr"&gt;thread&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="p"&gt;([](){&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Hello Thread&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;});&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Bye&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;me@host $ &lt;/span&gt;~/x-tools/armv8-rpi4-linux-gnueabihf/bin/armv8-rpi4-linux-gnueabihf-g++ -pthread c++-thread.cpp
+&lt;span class="gp"&gt;me@host $ &lt;/span&gt;scp a.out &lt;span class="m"&gt;192&lt;/span&gt;.168.1.142:
+&lt;span class="gp"&gt;me@host $ &lt;/span&gt;ssh &lt;span class="m"&gt;192&lt;/span&gt;.168.1.142 ./a.out
+&lt;span class="go"&gt;Hello Thread&lt;/span&gt;
+&lt;span class="go"&gt;Bye&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+&lt;section id="packaging-distributing-the-toolchain"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id21"&gt;Packaging/Distributing The Toolchain&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;The toolchain is fully relocatable. Although
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;$HOME/x-tools/armv8-rpi4-linux-gnueabihf/&lt;/span&gt;&lt;/code&gt; contains the cross
+toolchain &lt;em&gt;together&lt;/em&gt; with the &lt;a class="reference internal" href="../../trainings/material/soup/linux/toolchain/cross/basics.html"&gt;&lt;span class="doc"&gt;sysroot&lt;/span&gt;&lt;/a&gt;, even if you
+move it around it will remain self-contained.&lt;/p&gt;
+&lt;p&gt;Pack it into an archive,&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;tar -C ~/x-tools -J -c -f raspberry-pi-toolchain.tar.xz armv8-rpi4-linux-gnueabihf/
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;And share it with your colleagues.&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id="afterword"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id22"&gt;Afterword&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;I hope I could help you with this article. Share it if I could, or, if
+I couldn’t, feel free to send me an &lt;a class="reference internal" href="../../about/myself/contact.html"&gt;&lt;span class="doc"&gt;email&lt;/span&gt;&lt;/a&gt; explaining why.&lt;/p&gt;
+&lt;p&gt;Either way: cross development is not easy, given the huge number of
+dependencies between target libraries. This is a rather complex and
+fragile thing, and there are sure better ways to do cross
+development. Ideally, a target vendor (in our case, the guys who
+create &lt;a class="reference external" href="https://www.raspberrypi.com/software/"&gt;Raspberry Pi OS&lt;/a&gt;)
+would release an SDK that developers could install, and that contained
+&lt;em&gt;all&lt;/em&gt; that is necessary to do cross development. This would be the
+toolchain and associated basic runtime libraries (described here), and
+the entire &lt;em&gt;sysroot&lt;/em&gt; of the target.&lt;/p&gt;
+&lt;p&gt;Creating such an SDK is the job of higher level tools like &lt;a class="reference external" href="https://www.yoctoproject.org/"&gt;Yocto&lt;/a&gt; or &lt;a class="reference external" href="https://buildroot.org/"&gt;Buildroot&lt;/a&gt; - but this is another story.&lt;/p&gt;
+&lt;p class="rubric"&gt;Footnotes&lt;/p&gt;
+&lt;dl class="footnote brackets"&gt;
+&lt;dt class="label" id="my-situation"&gt;&lt;span class="brackets"&gt;&lt;a class="fn-backref" href="#id2"&gt;1&lt;/a&gt;&lt;/span&gt;&lt;/dt&gt;
+&lt;dd&gt;&lt;p&gt;That describes the situation that I encountered;
+yours might be a little different.&lt;/p&gt;
+&lt;/dd&gt;
+&lt;dt class="label" id="ct-prefix"&gt;&lt;span class="brackets"&gt;&lt;a class="fn-backref" href="#id3"&gt;2&lt;/a&gt;&lt;/span&gt;&lt;/dt&gt;
+&lt;dd&gt;&lt;p&gt;You change the installation prefix by setting the
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;CT_PREFIX&lt;/span&gt;&lt;/code&gt; environment variable prior to building,&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;&lt;span class="nv"&gt;CT_PREFIX&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/some/other/location ct-ng build
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/dd&gt;
+&lt;dt class="label" id="glibc-default-version"&gt;&lt;span class="brackets"&gt;&lt;a class="fn-backref" href="#id1"&gt;3&lt;/a&gt;&lt;/span&gt;&lt;/dt&gt;
+&lt;dd&gt;&lt;p&gt;As of this writing, &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;ct-ng&lt;/span&gt;&lt;/code&gt; chooses the
+GNU C Library version &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;2.34&lt;/span&gt;&lt;/code&gt;. Your
+situation might be different, the
+principle remains the same.&lt;/p&gt;
+&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://www.faschingbauer.me/blog/2022/09/cross-raspi.html" rel="alternate"/>
+    <summary>Why This Article? Why Not Use A Prebuilt Toolchain?</summary>
+    <published>2022-09-23T00:00:00+02:00</published>
+  </entry>
+</feed>
