@@ -7,7 +7,7 @@ class ThermometerRandom
 {
 public:
     ThermometerRandom(double lo_range, double hi_range);
-    double get_temperature();
+    virtual double get_temperature();
 
 private:
     std::uniform_real_distribution<double> _distribution;

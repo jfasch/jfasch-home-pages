@@ -5,7 +5,7 @@ class ThermometerConst
 {
 public:
     ThermometerConst(double temperature);
-    double get_temperature();
+    virtual double get_temperature();
 
 private:
     double _temperature;
