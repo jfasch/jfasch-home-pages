@@ -1,0 +1,304 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Using Move Semantics In Own Code &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx11/020-new-language-features/060-move/livehack-using-string-move.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="Afterword, Further Reading" href="afterword.html" />
+    <link rel="prev" title="Implementing Move Semantics (class String, Live Hacked)" href="livehack-string-move.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">C++ 11</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../010-introduction/group.html">Introduction</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../group.html">New Language Features</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../050-delegating-ctor/topic.html">Delegating Constructor</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../055-constexpr/topic.html"><code class="docutils literal notranslate"><span class="pre">constexpr</span></code></a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="group.html">Move Semantics, Rvalue References</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">Overview (Lvalues, Rvalues, And Such)</a></li>
+<li class="toctree-l6"><a class="reference internal" href="livehack-string-move.html">Implementing Move Semantics (<code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">String</span></code>, Live Hacked)</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">Using Move Semantics In Own Code</a></li>
+<li class="toctree-l6"><a class="reference internal" href="afterword.html">Afterword, Further Reading</a></li>
+<li class="toctree-l6"><a class="reference internal" href="livehack-smartptr-move.html"><code class="docutils literal notranslate"><span class="pre">SmartPtr</span></code> With Move Semantics</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../range-based-for.html">Range Based <code class="docutils literal notranslate"><span class="pre">for</span></code> Loops: Introduction</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../range-based-for-map.html">Case Study: Range Based <code class="docutils literal notranslate"><span class="pre">for</span></code> On <code class="docutils literal notranslate"><span class="pre">std::map</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../070-miscellaneous/topic.html">Miscellaneous</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../010-strongly-typed-enums/topic.html">Strongly Typed <code class="docutils literal notranslate"><span class="pre">enum</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../030-brace-initialization/group.html">Brace Initialization (Uniform Initialization)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../structured-binding.html">Structured Binding</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../auto.html"><code class="docutils literal notranslate"><span class="pre">auto</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../lambda/group.html">Lambda</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../override.html"><code class="docutils literal notranslate"><span class="pre">override</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../final.html"><code class="docutils literal notranslate"><span class="pre">final</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../delete.html"><code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">delete</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../default.html"><code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">default</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../030-smart-pointers/group.html">Smart Pointers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../035-perfect-forwarding/topic.html">Perfect Forwarding</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../040-bind-function/group.html">Functions, Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../050-multithreading/group.html">Multithreading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../100-miscellaneous/group.html">Miscellaneous</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../exercises/group.html">Introduction</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="using-move-semantics-in-own-code">
+<h1>Using Move Semantics In Own Code<a class="headerlink" href="#using-move-semantics-in-own-code" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#using-string-class-person" id="id4">Using <code class="docutils literal notranslate"><span class="pre">String</span></code>: <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Person</span></code></a></p></li>
+<li><p><a class="reference internal" href="#what" id="id5">What?</a></p></li>
+<li><p><a class="reference internal" href="#using-rvalue-references-inside-function-std-move" id="id6">Using Rvalue References Inside Function: <code class="docutils literal notranslate"><span class="pre">std::move</span></code></a></p></li>
+</ul>
+</div>
+<section id="using-string-class-person">
+<h2><a class="toc-backref" href="#id4">Using <code class="docutils literal notranslate"><span class="pre">String</span></code>: <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Person</span></code></a><a class="headerlink" href="#using-string-class-person" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Idea: constructor taking person’s <code class="docutils literal notranslate"><span class="pre">firstname</span></code> and <code class="docutils literal notranslate"><span class="pre">lastname</span></code></p></li>
+<li><p>Passing temporaries right into members ⟶ implement
+move constructor</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/8f772ceb807f2fd7a68760f2bed97e96/person-10.h"><code class="xref download docutils literal notranslate"><span class="pre">code/person-10.h</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifndef PERSON_H</span>
+<span class="cp">#define PERSON_H</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;string-30.h&quot;</span><span class="cp"></span>
+
+<span class="k">struct</span> <span class="nc">Person</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">Person</span><span class="p">(</span><span class="n">String</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">firstname</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">lastname</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">firstname</span><span class="p">(</span><span class="n">firstname</span><span class="p">),</span><span class="w"> </span>
+<span class="w">      </span><span class="n">lastname</span><span class="p">(</span><span class="n">lastname</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">firstname</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">lastname</span><span class="p">;</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/1671aab82b599c752396932737b9e1e5/person-suite-bogus.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/person-suite-bogus.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstring&gt;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;person-10.h&quot;</span><span class="cp"></span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">person_suite</span><span class="p">,</span><span class="w"> </span><span class="n">bogus</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">Person</span><span class="w"> </span><span class="nf">p</span><span class="p">(</span><span class="s">&quot;Joerg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Faschingbauer&quot;</span><span class="p">);</span><span class="w">  </span><span class="c1">// &lt;--- temporary String object -&gt; move ctor</span>
+
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">strcmp</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">firstname</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span><span class="w"> </span><span class="s">&quot;Joerg&quot;</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">strcmp</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">lastname</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span><span class="w"> </span><span class="s">&quot;Faschingbauer&quot;</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">code/person-10.h:9:7: error: use of deleted function ‘String::String(const String&amp;)’</span>
+<span class="go">    9 |     : firstname(firstname), lastname(lastname) {}</span>
+<span class="go">      |       ^~~~~~~~~~~~~~~~~~~~</span>
+</pre></div>
+</div>
+</section>
+<section id="what">
+<h2><a class="toc-backref" href="#id5">What?</a><a class="headerlink" href="#what" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p><strong>See also</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="overview.html#lvalue-definition"><span class="std std-ref">Lvalue definition</span></a></p></li>
+<li><p><a class="reference internal" href="overview.html#use-of-rvalue-inside-function"><span class="std std-ref">Rvalue reference parameters are lvalues</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Remember: inside a function, <a class="reference internal" href="overview.html#use-of-rvalue-inside-function"><span class="std std-ref">rvalue reference parameters are
+lvalues</span></a></p></li>
+<li><p>They have names</p>
+<ul>
+<li><p>⟶ can determine its address</p></li>
+<li><p>… which is the <a class="reference internal" href="overview.html#lvalue-definition"><span class="std std-ref">definition of an lvalue</span></a></p></li>
+</ul>
+</li>
+<li><p>Solution: convert into rvalue reference</p></li>
+<li><p>⟶ <code class="docutils literal notranslate"><span class="pre">std::move</span></code></p></li>
+</ul>
+</section>
+<section id="using-rvalue-references-inside-function-std-move">
+<h2><a class="toc-backref" href="#id6">Using Rvalue References Inside Function: <code class="docutils literal notranslate"><span class="pre">std::move</span></code></a><a class="headerlink" href="#using-rvalue-references-inside-function-std-move" title="Permalink to this headline">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/63351153ddc5ad4e12d0e765c9692aeb/person-20.h"><code class="xref download docutils literal notranslate"><span class="pre">code/person-20.h</span></code></a></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifndef PERSON_H</span>
+<span class="cp">#define PERSON_H</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;string-30.h&quot;</span><span class="cp"></span>
+
+<span class="k">struct</span> <span class="nc">Person</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">Person</span><span class="p">(</span><span class="n">String</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">firstname</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">lastname</span><span class="p">)</span><span class="w">   </span><span class="c1">// &lt;--- parameters have names -&gt; lvalues</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">firstname</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="w"> </span><span class="cm">/*!!*/</span><span class="w"> </span><span class="p">(</span><span class="n">firstname</span><span class="p">)),</span><span class="w">      </span><span class="c1">// &lt;--- request String&#39;s move contructor</span>
+<span class="w">      </span><span class="n">lastname</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="w"> </span><span class="cm">/*!!*/</span><span class="w"> </span><span class="p">(</span><span class="n">lastname</span><span class="p">))</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">firstname</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">lastname</span><span class="p">;</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2022 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/cxx11/020-new-language-features/060-move/livehack-using-string-move.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
