@@ -226,7 +226,7 @@
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::shared_ptr(std::shared_ptr&amp;&amp;</span> <span class="pre">from)</span></code></p></td>
 <td><p>Move constructor; <code class="docutils literal notranslate"><span class="pre">from</span></code> is empty afterwards (see
-<a class="reference internal" href="../020-new-language-features/060-move-pf/group.html"><span class="doc">Move Semantics, Rvalue References, Perfect Forwarding</span></a>)</p></td>
+<a class="reference internal" href="../020-new-language-features/060-move-pf/group.html"><span class="doc">Move Semantics, Rvalue References</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">reset(T*</span> <span class="pre">pointer)</span></code></p></td>
 <td><p>Replaces the managed object if any, possibly deleting it if
@@ -274,7 +274,8 @@ refcount reaches zero. <code class="docutils literal notranslate"><span class="p
 <li><p><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code></p>
 <ul class="simple">
 <li><p>Size of two pointers</p></li>
-<li><p>Copying manipulates the resource count</p></li>
+<li><p>Copying manipulates the resource count. <em>Expensive: atomic
+instructions - memory barriers</em></p></li>
 <li><p>Copying manipulates non-adjacent memory locations</p></li>
 <li><p>Usage is very easy (no <code class="docutils literal notranslate"><span class="pre">std::move</span></code> and such)</p></li>
 </ul>
@@ -294,7 +295,7 @@ refcount reaches zero. <code class="docutils literal notranslate"><span class="p
 <h2><a class="toc-backref" href="#id8"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>: Object Lifetime</a><a class="headerlink" href="#std-shared-ptr-object-lifetime" title="Permalink to this headline">¶</a></h2>
 <p><strong>How long does the pointed-to object live?</strong></p>
 <ul class="simple">
-<li><p>Reference count is used to track share ownership</p></li>
+<li><p>Reference count is used to track shared ownership</p></li>
 <li><p>When reference count drops to zero, the object is <em>not referenced anymore</em></p></li>
 <li><p>⟶ deleted</p></li>
 </ul>
@@ -406,7 +407,7 @@ pointer is shared among multiple threads!</p>
 <span class="w">    </span><span class="n">sensors</span><span class="p">[</span><span class="s">&quot;rand2&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rs2</span><span class="p">;</span><span class="w"></span>
 <span class="w">    </span><span class="n">sensors</span><span class="p">[</span><span class="s">&quot;const&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cs</span><span class="p">;</span><span class="w"></span>
 
-<span class="w">    </span><span class="c1">// shared ownership: cann access sensors from map *and* from</span>
+<span class="w">    </span><span class="c1">// shared ownership: can access sensors from map *and* from</span>
 <span class="w">    </span><span class="c1">// outside references</span>
 <span class="w">    </span><span class="n">ASSERT_DOUBLE_EQ</span><span class="p">(</span><span class="n">cs</span><span class="o">-&gt;</span><span class="n">get_temperature</span><span class="p">(),</span><span class="w"> </span><span class="mf">36.5</span><span class="p">);</span><span class="w"></span>
 <span class="w">    </span><span class="n">ASSERT_DOUBLE_EQ</span><span class="p">(</span><span class="n">sensors</span><span class="p">[</span><span class="s">&quot;const&quot;</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">get_temperature</span><span class="p">(),</span><span class="w"> </span><span class="mf">36.5</span><span class="p">);</span><span class="w"></span>
