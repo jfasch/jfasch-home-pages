@@ -1,0 +1,942 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Design Patterns With C++ &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx-design-patterns/group.html" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="UML Short Introduction" href="uml.html" />
+    <link rel="prev" title="Exercise: Bag Of Items, By Shared Reference" href="../cxx11/exercises/bag-shared.html" /> 
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../index.html">
+    <img class="logo" src="../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Design Patterns With C++</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="uml.html">UML Short Introduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="singleton.html">Singleton</a></li>
+<li class="toctree-l4"><a class="reference internal" href="adapter.html">Adapter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="proxy.html">Proxy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="composite.html">Composite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="decorator.html">Decorator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="command.html">Command</a></li>
+<li class="toctree-l4"><a class="reference internal" href="abstract-factory.html">Abstract Factory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="exercises/group.html">Exercises: Design Patterns</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="design-patterns-with-c">
+<h1>Design Patterns With C++<a class="headerlink" href="#design-patterns-with-c" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#topics" id="id1">Topics</a></p></li>
+<li><p><a class="reference internal" href="#to-be-done" id="id2">To Be Done</a></p></li>
+<li><p><a class="reference internal" href="#exercises" id="id3">Exercises</a></p></li>
+<li><p><a class="reference internal" href="#dependencies" id="id4">Dependencies</a></p></li>
+</ul>
+</div>
+<section id="topics">
+<h2><a class="toc-backref" href="#id1">Topics</a><a class="headerlink" href="#topics" title="Permalink to this headline">¶</a></h2>
+<p>Introduction: <a class="reference internal" href="../cxx03/100-inheritance-oo-design/group.html"><span class="doc">C++ Interfaces</span></a></p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="uml.html">UML Short Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="singleton.html">Singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapter.html">Adapter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxy.html">Proxy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="composite.html">Composite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decorator.html">Decorator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command.html">Command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="abstract-factory.html">Abstract Factory</a></li>
+</ul>
+</div>
+</section>
+<section id="to-be-done">
+<h2><a class="toc-backref" href="#id2">To Be Done</a><a class="headerlink" href="#to-be-done" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Command with MTQueue</p></li>
+<li><p>Solution page(s) maybe?</p></li>
+</ul>
+</section>
+<section id="exercises">
+<h2><a class="toc-backref" href="#id3">Exercises</a><a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="exercises/group.html">Exercises: Design Patterns</a></li>
+</ul>
+</div>
+</section>
+<section id="dependencies">
+<h2><a class="toc-backref" href="#id4">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<svg 
+ viewBox="0.00 0.00 2722.00 1305.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1301)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-1301 2718,-1301 2718,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_cxx_design_patterns</title>
+<path fill="none" stroke="black" d="M20,-895C20,-895 2122,-895 2122,-895 2128,-895 2134,-901 2134,-907 2134,-907 2134,-1277 2134,-1277 2134,-1283 2128,-1289 2122,-1289 2122,-1289 20,-1289 20,-1289 14,-1289 8,-1283 8,-1277 8,-1277 8,-907 8,-907 8,-901 14,-895 20,-895"/>
+<text text-anchor="middle" x="1071" y="-1273.8" font-family="Times,serif" font-size="14.00">Design Patterns With C++</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_cxx_design_patterns_exercises</title>
+<path fill="none" stroke="black" d="M28,-1039C28,-1039 1558,-1039 1558,-1039 1564,-1039 1570,-1045 1570,-1051 1570,-1051 1570,-1246 1570,-1246 1570,-1252 1564,-1258 1558,-1258 1558,-1258 28,-1258 28,-1258 22,-1258 16,-1252 16,-1246 16,-1246 16,-1051 16,-1051 16,-1045 22,-1039 28,-1039"/>
+<text text-anchor="middle" x="793" y="-1242.8" font-family="Times,serif" font-size="14.00">Exercises: Design Patterns</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_cxx03</title>
+<path fill="none" stroke="black" d="M1742,-130C1742,-130 2694,-130 2694,-130 2700,-130 2706,-136 2706,-142 2706,-142 2706,-875 2706,-875 2706,-881 2700,-887 2694,-887 2694,-887 1742,-887 1742,-887 1736,-887 1730,-881 1730,-875 1730,-875 1730,-142 1730,-142 1730,-136 1736,-130 1742,-130"/>
+<text text-anchor="middle" x="2218" y="-871.8" font-family="Times,serif" font-size="14.00">C++ 03</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_cxx03_inheritance_oo</title>
+<path fill="none" stroke="black" d="M1750,-490C1750,-490 2218,-490 2218,-490 2224,-490 2230,-496 2230,-502 2230,-502 2230,-844 2230,-844 2230,-850 2224,-856 2218,-856 2218,-856 1750,-856 1750,-856 1744,-856 1738,-850 1738,-844 1738,-844 1738,-502 1738,-502 1738,-496 1744,-490 1750,-490"/>
+<text text-anchor="middle" x="1984" y="-840.8" font-family="Times,serif" font-size="14.00">Inheritance And Object Oriented Design</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_cxx03_data_encapsulation</title>
+<path fill="none" stroke="black" d="M2250,-202C2250,-202 2674,-202 2674,-202 2680,-202 2686,-208 2686,-214 2686,-214 2686,-553 2686,-553 2686,-559 2680,-565 2674,-565 2674,-565 2250,-565 2250,-565 2244,-565 2238,-559 2238,-553 2238,-553 2238,-214 2238,-214 2238,-208 2244,-202 2250,-202"/>
+<text text-anchor="middle" x="2462" y="-549.8" font-family="Times,serif" font-size="14.00">Data Encapsulation</text>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_c</title>
+<path fill="none" stroke="black" d="M2420,-8C2420,-8 2631,-8 2631,-8 2637,-8 2643,-14 2643,-20 2643,-20 2643,-110 2643,-110 2643,-116 2637,-122 2631,-122 2631,-122 2420,-122 2420,-122 2414,-122 2408,-116 2408,-110 2408,-110 2408,-20 2408,-20 2408,-14 2414,-8 2420,-8"/>
+<text text-anchor="middle" x="2525.5" y="-106.8" font-family="Times,serif" font-size="14.00">The C Programming Language</text>
+</g>
+<g id="clust7" class="cluster">
+<title>cluster_c_introduction</title>
+<path fill="none" stroke="black" d="M2465,-16C2465,-16 2585,-16 2585,-16 2591,-16 2597,-22 2597,-28 2597,-28 2597,-79 2597,-79 2597,-85 2591,-91 2585,-91 2585,-91 2465,-91 2465,-91 2459,-91 2453,-85 2453,-79 2453,-79 2453,-28 2453,-28 2453,-22 2459,-16 2465,-16"/>
+<text text-anchor="middle" x="2525" y="-75.8" font-family="Times,serif" font-size="14.00">Introduction</text>
+</g>
+<!-- cxx_design_patterns_proxy -->
+<g id="node1" class="node">
+<title>cxx_design_patterns_proxy</title>
+<g id="a_node1"><a xlink:href="proxy.html" xlink:title="Proxy">
+<ellipse fill="#dcdcdc" stroke="black" cx="1770" cy="-993" rx="37.89" ry="18"/>
+<text text-anchor="middle" x="1770" y="-989.3" font-family="Times,serif" font-size="14.00">Proxy</text>
+</a>
+</g>
+</g>
+<!-- cxx_design_patterns_uml -->
+<g id="node3" class="node">
+<title>cxx_design_patterns_uml</title>
+<g id="a_node3"><a xlink:href="uml.html" xlink:title="UML Short Introduction">
+<ellipse fill="#dcdcdc" stroke="black" cx="1426" cy="-921" rx="122.68" ry="18"/>
+<text text-anchor="middle" x="1426" y="-917.3" font-family="Times,serif" font-size="14.00">UML Short Introduction</text>
+</a>
+</g>
+</g>
+<!-- cxx_design_patterns_proxy&#45;&gt;cxx_design_patterns_uml -->
+<g id="edge9" class="edge">
+<title>cxx_design_patterns_proxy&#45;&gt;cxx_design_patterns_uml</title>
+<path fill="none" stroke="black" d="M1740.51,-981.59C1733.21,-979.22 1725.37,-976.86 1718,-975 1652.62,-958.46 1577.76,-944.98 1520.21,-935.75"/>
+<polygon fill="black" stroke="black" points="1520.46,-932.25 1510.04,-934.14 1519.36,-939.16 1520.46,-932.25"/>
+</g>
+<!-- cxx03_inheritance_oo_interface -->
+<g id="node25" class="node">
+<title>cxx03_inheritance_oo_interface</title>
+<g id="a_node25"><a xlink:href="../cxx03/100-inheritance-oo-design/interface.html" xlink:title="Interfaces">
+<ellipse fill="#dcdcdc" stroke="black" cx="2018" cy="-807" rx="57.69" ry="18"/>
+<text text-anchor="middle" x="2018" y="-803.3" font-family="Times,serif" font-size="14.00">Interfaces</text>
+</a>
+</g>
+</g>
+<!-- cxx_design_patterns_proxy&#45;&gt;cxx03_inheritance_oo_interface -->
+<g id="edge8" class="edge">
+<title>cxx_design_patterns_proxy&#45;&gt;cxx03_inheritance_oo_interface</title>
+<path fill="none" stroke="black" d="M1789.46,-977.56C1832.73,-945.46 1937.12,-868.01 1988.47,-829.91"/>
+<polygon fill="black" stroke="black" points="1990.59,-832.7 1996.53,-823.93 1986.42,-827.07 1990.59,-832.7"/>
+</g>
+<!-- cxx_design_patterns_composite -->
+<g id="node2" class="node">
+<title>cxx_design_patterns_composite</title>
+<g id="a_node2"><a xlink:href="composite.html" xlink:title="Composite">
+<ellipse fill="#dcdcdc" stroke="black" cx="1812" cy="-1065" rx="59.59" ry="18"/>
+<text text-anchor="middle" x="1812" y="-1061.3" font-family="Times,serif" font-size="14.00">Composite</text>
+</a>
+</g>
+</g>
+<!-- cxx_design_patterns_composite&#45;&gt;cxx_design_patterns_proxy -->
+<g id="edge26" class="edge">
+<title>cxx_design_patterns_composite&#45;&gt;cxx_design_patterns_proxy</title>
+<path fill="none" stroke="black" d="M1801.83,-1047.05C1796.88,-1038.8 1790.82,-1028.7 1785.32,-1019.54"/>
+<polygon fill="black" stroke="black" points="1788.22,-1017.56 1780.07,-1010.79 1782.22,-1021.16 1788.22,-1017.56"/>
+</g>
+<!-- cxx_design_patterns_composite&#45;&gt;cxx_design_patterns_uml -->
+<g id="edge28" class="edge">
+<title>cxx_design_patterns_composite&#45;&gt;cxx_design_patterns_uml</title>
+<path fill="none" stroke="black" d="M1819.3,-1046.97C1826.52,-1027.17 1834.21,-994.7 1817,-975 1799.11,-954.52 1652.97,-939.05 1544.58,-930.26"/>
+<polygon fill="black" stroke="black" points="1544.79,-926.77 1534.54,-929.46 1544.23,-933.75 1544.79,-926.77"/>
+</g>
+<!-- cxx_design_patterns_composite&#45;&gt;cxx03_inheritance_oo_interface -->
+<g id="edge27" class="edge">
+<title>cxx_design_patterns_composite&#45;&gt;cxx03_inheritance_oo_interface</title>
+<path fill="none" stroke="black" d="M1869.21,-1059.62C1904.6,-1053.87 1948.23,-1040.76 1975,-1011 2019.33,-961.72 2022.15,-878.42 2020.23,-835.46"/>
+<polygon fill="black" stroke="black" points="2023.71,-834.99 2019.64,-825.2 2016.72,-835.39 2023.71,-834.99"/>
+</g>
+<!-- cxx_design_patterns_uml&#45;&gt;cxx03_inheritance_oo_interface -->
+<g id="edge37" class="edge">
+<title>cxx_design_patterns_uml&#45;&gt;cxx03_inheritance_oo_interface</title>
+<path fill="none" stroke="black" d="M1498,-906.38C1616.66,-883.93 1850.97,-839.6 1959.85,-819"/>
+<polygon fill="black" stroke="black" points="1960.82,-822.38 1969.99,-817.08 1959.51,-815.5 1960.82,-822.38"/>
+</g>
+<!-- cxx_design_patterns_adapter -->
+<g id="node4" class="node">
+<title>cxx_design_patterns_adapter</title>
+<g id="a_node4"><a xlink:href="adapter.html" xlink:title="Adapter">
+<ellipse fill="#dcdcdc" stroke="black" cx="1626" cy="-1065" rx="48.19" ry="18"/>
+<text text-anchor="middle" x="1626" y="-1061.3" font-family="Times,serif" font-size="14.00">Adapter</text>
+</a>
+</g>
+</g>
+<!-- cxx_design_patterns_adapter&#45;&gt;cxx_design_patterns_uml -->
+<g id="edge39" class="edge">
+<title>cxx_design_patterns_adapter&#45;&gt;cxx_design_patterns_uml</title>
+<path fill="none" stroke="black" d="M1604.6,-1048.8C1569.41,-1023.82 1499.16,-973.94 1458.03,-944.74"/>
+<polygon fill="black" stroke="black" points="1459.9,-941.77 1449.72,-938.84 1455.84,-947.48 1459.9,-941.77"/>
+</g>
+<!-- cxx_design_patterns_adapter&#45;&gt;cxx03_inheritance_oo_interface -->
+<g id="edge38" class="edge">
+<title>cxx_design_patterns_adapter&#45;&gt;cxx03_inheritance_oo_interface</title>
+<path fill="none" stroke="black" d="M1666.79,-1055.27C1714.93,-1044.53 1791.62,-1025.89 1817,-1011 1897.64,-963.69 1968.51,-875.98 2000.27,-833.02"/>
+<polygon fill="black" stroke="black" points="2003.2,-834.95 2006.27,-824.81 1997.55,-830.82 2003.2,-834.95"/>
+</g>
+<!-- cxx_design_patterns_decorator -->
+<g id="node5" class="node">
+<title>cxx_design_patterns_decorator</title>
+<g id="a_node5"><a xlink:href="decorator.html" xlink:title="Decorator">
+<ellipse fill="#dcdcdc" stroke="black" cx="1657" cy="-1137" rx="57.39" ry="18"/>
+<text text-anchor="middle" x="1657" y="-1133.3" font-family="Times,serif" font-size="14.00">Decorator</text>
+</a>
+</g>
+</g>
+<!-- cxx_design_patterns_decorator&#45;&gt;cxx_design_patterns_uml -->
+<g id="edge48" class="edge">
+<title>cxx_design_patterns_decorator&#45;&gt;cxx_design_patterns_uml</title>
+<path fill="none" stroke="black" d="M1673.94,-1119.48C1682.77,-1109.75 1692.78,-1096.7 1698,-1083 1715.1,-1038.09 1733.62,-1012.03 1703,-975 1682.71,-950.46 1611.53,-937.17 1546.41,-930.04"/>
+<polygon fill="black" stroke="black" points="1546.75,-926.56 1536.43,-928.99 1546.01,-933.52 1546.75,-926.56"/>
+</g>
+<!-- cxx_design_patterns_decorator&#45;&gt;cxx_design_patterns_adapter -->
+<g id="edge46" class="edge">
+<title>cxx_design_patterns_decorator&#45;&gt;cxx_design_patterns_adapter</title>
+<path fill="none" stroke="black" d="M1649.5,-1119.05C1645.92,-1110.97 1641.55,-1101.12 1637.56,-1092.11"/>
+<polygon fill="black" stroke="black" points="1640.68,-1090.52 1633.44,-1082.79 1634.28,-1093.35 1640.68,-1090.52"/>
+</g>
+<!-- cxx_design_patterns_decorator&#45;&gt;cxx03_inheritance_oo_interface -->
+<g id="edge47" class="edge">
+<title>cxx_design_patterns_decorator&#45;&gt;cxx03_inheritance_oo_interface</title>
+<path fill="none" stroke="black" d="M1704.73,-1127.06C1720.96,-1124.21 1739.23,-1121.23 1756,-1119 1797.93,-1113.42 2106.54,-1114.29 2135,-1083 2204.54,-1006.54 2095.01,-882.56 2042.99,-831.31"/>
+<polygon fill="black" stroke="black" points="2045.37,-828.75 2035.76,-824.29 2040.5,-833.77 2045.37,-828.75"/>
+</g>
+<!-- cxx_design_patterns_command -->
+<g id="node6" class="node">
+<title>cxx_design_patterns_command</title>
+<g id="a_node6"><a xlink:href="command.html" xlink:title="Command">
+<ellipse fill="#dcdcdc" stroke="black" cx="1823" cy="-1137" rx="57.69" ry="18"/>
+<text text-anchor="middle" x="1823" y="-1133.3" font-family="Times,serif" font-size="14.00">Command</text>
+</a>
+</g>
+</g>
+<!-- cxx_design_patterns_command&#45;&gt;cxx_design_patterns_composite -->
+<g id="edge50" class="edge">
+<title>cxx_design_patterns_command&#45;&gt;cxx_design_patterns_composite</title>
+<path fill="none" stroke="black" d="M1820.28,-1118.7C1819.07,-1110.98 1817.61,-1101.71 1816.26,-1093.11"/>
+<polygon fill="black" stroke="black" points="1819.7,-1092.44 1814.69,-1083.1 1812.78,-1093.53 1819.7,-1092.44"/>
+</g>
+<!-- cxx_design_patterns_command&#45;&gt;cxx_design_patterns_uml -->
+<g id="edge51" class="edge">
+<title>cxx_design_patterns_command&#45;&gt;cxx_design_patterns_uml</title>
+<path fill="none" stroke="black" d="M1847.92,-1120.6C1860.36,-1111.4 1874.18,-1098.48 1881,-1083 1902.65,-1033.89 1874.08,-1000.76 1827,-975 1780.54,-949.58 1649.64,-935.72 1549.92,-928.62"/>
+<polygon fill="black" stroke="black" points="1549.98,-925.11 1539.76,-927.91 1549.5,-932.09 1549.98,-925.11"/>
+</g>
+<!-- cxx_design_patterns_command&#45;&gt;cxx03_inheritance_oo_interface -->
+<g id="edge49" class="edge">
+<title>cxx_design_patterns_command&#45;&gt;cxx03_inheritance_oo_interface</title>
+<path fill="none" stroke="black" d="M1880.9,-1135.82C1969.35,-1134.18 2131.69,-1125.31 2168,-1083 2222.41,-1019.59 2209.71,-967.4 2168,-895 2146.99,-858.52 2104.17,-835.93 2069.64,-822.95"/>
+<polygon fill="black" stroke="black" points="2070.74,-819.62 2060.14,-819.53 2068.37,-826.21 2070.74,-819.62"/>
+</g>
+<!-- cxx_design_patterns_singleton -->
+<g id="node7" class="node">
+<title>cxx_design_patterns_singleton</title>
+<g id="a_node7"><a xlink:href="singleton.html" xlink:title="Singleton">
+<ellipse fill="#dcdcdc" stroke="black" cx="1639" cy="-993" rx="55.49" ry="18"/>
+<text text-anchor="middle" x="1639" y="-989.3" font-family="Times,serif" font-size="14.00">Singleton</text>
+</a>
+</g>
+</g>
+<!-- cxx_design_patterns_singleton&#45;&gt;cxx_design_patterns_uml -->
+<g id="edge53" class="edge">
+<title>cxx_design_patterns_singleton&#45;&gt;cxx_design_patterns_uml</title>
+<path fill="none" stroke="black" d="M1601.41,-979.65C1568.74,-968.91 1520.91,-953.19 1483.44,-940.88"/>
+<polygon fill="black" stroke="black" points="1484.26,-937.46 1473.66,-937.66 1482.07,-944.11 1484.26,-937.46"/>
+</g>
+<!-- cxx_design_patterns_singleton&#45;&gt;cxx03_inheritance_oo_interface -->
+<g id="edge52" class="edge">
+<title>cxx_design_patterns_singleton&#45;&gt;cxx03_inheritance_oo_interface</title>
+<path fill="none" stroke="black" d="M1668.42,-977.71C1736.06,-944.88 1902.61,-864.02 1978.8,-827.03"/>
+<polygon fill="black" stroke="black" points="1980.6,-830.05 1988.07,-822.53 1977.55,-823.75 1980.6,-830.05"/>
+</g>
+<!-- cxx_design_patterns_abstract_factory -->
+<g id="node8" class="node">
+<title>cxx_design_patterns_abstract_factory</title>
+<g id="a_node8"><a xlink:href="abstract-factory.html" xlink:title="Abstract Factory">
+<ellipse fill="#dcdcdc" stroke="black" cx="2038" cy="-1065" rx="88.28" ry="18"/>
+<text text-anchor="middle" x="2038" y="-1061.3" font-family="Times,serif" font-size="14.00">Abstract Factory</text>
+</a>
+</g>
+</g>
+<!-- cxx_design_patterns_abstract_factory&#45;&gt;cxx_design_patterns_uml -->
+<g id="edge65" class="edge">
+<title>cxx_design_patterns_abstract_factory&#45;&gt;cxx_design_patterns_uml</title>
+<path fill="none" stroke="black" d="M2021.18,-1047.16C1999.15,-1026.25 1958.3,-991.36 1916,-975 1851.57,-950.08 1673.5,-935.52 1550.76,-928.15"/>
+<polygon fill="black" stroke="black" points="1550.73,-924.64 1540.54,-927.55 1550.32,-931.63 1550.73,-924.64"/>
+</g>
+<!-- cxx_design_patterns_abstract_factory&#45;&gt;cxx_design_patterns_singleton -->
+<g id="edge63" class="edge">
+<title>cxx_design_patterns_abstract_factory&#45;&gt;cxx_design_patterns_singleton</title>
+<path fill="none" stroke="black" d="M1986.87,-1050.31C1970.68,-1046.28 1952.67,-1042.13 1936,-1039 1842.16,-1021.39 1817.18,-1026.7 1723,-1011 1713.52,-1009.42 1703.48,-1007.56 1693.77,-1005.65"/>
+<polygon fill="black" stroke="black" points="1694.29,-1002.19 1683.8,-1003.66 1692.92,-1009.05 1694.29,-1002.19"/>
+</g>
+<!-- cxx_design_patterns_abstract_factory&#45;&gt;cxx03_inheritance_oo_interface -->
+<g id="edge64" class="edge">
+<title>cxx_design_patterns_abstract_factory&#45;&gt;cxx03_inheritance_oo_interface</title>
+<path fill="none" stroke="black" d="M2036.66,-1046.81C2033.25,-1003.18 2024.24,-887.89 2020.12,-835.1"/>
+<polygon fill="black" stroke="black" points="2023.61,-834.82 2019.34,-825.12 2016.63,-835.36 2023.61,-834.82"/>
+</g>
+<!-- cxx_design_patterns_exercises_decorator -->
+<g id="node9" class="node">
+<title>cxx_design_patterns_exercises_decorator</title>
+<g id="a_node9"><a xlink:href="exercises/decorator.html" xlink:title="Exercise: Decorator">
+<ellipse fill="red" stroke="black" cx="541" cy="-1209" rx="102.88" ry="18"/>
+<text text-anchor="middle" x="541" y="-1205.3" font-family="Times,serif" font-size="14.00">Exercise: Decorator</text>
+</a>
+</g>
+</g>
+<!-- cxx_design_patterns_exercises_decorator&#45;&gt;cxx_design_patterns_uml -->
+<g id="edge3" class="edge">
+<title>cxx_design_patterns_exercises_decorator&#45;&gt;cxx_design_patterns_uml</title>
+<path fill="none" stroke="black" d="M545.22,-1190.96C557.27,-1146.34 596.41,-1026.03 679,-975 729.99,-943.5 1095.05,-929.88 1295.31,-924.73"/>
+<polygon fill="black" stroke="black" points="1295.4,-928.23 1305.31,-924.47 1295.22,-921.23 1295.4,-928.23"/>
+</g>
+<!-- cxx_design_patterns_exercises_decorator&#45;&gt;cxx_design_patterns_decorator -->
+<g id="edge2" class="edge">
+<title>cxx_design_patterns_exercises_decorator&#45;&gt;cxx_design_patterns_decorator</title>
+<path fill="none" stroke="black" d="M612.25,-1195.96C625.75,-1194.03 639.78,-1192.25 653,-1191 1066.12,-1151.8 1174.9,-1211.59 1586,-1155 1592.26,-1154.14 1598.78,-1152.97 1605.21,-1151.64"/>
+<polygon fill="black" stroke="black" points="1606.19,-1155.01 1615.21,-1149.45 1604.69,-1148.17 1606.19,-1155.01"/>
+</g>
+<!-- cxx_design_patterns_exercises_adapter -->
+<g id="node10" class="node">
+<title>cxx_design_patterns_exercises_adapter</title>
+<g id="a_node10"><a xlink:href="exercises/adapter.html" xlink:title="Exercise: Adapter">
+<ellipse fill="red" stroke="black" cx="1147" cy="-1137" rx="93.68" ry="18"/>
+<text text-anchor="middle" x="1147" y="-1133.3" font-family="Times,serif" font-size="14.00">Exercise: Adapter</text>
+</a>
+</g>
+</g>
+<!-- cxx_design_patterns_exercises_decorator&#45;&gt;cxx_design_patterns_exercises_adapter -->
+<g id="edge1" class="edge">
+<title>cxx_design_patterns_exercises_decorator&#45;&gt;cxx_design_patterns_exercises_adapter</title>
+<path fill="none" stroke="black" d="M614.11,-1196.27C627.05,-1194.37 640.41,-1192.53 653,-1191 826.67,-1169.86 871.48,-1177.4 1045,-1155 1053.32,-1153.93 1062,-1152.68 1070.63,-1151.36"/>
+<polygon fill="black" stroke="black" points="1071.38,-1154.78 1080.71,-1149.77 1070.29,-1147.87 1071.38,-1154.78"/>
+</g>
+<!-- cxx_design_patterns_exercises_adapter&#45;&gt;cxx_design_patterns_uml -->
+<g id="edge11" class="edge">
+<title>cxx_design_patterns_exercises_adapter&#45;&gt;cxx_design_patterns_uml</title>
+<path fill="none" stroke="black" d="M1079.56,-1124.49C1068.04,-1122.6 1056.18,-1120.71 1045,-1119 925.48,-1100.77 746.2,-1153.51 785,-1039 796.5,-1005.07 802.62,-992.28 834,-975 910.21,-933.04 1142.88,-923.36 1292.82,-921.64"/>
+<polygon fill="black" stroke="black" points="1293.06,-925.14 1303.02,-921.54 1292.99,-918.14 1293.06,-925.14"/>
+</g>
+<!-- cxx_design_patterns_exercises_adapter&#45;&gt;cxx_design_patterns_adapter -->
+<g id="edge10" class="edge">
+<title>cxx_design_patterns_exercises_adapter&#45;&gt;cxx_design_patterns_adapter</title>
+<path fill="none" stroke="black" d="M1213.96,-1124.42C1225.95,-1122.5 1238.33,-1120.61 1250,-1119 1393.53,-1099.2 1432.4,-1113.67 1574,-1083 1576.97,-1082.36 1580,-1081.61 1583.05,-1080.79"/>
+<polygon fill="black" stroke="black" points="1584.08,-1084.14 1592.71,-1078 1582.13,-1077.42 1584.08,-1084.14"/>
+</g>
+<!-- cxx_design_patterns_exercises_singleton_inflexible -->
+<g id="node11" class="node">
+<title>cxx_design_patterns_exercises_singleton_inflexible</title>
+<g id="a_node11"><a xlink:href="exercises/singleton-inflexible.html" xlink:title="Exercise: Singleton (Inflexible)">
+<ellipse fill="red" stroke="black" cx="961" cy="-1065" rx="153.27" ry="18"/>
+<text text-anchor="middle" x="961" y="-1061.3" font-family="Times,serif" font-size="14.00">Exercise: Singleton (Inflexible)</text>
+</a>
+</g>
+</g>
+<!-- cxx_design_patterns_exercises_singleton_inflexible&#45;&gt;cxx_design_patterns_uml -->
+<g id="edge13" class="edge">
+<title>cxx_design_patterns_exercises_singleton_inflexible&#45;&gt;cxx_design_patterns_uml</title>
+<path fill="none" stroke="black" d="M1013.44,-1047.99C1100.41,-1021.43 1273.99,-968.42 1365.82,-940.38"/>
+<polygon fill="black" stroke="black" points="1366.98,-943.68 1375.52,-937.42 1364.93,-936.99 1366.98,-943.68"/>
+</g>
+<!-- cxx_design_patterns_exercises_singleton_inflexible&#45;&gt;cxx_design_patterns_singleton -->
+<g id="edge12" class="edge">
+<title>cxx_design_patterns_exercises_singleton_inflexible&#45;&gt;cxx_design_patterns_singleton</title>
+<path fill="none" stroke="black" d="M1045.35,-1049.9C1070.31,-1046.02 1097.71,-1042.05 1123,-1039 1285.53,-1019.39 1477.86,-1004.91 1575.4,-998.19"/>
+<polygon fill="black" stroke="black" points="1575.66,-1001.68 1585.4,-997.5 1575.18,-994.69 1575.66,-1001.68"/>
+</g>
+<!-- cxx_design_patterns_exercises_command -->
+<g id="node12" class="node">
+<title>cxx_design_patterns_exercises_command</title>
+<g id="a_node12"><a xlink:href="exercises/command.html" xlink:title="Exercise: Command">
+<ellipse fill="red" stroke="black" cx="1173" cy="-1209" rx="103.18" ry="18"/>
+<text text-anchor="middle" x="1173" y="-1205.3" font-family="Times,serif" font-size="14.00">Exercise: Command</text>
+</a>
+</g>
+</g>
+<!-- cxx_design_patterns_exercises_command&#45;&gt;cxx_design_patterns_uml -->
+<g id="edge21" class="edge">
+<title>cxx_design_patterns_exercises_command&#45;&gt;cxx_design_patterns_uml</title>
+<path fill="none" stroke="black" d="M1099.26,-1196.36C1086.52,-1194.47 1073.38,-1192.61 1061,-1191 987.85,-1181.46 780.25,-1209.92 731,-1155 695.3,-1115.19 656.16,-1067.13 760,-975 798.98,-940.41 1111.49,-928.27 1294.25,-924.1"/>
+<polygon fill="black" stroke="black" points="1294.55,-927.59 1304.47,-923.87 1294.4,-920.6 1294.55,-927.59"/>
+</g>
+<!-- cxx_design_patterns_exercises_command&#45;&gt;cxx_design_patterns_command -->
+<g id="edge18" class="edge">
+<title>cxx_design_patterns_exercises_command&#45;&gt;cxx_design_patterns_command</title>
+<path fill="none" stroke="black" d="M1245.8,-1196.18C1258.83,-1194.28 1272.3,-1192.47 1285,-1191 1485.63,-1167.83 1537.96,-1182.85 1738,-1155 1747.51,-1153.68 1757.57,-1151.95 1767.3,-1150.12"/>
+<polygon fill="black" stroke="black" points="1768.14,-1153.52 1777.29,-1148.17 1766.81,-1146.65 1768.14,-1153.52"/>
+</g>
+<!-- cxx_design_patterns_exercises_composite -->
+<g id="node14" class="node">
+<title>cxx_design_patterns_exercises_composite</title>
+<g id="a_node14"><a xlink:href="exercises/composite.html" xlink:title="Exercise: Composite">
+<ellipse fill="red" stroke="black" cx="1365" cy="-1137" rx="105.88" ry="18"/>
+<text text-anchor="middle" x="1365" y="-1133.3" font-family="Times,serif" font-size="14.00">Exercise: Composite</text>
+</a>
+</g>
+</g>
+<!-- cxx_design_patterns_exercises_command&#45;&gt;cxx_design_patterns_exercises_composite -->
+<g id="edge20" class="edge">
+<title>cxx_design_patterns_exercises_command&#45;&gt;cxx_design_patterns_exercises_composite</title>
+<path fill="none" stroke="black" d="M1215.61,-1192.46C1244.32,-1182 1282.37,-1168.12 1312.89,-1157"/>
+<polygon fill="black" stroke="black" points="1314.31,-1160.21 1322.51,-1153.49 1311.91,-1153.63 1314.31,-1160.21"/>
+</g>
+<!-- cxx_design_patterns_exercises_command&#45;&gt;cxx03_inheritance_oo_interface -->
+<g id="edge19" class="edge">
+<title>cxx_design_patterns_exercises_command&#45;&gt;cxx03_inheritance_oo_interface</title>
+<path fill="none" stroke="black" d="M1244.55,-1195.96C1257.96,-1194.04 1271.88,-1192.27 1285,-1191 1379.42,-1181.87 2050.83,-1192.42 2138,-1155 2190.28,-1132.56 2230,-1122.89 2230,-1066 2230,-1066 2230,-1066 2230,-992 2230,-945.86 2224.01,-929.17 2193,-895 2160.1,-858.75 2108.71,-835.73 2070.11,-822.54"/>
+<polygon fill="black" stroke="black" points="2071.18,-819.2 2060.59,-819.39 2068.99,-825.85 2071.18,-819.2"/>
+</g>
+<!-- cxx_design_patterns_exercises_singleton_flexible_strict -->
+<g id="node13" class="node">
+<title>cxx_design_patterns_exercises_singleton_flexible_strict</title>
+<g id="a_node13"><a xlink:href="exercises/singleton-flexible-strict.html" xlink:title="Exercise: Singleton (Flexible And Strict)">
+<ellipse fill="red" stroke="black" cx="222" cy="-1209" rx="198.47" ry="18"/>
+<text text-anchor="middle" x="222" y="-1205.3" font-family="Times,serif" font-size="14.00">Exercise: Singleton (Flexible And Strict)</text>
+</a>
+</g>
+</g>
+<!-- cxx_design_patterns_exercises_singleton_flexible_strict&#45;&gt;cxx_design_patterns_uml -->
+<g id="edge25" class="edge">
+<title>cxx_design_patterns_exercises_singleton_flexible_strict&#45;&gt;cxx_design_patterns_uml</title>
+<path fill="none" stroke="black" d="M243.65,-1191.02C302.46,-1146.01 471.72,-1023.78 635,-975 754.6,-939.27 1101.8,-927.57 1294.04,-923.78"/>
+<polygon fill="black" stroke="black" points="1294.28,-927.27 1304.21,-923.58 1294.15,-920.28 1294.28,-927.27"/>
+</g>
+<!-- cxx_design_patterns_exercises_singleton_flexible_strict&#45;&gt;cxx_design_patterns_singleton -->
+<g id="edge24" class="edge">
+<title>cxx_design_patterns_exercises_singleton_flexible_strict&#45;&gt;cxx_design_patterns_singleton</title>
+<path fill="none" stroke="black" d="M358.06,-1195.9C381.7,-1194.06 406.05,-1192.33 429,-1191 662.3,-1177.43 1250.41,-1198.57 1480,-1155 1485.88,-1153.88 1679.55,-1087.89 1683,-1083 1694.28,-1067.03 1690.38,-1057.11 1683,-1039 1679.68,-1030.85 1674.1,-1023.38 1668,-1016.97"/>
+<polygon fill="black" stroke="black" points="1670.35,-1014.36 1660.72,-1009.94 1665.49,-1019.4 1670.35,-1014.36"/>
+</g>
+<!-- cxx_design_patterns_exercises_singleton_flexible_strict&#45;&gt;cxx_design_patterns_exercises_singleton_inflexible -->
+<g id="edge22" class="edge">
+<title>cxx_design_patterns_exercises_singleton_flexible_strict&#45;&gt;cxx_design_patterns_exercises_singleton_inflexible</title>
+<path fill="none" stroke="black" d="M363.35,-1196.37C504.29,-1184.24 701.88,-1165.55 716,-1155 729.89,-1144.63 717.76,-1130.18 731,-1119 750.3,-1102.7 804.35,-1089.81 855.2,-1080.83"/>
+<polygon fill="black" stroke="black" points="856.06,-1084.23 865.32,-1079.08 854.87,-1077.33 856.06,-1084.23"/>
+</g>
+<!-- cxx_design_patterns_exercises_singleton_flexible -->
+<g id="node18" class="node">
+<title>cxx_design_patterns_exercises_singleton_flexible</title>
+<g id="a_node18"><a xlink:href="exercises/singleton-flexible.html" xlink:title="Exercise: Singleton (Flexible)">
+<ellipse fill="red" stroke="black" cx="888" cy="-1137" rx="147.57" ry="18"/>
+<text text-anchor="middle" x="888" y="-1133.3" font-family="Times,serif" font-size="14.00">Exercise: Singleton (Flexible)</text>
+</a>
+</g>
+</g>
+<!-- cxx_design_patterns_exercises_singleton_flexible_strict&#45;&gt;cxx_design_patterns_exercises_singleton_flexible -->
+<g id="edge23" class="edge">
+<title>cxx_design_patterns_exercises_singleton_flexible_strict&#45;&gt;cxx_design_patterns_exercises_singleton_flexible</title>
+<path fill="none" stroke="black" d="M346.1,-1194.96C467.41,-1182.21 650.77,-1162.93 769.97,-1150.41"/>
+<polygon fill="black" stroke="black" points="770.64,-1153.85 780.22,-1149.33 769.91,-1146.89 770.64,-1153.85"/>
+</g>
+<!-- cxx_design_patterns_exercises_composite&#45;&gt;cxx_design_patterns_composite -->
+<g id="edge33" class="edge">
+<title>cxx_design_patterns_exercises_composite&#45;&gt;cxx_design_patterns_composite</title>
+<path fill="none" stroke="black" d="M1440.07,-1124.24C1527.11,-1110.61 1668.97,-1088.4 1750.02,-1075.71"/>
+<polygon fill="black" stroke="black" points="1750.74,-1079.14 1760.07,-1074.13 1749.65,-1072.22 1750.74,-1079.14"/>
+</g>
+<!-- cxx_design_patterns_exercises_composite&#45;&gt;cxx_design_patterns_uml -->
+<g id="edge34" class="edge">
+<title>cxx_design_patterns_exercises_composite&#45;&gt;cxx_design_patterns_uml</title>
+<path fill="none" stroke="black" d="M1290.24,-1124.21C1276.86,-1122.31 1263.03,-1120.48 1250,-1119 1200.05,-1113.32 833.1,-1119.93 799,-1083 785.73,-1068.63 786.54,-1054.07 799,-1039 861.08,-963.93 1133.99,-936.79 1298.61,-927.15"/>
+<polygon fill="black" stroke="black" points="1299.02,-930.63 1308.8,-926.56 1298.62,-923.64 1299.02,-930.63"/>
+</g>
+<!-- cxx_design_patterns_exercises_proxy_round -->
+<g id="node15" class="node">
+<title>cxx_design_patterns_exercises_proxy_round</title>
+<g id="a_node15"><a xlink:href="exercises/proxy-round.html" xlink:title="Exercise: Proxy (Rounding Thermometer)">
+<ellipse fill="red" stroke="black" cx="1336" cy="-1065" rx="204.16" ry="18"/>
+<text text-anchor="middle" x="1336" y="-1061.3" font-family="Times,serif" font-size="14.00">Exercise: Proxy (Rounding Thermometer)</text>
+</a>
+</g>
+</g>
+<!-- cxx_design_patterns_exercises_composite&#45;&gt;cxx_design_patterns_exercises_proxy_round -->
+<g id="edge32" class="edge">
+<title>cxx_design_patterns_exercises_composite&#45;&gt;cxx_design_patterns_exercises_proxy_round</title>
+<path fill="none" stroke="black" d="M1357.83,-1118.7C1354.57,-1110.81 1350.63,-1101.3 1347,-1092.55"/>
+<polygon fill="black" stroke="black" points="1350.15,-1091 1343.09,-1083.1 1343.68,-1093.68 1350.15,-1091"/>
+</g>
+<!-- cxx_design_patterns_exercises_proxy_round&#45;&gt;cxx_design_patterns_proxy -->
+<g id="edge35" class="edge">
+<title>cxx_design_patterns_exercises_proxy_round&#45;&gt;cxx_design_patterns_proxy</title>
+<path fill="none" stroke="black" d="M1453.47,-1050.23C1525.76,-1040.96 1620.12,-1027.45 1703,-1011 1711.2,-1009.37 1719.9,-1007.37 1728.22,-1005.32"/>
+<polygon fill="black" stroke="black" points="1729.28,-1008.66 1738.12,-1002.82 1727.57,-1001.88 1729.28,-1008.66"/>
+</g>
+<!-- cxx_design_patterns_exercises_proxy_round&#45;&gt;cxx_design_patterns_uml -->
+<g id="edge36" class="edge">
+<title>cxx_design_patterns_exercises_proxy_round&#45;&gt;cxx_design_patterns_uml</title>
+<path fill="none" stroke="black" d="M1346.86,-1046.87C1362.47,-1022.24 1391.37,-976.64 1409.59,-947.88"/>
+<polygon fill="black" stroke="black" points="1412.71,-949.51 1415.11,-939.19 1406.8,-945.76 1412.71,-949.51"/>
+</g>
+<!-- cxx_design_patterns_exercises_proxy_remote -->
+<g id="node16" class="node">
+<title>cxx_design_patterns_exercises_proxy_remote</title>
+<g id="a_node16"><a xlink:href="exercises/proxy-remote.html" xlink:title="Exercise: Proxy (Remote Thermometer)">
+<ellipse fill="red" stroke="black" cx="857" cy="-1209" rx="194.97" ry="18"/>
+<text text-anchor="middle" x="857" y="-1205.3" font-family="Times,serif" font-size="14.00">Exercise: Proxy (Remote Thermometer)</text>
+</a>
+</g>
+</g>
+<!-- cxx_design_patterns_exercises_proxy_remote&#45;&gt;cxx_design_patterns_proxy -->
+<g id="edge43" class="edge">
+<title>cxx_design_patterns_exercises_proxy_remote&#45;&gt;cxx_design_patterns_proxy</title>
+<path fill="none" stroke="black" d="M993.3,-1196.09C1015.91,-1194.28 1039.11,-1192.51 1061,-1191 1134.49,-1185.94 1667.97,-1203.97 1723,-1155 1762.08,-1120.22 1724.79,-1088.04 1743,-1039 1745.51,-1032.23 1749.06,-1025.34 1752.76,-1019.05"/>
+<polygon fill="black" stroke="black" points="1755.86,-1020.68 1758.18,-1010.35 1749.92,-1016.98 1755.86,-1020.68"/>
+</g>
+<!-- cxx_design_patterns_exercises_proxy_remote&#45;&gt;cxx_design_patterns_uml -->
+<g id="edge45" class="edge">
+<title>cxx_design_patterns_exercises_proxy_remote&#45;&gt;cxx_design_patterns_uml</title>
+<path fill="none" stroke="black" d="M759.06,-1193.42C736.33,-1185.55 714.33,-1173.48 699,-1155 647.54,-1092.97 654.08,-1019.91 721,-975 767.4,-943.86 1104.57,-930.2 1295.32,-924.91"/>
+<polygon fill="black" stroke="black" points="1295.52,-928.41 1305.42,-924.64 1295.33,-921.41 1295.52,-928.41"/>
+</g>
+<!-- cxx_design_patterns_exercises_proxy_remote&#45;&gt;cxx_design_patterns_exercises_adapter -->
+<g id="edge44" class="edge">
+<title>cxx_design_patterns_exercises_proxy_remote&#45;&gt;cxx_design_patterns_exercises_adapter</title>
+<path fill="none" stroke="black" d="M923.17,-1192.03C970.46,-1180.61 1033.82,-1165.32 1081.06,-1153.92"/>
+<polygon fill="black" stroke="black" points="1081.98,-1157.3 1090.88,-1151.55 1080.34,-1150.49 1081.98,-1157.3"/>
+</g>
+<!-- cxx_design_patterns_exercises_abstract_factory -->
+<g id="node17" class="node">
+<title>cxx_design_patterns_exercises_abstract_factory</title>
+<g id="a_node17"><a xlink:href="exercises/abstract-factory.html" xlink:title="Exercise: Abstract Factory">
+<ellipse fill="red" stroke="black" cx="1428" cy="-1209" rx="133.78" ry="18"/>
+<text text-anchor="middle" x="1428" y="-1205.3" font-family="Times,serif" font-size="14.00">Exercise: Abstract Factory</text>
+</a>
+</g>
+</g>
+<!-- cxx_design_patterns_exercises_abstract_factory&#45;&gt;cxx_design_patterns_uml -->
+<g id="edge59" class="edge">
+<title>cxx_design_patterns_exercises_abstract_factory&#45;&gt;cxx_design_patterns_uml</title>
+<path fill="none" stroke="black" d="M1552.05,-1202.16C1681.19,-1194.78 1867.77,-1179.93 1890,-1155 1944.3,-1094.11 1921.48,-1020.85 1854,-975 1806.83,-942.95 1664.24,-930.28 1556.5,-925.27"/>
+<polygon fill="black" stroke="black" points="1556.33,-921.76 1546.19,-924.81 1556.02,-928.75 1556.33,-921.76"/>
+</g>
+<!-- cxx_design_patterns_exercises_abstract_factory&#45;&gt;cxx_design_patterns_singleton -->
+<g id="edge58" class="edge">
+<title>cxx_design_patterns_exercises_abstract_factory&#45;&gt;cxx_design_patterns_singleton</title>
+<path fill="none" stroke="black" d="M1552.05,-1202.16C1681.19,-1194.78 1867.77,-1179.93 1890,-1155 1906.25,-1136.78 1903.56,-1063.03 1881,-1039 1856.6,-1013 1758.03,-1017.65 1723,-1011 1713.67,-1009.23 1703.77,-1007.28 1694.17,-1005.36"/>
+<polygon fill="black" stroke="black" points="1694.79,-1001.92 1684.3,-1003.38 1693.41,-1008.78 1694.79,-1001.92"/>
+</g>
+<!-- cxx_design_patterns_exercises_abstract_factory&#45;&gt;cxx03_inheritance_oo_interface -->
+<g id="edge57" class="edge">
+<title>cxx_design_patterns_exercises_abstract_factory&#45;&gt;cxx03_inheritance_oo_interface</title>
+<path fill="none" stroke="black" d="M1561.82,-1207.7C1779.81,-1205.97 2192.58,-1197.1 2244,-1155 2275.7,-1129.04 2268,-1106.97 2268,-1066 2268,-1066 2268,-1066 2268,-992 2268,-947.59 2273.38,-928.3 2244,-895 2202.41,-847.86 2132.3,-826.11 2081.17,-816.17"/>
+<polygon fill="black" stroke="black" points="2081.69,-812.7 2071.22,-814.33 2080.42,-819.59 2081.69,-812.7"/>
+</g>
+<!-- cxx_design_patterns_exercises_singleton_flexible&#45;&gt;cxx_design_patterns_uml -->
+<g id="edge62" class="edge">
+<title>cxx_design_patterns_exercises_singleton_flexible&#45;&gt;cxx_design_patterns_uml</title>
+<path fill="none" stroke="black" d="M824.72,-1120.71C805.42,-1112.77 786.33,-1100.83 775,-1083 748.94,-1041.99 754.75,-1006.2 792,-975 829.66,-943.45 1121.22,-930.16 1295.56,-924.98"/>
+<polygon fill="black" stroke="black" points="1295.68,-928.48 1305.57,-924.69 1295.48,-921.48 1295.68,-928.48"/>
+</g>
+<!-- cxx_design_patterns_exercises_singleton_flexible&#45;&gt;cxx_design_patterns_singleton -->
+<g id="edge61" class="edge">
+<title>cxx_design_patterns_exercises_singleton_flexible&#45;&gt;cxx_design_patterns_singleton</title>
+<path fill="none" stroke="black" d="M991.58,-1124.16C1009.07,-1122.32 1027.04,-1120.53 1044,-1119 1100.03,-1113.95 1502.82,-1115.12 1549,-1083 1566.64,-1070.74 1554.95,-1055.25 1569,-1039 1577.65,-1029 1589.06,-1020.4 1600.16,-1013.47"/>
+<polygon fill="black" stroke="black" points="1602.1,-1016.39 1608.93,-1008.28 1598.54,-1010.36 1602.1,-1016.39"/>
+</g>
+<!-- cxx_design_patterns_exercises_singleton_flexible&#45;&gt;cxx_design_patterns_exercises_singleton_inflexible -->
+<g id="edge60" class="edge">
+<title>cxx_design_patterns_exercises_singleton_flexible&#45;&gt;cxx_design_patterns_exercises_singleton_inflexible</title>
+<path fill="none" stroke="black" d="M905.67,-1119.05C914.75,-1110.35 925.97,-1099.59 935.93,-1090.04"/>
+<polygon fill="black" stroke="black" points="938.44,-1092.48 943.24,-1083.03 933.6,-1087.43 938.44,-1092.48"/>
+</g>
+<!-- cxx03_introduction -->
+<g id="node19" class="node">
+<title>cxx03_introduction</title>
+<g id="a_node19"><a xlink:href="../cxx03/001-introduction/topic.html" xlink:title="Introduction">
+<ellipse fill="#dcdcdc" stroke="black" cx="2525" cy="-156" rx="68.49" ry="18"/>
+<text text-anchor="middle" x="2525" y="-152.3" font-family="Times,serif" font-size="14.00">Introduction</text>
+</a>
+</g>
+</g>
+<!-- c_introduction_installation -->
+<g id="node31" class="node">
+<title>c_introduction_installation</title>
+<g id="a_node31"><a xlink:href="../c/010-introduction/000-installation/topic.html" xlink:title="Installation">
+<ellipse fill="#dcdcdc" stroke="black" cx="2525" cy="-42" rx="63.89" ry="18"/>
+<text text-anchor="middle" x="2525" y="-38.3" font-family="Times,serif" font-size="14.00">Installation</text>
+</a>
+</g>
+</g>
+<!-- cxx03_introduction&#45;&gt;c_introduction_installation -->
+<g id="edge30" class="edge">
+<title>cxx03_introduction&#45;&gt;c_introduction_installation</title>
+<path fill="none" stroke="black" d="M2525,-137.99C2525,-120.06 2525,-91.56 2525,-70.44"/>
+<polygon fill="black" stroke="black" points="2528.5,-70.17 2525,-60.17 2521.5,-70.17 2528.5,-70.17"/>
+</g>
+<!-- cxx03_inheritance_oo_virtual_destructor -->
+<g id="node20" class="node">
+<title>cxx03_inheritance_oo_virtual_destructor</title>
+<g id="a_node20"><a xlink:href="../cxx03/100-inheritance-oo-design/virtual-destructor.html" xlink:title="Virtual Destructors">
+<ellipse fill="#dcdcdc" stroke="black" cx="2018" cy="-735" rx="100.98" ry="18"/>
+<text text-anchor="middle" x="2018" y="-731.3" font-family="Times,serif" font-size="14.00">Virtual Destructors</text>
+</a>
+</g>
+</g>
+<!-- cxx03_inheritance_oo_destructor -->
+<g id="node22" class="node">
+<title>cxx03_inheritance_oo_destructor</title>
+<g id="a_node22"><a xlink:href="../cxx03/100-inheritance-oo-design/destructor.html" xlink:title="Destructors And Inheritance">
+<ellipse fill="#dcdcdc" stroke="black" cx="2079" cy="-591" rx="142.97" ry="18"/>
+<text text-anchor="middle" x="2079" y="-587.3" font-family="Times,serif" font-size="14.00">Destructors And Inheritance</text>
+</a>
+</g>
+</g>
+<!-- cxx03_inheritance_oo_virtual_destructor&#45;&gt;cxx03_inheritance_oo_destructor -->
+<g id="edge5" class="edge">
+<title>cxx03_inheritance_oo_virtual_destructor&#45;&gt;cxx03_inheritance_oo_destructor</title>
+<path fill="none" stroke="black" d="M2042.9,-717.36C2054.51,-708.13 2067.24,-695.57 2074,-681 2082.93,-661.76 2083.73,-637.6 2082.55,-619.31"/>
+<polygon fill="black" stroke="black" points="2086.03,-618.96 2081.67,-609.3 2079.06,-619.57 2086.03,-618.96"/>
+</g>
+<!-- cxx03_inheritance_oo_virtual_method -->
+<g id="node23" class="node">
+<title>cxx03_inheritance_oo_virtual_method</title>
+<g id="a_node23"><a xlink:href="../cxx03/100-inheritance-oo-design/virtual-method.html" xlink:title="Virtual Methods">
+<ellipse fill="#dcdcdc" stroke="black" cx="1832" cy="-591" rx="85.59" ry="18"/>
+<text text-anchor="middle" x="1832" y="-587.3" font-family="Times,serif" font-size="14.00">Virtual Methods</text>
+</a>
+</g>
+</g>
+<!-- cxx03_inheritance_oo_virtual_destructor&#45;&gt;cxx03_inheritance_oo_virtual_method -->
+<g id="edge4" class="edge">
+<title>cxx03_inheritance_oo_virtual_destructor&#45;&gt;cxx03_inheritance_oo_virtual_method</title>
+<path fill="none" stroke="black" d="M2035.82,-717.28C2053.83,-698.35 2076.66,-667.26 2059,-645 2053.96,-638.65 1966.26,-619.48 1901.37,-606.03"/>
+<polygon fill="black" stroke="black" points="1902.07,-602.6 1891.57,-604 1900.66,-609.45 1902.07,-602.6"/>
+</g>
+<!-- cxx03_inheritance_oo_polymorphism -->
+<g id="node24" class="node">
+<title>cxx03_inheritance_oo_polymorphism</title>
+<g id="a_node24"><a xlink:href="../cxx03/100-inheritance-oo-design/polymorphism.html" xlink:title="Polymorphic Usage Of Objects">
+<ellipse fill="#dcdcdc" stroke="black" cx="1898" cy="-663" rx="152.17" ry="18"/>
+<text text-anchor="middle" x="1898" y="-659.3" font-family="Times,serif" font-size="14.00">Polymorphic Usage Of Objects</text>
+</a>
+</g>
+</g>
+<!-- cxx03_inheritance_oo_virtual_destructor&#45;&gt;cxx03_inheritance_oo_polymorphism -->
+<g id="edge6" class="edge">
+<title>cxx03_inheritance_oo_virtual_destructor&#45;&gt;cxx03_inheritance_oo_polymorphism</title>
+<path fill="none" stroke="black" d="M1989.87,-717.59C1973.7,-708.16 1953.19,-696.2 1935.65,-685.96"/>
+<polygon fill="black" stroke="black" points="1937.19,-682.81 1926.79,-680.8 1933.67,-688.86 1937.19,-682.81"/>
+</g>
+<!-- cxx03_inheritance_oo_basics -->
+<g id="node21" class="node">
+<title>cxx03_inheritance_oo_basics</title>
+<g id="a_node21"><a xlink:href="../cxx03/100-inheritance-oo-design/basics.html" xlink:title="Inheritance Basics">
+<ellipse fill="#dcdcdc" stroke="black" cx="2079" cy="-516" rx="96.68" ry="18"/>
+<text text-anchor="middle" x="2079" y="-512.3" font-family="Times,serif" font-size="14.00">Inheritance Basics</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_classes_objects -->
+<g id="node28" class="node">
+<title>cxx03_data_encapsulation_classes_objects</title>
+<g id="a_node28"><a xlink:href="../cxx03/020-data-encapsulation/cpp-introduction.html" xlink:title="Classes and Objects">
+<ellipse fill="#dcdcdc" stroke="black" cx="2462" cy="-300" rx="103.98" ry="18"/>
+<text text-anchor="middle" x="2462" y="-296.3" font-family="Times,serif" font-size="14.00">Classes and Objects</text>
+</a>
+</g>
+</g>
+<!-- cxx03_inheritance_oo_basics&#45;&gt;cxx03_data_encapsulation_classes_objects -->
+<g id="edge7" class="edge">
+<title>cxx03_inheritance_oo_basics&#45;&gt;cxx03_data_encapsulation_classes_objects</title>
+<path fill="none" stroke="black" d="M2104.45,-498.55C2151.61,-468.34 2256.14,-402.67 2348,-354 2369.99,-342.35 2395.01,-330.56 2416,-321.07"/>
+<polygon fill="black" stroke="black" points="2417.64,-324.17 2425.33,-316.88 2414.78,-317.78 2417.64,-324.17"/>
+</g>
+<!-- cxx03_inheritance_oo_destructor&#45;&gt;cxx03_inheritance_oo_basics -->
+<g id="edge14" class="edge">
+<title>cxx03_inheritance_oo_destructor&#45;&gt;cxx03_inheritance_oo_basics</title>
+<path fill="none" stroke="black" d="M2079,-572.7C2079,-564.25 2079,-553.87 2079,-544.37"/>
+<polygon fill="black" stroke="black" points="2082.5,-544.18 2079,-534.18 2075.5,-544.18 2082.5,-544.18"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_dtor -->
+<g id="node30" class="node">
+<title>cxx03_data_encapsulation_ctor_dtor</title>
+<g id="a_node30"><a xlink:href="../cxx03/020-data-encapsulation/ctor-dtor.html" xlink:title="More Constructors, Destructors">
+<ellipse fill="#dcdcdc" stroke="black" cx="2405" cy="-516" rx="159.47" ry="18"/>
+<text text-anchor="middle" x="2405" y="-512.3" font-family="Times,serif" font-size="14.00">More Constructors, Destructors</text>
+</a>
+</g>
+</g>
+<!-- cxx03_inheritance_oo_destructor&#45;&gt;cxx03_data_encapsulation_ctor_dtor -->
+<g id="edge15" class="edge">
+<title>cxx03_inheritance_oo_destructor&#45;&gt;cxx03_data_encapsulation_ctor_dtor</title>
+<path fill="none" stroke="black" d="M2170.3,-577.05C2191.31,-573.57 2213.5,-569.51 2234,-565 2270.71,-556.92 2311.22,-545.65 2343.6,-536.06"/>
+<polygon fill="black" stroke="black" points="2344.79,-539.36 2353.38,-533.15 2342.79,-532.65 2344.79,-539.36"/>
+</g>
+<!-- cxx03_inheritance_oo_virtual_method&#45;&gt;cxx03_inheritance_oo_basics -->
+<g id="edge17" class="edge">
+<title>cxx03_inheritance_oo_virtual_method&#45;&gt;cxx03_inheritance_oo_basics</title>
+<path fill="none" stroke="black" d="M1879.62,-575.92C1919.68,-564.09 1977.13,-547.11 2020.07,-534.42"/>
+<polygon fill="black" stroke="black" points="2021.23,-537.72 2029.83,-531.53 2019.25,-531.01 2021.23,-537.72"/>
+</g>
+<!-- cxx03_inheritance_oo_polymorphism&#45;&gt;cxx03_inheritance_oo_virtual_method -->
+<g id="edge29" class="edge">
+<title>cxx03_inheritance_oo_polymorphism&#45;&gt;cxx03_inheritance_oo_virtual_method</title>
+<path fill="none" stroke="black" d="M1882.02,-645.05C1873.84,-636.37 1863.72,-625.64 1854.74,-616.11"/>
+<polygon fill="black" stroke="black" points="1857.24,-613.66 1847.83,-608.79 1852.14,-618.47 1857.24,-613.66"/>
+</g>
+<!-- cxx03_inheritance_oo_interface&#45;&gt;cxx03_inheritance_oo_virtual_destructor -->
+<g id="edge42" class="edge">
+<title>cxx03_inheritance_oo_interface&#45;&gt;cxx03_inheritance_oo_virtual_destructor</title>
+<path fill="none" stroke="black" d="M2018,-788.7C2018,-780.98 2018,-771.71 2018,-763.11"/>
+<polygon fill="black" stroke="black" points="2021.5,-763.1 2018,-753.1 2014.5,-763.1 2021.5,-763.1"/>
+</g>
+<!-- cxx03_inheritance_oo_interface&#45;&gt;cxx03_inheritance_oo_virtual_method -->
+<g id="edge40" class="edge">
+<title>cxx03_inheritance_oo_interface&#45;&gt;cxx03_inheritance_oo_virtual_method</title>
+<path fill="none" stroke="black" d="M2064.14,-796.1C2087.56,-788.49 2113.96,-775.35 2128,-753 2136.51,-739.45 2133.51,-732.02 2128,-717 2113.56,-677.62 2102.87,-666.74 2067,-645 2052.91,-636.46 1967.14,-618.35 1903.26,-605.69"/>
+<polygon fill="black" stroke="black" points="1903.7,-602.21 1893.21,-603.71 1902.34,-609.08 1903.7,-602.21"/>
+</g>
+<!-- cxx03_inheritance_oo_interface&#45;&gt;cxx03_inheritance_oo_polymorphism -->
+<g id="edge41" class="edge">
+<title>cxx03_inheritance_oo_interface&#45;&gt;cxx03_inheritance_oo_polymorphism</title>
+<path fill="none" stroke="black" d="M1973.11,-795.55C1949.91,-787.76 1923.33,-774.61 1908,-753 1895.39,-735.21 1893.59,-710.2 1894.55,-691.22"/>
+<polygon fill="black" stroke="black" points="1898.05,-691.35 1895.34,-681.11 1891.07,-690.81 1898.05,-691.35"/>
+</g>
+<!-- cxx03_data_encapsulation_c -->
+<g id="node26" class="node">
+<title>cxx03_data_encapsulation_c</title>
+<g id="a_node26"><a xlink:href="../cxx03/020-data-encapsulation/c.html" xlink:title="Object Oriented Programming In Good Ol’ C">
+<ellipse fill="#dcdcdc" stroke="black" cx="2462" cy="-228" rx="216.36" ry="18"/>
+<text text-anchor="middle" x="2462" y="-224.3" font-family="Times,serif" font-size="14.00">Object Oriented Programming In Good Ol’ C</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_c&#45;&gt;cxx03_introduction -->
+<g id="edge16" class="edge">
+<title>cxx03_data_encapsulation_c&#45;&gt;cxx03_introduction</title>
+<path fill="none" stroke="black" d="M2477.57,-209.7C2485.32,-201.09 2494.8,-190.55 2503.25,-181.17"/>
+<polygon fill="black" stroke="black" points="2505.95,-183.4 2510.04,-173.62 2500.75,-178.71 2505.95,-183.4"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_default -->
+<g id="node27" class="node">
+<title>cxx03_data_encapsulation_ctor_default</title>
+<g id="a_node27"><a xlink:href="../cxx03/020-data-encapsulation/ctor-default.html" xlink:title="Default Constructor">
+<ellipse fill="#dcdcdc" stroke="black" cx="2494" cy="-444" rx="103.18" ry="18"/>
+<text text-anchor="middle" x="2494" y="-440.3" font-family="Times,serif" font-size="14.00">Default Constructor</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_ctor_custom -->
+<g id="node29" class="node">
+<title>cxx03_data_encapsulation_ctor_custom</title>
+<g id="a_node29"><a xlink:href="../cxx03/020-data-encapsulation/ctor-custom.html" xlink:title="Custom Constructor">
+<ellipse fill="#dcdcdc" stroke="black" cx="2462" cy="-372" rx="104.78" ry="18"/>
+<text text-anchor="middle" x="2462" y="-368.3" font-family="Times,serif" font-size="14.00">Custom Constructor</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_ctor_default&#45;&gt;cxx03_data_encapsulation_ctor_custom -->
+<g id="edge31" class="edge">
+<title>cxx03_data_encapsulation_ctor_default&#45;&gt;cxx03_data_encapsulation_ctor_custom</title>
+<path fill="none" stroke="black" d="M2486.09,-425.7C2482.45,-417.73 2478.05,-408.1 2474.01,-399.26"/>
+<polygon fill="black" stroke="black" points="2477.16,-397.74 2469.82,-390.1 2470.79,-400.65 2477.16,-397.74"/>
+</g>
+<!-- cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_introduction -->
+<g id="edge54" class="edge">
+<title>cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_introduction</title>
+<path fill="none" stroke="black" d="M2547.98,-289.78C2603.9,-281.81 2669.56,-268.02 2687,-246 2699.14,-230.67 2698.83,-217.57 2687,-202 2675.28,-186.59 2632.22,-175.07 2593.43,-167.54"/>
+<polygon fill="black" stroke="black" points="2593.63,-164.02 2583.16,-165.62 2592.35,-170.9 2593.63,-164.02"/>
+</g>
+<!-- cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_data_encapsulation_c -->
+<g id="edge55" class="edge">
+<title>cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_data_encapsulation_c</title>
+<path fill="none" stroke="black" d="M2462,-281.7C2462,-273.98 2462,-264.71 2462,-256.11"/>
+<polygon fill="black" stroke="black" points="2465.5,-256.1 2462,-246.1 2458.5,-256.1 2465.5,-256.1"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_custom&#45;&gt;cxx03_data_encapsulation_classes_objects -->
+<g id="edge56" class="edge">
+<title>cxx03_data_encapsulation_ctor_custom&#45;&gt;cxx03_data_encapsulation_classes_objects</title>
+<path fill="none" stroke="black" d="M2462,-353.7C2462,-345.98 2462,-336.71 2462,-328.11"/>
+<polygon fill="black" stroke="black" points="2465.5,-328.1 2462,-318.1 2458.5,-328.1 2465.5,-328.1"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_default -->
+<g id="edge66" class="edge">
+<title>cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_default</title>
+<path fill="none" stroke="black" d="M2426.54,-498.05C2438.02,-489.03 2452.31,-477.79 2464.77,-467.99"/>
+<polygon fill="black" stroke="black" points="2466.96,-470.72 2472.65,-461.79 2462.63,-465.22 2466.96,-470.72"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_custom -->
+<g id="edge67" class="edge">
+<title>cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_custom</title>
+<path fill="none" stroke="black" d="M2393.43,-497.71C2382.54,-479.1 2369.62,-449.06 2382,-426 2389.17,-412.64 2401.36,-402.09 2414.08,-394.02"/>
+<polygon fill="black" stroke="black" points="2416.06,-396.92 2422.92,-388.84 2412.52,-390.88 2416.06,-396.92"/>
+</g>
+</g>
+</svg>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2022 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../_sources/trainings/material/soup/cxx-design-patterns/group.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
