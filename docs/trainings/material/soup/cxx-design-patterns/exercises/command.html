@@ -22,7 +22,7 @@
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx-design-patterns/exercises/command.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
-    <link rel="next" title="Exercise: Abstract Factory" href="abstract-factory.html" />
+    <link rel="next" title="Exercise: Interpreter" href="interpreter.html" />
     <link rel="prev" title="Exercise: Composite" href="composite.html" /> 
    
   <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
@@ -107,14 +107,15 @@
 <li class="toctree-l3"><a class="reference internal" href="../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../cxx03/group.html">C++ 03</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../cxx11/group.html">C++ 11</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../group.html">Design Patterns</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../group.html">Design Patterns With C++</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../uml.html">UML Short Introduction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../singleton.html">Singleton</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../adapter.html">Adapter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../proxy.html">Proxy</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../composite.html">Composite</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../decorator.html">Decorator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../composite.html">Composite</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../command.html">Command</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../interpreter.html">Interpreter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../abstract-factory.html">Abstract Factory</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="group.html">Exercises: Design Patterns</a><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="singleton-inflexible.html">Exercise: Singleton (Inflexible)</a></li>
@@ -126,7 +127,10 @@
 <li class="toctree-l5"><a class="reference internal" href="proxy-remote.html">Exercise: Proxy (Remote Thermometer)</a></li>
 <li class="toctree-l5"><a class="reference internal" href="composite.html">Exercise: Composite</a></li>
 <li class="toctree-l5 current"><a class="current reference internal" href="#">Exercise: Command</a></li>
+<li class="toctree-l5"><a class="reference internal" href="interpreter.html">Exercise: Interpreter</a></li>
+<li class="toctree-l5"><a class="reference internal" href="interpreter-and-adapter.html">Exercise: Interpreter Combined With Adapter (And A Proxy)</a></li>
 <li class="toctree-l5"><a class="reference internal" href="abstract-factory.html">Exercise: Abstract Factory</a></li>
+<li class="toctree-l5"><a class="reference internal" href="socialdb.html">SocialDB Source Code</a></li>
 </ul>
 </li>
 </ul>
@@ -183,6 +187,8 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">find()</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">drop()</span></code></p></li>
 </ul>
+<p>(See <a class="reference internal" href="socialdb.html"><span class="doc">here</span></a> for the definition of the <code class="docutils literal notranslate"><span class="pre">SocialDB</span></code>
+class.)</p>
 <p>Based on the situation described in <a class="reference internal" href="../command.html"><span class="doc">Command</span></a>, implement a
 <code class="docutils literal notranslate"><span class="pre">SocialDBCommand</span></code> hierarchy that provides a type for each of the
 database operations.</p>
@@ -272,10 +278,10 @@ let the issuer ask for it once the command has run.</p>
 
 <span class="w">    </span><span class="n">SocialDBFindCommand</span><span class="w"> </span><span class="nf">fc</span><span class="p">(</span><span class="s">&quot;1037190666&quot;</span><span class="p">);</span><span class="w"></span>
 
-<span class="w">    </span><span class="n">SocialDBCommand</span><span class="o">*</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">fc</span><span class="p">;</span><span class="w">           </span><span class="c1">// &lt;--- used as-a base</span>
+<span class="w">    </span><span class="n">SocialDBCommand</span><span class="o">*</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">fc</span><span class="p">;</span><span class="w">                  </span><span class="c1">// &lt;--- used as-a base</span>
 <span class="w">    </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">execute</span><span class="p">(</span><span class="n">db</span><span class="p">);</span><span class="w"></span>
 
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">firstname</span><span class="p">,</span><span class="w"> </span><span class="n">lastname</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fc</span><span class="p">.</span><span class="n">result</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">firstname</span><span class="p">,</span><span class="w"> </span><span class="n">lastname</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fc</span><span class="p">.</span><span class="n">result</span><span class="p">();</span><span class="w">  </span><span class="c1">// &lt;--- Hint: use struct SocialDB::Person as return value</span>
 <span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">firstname</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Joerg&quot;</span><span class="p">);</span><span class="w"></span>
 <span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">lastname</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Faschingbauer&quot;</span><span class="p">);</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
