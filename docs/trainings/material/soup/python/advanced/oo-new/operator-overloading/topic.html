@@ -29,7 +29,7 @@
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/python/advanced/oo-new/operator-overloading/topic.html" />
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
-    <link rel="next" title="Object Oriented Programming (Outdated)" href="../../oo/group.html" />
+    <link rel="next" title="Abstract Base Classes (abc), And Duck Typing" href="../abc/topic.html" />
     <link rel="prev" title="Inheritance" href="../inheritance/topic.html" /> 
    
   <link rel="stylesheet" href="../../../../../../../_static/custom.css" type="text/css" />
@@ -126,6 +126,7 @@
 <li class="toctree-l6"><a class="reference internal" href="../namedtuple/topic.html"><code class="docutils literal notranslate"><span class="pre">collections.namedtuple</span></code></a></li>
 <li class="toctree-l6"><a class="reference internal" href="../inheritance/topic.html">Inheritance</a></li>
 <li class="toctree-l6 current"><a class="current reference internal" href="#">Operator Overloading</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../abc/topic.html">Abstract Base Classes (<code class="docutils literal notranslate"><span class="pre">abc</span></code>), And Duck Typing</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../../oo/group.html">Object Oriented Programming (Outdated)</a></li>
@@ -396,13 +397,57 @@ behavior</p></li>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">int.__eq__</span></code> knows nothing</p></li>
 <li><p>Returns <code class="docutils literal notranslate"><span class="pre">NotImplemented</span></code></p></li>
-<li><p>As a fallback, Python reverses operands, thereby asking the right
-hand operand</p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">i</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">i</span> <span class="o">==</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<p>But, at a lower level …</p>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">i</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>NotImplemented
+</pre></div>
+</div>
+</div>
+</div>
+<ul class="simple">
+<li><p>As a fallback of that, Python reverses operands, thereby asking the
+right hand operand</p></li>
 </ul>
 <div class="jupyter_cell jupyter_container docutils container">
 <div class="cell_input code_cell docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">two</span> <span class="o">=</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-<span class="mi">2</span> <span class="o">==</span> <span class="n">two</span>
+<span class="n">two</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<ul class="simple">
+<li><p>Et voila …</p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">i</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">i</span> <span class="o">==</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -461,7 +506,7 @@ not order objects:</p>
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_263656</span><span class="o">/</span><span class="mf">3709071117.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_345705</span><span class="o">/</span><span class="mf">3709071117.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">Number</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 
 <span class="ne">TypeError</span>: &#39;&lt;&#39; not supported between instances of &#39;Number&#39; and &#39;Number&#39;
@@ -525,17 +570,12 @@ not order objects:</p>
 <p>No surprise though; Python knows that this is the same as <code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">&lt;</span> <span class="pre">l</span></code>:</p>
 <div class="jupyter_cell jupyter_container docutils container">
 <div class="cell_input code_cell docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="s1">&#39;__gt__&#39;</span><span class="p">):</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="fm">__gt__</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="fm">__lt__</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
-
-<span class="n">result</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">hasattr</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="s1">&#39;__gt__&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>NotImplemented
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>True
 </pre></div>
 </div>
 </div>
@@ -630,7 +670,7 @@ much writing</p></li>
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_263656</span><span class="o">/</span><span class="mf">151628379.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_345705</span><span class="o">/</span><span class="mf">151628379.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="g g-Whitespace">      </span><span class="mi">3</span>         <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
 <span class="g g-Whitespace">      </span><span class="mi">4</span> 
 <span class="ne">----&gt; </span><span class="mi">5</span> <span class="n">Number</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
@@ -692,7 +732,7 @@ much writing</p></li>
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_263656</span><span class="o">/</span><span class="mf">452733317.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_345705</span><span class="o">/</span><span class="mf">452733317.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">r</span> <span class="o">=</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 <span class="g g-Whitespace">      </span><span class="mi">3</span> 
 <span class="ne">----&gt; </span><span class="mi">4</span> <span class="n">l</span> <span class="o">-</span> <span class="n">r</span>
