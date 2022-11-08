@@ -1,0 +1,888 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<meta content="A thorough walk through Python's operator overloading: reverse operations, &quot;NotImplemented&quot; return value" name="description" />
+<meta content="python, operators object oriented programming, class" name="keywords" />
+
+    <title>Operator Overloading &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../../" id="documentation_options" src="../../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../../_static/doctools.js"></script>
+    <script src="../../../../../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/python/advanced/oo/operator-overloading/topic.html" />
+    <link rel="index" title="Index" href="../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../search.html" />
+    <link rel="next" title="Abstract Base Classes (abc), And Duck Typing" href="../abc/topic.html" />
+    <link rel="prev" title="Inheritance" href="../inheritance/topic.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../../index.html">
+    <img class="logo" src="../../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../basics/group.html">Python: The Language Fundamentals</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../group.html">Python: More Language Features</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../../comprehensions/topic.html">Comprehensions (List, Dictionary, Set)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../iteration-generation/topic.html">Iterating Intelligently: Generators, and the Iterator Protocol</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../starargs/topic.html">Positional and Keyword Arguments</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../closures/topic.html">Closures</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../decorators/topic.html">Decorators</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../exec/topic.html">The <code class="docutils literal notranslate"><span class="pre">exec()</span></code> Function</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="../group.html">Object Oriented Programming</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="../classes-and-dicts/topic.html">Classes And Dictionaries</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../constructor/topic.html">Constructor</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../methods/topic.html">Methods</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../str-repr/topic.html"><code class="docutils literal notranslate"><span class="pre">str()</span></code> And <code class="docutils literal notranslate"><span class="pre">repr()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="../properties/topic.html">Properties</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../namedtuple/topic.html"><code class="docutils literal notranslate"><span class="pre">collections.namedtuple</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="../inheritance/topic.html">Inheritance</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">Operator Overloading</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../abc/topic.html">Abstract Base Classes (<code class="docutils literal notranslate"><span class="pre">abc</span></code>), And Duck Typing</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../../exceptions.html">Exception Handling</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../modules.html">Modules and Packages</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../multithreading/group.html">Multithreading</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../swdev/group.html">Python: Project/Package Management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../misc/group.html">Python: Miscellaneous Topics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../drafts/group.html">Python: Draft Topics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../link-collection.html">Python Links</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../pcap-exam.html">PCAP Exam</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../graph.html">Python: All Material, Interrelated</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../exercises/group.html">Exercises</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cxx-design-patterns/group.html">Design Patterns With C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="operator-overloading">
+<h1>Operator Overloading<a class="headerlink" href="#operator-overloading" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#operators-are-dunder-methods" id="id1">Operators Are “Dunder” Methods</a></p></li>
+<li><p><a class="reference internal" href="#hypothetical-and-pointless-class-number" id="id2">Hypothetical And Pointless <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Number</span></code></a></p></li>
+<li><p><a class="reference internal" href="#simplest-equality-comparison" id="id3">Simplest: Equality Comparison (<code class="docutils literal notranslate"><span class="pre">==</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#comparing-against-incompatible-types-lotsa-magic" id="id4">Comparing Against Incompatible Types? (Lotsa Magic!)</a></p></li>
+<li><p><a class="reference internal" href="#ordering-less-than-operator" id="id5">Ordering: Less-Than (<cite>&lt;</cite>) Operator</a></p></li>
+<li><p><a class="reference internal" href="#ordering-magic-again-gt-in-terms-of-lt" id="id6">Ordering Magic, Again: <code class="docutils literal notranslate"><span class="pre">__gt__</span></code> in terms of <code class="docutils literal notranslate"><span class="pre">__lt__</span></code></a></p></li>
+<li><p><a class="reference internal" href="#table-comparison-operators" id="id7">Table: Comparison Operators</a></p></li>
+<li><p><a class="reference internal" href="#functools-total-ordering-to-the-rescue" id="id8"><code class="docutils literal notranslate"><span class="pre">&#64;functools.total_ordering</span></code> To The Rescue</a></p></li>
+<li><p><a class="reference internal" href="#arithmetic-operators" id="id9">Arithmetic Operators</a></p></li>
+<li><p><a class="reference internal" href="#arithmetic-operators-reverse-operations" id="id10">Arithmetic Operators, Reverse Operations</a></p></li>
+<li><p><a class="reference internal" href="#table-operators-and-the-methods-to-implement-them" id="id11">Table: Operators And The Methods To Implement Them</a></p></li>
+</ul>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p><strong>Respect!</strong></p>
+<ul class="simple">
+<li><p>Colleagues want to understand your code</p></li>
+<li><p>Only overload operators when it makes sense</p></li>
+<li><p><strong>It is hard to get right!</strong></p></li>
+<li><p>Lots of magic behind the scene (reverse operations, proper use of
+<code class="docutils literal notranslate"><span class="pre">NotImplemented</span></code>)</p></li>
+</ul>
+</div>
+<section id="operators-are-dunder-methods">
+<h2><a class="toc-backref" href="#id1">Operators Are “Dunder” Methods</a><a class="headerlink" href="#operators-are-dunder-methods" title="Permalink to this headline">¶</a></h2>
+<p>Pythonicity: even the innocent <code class="docutils literal notranslate"><span class="pre">int</span></code> type is a class</p>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">int</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>int
+</pre></div>
+</div>
+</div>
+</div>
+<p>… with all consequences: class dictionary, methods (err, operators)</p>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">int</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s1">&#39;__add__&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;slot wrapper &#39;__add__&#39; of &#39;int&#39; objects&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Operators …</p>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>3
+</pre></div>
+</div>
+</div>
+</div>
+<p>… are methods:</p>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">int</span><span class="o">.</span><span class="fm">__add__</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>3
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="hypothetical-and-pointless-class-number">
+<h2><a class="toc-backref" href="#id2">Hypothetical And Pointless <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Number</span></code></a><a class="headerlink" href="#hypothetical-and-pointless-class-number" title="Permalink to this headline">¶</a></h2>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Number</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+</section>
+<section id="simplest-equality-comparison">
+<h2><a class="toc-backref" href="#id3">Simplest: Equality Comparison (<code class="docutils literal notranslate"><span class="pre">==</span></code>)</a><a class="headerlink" href="#simplest-equality-comparison" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>By default, Python defines object <em>equality</em> as object <em>identity</em></p></li>
+<li><p>⟶ two different objects with the same value compare
+un-equal</p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">l</span><span class="o">==</span><span class="n">r</span>      <span class="c1"># &lt;--- same as &quot;l is r&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>False
+</pre></div>
+</div>
+</div>
+</div>
+<ul class="simple">
+<li><p>Not whats expected</p></li>
+<li><p>⟶ overload <code class="docutils literal notranslate"><span class="pre">==</span></code> by defining the <code class="docutils literal notranslate"><span class="pre">__eq__</span></code> method</p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Number</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">n</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">l</span> <span class="o">==</span> <span class="n">r</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Number</span></code> does not define <code class="docutils literal notranslate"><span class="pre">__ne__</span></code></p></li>
+<li><p>Special Python behaivor</p></li>
+<li><p>Python calls <code class="docutils literal notranslate"><span class="pre">__eq__</span></code> and negates the result</p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">!=</span> <span class="n">r</span>    <span class="c1"># &lt;--- not (l==r)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>False
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="comparing-against-incompatible-types-lotsa-magic">
+<h2><a class="toc-backref" href="#id4">Comparing Against Incompatible Types? (Lotsa Magic!)</a><a class="headerlink" href="#comparing-against-incompatible-types-lotsa-magic" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Number</span></code> With <code class="docutils literal notranslate"><span class="pre">int</span></code>?</p></li>
+<li><p>⟶ <code class="docutils literal notranslate"><span class="pre">NotImplemented</span></code> triggers more special Python
+behavior</p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numbers</span>
+
+<span class="k">class</span> <span class="nc">Number</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>           <span class="c1"># &lt;--- easy</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">n</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span> <span class="c1"># &lt;--- any Python number</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">==</span> <span class="n">other</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>               <span class="c1"># &lt;--- magic</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+<p><strong>Straightforward</strong>: compare <code class="docutils literal notranslate"><span class="pre">Number</span></code> with <code class="docutils literal notranslate"><span class="pre">int</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Number.__eq__</span></code> knows about <code class="docutils literal notranslate"><span class="pre">int</span></code></p></li>
+<li><p>Compares directly</p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Less straightforward</strong>: compare <code class="docutils literal notranslate"><span class="pre">int</span></code> with <code class="docutils literal notranslate"><span class="pre">Number</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">int.__eq__</span></code> knows nothing</p></li>
+<li><p>Returns <code class="docutils literal notranslate"><span class="pre">NotImplemented</span></code></p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">i</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">i</span> <span class="o">==</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<p>But, at a lower level …</p>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">i</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>NotImplemented
+</pre></div>
+</div>
+</div>
+</div>
+<ul class="simple">
+<li><p>As a fallback of that, Python reverses operands, thereby asking the
+right hand operand</p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">two</span> <span class="o">=</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">two</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<ul class="simple">
+<li><p>Et voila …</p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">i</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">i</span> <span class="o">==</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Special behavior</strong>: this is the same as …</p>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">number2</span> <span class="o">=</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">int2</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">int2</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">number2</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">NotImplemented</span><span class="p">:</span>    <span class="c1"># &lt;--- retry, in reverse order</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">number2</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">int2</span><span class="p">)</span>
+
+<span class="n">result</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Not so special</strong>: comparing with e.g. <code class="docutils literal notranslate"><span class="pre">str</span></code></p>
+<ul class="simple">
+<li><p>Both direct and reversed operation return <code class="docutils literal notranslate"><span class="pre">NotImplemented</span></code></p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;2&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>False
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="ordering-less-than-operator">
+<h2><a class="toc-backref" href="#id5">Ordering: Less-Than (<cite>&lt;</cite>) Operator</a><a class="headerlink" href="#ordering-less-than-operator" title="Permalink to this headline">¶</a></h2>
+<p>As opposed to equality comparison (<code class="docutils literal notranslate"><span class="pre">==</span></code>, <code class="docutils literal notranslate"><span class="pre">!=</span></code>), Python itself does
+not order objects:</p>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">Number</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_127330</span><span class="o">/</span><span class="mf">3709071117.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">Number</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="ne">TypeError</span>: &#39;&lt;&#39; not supported between instances of &#39;Number&#39; and &#39;Number&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Straightforward implementation; no different from <code class="docutils literal notranslate"><span class="pre">__eq__</span></code>:</p>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numbers</span>
+
+<span class="k">class</span> <span class="nc">Number</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">n</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">&lt;</span> <span class="n">other</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+<p>Solves problem:</p>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">Number</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="ordering-magic-again-gt-in-terms-of-lt">
+<h2><a class="toc-backref" href="#id6">Ordering Magic, Again: <code class="docutils literal notranslate"><span class="pre">__gt__</span></code> in terms of <code class="docutils literal notranslate"><span class="pre">__lt__</span></code></a><a class="headerlink" href="#ordering-magic-again-gt-in-terms-of-lt" title="Permalink to this headline">¶</a></h2>
+<p>Magically, we see <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> implemented:</p>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Number</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">l</span> <span class="o">&gt;</span> <span class="n">r</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<p>No surprise though; Python knows that this is the same as <code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">&lt;</span> <span class="pre">l</span></code>:</p>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">hasattr</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="s1">&#39;__gt__&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="table-comparison-operators">
+<h2><a class="toc-backref" href="#id7">Table: Comparison Operators</a><a class="headerlink" href="#table-comparison-operators" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-auto docutils align-left">
+<thead>
+<tr class="row-odd"><th class="head"><p>Operator</p></th>
+<th class="head"><p>Method</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__lt__</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;=</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__le__</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">==</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__eq__</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">!=</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__ne__</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__gt__</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&gt;=</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__ge__</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functools-total-ordering-to-the-rescue">
+<h2><a class="toc-backref" href="#id8"><code class="docutils literal notranslate"><span class="pre">&#64;functools.total_ordering</span></code> To The Rescue</a><a class="headerlink" href="#functools-total-ordering-to-the-rescue" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Even without the <em>reflection</em> magic, implementing all of these is
+much writing</p></li>
+<li><p>⟶ <code class="docutils literal notranslate"><span class="pre">&#64;functools.total_ordering</span></code> decorator</p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numbers</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+
+<span class="nd">@functools</span><span class="o">.</span><span class="n">total_ordering</span>
+<span class="k">class</span> <span class="nc">Number</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">n</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">==</span> <span class="n">other</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">n</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">&lt;</span> <span class="n">other</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+
+<span class="n">Number</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="c1"># ... and all the other operators ...</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="arithmetic-operators">
+<h2><a class="toc-backref" href="#id9">Arithmetic Operators</a><a class="headerlink" href="#arithmetic-operators" title="Permalink to this headline">¶</a></h2>
+<p>Reverting back to start …</p>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Number</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+
+<span class="n">Number</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_127330</span><span class="o">/</span><span class="mf">151628379.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span>         <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> 
+<span class="ne">----&gt; </span><span class="mi">5</span> <span class="n">Number</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="ne">TypeError</span>: unsupported operand type(s) for -: &#39;Number&#39; and &#39;Number&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<ul class="simple">
+<li><p>No surprise: implement <code class="docutils literal notranslate"><span class="pre">__sub__</span></code></p></li>
+<li><p>Ideally, with full-bloated <code class="docutils literal notranslate"><span class="pre">NotImplemented</span></code> bells and whistles</p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numbers</span>
+
+<span class="k">class</span> <span class="nc">Number</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="k">def</span> <span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Number</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="n">other</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Number</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="n">other</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+
+<span class="nb">sum</span> <span class="o">=</span> <span class="n">Number</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span>
+<span class="nb">sum</span><span class="o">.</span><span class="n">n</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>-1
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="arithmetic-operators-reverse-operations">
+<h2><a class="toc-backref" href="#id10">Arithmetic Operators, Reverse Operations</a><a class="headerlink" href="#arithmetic-operators-reverse-operations" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Comparison operators are easy: operations are symmetric (<code class="docutils literal notranslate"><span class="pre">l</span> <span class="pre">&lt;</span> <span class="pre">r</span></code>
+⇔ <code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">&gt;</span> <span class="pre">l</span></code>)</p></li>
+<li><p>Arithmetic operators are not generally symmetric/commutative: <code class="docutils literal notranslate"><span class="pre">l</span> <span class="pre">-</span>
+<span class="pre">r</span></code> vs. <code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">-</span> <span class="pre">l</span></code></p></li>
+<li><p>⟶ <code class="docutils literal notranslate"><span class="pre">NotImplemented</span></code> fallbacks handled differently</p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">l</span> <span class="o">-</span> <span class="n">r</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_127330</span><span class="o">/</span><span class="mf">452733317.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">r</span> <span class="o">=</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> 
+<span class="ne">----&gt; </span><span class="mi">4</span> <span class="n">l</span> <span class="o">-</span> <span class="n">r</span>
+
+<span class="ne">TypeError</span>: unsupported operand type(s) for -: &#39;int&#39; and &#39;Number&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Hm. <code class="docutils literal notranslate"><span class="pre">int</span></code> knows nothing:</p>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="o">.</span><span class="fm">__sub__</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>NotImplemented
+</pre></div>
+</div>
+</div>
+</div>
+<ul class="simple">
+<li><p>Python knows that arithmetic operator are not generally symmetric</p></li>
+<li><p>Does not call <code class="docutils literal notranslate"><span class="pre">r.__sub__(l)</span></code> as a fallback</p></li>
+<li><p>⟶ <code class="docutils literal notranslate"><span class="pre">__rsub__</span></code> - <em>reverse subtraction</em></p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numbers</span>
+
+<span class="k">class</span> <span class="nc">Number</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="k">def</span> <span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Number</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="n">other</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Number</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="n">other</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+    <span class="k">def</span> <span class="fm">__rsub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Number</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Number</span><span class="p">(</span><span class="n">other</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+
+<span class="n">l</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">Number</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">diff</span> <span class="o">=</span> <span class="n">l</span> <span class="o">-</span> <span class="n">r</span>
+<span class="n">diff</span><span class="o">.</span><span class="n">n</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>-1
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="table-operators-and-the-methods-to-implement-them">
+<h2><a class="toc-backref" href="#id11">Table: Operators And The Methods To Implement Them</a><a class="headerlink" href="#table-operators-and-the-methods-to-implement-them" title="Permalink to this headline">¶</a></h2>
+<p>Here’s a table summarizing the rest of the operators that can be
+overloaded in Python. Reverse operations are not listed; they are
+usually prefixed with an <code class="docutils literal notranslate"><span class="pre">r</span></code>, as in <code class="docutils literal notranslate"><span class="pre">__rsub__</span></code>, <code class="docutils literal notranslate"><span class="pre">__radd__</span></code>,
+<code class="docutils literal notranslate"><span class="pre">__rrshift__</span></code>.</p>
+<table class="colwidths-auto docutils align-left">
+<thead>
+<tr class="row-odd"><th class="head"><p>Meaning</p></th>
+<th class="head"><p>Operator</p></th>
+<th class="head"><p>Method</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Addition</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">+</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__add__</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Subtraction</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__sub__</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Multiplication</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">*</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__mul__</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Power</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">**</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__pow__</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Division</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__truediv__</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Floor Division</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">//</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__floordiv__</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Modulo</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">%</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__mod__</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Bitwise Left Shift</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&lt;&lt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__lshift__</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Bitwise Right Shift</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&gt;&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__rshift__</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Bitwise AND</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&amp;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__and__</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Bitwise OR</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">|</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__or__</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Bitwise XOR</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">^</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__xor__</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2022 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../../_sources/trainings/material/soup/python/advanced/oo/operator-overloading/topic.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
