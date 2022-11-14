@@ -1,0 +1,84 @@
+.. ot-topic:: python.advanced.context_mgr
+   :dependencies: python.advanced.oo.classes_and_dicts,
+		  python.advanced.exceptions
+
+.. include:: <mmlalias.txt>
+
+
+Context Managers
+================
+
+.. contents::
+   :local:
+
+Why?
+----
+
+* Python is *garbage collected*
+* Actually, does not make any guarantees when resources are freed
+  (though C-Python does refcounting, deterministically)
+* Usually not a problem with memory-only data (like ``list``,
+  ``dict``, etc)
+* Want more deterministic behavior for other resources
+* *Automatic* cleanup |longrightarrow| exception safety
+* |longrightarrow| simplicity
+
+Example: Open File
+------------------
+
+.. sidebar::
+
+   **Documentation**
+
+   * :doc:`python:library/functions`
+
+* The prototypical example
+* ``open()`` return value (a ``io.TextIOWrapper`` instance) can be
+  used as a *context manager*
+* |longrightarrow| ``with``
+
+.. jupyter-execute::
+
+   with open('/etc/passwd') as f:
+       for line in f:
+           if 'jfasch' in line:
+               print(line)
+
+Without ``with``, this would have to look more ugly:
+
+.. jupyter-execute::
+
+   try:
+       f = open('/etc/passwd')
+       for line in f:
+           if 'jfasch' in line:
+               print(line)
+   finally:
+       f.close()
+
+Example: Temporary Directory
+----------------------------
+
+.. sidebar::
+
+   **Documentation**
+
+   * :doc:`python:library/tempfile`
+
+.. literalinclude:: tar-tmpdir.py
+   :caption: :download:`tar-tmpdir.py`
+   :language: python
+
+* Nested ``with`` blocks
+* |longrightarrow| hard to get manual cleanup right 
+
+
+
+
+
+TODO
+----
+
+
+
+https://www.youtube.com/watch?v=-aKFBoZpiqA
