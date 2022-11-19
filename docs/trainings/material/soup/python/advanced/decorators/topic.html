@@ -172,15 +172,22 @@
 <div class="contents local topic" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#the-ominous" id="id1">The Ominous “<code class="docutils literal notranslate"><span class="pre">&#64;</span></code>”</a></p></li>
-<li><p><a class="reference internal" href="#what-and-how" id="id2">What and How</a></p></li>
-<li><p><a class="reference internal" href="#closures-recap" id="id3">Closures Recap</a></p></li>
-<li><p><a class="reference internal" href="#simple-decorator-function-without-args" id="id4">Simple Decorator: Function Without Args</a></p></li>
-<li><p><a class="reference internal" href="#decorators-are-syntactic-sugar" id="id5">Decorators are Syntactic Sugar</a></p></li>
-<li><p><a class="reference internal" href="#args-kwargs-a-debug-decorator" id="id6"><code class="docutils literal notranslate"><span class="pre">*args</span></code>, <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>: A Debug-Decorator</a></p></li>
+<li><p><a class="reference internal" href="#decorators-overview" id="id2">Decorators Overview</a></p></li>
+<li><p><a class="reference internal" href="#decorator-basics" id="id3">Decorator Basics</a></p></li>
+<li><p><a class="reference internal" href="#decorators-are-syntactic-sugar" id="id4">Decorators are Syntactic Sugar</a></p></li>
+<li><p><a class="reference internal" href="#problem-arbitrary-function-arguments" id="id5">Problem: Arbitrary Function Arguments</a></p></li>
+<li><p><a class="reference internal" href="#args-kwargs-to-the-rescue" id="id6"><code class="docutils literal notranslate"><span class="pre">*args</span></code>, <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> To The Rescue</a></p></li>
 <li><p><a class="reference internal" href="#sideways-functools-wraps" id="id7">Sideways: <code class="docutils literal notranslate"><span class="pre">functools.wraps</span></code></a></p></li>
 <li><p><a class="reference internal" href="#class-decorator-debug-with-prefix" id="id8">Class Decorator: <code class="docutils literal notranslate"><span class="pre">debug()</span></code> with prefix</a></p></li>
 </ul>
 </div>
+<aside class="sidebar">
+<p><strong>See also</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../starargs/topic.html"><span class="doc">Positional and Keyword Arguments</span></a></p></li>
+<li><p><a class="reference internal" href="../closures/topic.html"><span class="doc">Closures</span></a></p></li>
+</ul>
+</aside>
 <section id="the-ominous">
 <h2><a class="toc-backref" href="#id1">The Ominous “<code class="docutils literal notranslate"><span class="pre">&#64;</span></code>”</a><a class="headerlink" href="#the-ominous" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -202,8 +209,8 @@
 </li>
 </ul>
 </section>
-<section id="what-and-how">
-<h2><a class="toc-backref" href="#id2">What and How</a><a class="headerlink" href="#what-and-how" title="Permalink to this headline">¶</a></h2>
+<section id="decorators-overview">
+<h2><a class="toc-backref" href="#id2">Decorators Overview</a><a class="headerlink" href="#decorators-overview" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Only syntactic sugar for inner functions/closures (see
 <a class="reference internal" href="../closures/topic.html"><span class="doc">Closures</span></a>)</p></li>
@@ -224,198 +231,158 @@ parameterized ⟶ state needs to be remembered)</p></li>
 </pre></div>
 </div>
 </section>
-<section id="closures-recap">
-<h2><a class="toc-backref" href="#id3">Closures Recap</a><a class="headerlink" href="#closures-recap" title="Permalink to this headline">¶</a></h2>
-<div class="jupyter_cell jupyter_container docutils container">
-<div class="cell_input code_cell docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;wrapper called, param =&#39;</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">param</span>
-    <span class="k">return</span> <span class="n">wrapper</span>
-
-<span class="n">eins</span> <span class="o">=</span> <span class="n">decorator</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">zwei</span> <span class="o">=</span> <span class="n">decorator</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">blah</span> <span class="o">=</span> <span class="n">decorator</span><span class="p">(</span><span class="s1">&#39;blah&#39;</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;eins&#39;</span><span class="p">,</span> <span class="n">eins</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;zwei&#39;</span><span class="p">,</span> <span class="n">zwei</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;blah&#39;</span><span class="p">,</span> <span class="n">blah</span><span class="p">())</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>wrapper called, param = 1
-eins 1
-wrapper called, param = 2
-zwei 2
-wrapper called, param = blah
-blah blah
-</pre></div>
-</div>
-</div>
-</div>
+<section id="decorator-basics">
+<h2><a class="toc-backref" href="#id3">Decorator Basics</a><a class="headerlink" href="#decorator-basics" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p><strong>See also</strong></p>
 <ul class="simple">
-<li><p>Ignore names <code class="docutils literal notranslate"><span class="pre">decorator</span></code>, <code class="docutils literal notranslate"><span class="pre">wrapper</span></code></p></li>
-<li><p>Think <code class="docutils literal notranslate"><span class="pre">outer</span></code> and <code class="docutils literal notranslate"><span class="pre">inner</span></code>, or <code class="docutils literal notranslate"><span class="pre">foo</span></code> and <code class="docutils literal notranslate"><span class="pre">bar</span></code></p></li>
-<li><p>Decorator semantics will come next</p></li>
+<li><p><a class="reference internal" href="../closures/topic.html"><span class="doc">Closures</span></a></p></li>
 </ul>
-</section>
-<section id="simple-decorator-function-without-args">
-<h2><a class="toc-backref" href="#id4">Simple Decorator: Function Without Args</a><a class="headerlink" href="#simple-decorator-function-without-args" title="Permalink to this headline">¶</a></h2>
-<div class="jupyter_cell jupyter_container docutils container">
-<div class="cell_input code_cell docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;wrapper called, func =&#39;</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">func</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">wrapper</span>
-
-<span class="k">def</span> <span class="nf">f1</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;f1 called&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="mi">1</span>
-
-<span class="k">def</span> <span class="nf">f2</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;f2 called&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="mi">2</span>
-
-<span class="n">f1</span> <span class="o">=</span> <span class="n">decorator</span><span class="p">(</span><span class="n">f1</span><span class="p">)</span>
-<span class="n">f2</span> <span class="o">=</span> <span class="n">decorator</span><span class="p">(</span><span class="n">f2</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;f1 returned&#39;</span><span class="p">,</span> <span class="n">f1</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;f2 returned&#39;</span><span class="p">,</span> <span class="n">f2</span><span class="p">())</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>wrapper called, func = f1
-f1 called
-f1 returned 1
-wrapper called, func = f2
-f2 called
-f2 returned 2
-</pre></div>
-</div>
-</div>
-</div>
+</aside>
 <ul class="simple">
-<li><p>Modify <code class="docutils literal notranslate"><span class="pre">decorator</span></code> to take a function as parameter</p></li>
-<li><p>Print return values, and wrapping information</p></li>
-</ul>
-</section>
-<section id="decorators-are-syntactic-sugar">
-<h2><a class="toc-backref" href="#id5">Decorators are Syntactic Sugar</a><a class="headerlink" href="#decorators-are-syntactic-sugar" title="Permalink to this headline">¶</a></h2>
-<div class="jupyter_cell jupyter_container docutils container">
-<div class="cell_input code_cell docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;wrapper called, func =&#39;</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">func</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">wrapper</span>
-
-<span class="nd">@decorator</span>
-<span class="k">def</span> <span class="nf">f1</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;f1 called&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="mi">1</span>
-
-<span class="nd">@decorator</span>
-<span class="k">def</span> <span class="nf">f2</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;f2 called&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="mi">2</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;f1 returned&#39;</span><span class="p">,</span> <span class="n">f1</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;f2 returned&#39;</span><span class="p">,</span> <span class="n">f2</span><span class="p">())</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>wrapper called, func = f1
-f1 called
-f1 returned 1
-wrapper called, func = f2
-f2 called
-f2 returned 2
-</pre></div>
-</div>
-</div>
-</div>
-<ul class="simple">
-<li><p>Replace explicit wrapper call to <code class="docutils literal notranslate"><span class="pre">decorator</span></code> with “<code class="docutils literal notranslate"><span class="pre">&#64;</span></code>” directly
-before function definitions</p></li>
-<li><p>Simply call functions (they are automatically wrapped)</p></li>
-<li><p>⟶ exactly the same</p></li>
-<li><p><em>That’s basically it</em>!</p></li>
-</ul>
-</section>
-<section id="args-kwargs-a-debug-decorator">
-<h2><a class="toc-backref" href="#id6"><code class="docutils literal notranslate"><span class="pre">*args</span></code>, <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>: A Debug-Decorator</a><a class="headerlink" href="#args-kwargs-a-debug-decorator" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Wrong</p></li>
-</ul>
-<div class="jupyter_cell jupyter_container docutils container">
-<div class="cell_input code_cell docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;debug: func =&#39;</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">func</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">wrapper</span>
-
-<span class="nd">@debug</span>
-<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">l</span><span class="o">+</span><span class="n">r</span>
-
-<span class="nd">@debug</span>
-<span class="k">def</span> <span class="nf">sub</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">l</span><span class="o">-</span><span class="n">r</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;add(1,2) returned&#39;</span><span class="p">,</span> <span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;sub(1,2) returned&#39;</span><span class="p">,</span> <span class="n">sub</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_230019</span><span class="o">/</span><span class="mf">1253093385.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="g g-Whitespace">     </span><span class="mi">13</span>     <span class="k">return</span> <span class="n">l</span><span class="o">-</span><span class="n">r</span>
-<span class="g g-Whitespace">     </span><span class="mi">14</span> 
-<span class="ne">---&gt; </span><span class="mi">15</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;add(1,2) returned&#39;</span><span class="p">,</span> <span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
-<span class="g g-Whitespace">     </span><span class="mi">16</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;sub(1,2) returned&#39;</span><span class="p">,</span> <span class="n">sub</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
-
-<span class="ne">TypeError</span>: debug.&lt;locals&gt;.wrapper() takes 0 positional arguments but 2 were given
-</pre></div>
-</div>
-</div>
-</div>
-<ul class="simple">
-<li><p>Right</p></li>
+<li><p>Something that creates a function to wrap another function</p></li>
+<li><p>Wrapped function passed as argument</p></li>
+<li><p>That is the whole point</p></li>
 </ul>
 <div class="jupyter_cell jupyter_container docutils container">
 <div class="cell_input code_cell docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;debug: func =&#39;</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s1">&#39;called:&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">wrapper</span>
-
-<span class="nd">@debug</span>
-<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">l</span><span class="o">+</span><span class="n">r</span>
-
-<span class="nd">@debug</span>
-<span class="k">def</span> <span class="nf">sub</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">l</span><span class="o">-</span><span class="n">r</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;add(1,2) returned&#39;</span><span class="p">,</span> <span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;sub(1,2) returned&#39;</span><span class="p">,</span> <span class="n">sub</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>debug: func = add (1, 2) {}
-add(1,2) returned 3
-debug: func = sub (1, 2) {}
-sub(1,2) returned -1
+</div>
+</div>
+<ul class="simple">
+<li><p>Can <code class="docutils literal notranslate"><span class="pre">&#64;debug</span></code> anything now</p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@debug</span>
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span>
+
+<span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>add called: (1, 2) {}
+</pre></div>
+</div>
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>3
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="decorators-are-syntactic-sugar">
+<h2><a class="toc-backref" href="#id4">Decorators are Syntactic Sugar</a><a class="headerlink" href="#decorators-are-syntactic-sugar" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>This is too much typing</p></li>
+<li><p>Why explicitly <em>replace</em> a function?</p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;f called&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">42</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+<ul class="simple">
+<li><p>Want decadence!</p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@debug</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">():</span>
+    <span class="k">return</span> <span class="mi">42</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+</section>
+<section id="problem-arbitrary-function-arguments">
+<h2><a class="toc-backref" href="#id5">Problem: Arbitrary Function Arguments</a><a class="headerlink" href="#problem-arbitrary-function-arguments" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Currently, <code class="docutils literal notranslate"><span class="pre">wrapper()</span></code> cannot does not take any arguments</p></li>
+<li><p>⟶ cannot wrap <em>any</em> function</p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@debug</span>
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span>
+
+<span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>add called: (1, 2) {}
+</pre></div>
+</div>
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>3
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="args-kwargs-to-the-rescue">
+<h2><a class="toc-backref" href="#id6"><code class="docutils literal notranslate"><span class="pre">*args</span></code>, <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> To The Rescue</a><a class="headerlink" href="#args-kwargs-to-the-rescue" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<ul class="simple">
+<li><p><a class="reference internal" href="../starargs/topic.html"><span class="doc">Positional and Keyword Arguments</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>A wrapper needs to accept <em>anything</em> that the wrapped function can
+take</p></li>
+<li><p>As generic as possible</p></li>
+<li><p>⟶ <a class="reference internal" href="../starargs/topic.html"><span class="doc">starargs</span></a></p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>       <span class="c1"># &lt;--- accept anything</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s1">&#39;called:&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>    <span class="c1"># &lt;--- pass anything</span>
+    <span class="k">return</span> <span class="n">wrapper</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+<ul class="simple">
+<li><p>Can wrap anything</p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@debug</span>
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span>
+
+<span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>add called: (1, 2) {}
+</pre></div>
+</div>
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>3
 </pre></div>
 </div>
 </div>
@@ -428,62 +395,51 @@ sub(1,2) returned -1
 </ul>
 <div class="jupyter_cell jupyter_container docutils container">
 <div class="cell_input code_cell docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;debug: func =&#39;</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">wrapper</span>
-
-<span class="nd">@debug</span>
-<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">l</span><span class="o">+</span><span class="n">r</span>
-
-<span class="nd">@debug</span>
-<span class="k">def</span> <span class="nf">sub</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">l</span><span class="o">-</span><span class="n">r</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;add name:&#39;</span><span class="p">,</span> <span class="n">add</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;sub name:&#39;</span><span class="p">,</span> <span class="n">sub</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">add</span><span class="o">.</span><span class="vm">__name__</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>add name: wrapper
-sub name: wrapper
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>&#39;wrapper&#39;
 </pre></div>
 </div>
 </div>
 </div>
 <ul class="simple">
 <li><p>Pretty: add description (copy metadata over)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;functools.wraps</span></code>: a decorator for decorators</p></li>
 </ul>
 <div class="jupyter_cell jupyter_container docutils container">
 <div class="cell_input code_cell docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">functools</span>
 
 <span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>           <span class="c1"># &lt;--- copy func metadata over to wrapper</span>
     <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;debug: func =&#39;</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s1">&#39;called:&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">wrapper</span>
-
-<span class="nd">@debug</span>
-<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">l</span><span class="o">+</span><span class="n">r</span>
-
-<span class="nd">@debug</span>
-<span class="k">def</span> <span class="nf">sub</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">l</span><span class="o">-</span><span class="n">r</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;add name:&#39;</span><span class="p">,</span> <span class="n">add</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;sub name:&#39;</span><span class="p">,</span> <span class="n">sub</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>add name: add
-sub name: sub
+</div>
+</div>
+<ul class="simple">
+<li><p>Now any decorated/wrapped function has all it needs</p></li>
+</ul>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@debug</span>
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span>
+
+<span class="n">add</span><span class="o">.</span><span class="vm">__name__</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>&#39;add&#39;
 </pre></div>
 </div>
 </div>
