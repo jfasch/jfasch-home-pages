@@ -27,7 +27,7 @@
     <link rel="canonical" href="https://www.faschingbauer.me/about/site/work-in-progress/fh-joanneum/2020/ws2022.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
-    <link rel="next" title="I2S Audio for a Kontron SMARC Module" href="../../project-xxx/index.html" />
+    <link rel="next" title="Build Toolchain Using Docker (Fedora)" href="ws2022/toolchain-build-docker-fedora.html" />
     <link rel="prev" title="2022-04-01" href="ss2022-log/2022-04-01.html" /> 
    
   <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
@@ -129,6 +129,9 @@
 <li class="toctree-l5"><a class="reference internal" href="ss2022.html">SS2022</a></li>
 <li class="toctree-l5"><a class="reference internal" href="ss2022-log/index.html">SS2022: Logs</a></li>
 <li class="toctree-l5 current"><a class="current reference internal" href="#">WS2022</a></li>
+<li class="toctree-l5"><a class="reference internal" href="ws2022/toolchain-build-docker-fedora.html">Build Toolchain Using Docker (Fedora)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="ws2022/toolchain-setup.html">Cross Toolchain Setup</a></li>
+<li class="toctree-l5"><a class="reference internal" href="ws2022/exercise-ws-sensor.html">Exercise: OneWire Sensor Class</a></li>
 </ul>
 </li>
 </ul>
@@ -233,66 +236,12 @@
 <tr class="row-even"><td><p>2022-11-11</p></td>
 <td></td>
 <td><p>3</p></td>
-<td><ul>
+<td><ul class="simple">
 <li><p>Continuing with Design Patterns</p>
 <ul>
 <li><p><a class="reference internal" href="../../../../../trainings/material/soup/cxx-design-patterns/composite/composite.html"><span class="doc">Composite</span></a>
 (use <code class="docutils literal notranslate"><span class="pre">std::vector&lt;&gt;</span></code> to store multiple <code class="docutils literal notranslate"><span class="pre">Sensor*</span></code>;
-<a class="reference internal" href="../../../../../trainings/material/soup/cxx03/060-stl/040-sequential-containers/vector.html"><span class="doc">more information</span></a>)</p>
-<p>jjj stop here</p>
-</li>
-</ul>
-</li>
-<li><p>Cross toolchain setup (now one that works for C++)</p>
-<ul>
-<li><p>Download toolchain (whopping 70MB), and unpack to
-<code class="docutils literal notranslate"><span class="pre">&lt;toolchain-dir&gt;</span></code>: <a class="reference external" href="https://drive.google.com/file/d/1vuV3fLCamsqR54Thhr1vZ7lmSjCTpqSg/view?usp=sharing">armv8-rpi4-linux-gnueabihf.tar.xz</a></p></li>
-<li><p>Modify <code class="docutils literal notranslate"><span class="pre">PATH</span></code> (best permanently in <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code>). Make
-sure that <code class="docutils literal notranslate"><span class="pre">&lt;toolchain-dir&gt;</span></code> is given as <strong>absolute path</strong>
-(<a class="reference internal" href="../../../../../trainings/material/soup/linux/basics/shell/paths.html"><span class="doc">see here</span></a>).</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span>&lt;toolchain-dir&gt;/armv8-rpi4-linux-gnueabihf/bin:<span class="nv">$PATH</span>
-
-<span class="go">jjj .bashrc recap</span>
-</pre></div>
-</div>
-</li>
-<li><p>Download (best into <code class="docutils literal notranslate"><span class="pre">&lt;toolchain-dir&gt;</span></code>) and modify:
-<a class="reference download internal" download="" href="../../../../../_downloads/90a83a5eed1cbb08a65e9f6a25388f25/armv8-rpi4-linux-gnueabihf.cmake"><code class="xref download docutils literal notranslate"><span class="pre">Toolchain</span> <span class="pre">file</span></code></a></p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>set(CMAKE_FIND_ROOT_PATH &lt;toolchain-dir&gt;/armv8-rpi4-linux-gnueabihf/armv8-rpi4-linux-gnueabihf/sysroot)
-set(CMAKE_SYSROOT &lt;toolchain-dir&gt;/armv8-rpi4-linux-gnueabihf/armv8-rpi4-linux-gnueabihf/sysroot)
-
-jjj sysroot
-</pre></div>
-</div>
-</li>
-<li><p>Further information</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="../../../../../trainings/material/soup/linux/toolchain/cmake/cross.html"><span class="doc">CMake: Cross Build</span></a></p></li>
-<li><p><a class="reference internal" href="../../../../../blog/2022/09/cross-raspi.html"><span class="doc">Building A Cross Toolchain For The Raspberry Pi, Using crosstool-ng</span></a></p></li>
-</ul>
-<p>jjj demo how that goes #$%^&amp;^%$#</p>
-</li>
-</ul>
-</li>
-<li><p>Exercise</p>
-<ul class="simple">
-<li><p>To your project, as a subdirectory of the toplevel
-directory, add a directory <code class="docutils literal notranslate"><span class="pre">bin-trainee/</span></code> to your build,
-and register it with your top-level <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code></p></li>
-<li><p>Add <a class="reference external" href="https://github.com/jfasch/FH-ECE20-patterns/blob/main/bin-trainer/onewire-temperature.cpp">onewire-temperature.cpp</a>
-to that directory (and its <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code>, of course)</p></li>
-<li><p>Slowly transform that program as follows</p>
-<ul>
-<li><p>Create a <em>real</em> sensor in <code class="docutils literal notranslate"><span class="pre">libtrainee/sensor-onewire.h</span></code>
-and <code class="docutils literal notranslate"><span class="pre">libtrainee/sensor-onewire.cpp</span></code>. (Move code over
-from the <code class="docutils literal notranslate"><span class="pre">onewire-temperature.cpp</span></code> into the class as
-you go.) (<em>Hint:</em> you use <a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string/stof">std::stod</a>
-to convert a string into its <code class="docutils literal notranslate"><span class="pre">double</span></code> representation.)</p></li>
-<li><p>Otherwise, leave the program intact.</p></li>
-</ul>
-</li>
-<li><p>When done, transfer it to our Cloud Platform (<code class="docutils literal notranslate"><span class="pre">ssh</span> <span class="pre">-p</span> <span class="pre">2020</span>
-<span class="pre">firstname.lastname&#64;jfasch.bounceme.net</span></code>) and test.</p></li>
+<a class="reference internal" href="../../../../../trainings/material/soup/cxx03/060-stl/040-sequential-containers/vector.html"><span class="doc">more information</span></a>)</p></li>
 </ul>
 </li>
 </ul>
@@ -306,7 +255,11 @@ to convert a string into its <code class="docutils literal notranslate"><span cl
 <tr class="row-even"><td></td>
 <td><p>2022-11-22</p></td>
 <td><p>4</p></td>
-<td></td>
+<td><ul class="simple">
+<li><p><a class="reference internal" href="ws2022/toolchain-setup.html"><span class="doc">Cross Toolchain Setup</span></a></p></li>
+<li><p><a class="reference internal" href="ws2022/exercise-ws-sensor.html"><span class="doc">Exercise: OneWire Sensor Class</span></a></p></li>
+</ul>
+</td>
 </tr>
 <tr class="row-odd"><td></td>
 <td><p>2022-11-29</p></td>
