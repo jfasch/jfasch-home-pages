@@ -1,0 +1,631 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>std::filesystem &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx11/filesystem/topic.html" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="Introduction" href="../exercises/group.html" />
+    <link rel="prev" title="New-Style Union: std::variant" href="../100-miscellaneous/any-variant-optional/variant.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../index.html">
+    <img class="logo" src="../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../group.html">C++ 11</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../010-introduction/group.html">Introduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../020-new-language-features/group.html">New Language Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../030-smart-pointers/group.html">Smart Pointers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../035-perfect-forwarding/topic.html">Perfect Forwarding</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../040-bind-function/group.html">Functions, Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../050-multithreading/group.html">Multithreading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../100-miscellaneous/group.html">Miscellaneous</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">std::filesystem</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../exercises/group.html">Introduction</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx-design-patterns/group.html">Design Patterns With C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx-code/index.html">C++ Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx-exercises/group.html">C++ Exercises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="std-filesystem">
+<h1><code class="docutils literal notranslate"><span class="pre">std::filesystem</span></code><a class="headerlink" href="#std-filesystem" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#overview" id="id13">Overview</a></p></li>
+<li><p><a class="reference internal" href="#fixture" id="id14">Fixture</a></p></li>
+<li><p><a class="reference internal" href="#paths-composition-comparison" id="id15">Paths: Composition, Comparison</a></p></li>
+<li><p><a class="reference internal" href="#absolute-and-relative-paths" id="id16">Absolute and Relative Paths</a></p></li>
+<li><p><a class="reference internal" href="#path-component-access" id="id17">Path Component Access</a></p></li>
+<li><p><a class="reference internal" href="#iterating-over-path-components" id="id18">Iterating Over Path Components</a></p></li>
+<li><p><a class="reference internal" href="#directory-creation-std-filesystem-create-directory" id="id19">Directory Creation: <code class="docutils literal notranslate"><span class="pre">std::filesystem::create_directory()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#directory-creation-std-filesystem-create-directories-mkdir-p" id="id20">Directory Creation: <code class="docutils literal notranslate"><span class="pre">std::filesystem::create_directories()</span></code> (<code class="docutils literal notranslate"><span class="pre">mkdir</span> <span class="pre">-p</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#directory-entry-classification-std-filesystem-is-xxx" id="id21">Directory Entry Classification: <code class="docutils literal notranslate"><span class="pre">std::filesystem::is_xxx()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#iterating-over-directory-entries" id="id22">Iterating Over Directory Entries</a></p></li>
+<li><p><a class="reference internal" href="#recursive-directory-iteration" id="id23">Recursive Directory Iteration</a></p></li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This topic is usually live hacked.</p>
+</div>
+<section id="overview">
+<h2><a class="toc-backref" href="#id13">Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p><strong>Documentation</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/filesystem">std::filesystem</a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>File system related stuff (obviously)</p>
+<ul>
+<li><p>Path manipulation</p></li>
+<li><p>Directory creation and iteration ⟶ even recursive!</p></li>
+<li><p>Stats linke size, access time</p></li>
+<li><p>Permissions</p></li>
+<li><p>Support routines like copy, remove, …</p></li>
+</ul>
+</li>
+<li><p>Since C++ 17</p></li>
+<li><p>Continually improved since then</p></li>
+</ul>
+</section>
+<section id="fixture">
+<h2><a class="toc-backref" href="#id14">Fixture</a><a class="headerlink" href="#fixture" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p><strong>See also</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../unittest/unittest_gtest_fixture/topic.html"><span class="doc">Unittest: GTest Fixtures</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Every test case has its own temporary directory, by a
+<code class="docutils literal notranslate"><span class="pre">std::filesystem::path</span></code> type variable, <code class="docutils literal notranslate"><span class="pre">dirname</span></code></p></li>
+<li><p>Directory is removed after each test run ⟶
+<a class="reference internal" href="../../unittest/unittest_gtest_fixture/topic.html"><span class="doc">fixture</span></a></p></li>
+<li><p>(Not central to this topic, just for completeness)</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/fb0c560f5b9a36c5cae1876a811ac8dd/suite.h"><code class="xref download docutils literal notranslate"><span class="pre">code/suite.h</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;fixture-tmpdir.h&gt;</span><span class="cp"></span>
+
+<span class="k">struct</span> <span class="nc">filesystem_suite</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">tmpdir_fixture</span><span class="w"> </span><span class="p">{};</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="paths-composition-comparison">
+<h2><a class="toc-backref" href="#id15">Paths: Composition, Comparison</a><a class="headerlink" href="#paths-composition-comparison" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p><strong>Documentation</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/filesystem/path">std::filesystem::path</a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">std::filesystem::path</span></code> does not access filesystem</p></li>
+<li><p>Used as input to higher level routines</p></li>
+<li><p>Main operators: <code class="docutils literal notranslate"><span class="pre">/=</span></code>, <code class="docutils literal notranslate"><span class="pre">/</span></code></p></li>
+<li><p>Lexical comparison</p></li>
+<li><p>Largely compatible with <code class="docutils literal notranslate"><span class="pre">str::string</span></code></p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/b5b4039e2e8d5695b071c016439b0abe/path_compose_compare.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/path_compose_compare.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;suite.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;filesystem&gt;</span><span class="cp"></span>
+
+<span class="n">TEST_F</span><span class="p">(</span><span class="n">filesystem_suite</span><span class="p">,</span><span class="w"> </span><span class="n">path_compose_compare</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="w"> </span><span class="n">fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;/&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">fn</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="s">&quot;etc&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">fn</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="s">&quot;passwd&quot;</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;/etc/passwd&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/2886b07c40a0a6bc3d65ab8406c4bee2/path_compose_compare_2.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/path_compose_compare_2.cpp</span></code></a></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;suite.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;filesystem&gt;</span><span class="cp"></span>
+
+<span class="n">TEST_F</span><span class="p">(</span><span class="n">filesystem_suite</span><span class="p">,</span><span class="w"> </span><span class="n">path_compose_compare_2</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="w"> </span><span class="n">fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;/etc&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="w"> </span><span class="n">passwd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fn</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;passwd&quot;</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">passwd</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;/etc/passwd&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="absolute-and-relative-paths">
+<h2><a class="toc-backref" href="#id16">Absolute and Relative Paths</a><a class="headerlink" href="#absolute-and-relative-paths" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p><strong>See also</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../linux/basics/shell/paths.html"><span class="doc">Absolute and Relative Paths</span></a></p></li>
+</ul>
+</aside>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/4eda27b0e096a82b55b044e7ae957137/path_abs_rel.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/path_abs_rel.cpp</span></code></a></span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;suite.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;filesystem&gt;</span><span class="cp"></span>
+
+<span class="n">TEST_F</span><span class="p">(</span><span class="n">filesystem_suite</span><span class="p">,</span><span class="w"> </span><span class="n">path_abs_rel</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="w"> </span><span class="n">abspath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;/etc/passwd&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">abspath</span><span class="p">.</span><span class="n">is_absolute</span><span class="p">());</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_FALSE</span><span class="p">(</span><span class="n">abspath</span><span class="p">.</span><span class="n">is_relative</span><span class="p">());</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="w"> </span><span class="n">relpath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;etc/passwd&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_FALSE</span><span class="p">(</span><span class="n">relpath</span><span class="p">.</span><span class="n">is_absolute</span><span class="p">());</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">relpath</span><span class="p">.</span><span class="n">is_relative</span><span class="p">());</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="path-component-access">
+<h2><a class="toc-backref" href="#id17">Path Component Access</a><a class="headerlink" href="#path-component-access" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Extracting filename from an entire path</p></li>
+<li><p>Extracting parent directory from an entire path</p></li>
+<li><p>…</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/d2c3e34fc95b0685a42baf85ef885ee8/path_component_access.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/path_component_access.cpp</span></code></a></span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;suite.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;filesystem&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span><span class="cp"></span>
+
+<span class="n">TEST_F</span><span class="p">(</span><span class="n">filesystem_suite</span><span class="p">,</span><span class="w"> </span><span class="n">path_component_access</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;/a/b/c/blah&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">filename_part</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">path</span><span class="p">.</span><span class="n">filename</span><span class="p">();</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">filename_part</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;blah&quot;</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">dir_part</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">path</span><span class="p">.</span><span class="n">parent_path</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">dir_part</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;/a/b/c&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="iterating-over-path-components">
+<h2><a class="toc-backref" href="#id18">Iterating Over Path Components</a><a class="headerlink" href="#iterating-over-path-components" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>A <code class="docutils literal notranslate"><span class="pre">path</span></code> is basically a list of strings</p></li>
+<li><p>Separated by OS specific directory separators</p></li>
+<li><p>Absolute paths start with a separator</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/442c18d33b94a084d7af9a8f842ff7c6/path_iteration.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/path_iteration.cpp</span></code></a></span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;suite.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;filesystem&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span><span class="cp"></span>
+
+<span class="n">TEST_F</span><span class="p">(</span><span class="n">filesystem_suite</span><span class="p">,</span><span class="w"> </span><span class="n">path_iteration</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;/etc/passwd&quot;</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">components</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span><span class="w"></span>
+
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="nl">component</span><span class="p">:</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">components</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">component</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">components</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="s">&quot;/&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">components</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="s">&quot;etc&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">components</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="s">&quot;passwd&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="directory-creation-std-filesystem-create-directory">
+<h2><a class="toc-backref" href="#id19">Directory Creation: <code class="docutils literal notranslate"><span class="pre">std::filesystem::create_directory()</span></code></a><a class="headerlink" href="#directory-creation-std-filesystem-create-directory" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p><strong>See also</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../linux/basics/shell/file_dir_create_rm.html"><span class="doc">Creating And Removing Files and Directories</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Os wise, creating a directory fail if the parent directory does not
+exist (or has no permissions)</p></li>
+<li><p>⟶ E.g. <code class="docutils literal notranslate"><span class="pre">mkdir</span> <span class="pre">-p</span></code> allows you to create paths of
+multiple levels</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/112765c150def81c40cbb77c0b5ee11c/create_directory_error.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/create_directory_error.cpp</span></code></a></span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;suite.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;filesystem&gt;</span><span class="cp"></span>
+
+<span class="n">TEST_F</span><span class="p">(</span><span class="n">filesystem_suite</span><span class="p">,</span><span class="w"> </span><span class="n">create_directory_error</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_THROW</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">create_directory</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;parent/child&quot;</span><span class="p">),</span><span class="w"></span>
+<span class="w">                 </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">filesystem_error</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><p>Create directories one at a time</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/8def939fe8b2c1f460dedb609b43f239/create_directory_single.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/create_directory_single.cpp</span></code></a></span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;suite.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;filesystem&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdexcept&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;fstream&gt;</span><span class="cp"></span>
+
+<span class="n">TEST_F</span><span class="p">(</span><span class="n">filesystem_suite</span><span class="p">,</span><span class="w"> </span><span class="n">create_directory_single</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">create_directory</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;parent&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">create_directory</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;parent/child&quot;</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">ofstream</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;parent/child/file.txt&quot;</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">is_regular_file</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;parent/child/file.txt&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="directory-creation-std-filesystem-create-directories-mkdir-p">
+<h2><a class="toc-backref" href="#id20">Directory Creation: <code class="docutils literal notranslate"><span class="pre">std::filesystem::create_directories()</span></code> (<code class="docutils literal notranslate"><span class="pre">mkdir</span> <span class="pre">-p</span></code>)</a><a class="headerlink" href="#directory-creation-std-filesystem-create-directories-mkdir-p" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Creating multiple level of directories in one shot</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/069da6a7f5c6ac483ece801fb6c90fd9/create_directory_multiple.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/create_directory_multiple.cpp</span></code></a></span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;suite.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;filesystem&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;fstream&gt;</span><span class="cp"></span>
+
+<span class="n">TEST_F</span><span class="p">(</span><span class="n">filesystem_suite</span><span class="p">,</span><span class="w"> </span><span class="n">create_directory_multiple</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">create_directories</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;parent/child&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">ofstream</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;parent/child/file.txt&quot;</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">is_regular_file</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;parent/child/file.txt&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="directory-entry-classification-std-filesystem-is-xxx">
+<h2><a class="toc-backref" href="#id21">Directory Entry Classification: <code class="docutils literal notranslate"><span class="pre">std::filesystem::is_xxx()</span></code></a><a class="headerlink" href="#directory-entry-classification-std-filesystem-is-xxx" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Directories may contain files and directories</p></li>
+<li><p>Symbolic links, named pipes, character devices, block devices, …</p></li>
+<li><p>⟶ classification routines</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/99c0c92e5ac31f4127ff0a576f54099b/is_xxx.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/is_xxx.cpp</span></code></a></span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;suite.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;filesystem&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;fstream&gt;</span><span class="cp"></span>
+
+<span class="n">TEST_F</span><span class="p">(</span><span class="n">filesystem_suite</span><span class="p">,</span><span class="w"> </span><span class="n">is_xxx</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">create_directory</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;subdir&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">is_directory</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;subdir&quot;</span><span class="p">));</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">ofstream</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;file&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">is_regular_file</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;file&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<p>From <a class="reference external" href="https://en.cppreference.com/w/cpp/filesystem">cppreference.com</a>:</p>
+<table class="colwidths-auto docutils align-left">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">is_block_file</span></code></p></td>
+<td><p>checks whether the given path refers to block device</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">is_character_file</span></code></p></td>
+<td><p>checks whether the given path refers to a character device</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">is_directory</span></code></p></td>
+<td><p>checks whether the given path refers to a directory</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">is_empty</span></code></p></td>
+<td><p>checks whether the given path refers to an empty file or
+directory</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">is_fifo</span></code></p></td>
+<td><p>checks whether the given path refers to a named pipe</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">is_other</span></code></p></td>
+<td><p>checks whether the argument refers to an other file</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">is_regular_file</span></code></p></td>
+<td><p>checks whether the argument refers to a regular file</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">is_socket</span></code></p></td>
+<td><p>checks whether the argument refers to a named IPC socket</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">is_symlink</span></code></p></td>
+<td><p>checks whether the argument refers to a symbolic link</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="iterating-over-directory-entries">
+<h2><a class="toc-backref" href="#id22">Iterating Over Directory Entries</a><a class="headerlink" href="#iterating-over-directory-entries" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p><strong>Documentation</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man3/readdir.3.html">man -s 3 readdir</a></p></li>
+</ul>
+<p><strong>See also</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../cxx03/060-stl/010-basics/topic.html"><span class="doc">Standard Template Library: Basics</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Directories contain entries</p>
+<ul>
+<li><p>⟶ want to iterate over those</p></li>
+<li><p>⟶ <a class="reference internal" href="../../cxx03/060-stl/010-basics/topic.html"><span class="doc">C++ iterators</span></a></p></li>
+</ul>
+</li>
+<li><p>OS wise, directories are not read in any particular order</p></li>
+<li><p>File system specific (e.h. <code class="docutils literal notranslate"><span class="pre">ext4</span></code> might be different from
+<code class="docutils literal notranslate"><span class="pre">btrfs</span></code> from <code class="docutils literal notranslate"><span class="pre">ntfs</span></code>)</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/b5ec8df48389772080c1b32c9003be1a/directory_iterator.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/directory_iterator.cpp</span></code></a></span><a class="headerlink" href="#id11" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;suite.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;filesystem&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;fstream&gt;</span><span class="cp"></span>
+
+<span class="n">TEST_F</span><span class="p">(</span><span class="n">filesystem_suite</span><span class="p">,</span><span class="w"> </span><span class="n">directory_iterator</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">create_directory</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;subdir1&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">create_directory</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;subdir2&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">ofstream</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;subdir1/file&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">ofstream</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;subdir2/file&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">ofstream</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;file1&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">ofstream</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;file2&quot;</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="o">&gt;</span><span class="w"> </span><span class="n">entries</span><span class="p">;</span><span class="w">         </span><span class="c1">// &lt;--- iteration order is not (necessarily) creation order</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">diriter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">directory_iterator</span><span class="p">(</span><span class="n">dirname</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">directory_entry</span><span class="o">&amp;</span><span class="w"> </span><span class="nl">entry</span><span class="p">:</span><span class="w"> </span><span class="n">diriter</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">entries</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">entry</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">entries</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span><span class="w">                    </span><span class="c1">// &lt;--- not 6! (no recursion)</span>
+
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">entries</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;subdir1&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">entries</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;subdir2&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">entries</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;file1&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">entries</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;file2&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="recursive-directory-iteration">
+<h2><a class="toc-backref" href="#id23">Recursive Directory Iteration</a><a class="headerlink" href="#recursive-directory-iteration" title="Permalink to this headline">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/ce701447d6050002afcfe7023bda2a04/recursive_directory_iterator.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/recursive_directory_iterator.cpp</span></code></a></span><a class="headerlink" href="#id12" title="Permalink to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;suite.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;filesystem&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;fstream&gt;</span><span class="cp"></span>
+
+<span class="n">TEST_F</span><span class="p">(</span><span class="n">filesystem_suite</span><span class="p">,</span><span class="w"> </span><span class="n">recursive_directory_iterator</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">create_directory</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;subdir1&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">create_directory</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;subdir2&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">ofstream</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;subdir1/file&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">ofstream</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;subdir2/file&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">ofstream</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;file1&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">ofstream</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;file2&quot;</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">diriter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">recursive_directory_iterator</span><span class="p">(</span><span class="n">dirname</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="o">&gt;</span><span class="w"> </span><span class="n">entries</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="nl">entry</span><span class="p">:</span><span class="w"> </span><span class="n">diriter</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">entries</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">entry</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">entries</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span><span class="w"> </span><span class="mi">6</span><span class="p">);</span><span class="w">                  </span><span class="c1">// &lt;--- *recursive*: hitting entries in subdirs too</span>
+
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">entries</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;subdir1&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">entries</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;subdir2&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">entries</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;subdir1/file&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">entries</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;subdir2/file&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">entries</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;file1&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">entries</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;file2&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2022 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../_sources/trainings/material/soup/cxx11/filesystem/topic.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

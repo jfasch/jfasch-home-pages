@@ -128,10 +128,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../observer/observer.html">Observer</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../abstract-factory/abstract-factory.html">Abstract Factory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../heating-screenplay/heating-screenplay.html">Case Study/Livehacking: Heating Control (Reading Sensors)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../solutions/group.html">Solutions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../course-preparation.html">Course Preparation</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx-code/index.html">C++ Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx-exercises/group.html">C++ Exercises</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../linux/group.html">Linux</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../unittest/group.html">Unit Testing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../kernel/group.html">Linux Kernel Driver Development</a></li>
@@ -181,23 +181,24 @@
 <section id="problem">
 <h2><a class="toc-backref" href="#id7">Problem</a><a class="headerlink" href="#problem" title="Permalink to this headline">¶</a></h2>
 <p>The sensor hierarchy of our company covers many different
-sensor. However, management has decided that it is not broad enough,
-and some sensors of company A need to be added. Company A has software
-implementations for those sensors that we could technically use. It
-does not fit into our hierarchy, naturally <a class="footnote-reference brackets" href="#impedance-mismatch" id="id1">1</a>.</p>
+sensors. However, management has decided that it is not broad enough,
+and some sensors of another company need to be added. That company has
+software implementations for those sensors that we could technically
+use. Naturally, those software implementations do not fit into our
+hierarchy <a class="footnote-reference brackets" href="#impedance-mismatch" id="id1">1</a>.</p>
 <p>What they have, though, is a similar hierarchy (one interface for all
 their sensors), with the only apparent difference being that they
 measure in degrees Fahrenheit.</p>
-<a class="reference internal image-reference" href="../../../../../_images/sensor-hierarchy-company-A.png"><img alt="../../../../../_images/sensor-hierarchy-company-A.png" src="../../../../../_images/sensor-hierarchy-company-A.png" style="width: 701.6px; height: 510.0px;" /></a>
+<a class="reference internal image-reference" href="../../../../../_images/fahrenheit-hierarchy.png"><img alt="../../../../../_images/fahrenheit-hierarchy.png" src="../../../../../_images/fahrenheit-hierarchy.png" style="width: 701.6px; height: 510.0px;" /></a>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/13e3b46a4f335d4759148e1593e63643/sensor-A.h"><code class="xref download docutils literal notranslate"><span class="pre">../code/libtrainer/sensor-A.h</span></code></a></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/fe1ac739d4ff8f2d0ed4f4f930450a1e/sensor-fahrenheit.h"><code class="xref download docutils literal notranslate"><span class="pre">/trainings/material/soup/cxx-code/design-patterns-adapter/sensors-fahrenheit/sensor-fahrenheit.h</span></code></a></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#pragma once</span>
 
-<span class="k">class</span> <span class="nc">ASensor</span><span class="w"></span>
+<span class="k">class</span> <span class="nc">FahrenheitSensor</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="k">public</span><span class="o">:</span><span class="w"></span>
-<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">ASensor</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
-<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">get_temperature_fahrenheit</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">FahrenheitSensor</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">get_temperature_f</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
 <span class="p">};</span><span class="w"></span>
 </pre></div>
 </div>
@@ -207,7 +208,7 @@ measure in degrees Fahrenheit.</p>
 <h2><a class="toc-backref" href="#id8">Solution: Adaptation</a><a class="headerlink" href="#solution-adaptation" title="Permalink to this headline">¶</a></h2>
 <p>Seems like we could be able to integrate all of their sensors in one
 swoop, <em>easily</em>.</p>
-<a class="reference internal image-reference" href="../../../../../_images/sensor-a-adapter.png"><img alt="../../../../../_images/sensor-a-adapter.png" src="../../../../../_images/sensor-a-adapter.png" style="width: 701.6px; height: 510.0px;" /></a>
+<a class="reference internal image-reference" href="../../../../../_images/fahrenheit-adapter.png"><img alt="../../../../../_images/fahrenheit-adapter.png" src="../../../../../_images/fahrenheit-adapter.png" style="width: 701.6px; height: 510.0px;" /></a>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Convert Fahrenheit to Celsius using the following formula:</p>
@@ -223,24 +224,24 @@ time.</p>
 <section id="basic-adaptation">
 <h3><a class="toc-backref" href="#id10">Basic Adaptation</a><a class="headerlink" href="#basic-adaptation" title="Permalink to this headline">¶</a></h3>
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/b8f764344faa650094dbcec2e167a421/adapter-suite-basic.cpp"><code class="xref download docutils literal notranslate"><span class="pre">../code/tests-trainee/adapter-suite-basic.cpp</span></code></a></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/0815ea717df9bb4a67caadad30acab80/adapter-suite-basic.cpp"><code class="xref download docutils literal notranslate"><span class="pre">/trainings/material/soup/cxx-code/design-patterns-adapter/tests/adapter-suite-basic.cpp</span></code></a></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
 
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-A.h&gt;</span><span class="c1">          // &lt;--- company A&#39;s sensor interface</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-A-const.h&gt;</span><span class="c1">    // &lt;--- one of their sensors</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-A-adapter.h&gt;</span><span class="c1">  // &lt;--- to be implemented</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor.h&gt;</span><span class="c1">            // &lt;--- our sensor interface</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-fahrenheit.h&gt;</span><span class="c1">          // &lt;--- company A&#39;s sensor interface</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-fahrenheit-const.h&gt;</span><span class="c1">    // &lt;--- one of their sensors</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-fahrenheit-adapter.h&gt;</span><span class="c1">  // &lt;--- to be implemented</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor.h&gt;</span><span class="c1">                     // &lt;--- our sensor interface</span><span class="cp"></span>
 
 <span class="n">TEST</span><span class="p">(</span><span class="n">adapter_suite</span><span class="p">,</span><span class="w"> </span><span class="n">basic</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="c1">// buy most sophisticated sensor from A, and see if it works</span>
-<span class="w">    </span><span class="n">AConstantSensor</span><span class="w"> </span><span class="nf">const_sensor_from_a</span><span class="p">(</span><span class="mf">36.5</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="n">ASSERT_FLOAT_EQ</span><span class="p">(</span><span class="n">const_sensor_from_a</span><span class="p">.</span><span class="n">get_temperature_fahrenheit</span><span class="p">(),</span><span class="w"> </span><span class="mf">36.5</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">ConstantFahrenheitSensor</span><span class="w"> </span><span class="nf">fs</span><span class="p">(</span><span class="mf">36.5</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_FLOAT_EQ</span><span class="p">(</span><span class="n">fs</span><span class="p">.</span><span class="n">get_temperature_f</span><span class="p">(),</span><span class="w"> </span><span class="mf">36.5</span><span class="p">);</span><span class="w"></span>
 
 <span class="w">    </span><span class="c1">// adapt it into our hierarchy, converting its Fahrenheit</span>
 <span class="w">    </span><span class="c1">// measurement into Celsius</span>
-<span class="w">    </span><span class="n">ASensor_Adapter</span><span class="w"> </span><span class="nf">a_adapter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">const_sensor_from_a</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="n">ASSERT_FLOAT_EQ</span><span class="p">(</span><span class="n">a_adapter</span><span class="p">.</span><span class="n">get_temperature</span><span class="p">(),</span><span class="w"> </span><span class="p">(</span><span class="mf">36.5</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">32</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">5</span><span class="o">/</span><span class="mi">9</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">FahrenheitSensor_Adapter</span><span class="w"> </span><span class="nf">adapter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">fs</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_FLOAT_EQ</span><span class="p">(</span><span class="n">adapter</span><span class="p">.</span><span class="n">get_temperature</span><span class="p">(),</span><span class="w"> </span><span class="p">(</span><span class="mf">36.5</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">32</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">5</span><span class="o">/</span><span class="mi">9</span><span class="p">);</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
@@ -249,21 +250,23 @@ time.</p>
 <section id="adapter-must-be-a-sensor">
 <h3><a class="toc-backref" href="#id11">Adapter Must <em>Be-A</em> <code class="docutils literal notranslate"><span class="pre">Sensor</span></code></a><a class="headerlink" href="#adapter-must-be-a-sensor" title="Permalink to this headline">¶</a></h3>
 <div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/c47021ae453644ccdbf11628887ac477/adapter-suite-adapter--is-a--sensor.cpp"><code class="xref download docutils literal notranslate"><span class="pre">../code/tests-trainee/adapter-suite-adapter--is-a--sensor.cpp</span></code></a></span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/0bc0fa61e1f2567c4754bcebb78225c9/adapter-suite-adapter--is-a--sensor.cpp"><code class="xref download docutils literal notranslate"><span class="pre">/trainings/material/soup/cxx-code/design-patterns-adapter/tests/adapter-suite-adapter--is-a--sensor.cpp</span></code></a></span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
 
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-A.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-A-const.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-A-adapter.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-fahrenheit.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-fahrenheit-const.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-fahrenheit-adapter.h&gt;</span><span class="cp"></span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor.h&gt;</span><span class="cp"></span>
 
 <span class="n">TEST</span><span class="p">(</span><span class="n">adapter_suite</span><span class="p">,</span><span class="w"> </span><span class="n">adapter__is_a__sensor</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">AConstantSensor</span><span class="w"> </span><span class="nf">const_sensor_from_a</span><span class="p">(</span><span class="mf">36.5</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="n">ASensor_Adapter</span><span class="w"> </span><span class="nf">a_adapter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">const_sensor_from_a</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">ConstantFahrenheitSensor</span><span class="w"> </span><span class="nf">fs</span><span class="p">(</span><span class="mf">36.5</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">FahrenheitSensor_Adapter</span><span class="w"> </span><span class="nf">adapter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">fs</span><span class="p">);</span><span class="w"></span>
 
-<span class="w">    </span><span class="n">Sensor</span><span class="o">*</span><span class="w"> </span><span class="n">sensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">a_adapter</span><span class="p">;</span><span class="w">                 </span><span class="c1">// &lt;--- is-a Sensor</span>
-<span class="w">    </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">sensor</span><span class="p">;</span><span class="w"> </span><span class="c1">// suppress &quot;unused&quot; warning</span>
+<span class="w">    </span><span class="n">Sensor</span><span class="o">*</span><span class="w"> </span><span class="n">sensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">adapter</span><span class="p">;</span><span class="w">                 </span><span class="c1">// &lt;--- is-a Sensor</span>
+
+<span class="w">    </span><span class="c1">// suppress &quot;unused&quot; warning</span>
+<span class="w">    </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">sensor</span><span class="p">;</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
@@ -272,23 +275,25 @@ time.</p>
 <section id="adaptee-can-be-any-asensor">
 <h3><a class="toc-backref" href="#id12">Adaptee Can <em>Be-Any</em> <code class="docutils literal notranslate"><span class="pre">ASensor</span></code></a><a class="headerlink" href="#adaptee-can-be-any-asensor" title="Permalink to this headline">¶</a></h3>
 <div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/7cbf0528517c26de49e2667a56965913/adapter-suite-adapter--knows--an-a-sensor.cpp"><code class="xref download docutils literal notranslate"><span class="pre">../code/tests-trainee/adapter-suite-adapter--knows--an-a-sensor.cpp</span></code></a></span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/618176927057b427983e4453c602ffec/adapter-suite-adapter--knows--an-a-sensor.cpp"><code class="xref download docutils literal notranslate"><span class="pre">/trainings/material/soup/cxx-code/design-patterns-adapter/tests/adapter-suite-adapter--knows--an-a-sensor.cpp</span></code></a></span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
 
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-A.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-A-const.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-A-adapter.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-fahrenheit.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-fahrenheit-const.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-fahrenheit-adapter.h&gt;</span><span class="cp"></span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor.h&gt;</span><span class="cp"></span>
 
 <span class="n">TEST</span><span class="p">(</span><span class="n">adapter_suite</span><span class="p">,</span><span class="w"> </span><span class="n">adapter__knows__an_a_sensor</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">AConstantSensor</span><span class="w"> </span><span class="nf">const_sensor_from_a</span><span class="p">(</span><span class="mf">36.5</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="n">ASensor</span><span class="o">*</span><span class="w"> </span><span class="n">a_sensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">const_sensor_from_a</span><span class="p">;</span><span class="w">    </span><span class="c1">// &lt;--- convert to root of A&#39;s sensor hierarchy</span>
+<span class="w">    </span><span class="n">ConstantFahrenheitSensor</span><span class="w"> </span><span class="nf">fcs</span><span class="p">(</span><span class="mf">36.5</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">FahrenheitSensor</span><span class="o">*</span><span class="w"> </span><span class="n">fs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">fcs</span><span class="p">;</span><span class="w">            </span><span class="c1">// &lt;--- convert to root of A&#39;s sensor hierarchy</span>
 
-<span class="w">    </span><span class="n">ASensor_Adapter</span><span class="w"> </span><span class="nf">a_adapter</span><span class="p">(</span><span class="n">a_sensor</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">FahrenheitSensor_Adapter</span><span class="w"> </span><span class="nf">adapter</span><span class="p">(</span><span class="n">fs</span><span class="p">);</span><span class="w"></span>
 
-<span class="w">    </span><span class="n">Sensor</span><span class="o">*</span><span class="w"> </span><span class="n">sensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">a_adapter</span><span class="p">;</span><span class="w">                 </span><span class="c1">// &lt;--- is-a Sensor</span>
-<span class="w">    </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">sensor</span><span class="p">;</span><span class="w"> </span><span class="c1">// suppress &quot;unused&quot; warning</span>
+<span class="w">    </span><span class="n">Sensor</span><span class="o">*</span><span class="w"> </span><span class="n">sensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">adapter</span><span class="p">;</span><span class="w">              </span><span class="c1">// &lt;--- is-a Sensor</span>
+
+<span class="w">    </span><span class="c1">// suppress &quot;unused&quot; warning</span>
+<span class="w">    </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">sensor</span><span class="p">;</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
@@ -299,19 +304,19 @@ time.</p>
 <p>Make sure that the adapter is really doing <em>measurement</em> (i.e. <em>use</em>
 the adaptee) when being asked for its temperature.</p>
 <div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/251196aff9cd48b523be479f4b213a4b/adapter-suite-adapter-definitely-knows--a-sensor--HELL.cpp"><code class="xref download docutils literal notranslate"><span class="pre">../code/tests-trainee/adapter-suite-adapter-definitely-knows--a-sensor--HELL.cpp</span></code></a></span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/37dfe2a6fb3921d5e3277455300bb4d5/adapter-suite-adapter-definitely-knows--a-sensor--HELL.cpp"><code class="xref download docutils literal notranslate"><span class="pre">/trainings/material/soup/cxx-code/design-patterns-adapter/tests/adapter-suite-adapter-definitely-knows--a-sensor--HELL.cpp</span></code></a></span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp"></span>
 
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-A.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-A-const.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-A-adapter.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-fahrenheit.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-fahrenheit-const.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor-fahrenheit-adapter.h&gt;</span><span class="cp"></span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sensor.h&gt;</span><span class="cp"></span>
 
 
-<span class="k">class</span> <span class="nc">AVariableSensor</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">ASensor</span><span class="w"></span>
+<span class="k">class</span> <span class="nc">VariableFahrenheitSensor</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">FahrenheitSensor</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="k">public</span><span class="o">:</span><span class="w"></span>
-<span class="w">    </span><span class="n">AVariableSensor</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">initial_value</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">VariableFahrenheitSensor</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">initial_value</span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">_value</span><span class="p">(</span><span class="n">initial_value</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
 
 <span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">change_temperature</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"></span>
@@ -319,7 +324,7 @@ the adaptee) when being asked for its temperature.</p>
 <span class="w">        </span><span class="n">_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v</span><span class="p">;</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">get_temperature_fahrenheit</span><span class="p">()</span><span class="w"> </span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">get_temperature_f</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"></span>
 <span class="w">    </span><span class="p">{</span><span class="w"></span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_value</span><span class="p">;</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
@@ -330,14 +335,14 @@ the adaptee) when being asked for its temperature.</p>
 
 <span class="n">TEST</span><span class="p">(</span><span class="n">adapter_suite</span><span class="p">,</span><span class="w"> </span><span class="n">adapter__definitely_knows__a_sensor__HELL</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">AVariableSensor</span><span class="w"> </span><span class="nf">sensor_from_a</span><span class="p">(</span><span class="mf">36.5</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="n">ASensor_Adapter</span><span class="w"> </span><span class="nf">a_adapter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sensor_from_a</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">VariableFahrenheitSensor</span><span class="w"> </span><span class="nf">fs</span><span class="p">(</span><span class="mf">36.5</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">FahrenheitSensor_Adapter</span><span class="w"> </span><span class="nf">adapter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">fs</span><span class="p">);</span><span class="w"></span>
 
-<span class="w">    </span><span class="n">ASSERT_FLOAT_EQ</span><span class="p">(</span><span class="n">a_adapter</span><span class="p">.</span><span class="n">get_temperature</span><span class="p">(),</span><span class="w"> </span><span class="p">(</span><span class="mf">36.5</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">32</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">5</span><span class="o">/</span><span class="mi">9</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_FLOAT_EQ</span><span class="p">(</span><span class="n">adapter</span><span class="p">.</span><span class="n">get_temperature</span><span class="p">(),</span><span class="w"> </span><span class="p">(</span><span class="mf">36.5</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">32</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">5</span><span class="o">/</span><span class="mi">9</span><span class="p">);</span><span class="w"></span>
 
-<span class="w">    </span><span class="n">sensor_from_a</span><span class="p">.</span><span class="n">change_temperature</span><span class="p">(</span><span class="mf">42.7</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">fs</span><span class="p">.</span><span class="n">change_temperature</span><span class="p">(</span><span class="mf">42.7</span><span class="p">);</span><span class="w"></span>
 
-<span class="w">    </span><span class="n">ASSERT_FLOAT_EQ</span><span class="p">(</span><span class="n">a_adapter</span><span class="p">.</span><span class="n">get_temperature</span><span class="p">(),</span><span class="w"> </span><span class="p">(</span><span class="mf">42.7</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">32</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">5</span><span class="o">/</span><span class="mi">9</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">ASSERT_FLOAT_EQ</span><span class="p">(</span><span class="n">adapter</span><span class="p">.</span><span class="n">get_temperature</span><span class="p">(),</span><span class="w"> </span><span class="p">(</span><span class="mf">42.7</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">32</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">5</span><span class="o">/</span><span class="mi">9</span><span class="p">);</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
