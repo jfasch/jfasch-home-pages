@@ -315,11 +315,14 @@ used as a <em>context manager</em></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">__exit__</span></code>: <em>cleans up resources</em>, and receives exception context
 if any</p>
 <ul>
+<li><p>Not called if <code class="docutils literal notranslate"><span class="pre">__enter__</span></code> failed</p></li>
 <li><p>Exception ignored if returns <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
-<li><p>Exception re-raised if returns <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+<li><p>Exception re-raised if returns <code class="docutils literal notranslate"><span class="pre">False</span></code> (can omit <code class="docutils literal notranslate"><span class="pre">return</span>
+<span class="pre">False</span></code> ⟶ <code class="docutils literal notranslate"><span class="pre">return</span> <span class="pre">None</span></code> implicitly)</p></li>
 </ul>
 </li>
 <li><p>Example: manual <code class="docutils literal notranslate"><span class="pre">open()</span></code> context manager</p></li>
+<li><p>(attention: complete nonsense because <code class="docutils literal notranslate"><span class="pre">open()</span></code> does that already)</p></li>
 </ul>
 <div class="jupyter_cell jupyter_container docutils container">
 <div class="cell_input code_cell docutils container">
@@ -330,7 +333,7 @@ if any</p>
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span>      <span class="c1"># &lt;--- becomes &#39;f&#39; in &#39;as f&#39;</span>
-    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">exc_traceback</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">False</span>          <span class="c1"># &lt;--- re-raise exception</span>
 
@@ -343,7 +346,7 @@ if any</p>
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">RuntimeError</span><span class="g g-Whitespace">                              </span>Traceback (most recent call last)
-<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_21745</span><span class="o">/</span><span class="mf">509249159.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_46497</span><span class="o">/</span><span class="mf">2037535577.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="g g-Whitespace">     </span><span class="mi">12</span> <span class="k">with</span> <span class="n">OpenForReading</span><span class="p">(</span><span class="s1">&#39;/etc/passwd&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
 <span class="g g-Whitespace">     </span><span class="mi">13</span>     <span class="c1"># do something with f</span>
 <span class="ne">---&gt; </span><span class="mi">14</span>     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;bad luck&#39;</span><span class="p">)</span>
@@ -417,12 +420,9 @@ MEGA: even cooler
 
 <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
 <span class="k">def</span> <span class="nf">OpenForReading</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-        <span class="k">yield</span> <span class="n">file</span>            <span class="c1"># &lt;--- becomes &#39;f&#39; in &#39;as f&#39;</span>
-                              <span class="c1"># &lt;--- continuing here after &#39;with&#39; block has run</span>
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">file</span>            <span class="c1"># &lt;--- becomes &#39;f&#39; in &#39;as f&#39;</span>
+    <span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>          <span class="c1"># &lt;--- continuing here after &#39;with&#39; block has run</span>
 </pre></div>
 </div>
 </div>

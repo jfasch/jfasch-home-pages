@@ -96,10 +96,13 @@ Under The Hood: *Context Manager*
 * ``__exit__``: *cleans up resources*, and receives exception context
   if any
 
+  * Not called if ``__enter__`` failed
   * Exception ignored if returns ``True``
-  * Exception re-raised if returns ``False``
+  * Exception re-raised if returns ``False`` (can omit ``return
+    False`` |longrightarrow| ``return None`` implicitly)
 
 * Example: manual ``open()`` context manager
+* (attention: complete nonsense because ``open()`` does that already)
 
 .. jupyter-execute::
    :raises:
@@ -111,7 +114,7 @@ Under The Hood: *Context Manager*
        def __enter__(self):
            self.file = open(self.filename)
            return self.file      # <--- becomes 'f' in 'as f'
-       def __exit__(self, exc_type, exc_value, exc_tb):
+       def __exit__(self, exc_type, exc_value, exc_traceback):
            self.file.close()
            return False          # <--- re-raise exception
    
@@ -173,12 +176,10 @@ Still Much Typing |longrightarrow| ``@contextlib.contextmanager``
    
    @contextlib.contextmanager
    def OpenForReading(filename):
-       try:
-           file = open(filename)
-           yield file            # <--- becomes 'f' in 'as f'
-	                         # <--- continuing here after 'with' block has run
-       finally:
-           file.close()
+       file = open(filename)
+       yield file            # <--- becomes 'f' in 'as f'
+       file.close()          # <--- continuing here after 'with' block has run
+
 
 More Involved: Using Closures To Implement ``PrefixPrint``
 ----------------------------------------------------------
