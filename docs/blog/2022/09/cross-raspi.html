@@ -174,33 +174,46 @@
 <h1>Building A Cross Toolchain For The Raspberry Pi, Using <code class="docutils literal notranslate"><span class="pre">crosstool-ng</span></code><a class="headerlink" href="#building-a-cross-toolchain-for-the-raspberry-pi-using-crosstool-ng" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#why-this-article-why-not-use-a-prebuilt-toolchain" id="id11">Why This Article? Why Not Use A Prebuilt Toolchain?</a></p></li>
-<li><p><a class="reference internal" href="#installing-crosstool-ng" id="id12">Installing <code class="docutils literal notranslate"><span class="pre">crosstool-ng</span></code></a></p>
+<li><p><a class="reference internal" href="#why-this-article-why-not-use-a-prebuilt-toolchain" id="id13">Why This Article? Why Not Use A Prebuilt Toolchain?</a></p></li>
+<li><p><a class="reference internal" href="#installing-crosstool-ng" id="id14">Installing <code class="docutils literal notranslate"><span class="pre">crosstool-ng</span></code></a></p>
 <ul>
-<li><p><a class="reference internal" href="#prerequisites" id="id13">Prerequisites</a></p></li>
-<li><p><a class="reference internal" href="#download-build-install" id="id14">Download, Build, Install</a></p></li>
+<li><p><a class="reference internal" href="#prerequisites" id="id15">Prerequisites</a></p></li>
+<li><p><a class="reference internal" href="#installing-from-cloned-git-repository" id="id16">Installing From Cloned Git Repository</a></p></li>
+<li><p><a class="reference internal" href="#installing-from-release-tarball" id="id17">Installing From Release Tarball</a></p></li>
+<li><p><a class="reference internal" href="#path-and-basic-test" id="id18"><code class="docutils literal notranslate"><span class="pre">PATH</span></code>, And Basic Test</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#configure-toolchain-build" id="id15">Configure Toolchain Build</a></p>
+<li><p><a class="reference internal" href="#configure-toolchain-build" id="id19">Configure Toolchain Build</a></p>
 <ul>
-<li><p><a class="reference internal" href="#base-configuration-for-the-raspberry" id="id16">Base Configuration For The Raspberry</a></p></li>
-<li><p><a class="reference internal" href="#important-glibc-version" id="id17">Important: <code class="docutils literal notranslate"><span class="pre">glibc</span></code> Version</a></p></li>
+<li><p><a class="reference internal" href="#base-configuration-for-the-raspberry" id="id20">Base Configuration For The Raspberry</a></p></li>
+<li><p><a class="reference internal" href="#important-glibc-version" id="id21">Important: <code class="docutils literal notranslate"><span class="pre">glibc</span></code> Version</a></p>
+<ul>
+<li><p><a class="reference internal" href="#the-error" id="id22">The Error</a></p></li>
+<li><p><a class="reference internal" href="#the-fix" id="id23">The Fix</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#toolchain-build-install" id="id18">Toolchain Build/Install</a></p></li>
-<li><p><a class="reference internal" href="#test" id="id19">Test</a></p>
+<li><p><a class="reference internal" href="#important-gcc-version" id="id24">Important: GCC Version</a></p>
 <ul>
-<li><p><a class="reference internal" href="#simplest-c-stdio-h" id="id20">Simplest: C, <code class="docutils literal notranslate"><span class="pre">&lt;stdio.h&gt;</span></code></a></p></li>
-<li><p><a class="reference internal" href="#c-iostream" id="id21">C++, <code class="docutils literal notranslate"><span class="pre">&lt;iostream&gt;</span></code></a></p></li>
-<li><p><a class="reference internal" href="#c-thread" id="id22">C++, <code class="docutils literal notranslate"><span class="pre">&lt;thread&gt;</span></code></a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id25">The Error</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id26">The Fix</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#packaging-distributing-the-toolchain" id="id23">Packaging/Distributing The Toolchain</a></p></li>
-<li><p><a class="reference internal" href="#afterword" id="id24">Afterword</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#toolchain-build-install" id="id27">Toolchain Build/Install</a></p></li>
+<li><p><a class="reference internal" href="#test" id="id28">Test</a></p>
+<ul>
+<li><p><a class="reference internal" href="#simplest-c-stdio-h" id="id29">Simplest: C, <code class="docutils literal notranslate"><span class="pre">&lt;stdio.h&gt;</span></code></a></p></li>
+<li><p><a class="reference internal" href="#c-iostream" id="id30">C++, <code class="docutils literal notranslate"><span class="pre">&lt;iostream&gt;</span></code></a></p></li>
+<li><p><a class="reference internal" href="#c-thread" id="id31">C++, <code class="docutils literal notranslate"><span class="pre">&lt;thread&gt;</span></code></a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#packaging-distributing-the-toolchain" id="id32">Packaging/Distributing The Toolchain</a></p></li>
+<li><p><a class="reference internal" href="#afterword" id="id33">Afterword</a></p></li>
 </ul>
 </div>
 <section id="why-this-article-why-not-use-a-prebuilt-toolchain">
-<h2><a class="toc-backref" href="#id11">Why This Article? Why Not Use A Prebuilt Toolchain?</a><a class="headerlink" href="#why-this-article-why-not-use-a-prebuilt-toolchain" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">Why This Article? Why Not Use A Prebuilt Toolchain?</a><a class="headerlink" href="#why-this-article-why-not-use-a-prebuilt-toolchain" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>There <a class="reference external" href="https://github.com/raspberrypi/tools">used to be</a> a
 toolchain for the Raspberry Pi, made by the <a class="reference external" href="https://www.raspberrypi.com/software/">Raspberry Pi OS</a> creators. Sadly, this
@@ -225,26 +238,26 @@ Raspberry (because that was my primary intention), it will sure work
 for <em>any</em> target.</p>
 </section>
 <section id="installing-crosstool-ng">
-<h2><a class="toc-backref" href="#id12">Installing <code class="docutils literal notranslate"><span class="pre">crosstool-ng</span></code></a><a class="headerlink" href="#installing-crosstool-ng" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id14">Installing <code class="docutils literal notranslate"><span class="pre">crosstool-ng</span></code></a><a class="headerlink" href="#installing-crosstool-ng" title="Permalink to this headline">¶</a></h2>
 <p>Below is a writeup of how I installed <code class="docutils literal notranslate"><span class="pre">crosstool-ng</span></code> (running
 Fedora, I chose to install from a released tarball) . Please read
 through their <a class="reference external" href="https://crosstool-ng.github.io/docs/install/">installation documentation</a> for your particular
 situation.</p>
 <section id="prerequisites">
-<h3><a class="toc-backref" href="#id13">Prerequisites</a><a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id15">Prerequisites</a><a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">crosstool-ng</span></code> requires one to install a number of packages
 first. Thankfully, they do thorough testing in Docker, and the list of
 dependencies can be taken from the Docker file for your OS (see <a class="reference external" href="https://github.com/crosstool-ng/crosstool-ng/tree/master/testing/docker">here</a>).</p>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Dependencies for Fedora</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Dependencies for Fedora</span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">root@host # </span>dnf install autoconf gperf bison file flex texinfo help2man gcc-c++ libtool make patch <span class="se">\</span>
     ncurses-devel python3-devel perl-Thread-Queue bzip2 git wget which xz unzip rsync diffutils <span class="se">\</span>
     meson ninja-build
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Dependencies for Ubuntu</span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Dependencies for Ubuntu</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">root@host # </span>apt install -y gcc g++ gperf bison flex texinfo help2man make libncurses5-dev <span class="se">\</span>
     python3-dev autoconf automake libtool libtool-bin gawk wget bzip2 xz-utils unzip <span class="se">\</span>
     patch libstdc++6 rsync git meson ninja-build
@@ -252,9 +265,39 @@ dependencies can be taken from the Docker file for your OS (see <a class="refere
 </div>
 </div>
 </section>
-<section id="download-build-install">
-<h3><a class="toc-backref" href="#id14">Download, Build, Install</a><a class="headerlink" href="#download-build-install" title="Permalink to this headline">¶</a></h3>
-<p>I chose to install from a release tarball (<a class="reference external" href="https://crosstool-ng.github.io/download/">here</a>); current version as of
+<section id="installing-from-cloned-git-repository">
+<h3><a class="toc-backref" href="#id16">Installing From Cloned Git Repository</a><a class="headerlink" href="#installing-from-cloned-git-repository" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>At one point, <code class="docutils literal notranslate"><span class="pre">ct-ng</span></code> (as installed from the release tarball)
+failed to build toolchains because it tried to download a version
+of <code class="docutils literal notranslate"><span class="pre">zlib</span></code> that did not exist anymore:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[EXTRA]    Retrieving &#39;zlib-1.2.12&#39;</span>
+<span class="go">[ERROR]    zlib: download failed</span>
+</pre></div>
+</div>
+<p>The issue had already been resolved in the upstream repository, but
+no tarball release had been made. So building <code class="docutils literal notranslate"><span class="pre">crosstool-ng</span></code> from
+source is in order.</p>
+</div>
+<p>The steps are basically the same as installing from the release
+tarball, except that some massaging (yes, autotools) in the source
+directory is necessary prior to building.</p>
+<p>Clone repository, and massage source tree:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">me@host$ </span>git clone https://github.com/crosstool-ng/crosstool-ng
+<span class="gp">me@host$ </span><span class="nb">cd</span> crosstool-ng/
+<span class="gp">me@host$ </span>sh ./bootstrap
+<span class="gp">me@host$ </span>./configure --prefix<span class="o">=</span>/home/jfasch/cross
+<span class="gp">me@host$ </span>make
+<span class="gp">me@host$ </span>make install
+</pre></div>
+</div>
+</section>
+<section id="installing-from-release-tarball">
+<h3><a class="toc-backref" href="#id17">Installing From Release Tarball</a><a class="headerlink" href="#installing-from-release-tarball" title="Permalink to this headline">¶</a></h3>
+<p>As complained above, releases might be out of date. Anyway, the
+procedure is slightly simpler that building from the upstream repo
+source. Download latest release <a class="reference external" href="https://crosstool-ng.github.io/download/">here</a>); current version as of
 this writing is <code class="docutils literal notranslate"><span class="pre">1.25.0</span></code>.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">me@host$ </span>wget http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-1.25.0.tar.xz
 <span class="gp">me@host$ </span>tar xf crosstool-ng-1.25.0.tar.xz
@@ -264,9 +307,12 @@ this writing is <code class="docutils literal notranslate"><span class="pre">1.2
 <span class="gp">me@host$ </span>make install
 </pre></div>
 </div>
+</section>
+<section id="path-and-basic-test">
+<h3><a class="toc-backref" href="#id18"><code class="docutils literal notranslate"><span class="pre">PATH</span></code>, And Basic Test</a><a class="headerlink" href="#path-and-basic-test" title="Permalink to this headline">¶</a></h3>
 <p>Add <code class="docutils literal notranslate"><span class="pre">ct-ng</span></code> to <code class="docutils literal notranslate"><span class="pre">PATH</span></code>,</p>
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">You may want to add this to <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code></span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">You may want to add this to <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code></span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>me@host$ <span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$HOME</span>/cross/bin:<span class="nv">$PATH</span>
 </pre></div>
 </div>
@@ -285,14 +331,14 @@ this writing is <code class="docutils literal notranslate"><span class="pre">1.2
 </section>
 </section>
 <section id="configure-toolchain-build">
-<h2><a class="toc-backref" href="#id15">Configure Toolchain Build</a><a class="headerlink" href="#configure-toolchain-build" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id19">Configure Toolchain Build</a><a class="headerlink" href="#configure-toolchain-build" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">ct-ng</span></code> toolchain build configuration works a lot like the Linux
 kernel’s configuration system (a little less elaborate though). There
 are a number of base configurations to choose from (we need a
 Raspberry config), and, having chosen one, you can tune it to your
 needs.</p>
 <section id="base-configuration-for-the-raspberry">
-<h3><a class="toc-backref" href="#id16">Base Configuration For The Raspberry</a><a class="headerlink" href="#base-configuration-for-the-raspberry" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id20">Base Configuration For The Raspberry</a><a class="headerlink" href="#base-configuration-for-the-raspberry" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">me@host$ </span>ct-ng list-samples<span class="p">|</span>grep rpi
 <span class="go">[G...]   aarch64-rpi3-linux-gnu</span>
 <span class="go">[G...]   aarch64-rpi4-linux-gnu</span>
@@ -310,12 +356,16 @@ create a <code class="docutils literal notranslate"><span class="pre">.config</s
 </div>
 </section>
 <section id="important-glibc-version">
-<span id="glibc-version"></span><h3><a class="toc-backref" href="#id17">Important: <code class="docutils literal notranslate"><span class="pre">glibc</span></code> Version</a><a class="headerlink" href="#important-glibc-version" title="Permalink to this headline">¶</a></h3>
+<span id="glibc-version"></span><h3><a class="toc-backref" href="#id21">Important: <code class="docutils literal notranslate"><span class="pre">glibc</span></code> Version</a><a class="headerlink" href="#important-glibc-version" title="Permalink to this headline">¶</a></h3>
+<section id="the-error">
+<h4><a class="toc-backref" href="#id22">The Error</a><a class="headerlink" href="#the-error" title="Permalink to this headline">¶</a></h4>
 <p>Executables built by your toolchain won’t work if the toolchain links
 against a C library whose version is higher than what is present on
 the target. Continuing with the above default configuration, and just
 saying <code class="docutils literal notranslate"><span class="pre">ct-ng</span> <span class="pre">build</span></code> will likely result in an error
-<a class="footnote-reference brackets" href="#glibc-default-version" id="id2">3</a>:</p>
+<a class="footnote-reference brackets" href="#glibc-default-version" id="id2">3</a>.</p>
+<p>A minimal <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">main()</span> <span class="pre">{</span> <span class="pre">return</span> <span class="pre">0;</span> <span class="pre">}</span></code> program, compiled for the
+target, will complain:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">me@target $ </span>./a.out
 <span class="go">./a.out: /lib/arm-linux-gnueabihf/libc.so.6: version `GLIBC_2.34&#39; not found (required by ./a.out)</span>
 </pre></div>
@@ -339,7 +389,10 @@ obviously cannot have <code class="docutils literal notranslate"><span class="pr
 <span class="go">...</span>
 </pre></div>
 </div>
-<p>So, it’s <code class="docutils literal notranslate"><span class="pre">2.28</span></code>. Tune configuration,</p>
+</section>
+<section id="the-fix">
+<h4><a class="toc-backref" href="#id23">The Fix</a><a class="headerlink" href="#the-fix" title="Permalink to this headline">¶</a></h4>
+<p>So, it’s <code class="docutils literal notranslate"><span class="pre">2.28</span></code>. Back on the <em>host</em> again, tune configuration:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">me@host $ </span>ct-ng menuconfig
 </pre></div>
 </div>
@@ -350,13 +403,40 @@ has to disable <code class="docutils literal notranslate"><span class="pre">-Wer
 <a class="reference internal image-reference" href="../../../_images/werror.png"><img alt="../../../_images/werror.png" src="../../../_images/werror.png" style="width: 477.0px; height: 255.5px;" /></a>
 </section>
 </section>
+<section id="important-gcc-version">
+<h3><a class="toc-backref" href="#id24">Important: GCC Version</a><a class="headerlink" href="#important-gcc-version" title="Permalink to this headline">¶</a></h3>
+<p>Not only is the Pi’s <code class="docutils literal notranslate"><span class="pre">glibc</span></code> version rather outdated; GCC is also a
+bit behind - it’s <code class="docutils literal notranslate"><span class="pre">8.3.0</span></code>.</p>
+<section id="id4">
+<h4><a class="toc-backref" href="#id25">The Error</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<p>Using the latest supported GCC version (<code class="docutils literal notranslate"><span class="pre">12.2.0</span></code> as of this writing)
+as a cross compiler, A less trivial C++ program fails to start:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">./a.out: /lib/arm-linux-gnueabihf/libstdc++.so.6: version `GLIBCXX_3.4.29&#39; not found (required by ./a.out)</span>
+<span class="go">./a.out: /lib/arm-linux-gnueabihf/libstdc++.so.6: version `GLIBCXX_3.4.26&#39; not found (required by ./a.out)</span>
+</pre></div>
+</div>
+<p>It turns out that the program makes use of the <code class="docutils literal notranslate"><span class="pre">std::filesystem</span></code>
+library that has been added in C++17. Apparently that library uses
+some more modern functionality from GCC’s C++ support library,
+<code class="docutils literal notranslate"><span class="pre">libgcc_s.so.1</span></code>. That functionality is obviously not contained in
+<code class="docutils literal notranslate"><span class="pre">libgcc_s.so.1</span></code> as of GCC <code class="docutils literal notranslate"><span class="pre">8.3.0</span></code></p>
+</section>
+<section id="id5">
+<h4><a class="toc-backref" href="#id26">The Fix</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<p>Downgrade the toolchain’s GCC to something like <code class="docutils literal notranslate"><span class="pre">8.3.0</span></code> (<code class="docutils literal notranslate"><span class="pre">8.5.0</span></code>
+is just a minor release, so it should work).</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">C</span> <span class="pre">compiler</span> <span class="pre">-&gt;</span> <span class="pre">Version</span> <span class="pre">of</span> <span class="pre">gcc</span></code>, choose <code class="docutils literal notranslate"><span class="pre">8.5.0</span></code>:</p>
+<a class="reference internal image-reference" href="../../../_images/gcc-version.png"><img alt="../../../_images/gcc-version.png" src="../../../_images/gcc-version.png" style="width: 400.5px; height: 264.5px;" /></a>
+</section>
+</section>
+</section>
 <section id="toolchain-build-install">
-<h2><a class="toc-backref" href="#id18">Toolchain Build/Install</a><a class="headerlink" href="#toolchain-build-install" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id27">Toolchain Build/Install</a><a class="headerlink" href="#toolchain-build-install" title="Permalink to this headline">¶</a></h2>
 <p>This is as simple as saying,</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">me@host $ </span>ct-ng build
 </pre></div>
 </div>
-<p>By default <a class="footnote-reference brackets" href="#ct-prefix" id="id4">2</a>, the toolchain is installed in
+<p>By default <a class="footnote-reference brackets" href="#ct-prefix" id="id6">2</a>, the toolchain is installed in
 <code class="docutils literal notranslate"><span class="pre">$HOME/x-tools/armv8-rpi4-linux-gnueabihf/</span></code> (you may want to add
 <code class="docutils literal notranslate"><span class="pre">$HOME/x-tools/armv8-rpi4-linux-gnueabihf/bin/</span></code> to <code class="docutils literal notranslate"><span class="pre">$PATH</span></code>).</p>
 <p>For build system configuration (see for example
@@ -384,14 +464,14 @@ has to disable <code class="docutils literal notranslate"><span class="pre">-Wer
 </table>
 </section>
 <section id="test">
-<h2><a class="toc-backref" href="#id19">Test</a><a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id28">Test</a><a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h2>
 <p>I tested the toolchain from a number of viewpoints that I describe
 below.</p>
 <section id="simplest-c-stdio-h">
-<h3><a class="toc-backref" href="#id20">Simplest: C, <code class="docutils literal notranslate"><span class="pre">&lt;stdio.h&gt;</span></code></a><a class="headerlink" href="#simplest-c-stdio-h" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id29">Simplest: C, <code class="docutils literal notranslate"><span class="pre">&lt;stdio.h&gt;</span></code></a><a class="headerlink" href="#simplest-c-stdio-h" title="Permalink to this headline">¶</a></h3>
 <p>Check for availability of <code class="docutils literal notranslate"><span class="pre">libc</span></code>.</p>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../_downloads/930da294b589e3c0ee18e29e9212dc93/c-stdio.c"><code class="xref download docutils literal notranslate"><span class="pre">c-stdio.c</span></code></a></span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../_downloads/930da294b589e3c0ee18e29e9212dc93/c-stdio.c"><code class="xref download docutils literal notranslate"><span class="pre">c-stdio.c</span></code></a></span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
 
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"></span>
@@ -410,10 +490,10 @@ below.</p>
 </div>
 </section>
 <section id="c-iostream">
-<h3><a class="toc-backref" href="#id21">C++, <code class="docutils literal notranslate"><span class="pre">&lt;iostream&gt;</span></code></a><a class="headerlink" href="#c-iostream" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id30">C++, <code class="docutils literal notranslate"><span class="pre">&lt;iostream&gt;</span></code></a><a class="headerlink" href="#c-iostream" title="Permalink to this headline">¶</a></h3>
 <p>Check for availability of <code class="docutils literal notranslate"><span class="pre">libstdc++</span></code>.</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../_downloads/1f44756998952fcb268db788f7cf730b/c%2B%2B-iostream.cpp"><code class="xref download docutils literal notranslate"><span class="pre">c++-iostream.cpp</span></code></a></span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../_downloads/1f44756998952fcb268db788f7cf730b/c%2B%2B-iostream.cpp"><code class="xref download docutils literal notranslate"><span class="pre">c++-iostream.cpp</span></code></a></span><a class="headerlink" href="#id11" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
 
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"></span>
@@ -432,10 +512,10 @@ below.</p>
 </div>
 </section>
 <section id="c-thread">
-<h3><a class="toc-backref" href="#id22">C++, <code class="docutils literal notranslate"><span class="pre">&lt;thread&gt;</span></code></a><a class="headerlink" href="#c-thread" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id31">C++, <code class="docutils literal notranslate"><span class="pre">&lt;thread&gt;</span></code></a><a class="headerlink" href="#c-thread" title="Permalink to this headline">¶</a></h3>
 <p>Check for availability of <code class="docutils literal notranslate"><span class="pre">libpthread</span></code>.</p>
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../_downloads/59cbba0b5d6de2183a7a48be92ed635e/c%2B%2B-thread.cpp"><code class="xref download docutils literal notranslate"><span class="pre">c++-thread.cpp</span></code></a></span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../_downloads/59cbba0b5d6de2183a7a48be92ed635e/c%2B%2B-thread.cpp"><code class="xref download docutils literal notranslate"><span class="pre">c++-thread.cpp</span></code></a></span><a class="headerlink" href="#id12" title="Permalink to this code">¶</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thread&gt;</span><span class="cp"></span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
 
@@ -461,7 +541,7 @@ below.</p>
 </section>
 </section>
 <section id="packaging-distributing-the-toolchain">
-<h2><a class="toc-backref" href="#id23">Packaging/Distributing The Toolchain</a><a class="headerlink" href="#packaging-distributing-the-toolchain" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id32">Packaging/Distributing The Toolchain</a><a class="headerlink" href="#packaging-distributing-the-toolchain" title="Permalink to this headline">¶</a></h2>
 <p>The toolchain is fully relocatable. Although
 <code class="docutils literal notranslate"><span class="pre">$HOME/x-tools/armv8-rpi4-linux-gnueabihf/</span></code> contains the cross
 toolchain <em>together</em> with the <a class="reference internal" href="../../../trainings/material/soup/linux/toolchain/cross/basics.html"><span class="doc">sysroot</span></a>, even if you
@@ -473,7 +553,7 @@ move it around it will remain self-contained.</p>
 <p>And share it with your colleagues.</p>
 </section>
 <section id="afterword">
-<h2><a class="toc-backref" href="#id24">Afterword</a><a class="headerlink" href="#afterword" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id33">Afterword</a><a class="headerlink" href="#afterword" title="Permalink to this headline">¶</a></h2>
 <p>I hope I could help you with this article. Share it if I could, or, if
 I couldn’t, feel free to send me an <a class="reference internal" href="../../../about/myself/contact.html"><span class="doc">email</span></a> explaining why.</p>
 <p>Either way: cross development is not easy, given the huge number of
@@ -492,7 +572,7 @@ the target.</p>
 <dd><p>That describes the situation that I encountered;
 yours might be a little different.</p>
 </dd>
-<dt class="label" id="ct-prefix"><span class="brackets"><a class="fn-backref" href="#id4">2</a></span></dt>
+<dt class="label" id="ct-prefix"><span class="brackets"><a class="fn-backref" href="#id6">2</a></span></dt>
 <dd><p>You change the installation prefix by setting the
 <code class="docutils literal notranslate"><span class="pre">CT_PREFIX</span></code> environment variable prior to building,</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">CT_PREFIX</span><span class="o">=</span>/some/other/location ct-ng build

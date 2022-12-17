@@ -24,7 +24,7 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
     <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
-    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx-exercises/oo/sensor-w1-factory.html" />
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx-exercises/oo-sensors/sensor-w1-factory.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="Exercises: Design Patterns" href="../design-patterns/group.html" />
@@ -115,13 +115,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../cxx-design-patterns/group.html">Design Patterns With C++</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../cxx-code/index.html">C++ Code</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../group.html">C++ Exercises</a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="group.html">C++ Exercises: Object Oriented Programming</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="group.html">C++ Exercises: Object Oriented Programming - Sensors</a><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="sensor-interface.html">Exercise: Sensor Interface</a></li>
 <li class="toctree-l5"><a class="reference internal" href="sensor-w1.html">Exercise: OneWire Sensor Class</a></li>
 <li class="toctree-l5 current"><a class="current reference internal" href="#">Exercise: OneWire Sensor Factory</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../design-patterns/group.html">Exercises: Design Patterns</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../fh-sensor-oo-first-try/group.html">FH Sensor OO (First Try)</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../linux/group.html">Linux</a></li>
@@ -158,30 +159,30 @@
 <h1>Exercise: OneWire Sensor Factory<a class="headerlink" href="#exercise-onewire-sensor-factory" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#problem" id="id7">Problem</a></p></li>
-<li><p><a class="reference internal" href="#implementation" id="id8">Implementation</a></p>
+<li><p><a class="reference internal" href="#problem" id="id5">Problem</a></p></li>
+<li><p><a class="reference internal" href="#implementation" id="id6">Implementation</a></p>
 <ul>
-<li><p><a class="reference internal" href="#fixture" id="id9">Fixture</a></p></li>
-<li><p><a class="reference internal" href="#unit-tests" id="id10">Unit Tests</a></p>
+<li><p><a class="reference internal" href="#fixture" id="id7">Fixture</a></p></li>
+<li><p><a class="reference internal" href="#unit-tests" id="id8">Unit Tests</a></p>
 <ul>
-<li><p><a class="reference internal" href="#basic" id="id11"><code class="docutils literal notranslate"><span class="pre">basic</span></code></a></p></li>
-<li><p><a class="reference internal" href="#notfound" id="id12"><code class="docutils literal notranslate"><span class="pre">notfound</span></code></a></p></li>
-<li><p><a class="reference internal" href="#find-is-const" id="id13"><code class="docutils literal notranslate"><span class="pre">find_is_const</span></code></a></p></li>
+<li><p><a class="reference internal" href="#basic" id="id9"><code class="docutils literal notranslate"><span class="pre">basic</span></code></a></p></li>
+<li><p><a class="reference internal" href="#notfound" id="id10"><code class="docutils literal notranslate"><span class="pre">notfound</span></code></a></p></li>
+<li><p><a class="reference internal" href="#find-is-const" id="id11"><code class="docutils literal notranslate"><span class="pre">find_is_const</span></code></a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#testing-in-isolation" id="id14">Testing In Isolation</a></p></li>
+<li><p><a class="reference internal" href="#testing-in-isolation" id="id12">Testing In Isolation</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#testing-in-reality" id="id15">Testing In Reality</a></p>
+<li><p><a class="reference internal" href="#testing-in-reality" id="id13">Testing In Reality</a></p>
 <ul>
-<li><p><a class="reference internal" href="#on-the-pc" id="id16">On The PC</a></p></li>
-<li><p><a class="reference internal" href="#on-the-target" id="id17">On The Target</a></p></li>
+<li><p><a class="reference internal" href="#on-the-pc" id="id14">On The PC</a></p></li>
+<li><p><a class="reference internal" href="#on-the-target" id="id15">On The Target</a></p></li>
 </ul>
 </li>
 </ul>
 </div>
 <section id="problem">
-<h2><a class="toc-backref" href="#id7">Problem</a><a class="headerlink" href="#problem" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">Problem</a><a class="headerlink" href="#problem" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p>On Linux, Onewire device addresses are mapped to aptly named
 directories - e.g. <code class="docutils literal notranslate"><span class="pre">/sys/bus/w1/devices/28-02131d959eaa</span></code></p></li>
@@ -214,7 +215,7 @@ does not want to mention <em>file system paths</em> like that</p>
 </ul>
 </aside>
 <ul>
-<li><p><a href="#id5"><span class="problematic" id="id6">|longrightarrow|</span></a> need something that …</p>
+<li><p>⟶ need something that …</p>
 <ul class="simple">
 <li><p>Searches the Onewire tree (<code class="docutils literal notranslate"><span class="pre">/sys/bus/w1</span></code>) for a device directory
 that looks something like <code class="docutils literal notranslate"><span class="pre">devices/*-&lt;address</span> <span class="pre">in</span> <span class="pre">hex&gt;</span></code>. (The
@@ -240,12 +241,12 @@ sensors from configuration data, like so …</p>
 </ul>
 </section>
 <section id="implementation">
-<h2><a class="toc-backref" href="#id8">Implementation</a><a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">Implementation</a><a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
 <p>Lets create a class <code class="docutils literal notranslate"><span class="pre">W1SensorFactory</span></code> (a <em>factory</em> is something that
 creates something) that fulfills the requirements listed further
 below.</p>
 <section id="fixture">
-<h3><a class="toc-backref" href="#id9">Fixture</a><a class="headerlink" href="#fixture" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id7">Fixture</a><a class="headerlink" href="#fixture" title="Permalink to this headline">¶</a></h3>
 <p>As a test-implementation detail, the fixture class
 <code class="docutils literal notranslate"><span class="pre">sensor_w1_factory_suite</span></code> …</p>
 <ul class="simple">
@@ -294,12 +295,12 @@ accordingly.</p>
 </div>
 </section>
 <section id="unit-tests">
-<h3><a class="toc-backref" href="#id10">Unit Tests</a><a class="headerlink" href="#unit-tests" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id8">Unit Tests</a><a class="headerlink" href="#unit-tests" title="Permalink to this headline">¶</a></h3>
 <p>One by one, download the following files into <code class="docutils literal notranslate"><span class="pre">tests/</span></code> (and to the
 obvious <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> dance). when one test passes, procees to
 the next.</p>
 <section id="basic">
-<h4><a class="toc-backref" href="#id11"><code class="docutils literal notranslate"><span class="pre">basic</span></code></a><a class="headerlink" href="#basic" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id9"><code class="docutils literal notranslate"><span class="pre">basic</span></code></a><a class="headerlink" href="#basic" title="Permalink to this headline">¶</a></h4>
 <p>The sunny case: given an existing Onewire address, the factory returns
 a <code class="docutils literal notranslate"><span class="pre">W1Sensor</span></code> object.</p>
 <div class="literal-block-wrapper docutils container" id="id2">
@@ -330,13 +331,7 @@ a <code class="docutils literal notranslate"><span class="pre">W1Sensor</span></
 </div>
 </section>
 <section id="notfound">
-<h4><a class="toc-backref" href="#id12"><code class="docutils literal notranslate"><span class="pre">notfound</span></code></a><a class="headerlink" href="#notfound" title="Permalink to this headline">¶</a></h4>
-<aside class="sidebar">
-<p><strong>See also</strong></p>
-<ul class="simple">
-<li><p><span class="xref std std-doc">/trainings/material/soup/cxx11/020-new-language-features/070-miscellaneous/topic`</span></p></li>
-</ul>
-</aside>
+<h4><a class="toc-backref" href="#id10"><code class="docutils literal notranslate"><span class="pre">notfound</span></code></a><a class="headerlink" href="#notfound" title="Permalink to this headline">¶</a></h4>
 <p>One possible error: <em>address not found</em>. Lacking any knowledge of
 <a class="reference internal" href="../../cxx11/030-smart-pointers/group.html"><span class="doc">C++ smart pointers</span></a>, a raw
 pointer with the value <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> is returned.</p>
@@ -363,7 +358,7 @@ pointer with the value <code class="docutils literal notranslate"><span class="p
 </div>
 </section>
 <section id="find-is-const">
-<h4><a class="toc-backref" href="#id13"><code class="docutils literal notranslate"><span class="pre">find_is_const</span></code></a><a class="headerlink" href="#find-is-const" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id11"><code class="docutils literal notranslate"><span class="pre">find_is_const</span></code></a><a class="headerlink" href="#find-is-const" title="Permalink to this headline">¶</a></h4>
 <p>Exercising our C++ expertise, we know that something that <em>creates</em>
 something rarely modifies itself - hence the
 <code class="docutils literal notranslate"><span class="pre">W1SensorFactory::find_by_address()</span></code> could just as well be
@@ -387,7 +382,7 @@ something rarely modifies itself - hence the
 </section>
 </section>
 <section id="testing-in-isolation">
-<h3><a class="toc-backref" href="#id14">Testing In Isolation</a><a class="headerlink" href="#testing-in-isolation" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id12">Testing In Isolation</a><a class="headerlink" href="#testing-in-isolation" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">pwd</span>
 <span class="go">/home/jfasch/tmp/FH-ECE20-final-x86_64    # &lt;--- my PC build directory (yours might be different)</span>
 </pre></div>
@@ -424,9 +419,9 @@ something rarely modifies itself - hence the
 </section>
 </section>
 <section id="testing-in-reality">
-<h2><a class="toc-backref" href="#id15">Testing In Reality</a><a class="headerlink" href="#testing-in-reality" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">Testing In Reality</a><a class="headerlink" href="#testing-in-reality" title="Permalink to this headline">¶</a></h2>
 <section id="on-the-pc">
-<h3><a class="toc-backref" href="#id16">On The PC</a><a class="headerlink" href="#on-the-pc" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id14">On The PC</a><a class="headerlink" href="#on-the-pc" title="Permalink to this headline">¶</a></h3>
 <p>Once the project compiles on <em>and for</em> the development machine, you
 are able to test it; no need for target hardware.</p>
 <ul>
@@ -463,7 +458,7 @@ system configurator mentioned above)</p>
 </ul>
 </section>
 <section id="on-the-target">
-<h3><a class="toc-backref" href="#id17">On The Target</a><a class="headerlink" href="#on-the-target" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id15">On The Target</a><a class="headerlink" href="#on-the-target" title="Permalink to this headline">¶</a></h3>
 <aside class="sidebar">
 <p><strong>See also</strong></p>
 <ul class="simple">
@@ -502,7 +497,7 @@ against a real sensor device.</p>
       &copy;2019-2022 (GPLv3), Jörg Faschingbauer.
       
       |
-      <a href="../../../../../_sources/trainings/material/soup/cxx-exercises/oo/sensor-w1-factory.rst.txt"
+      <a href="../../../../../_sources/trainings/material/soup/cxx-exercises/oo-sensors/sensor-w1-factory.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
