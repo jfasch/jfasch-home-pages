@@ -10,7 +10,7 @@ int main()
 
     int *run = a_begin;
     while (run != a_end)
-        cout << *run++ << endl;
+        cout << *run++ << endl;       // <--- explicit precedence: *(run++)
 
     return 0;
 }

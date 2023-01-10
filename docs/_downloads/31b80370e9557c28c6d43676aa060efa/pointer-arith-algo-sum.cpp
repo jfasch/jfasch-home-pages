@@ -11,7 +11,7 @@ int main()
     int *run = a_begin;
     int sum = 0;
     while (run != a_end)
-        sum += *run++;           // <--- explicit precedence: *(run++)
+        sum += *run++;
 
     cout << sum << endl;
 
