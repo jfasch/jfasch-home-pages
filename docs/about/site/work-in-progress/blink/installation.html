@@ -159,54 +159,66 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="#libgpiod" id="id1"><code class="docutils literal notranslate"><span class="pre">libgpiod</span></code></a></p>
 <ul>
-<li><p><a class="reference internal" href="#clone-and-massage" id="id2">Clone, and Massage</a></p></li>
+<li><p><a class="reference internal" href="#prerequisites" id="id2">Prerequisites</a></p>
+<ul>
+<li><p><a class="reference internal" href="#fedora" id="id3">Fedora</a></p></li>
+<li><p><a class="reference internal" href="#raspberry-os" id="id4">Raspberry OS</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#build" id="id3">Build</a></p></li>
+<li><p><a class="reference internal" href="#clone-and-massage" id="id5">Clone, and Massage</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#build" id="id6">Build</a></p></li>
 </ul>
 </div>
 <section id="libgpiod">
 <h2><a class="toc-backref" href="#id1"><code class="docutils literal notranslate"><span class="pre">libgpiod</span></code></a><a class="headerlink" href="#libgpiod" title="Permalink to this headline">¶</a></h2>
+<section id="prerequisites">
+<h3><a class="toc-backref" href="#id2">Prerequisites</a><a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h3>
+<section id="fedora">
+<h4><a class="toc-backref" href="#id3">Fedora</a><a class="headerlink" href="#fedora" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo dnf install autoconf-archive
+</pre></div>
+</div>
+</section>
+<section id="raspberry-os">
+<h4><a class="toc-backref" href="#id4">Raspberry OS</a><a class="headerlink" href="#raspberry-os" title="Permalink to this headline">¶</a></h4>
+<p>Pi <code class="docutils literal notranslate"><span class="pre">autoconf</span></code> is still at version 2.69, <code class="docutils literal notranslate"><span class="pre">libgpiod</span></code> requires 2.70
+(I guess). Don’t want to go through the process of autotooling on the
+Pi anyway, because the plan of autotools is to create a portable
+<code class="docutils literal notranslate"><span class="pre">configure</span></code> script, and a tarball containing all that’s necessary.</p>
+<p><strong>Steps</strong></p>
+<ul>
+<li><p>Proceed through the PC build below. Be aware that <code class="docutils literal notranslate"><span class="pre">--enable-tools</span></code>
+is necessary to create tarballs.</p></li>
+<li><p>Once everything is built,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">pwd</span>         <span class="c1"># &lt;--- in the build directory</span>
+<span class="go">/home/jfasch/tmp/libgpiod-build</span>
+<span class="gp">$ </span>make dist
+<span class="gp">$ </span>ls -1 ls -l libgpiod-*.tar.gz
+<span class="go">libgpiod-2.0.tar.gz</span>
+</pre></div>
+</div>
+</li>
+<li><p>Transfer that file to the Pi, and unpack it</p></li>
+<li><p>Configure the package just like you did for the PC native version
+(maybe with a different install prefix)</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>/home/jfasch/work/libgpiod/configure --enable-bindings-cxx --enable-bindings-python  --enable-tools --prefix<span class="o">=</span>...
+<span class="gp">$ </span>make
+<span class="gp">$ </span>make install
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+</section>
 <section id="clone-and-massage">
-<h3><a class="toc-backref" href="#id2">Clone, and Massage</a><a class="headerlink" href="#clone-and-massage" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">autogen.sh</span></code> does a <code class="docutils literal notranslate"><span class="pre">configure</span></code> step (in the source directory!) by
-default; using <code class="docutils literal notranslate"><span class="pre">NOCONFIGURE=yes</span></code> to suppress it.</p>
+<h3><a class="toc-backref" href="#id5">Clone, and Massage</a><a class="headerlink" href="#clone-and-massage" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git clone https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git
 </pre></div>
 </div>
-<p>First try, naively …</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">NOCONFIGURE</span><span class="o">=</span>yes ./autogen.sh
-<span class="go">autoreconf: export WARNINGS=</span>
-<span class="go">autoreconf: Entering directory &#39;.&#39;</span>
-<span class="go">autoreconf: configure.ac: not using Gettext</span>
-<span class="go">autoreconf: running: aclocal --force -I m4</span>
-<span class="go">aclocal: warning: couldn&#39;t open directory &#39;m4&#39;: No such file or directory</span>
-<span class="go">autoreconf: configure.ac: tracing</span>
-<span class="go">autoreconf: configure.ac: creating directory autostuff</span>
-<span class="go">autoreconf: running: libtoolize --copy --force</span>
-<span class="go">libtoolize: putting auxiliary files in AC_CONFIG_AUX_DIR, &#39;autostuff&#39;.</span>
-<span class="go">libtoolize: copying file &#39;autostuff/ltmain.sh&#39;</span>
-<span class="go">libtoolize: putting macros in AC_CONFIG_MACRO_DIRS, &#39;m4&#39;.</span>
-<span class="go">libtoolize: copying file &#39;m4/libtool.m4&#39;</span>
-<span class="go">libtoolize: copying file &#39;m4/ltoptions.m4&#39;</span>
-<span class="go">libtoolize: copying file &#39;m4/ltsugar.m4&#39;</span>
-<span class="go">libtoolize: copying file &#39;m4/ltversion.m4&#39;</span>
-<span class="go">libtoolize: copying file &#39;m4/lt~obsolete.m4&#39;</span>
-<span class="go">autoreconf: configure.ac: not using Intltool</span>
-<span class="go">autoreconf: configure.ac: not using Gtkdoc</span>
-<span class="go">autoreconf: running: aclocal --force -I m4</span>
-<span class="go">autoreconf: running: /usr/bin/autoconf --force</span>
-<span class="go">configure.ac:204: error: Unexpanded AX_ macro found. Please install GNU autoconf-archive.</span>
-<span class="go">      If this token and others are legitimate, please use m4_pattern_allow.</span>
-<span class="go">      See the Autoconf documentation.</span>
-<span class="go">autoreconf: error: /usr/bin/autoconf failed with exit status: 1</span>
-</pre></div>
-</div>
-<p>Ah yes, <code class="docutils literal notranslate"><span class="pre">autoconf-archive</span></code> …</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo dnf install autoconf-archive
-<span class="go">... works ...</span>
-</pre></div>
-</div>
+<p><code class="docutils literal notranslate"><span class="pre">autogen.sh</span></code> does a <code class="docutils literal notranslate"><span class="pre">configure</span></code> step (in the source directory!) by
+default; using <code class="docutils literal notranslate"><span class="pre">NOCONFIGURE=yes</span></code> to suppress it.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">NOCONFIGURE</span><span class="o">=</span>yes ./autogen.sh
 <span class="go">... better now ...</span>
 </pre></div>
@@ -214,7 +226,7 @@ default; using <code class="docutils literal notranslate"><span class="pre">NOCO
 </section>
 </section>
 <section id="build">
-<h2><a class="toc-backref" href="#id3">Build</a><a class="headerlink" href="#build" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">Build</a><a class="headerlink" href="#build" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>mkdir ~/tmp/libgpiod-build/
 <span class="gp">$ </span><span class="nb">cd</span> ~/tmp/libgpiod-build/
 </pre></div>

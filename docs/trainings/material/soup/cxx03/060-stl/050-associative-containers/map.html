@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>map&lt;&gt; &#8212; Jörg Faschingbauer</title>
+    <title>std::map &#8212; Jörg Faschingbauer</title>
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css" />
@@ -27,7 +27,7 @@
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx03/060-stl/050-associative-containers/map.html" />
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../search.html" />
-    <link rel="next" title="multimap&lt;&gt;" href="multimap.html" />
+    <link rel="next" title="Screenplay: std::map Initialization And Inserting" href="map-init-fill.html" />
     <link rel="prev" title="Associative Containers" href="basics.html" /> 
    
   <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
@@ -118,11 +118,18 @@
 <li class="toctree-l4"><a class="reference internal" href="../../050-templates/group.html">Templates</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="../group.html">Standard Template Library</a><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="../010-basics/topic.html">Standard Template Library: Basics</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../015-vector-copy-etc/topic.html"><code class="docutils literal notranslate"><span class="pre">std::vector</span></code> (And <code class="docutils literal notranslate"><span class="pre">std::copy()</span></code>)</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../020-algorithm/group.html">Algorithms</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../040-sequential-containers/group.html">Sequential Containers</a></li>
 <li class="toctree-l5 current"><a class="reference internal" href="group.html">Associative Containers</a><ul class="current">
 <li class="toctree-l6"><a class="reference internal" href="basics.html">Associative Containers</a></li>
-<li class="toctree-l6 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">map&lt;&gt;</span></code></a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">std::map</span></code></a><ul>
+<li class="toctree-l7"><a class="reference internal" href="map-init-fill.html">Screenplay: <code class="docutils literal notranslate"><span class="pre">std::map</span></code> Initialization And Inserting</a></li>
+<li class="toctree-l7"><a class="reference internal" href="map-insert.html">Screenplay: Inserting Elements</a></li>
+<li class="toctree-l7"><a class="reference internal" href="map-remove.html">Screenplay: Removing (Erasing) Elements</a></li>
+<li class="toctree-l7"><a class="reference internal" href="map-search.html">Screenplay: Searching</a></li>
+</ul>
+</li>
 <li class="toctree-l6"><a class="reference internal" href="multimap.html"><code class="docutils literal notranslate"><span class="pre">multimap&lt;&gt;</span></code></a></li>
 </ul>
 </li>
@@ -170,141 +177,164 @@
           
 
           <div class="body" role="main">
-             <aside class="sidebar">
-<p class="sidebar-title">Documentation</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/container/map">std::map</a> &#64;
-<a class="reference external" href="https://cppreference.com">cppreference.com</a></p></li>
-<li><p><a class="reference external" href="http://www.cplusplus.com/reference/map/map/">std::map</a> &#64;
-<a class="reference external" href="https://cplusplus.com">cplusplus.com</a></p></li>
-</ul>
-</aside>
-<section id="map">
-<h1><code class="docutils literal notranslate"><span class="pre">map&lt;&gt;</span></code><a class="headerlink" href="#map" title="Permalink to this headline">¶</a></h1>
+             <section id="std-map">
+<h1><code class="docutils literal notranslate"><span class="pre">std::map</span></code><a class="headerlink" href="#std-map" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#live-hacking" id="id2">Live Hacking</a></p></li>
+<li><p><a class="reference internal" href="#basics" id="id1">Basics</a></p></li>
+<li><p><a class="reference internal" href="#type-instantiation" id="id2">Type Instantiation</a></p></li>
+<li><p><a class="reference internal" href="#filling-the-container" id="id3">Filling The Container</a></p></li>
+<li><p><a class="reference internal" href="#inserting-elements" id="id4">Inserting Elements</a></p></li>
+<li><p><a class="reference internal" href="#removing-elements" id="id5">Removing Elements</a></p></li>
+<li><p><a class="reference internal" href="#searching" id="id6">Searching</a></p></li>
 </ul>
 </div>
-<section id="live-hacking">
-<h2><a class="toc-backref" href="#id2">Live Hacking</a><a class="headerlink" href="#live-hacking" title="Permalink to this headline">¶</a></h2>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/77de4e02a4fa1b5592f710feeebc83bb/map.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/map.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span><span class="cp"></span>
-<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">std</span><span class="p">;</span><span class="w"></span>
-
-
-<span class="k">class</span> <span class="nc">User</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="k">public</span><span class="o">:</span><span class="w"></span>
-<span class="w">    </span><span class="n">User</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
-<span class="w">    </span><span class="n">User</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">firstname</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lastname</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">_firstname</span><span class="p">(</span><span class="n">firstname</span><span class="p">),</span><span class="w"> </span><span class="n">_lastname</span><span class="p">(</span><span class="n">lastname</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
-
-<span class="w">    </span><span class="c1">// read-only access methods for private members (Java: getter methods)</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">firstname</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_firstname</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lastname</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_lastname</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
-
-<span class="k">private</span><span class="o">:</span><span class="w"></span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">_firstname</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">_lastname</span><span class="p">;</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
-
-
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">User</span><span class="w"> </span><span class="n">joerg</span><span class="p">(</span><span class="s">&quot;Joerg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Faschingbauer&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">joerg_svnr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1037190666&quot;</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">    </span><span class="n">User</span><span class="w"> </span><span class="n">caro</span><span class="p">(</span><span class="s">&quot;Caro&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Faschingbauer&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">caro_svnr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1234250497&quot;</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">    </span><span class="n">User</span><span class="w"> </span><span class="n">johanna</span><span class="p">(</span><span class="s">&quot;Johanna&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Faschingbauer&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">johanna_svnr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;2345110695&quot;</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">    </span><span class="n">User</span><span class="w"> </span><span class="n">philipp</span><span class="p">(</span><span class="s">&quot;Philipp&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Lichtenberger&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">philipp_svnr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;3456060486&quot;</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="n">meine_user_db</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">    </span><span class="c1">// insert (using index operator)</span>
-<span class="w">    </span><span class="n">meine_user_db</span><span class="p">[</span><span class="n">joerg_svnr</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">joerg</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">meine_user_db</span><span class="p">[</span><span class="n">johanna_svnr</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">johanna</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">meine_user_db</span><span class="p">[</span><span class="n">caro_svnr</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">caro</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">    </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;initial content: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="nl">elem</span><span class="p">:</span><span class="w"> </span><span class="n">meine_user_db</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;   Key: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">elem</span><span class="p">.</span><span class="n">first</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;, Value: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">elem</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">firstname</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;,&#39;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">elem</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">lastname</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">    </span><span class="n">meine_user_db</span><span class="p">[</span><span class="n">joerg_svnr</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">caro</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">    </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;content after overwrite: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="nl">elem</span><span class="p">:</span><span class="w"> </span><span class="n">meine_user_db</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;   Key: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">elem</span><span class="p">.</span><span class="n">first</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;, Value: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">elem</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">firstname</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;,&#39;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">elem</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">lastname</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-
-
-<span class="w">    </span><span class="c1">// insert (using map::insert())</span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="c1">// no error: philipp not yet in db</span>
-<span class="w">        </span><span class="n">meine_user_db</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">philipp_svnr</span><span class="p">,</span><span class="w"> </span><span class="n">philipp</span><span class="p">));</span><span class="w"></span>
-
-<span class="w">        </span><span class="c1">// error: johanna already there (doc says that the operation</span>
-<span class="w">        </span><span class="c1">// fails)</span>
-<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">User</span><span class="o">&gt;::</span><span class="n">iterator</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">returnvalue</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
-<span class="w">            </span><span class="n">meine_user_db</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="s">&quot;2345110695&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">User</span><span class="p">(</span><span class="s">&quot;xyz&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;abc&quot;</span><span class="p">)));</span><span class="w"></span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">returnvalue</span><span class="p">.</span><span class="n">second</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">true</span><span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;operation successful&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;operation not successful, a user with this key already exists:&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-<span class="w">            </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  Firstname: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">returnvalue</span><span class="p">.</span><span class="n">first</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">firstname</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-<span class="w">            </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  Lastname: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">returnvalue</span><span class="p">.</span><span class="n">first</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">lastname</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-
-<span class="w">    </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">meine_user_db</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">    </span><span class="c1">// search (using index operator)</span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="n">User</span><span class="w"> </span><span class="n">joerg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">meine_user_db</span><span class="p">[</span><span class="n">joerg_svnr</span><span class="p">];</span><span class="w"></span>
-<span class="w">        </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">joerg</span><span class="p">.</span><span class="n">firstname</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">joerg</span><span class="p">.</span><span class="n">lastname</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-
-<span class="w">    </span><span class="c1">// search the same, but with a key that does not exist</span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="n">User</span><span class="w"> </span><span class="n">somebody</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">meine_user_db</span><span class="p">[</span><span class="s">&quot;5678010101&quot;</span><span class="w"> </span><span class="cm">/*not an existing key*/</span><span class="p">];</span><span class="w"></span>
-<span class="w">        </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">somebody</span><span class="p">.</span><span class="n">firstname</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w">  </span><span class="c1">// empty string</span>
-<span class="w">        </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">somebody</span><span class="p">.</span><span class="n">lastname</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">somebody</span><span class="p">.</span><span class="n">firstname</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">somebody</span><span class="p">.</span><span class="n">lastname</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;5678010101 not found (but created as side effect)&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Firstname: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">somebody</span><span class="p">.</span><span class="n">firstname</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-<span class="w">            </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Lastname: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">somebody</span><span class="p">.</span><span class="n">lastname</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">        </span>
-<span class="w">        </span><span class="c1">// GOTCHA: the map has been modified: an empty User has been</span>
-<span class="w">        </span><span class="c1">// inserted under that key.</span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-
-<span class="w">    </span><span class="c1">// search using at(), with a key that does not exist</span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="n">User</span><span class="w"> </span><span class="n">somebody</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">meine_user_db</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="s">&quot;6789020222&quot;</span><span class="cm">/*does not exist*/</span><span class="p">);</span><span class="w"></span>
-<span class="w">            </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Firstname: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">somebody</span><span class="p">.</span><span class="n">firstname</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-<span class="w">            </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Lastname: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">somebody</span><span class="p">.</span><span class="n">lastname</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">        </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">out_of_range</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="n">cerr</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;6789020222 not found&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="toctree-wrapper compound">
+</div>
+<section id="basics">
+<h2><a class="toc-backref" href="#id1">Basics</a><a class="headerlink" href="#basics" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/container/map">std::map</a></p></li>
+</ul>
+</aside>
+<ul>
+<li><p>Implementation of a <em>key</em> to <em>value</em> mapping</p></li>
+<li><p>Internally realized as a <a class="reference external" href="https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">red-black tree</a></p></li>
+<li><p>Template type, parameterized as <code class="docutils literal notranslate"><span class="pre">std::map&lt;keytype,</span> <span class="pre">valuetype&gt;</span></code></p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">some_map</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
-</div>
+</li>
+<li><p>Tree nodes are <em>pairs</em> <code class="docutils literal notranslate"><span class="pre">(key,</span> <span class="pre">value)</span></code></p>
+<a class="reference internal image-reference" href="../../../../../../_images/40-40-00-map.svg"><img alt="../../../../../../_images/40-40-00-map.svg" height="181" src="../../../../../../_images/40-40-00-map.svg" width="544" /></a>
+</li>
+</ul>
+</section>
+<section id="type-instantiation">
+<h2><a class="toc-backref" href="#id2">Type Instantiation</a><a class="headerlink" href="#type-instantiation" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Type of a map is, e.g. <code class="docutils literal notranslate"><span class="pre">std::map&lt;int,</span> <span class="pre">std::string&gt;</span></code></p></li>
+<li><p>⟶ Compiler instantiates red-black tree implementation
+of the mapping</p></li>
+<li><p>Key and value types not limited to built-in type, naturally</p></li>
+<li><p>Type has <em>member types</em> (used when operating on object of the map
+type)</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_type</span></code>: the <em>key</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mapped_type</span></code>: the <em>value</em> that the key maps to</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">value_type</span></code>: the <em>node</em> type that the red-black tree has
+(<code class="docutils literal notranslate"><span class="pre">std::pair&lt;int,</span> <span class="pre">std::string&gt;</span></code>)</p></li>
+<li><p>…</p></li>
+<li><p>⟶ later</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="filling-the-container">
+<h2><a class="toc-backref" href="#id3">Filling The Container</a><a class="headerlink" href="#filling-the-container" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p><strong>Live Hacking</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="map-init-fill.html"><span class="doc">Screenplay: std::map Initialization And Inserting</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Default constructor ⟶ empty container, obviously</p></li>
+<li><p>Pre C++11, containers can only be <em>initialized</em> as being empty</p>
+<ul>
+<li><p>To be filled explicitly during runtime</p></li>
+</ul>
+</li>
+<li><p>Since C++11:
+<a class="reference internal" href="../../../cxx11/020-new-language-features/030-brace-initialization/group.html"><span class="doc">Brace Initialization (Uniform Initialization)</span></a></p></li>
+<li><p>Type definition with <code class="docutils literal notranslate"><span class="pre">using</span></code> is strongly recommended when working
+with maps</p></li>
+</ul>
+</section>
+<section id="inserting-elements">
+<h2><a class="toc-backref" href="#id4">Inserting Elements</a><a class="headerlink" href="#inserting-elements" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p><strong>Documentation</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/container/map/operator_at">map::operator[]()</a></p></li>
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/container/map/insert">map::insert()</a></p></li>
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/container/map/emplace">map::emplace()</a></p></li>
+</ul>
+<p><strong>Live Hacking</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="map-insert.html"><span class="doc">Screenplay: Inserting Elements</span></a></p></li>
+</ul>
+</aside>
+<p>Many ways to bring elements into the container, varying in their
+key-collision semantics, and many other facets …</p>
+<ul class="simple">
+<li><p>Subscript operator (<code class="docutils literal notranslate"><span class="pre">[]</span></code>): <code class="docutils literal notranslate"><span class="pre">my_map[42]</span> <span class="pre">=</span> <span class="pre">&quot;zweiundvierzig&quot;;</span></code>.
+Overwrites keys that are already there.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">insert()</span></code>. Does not overwrite; return value has an indicator if
+element was inserted.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">emplace()</span></code>. Like <code class="docutils literal notranslate"><span class="pre">insert()</span></code>, but rather constructs element
+in-place. (Performance!)</p></li>
+</ul>
+</section>
+<section id="removing-elements">
+<h2><a class="toc-backref" href="#id5">Removing Elements</a><a class="headerlink" href="#removing-elements" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p><strong>Documentation</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/container/map/erase">map::erase()</a></p></li>
+</ul>
+<p><strong>Live Hacking</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="map-remove.html"><span class="doc">Screenplay: Removing (Erasing) Elements</span></a></p></li>
+</ul>
+</aside>
+<p>Many overloads …</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">erase(iterator)</span></code>: if one has a pointer to the element (for some
+reason)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">erase(begin-iterator,</span> <span class="pre">end-iterator)</span></code>: same rationale</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">erase(key)</span></code></p></li>
+</ul>
+</section>
+<section id="searching">
+<h2><a class="toc-backref" href="#id6">Searching</a><a class="headerlink" href="#searching" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p><strong>Documentation</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/container/map/find">map::find()</a></p></li>
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/container/map/operator_at">map::operator[]()</a></p></li>
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/container/map/at">map::at()</a></p></li>
+</ul>
+<p><strong>Live Hacking</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="map-search.html"><span class="doc">Screenplay: Searching</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">find(key)</span></code></p>
+<ul>
+<li><p>if found, returns a pointer (err, iterator) to tree node (<code class="docutils literal notranslate"><span class="pre">(key,</span>
+<span class="pre">value)</span></code>)</p></li>
+<li><p>otherwise, returns <code class="docutils literal notranslate"><span class="pre">map.end()</span></code></p></li>
+<li><p>⟶ requires an <code class="docutils literal notranslate"><span class="pre">if</span></code> statement to check</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">operator[]()</span></code> is unusable in most cases</p>
+<ul>
+<li><p>Mainly there for insertion</p></li>
+<li><p>For technical reasons, can also be used to search</p></li>
+<li><p>Creates new entry if key not found</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at(key)</span></code></p>
+<ul>
+<li><p>Like <code class="docutils literal notranslate"><span class="pre">[key]</span></code> if <code class="docutils literal notranslate"><span class="pre">key</span></code> is found</p></li>
+<li><p>Throws <code class="docutils literal notranslate"><span class="pre">std::out_of_range</span></code> otherwise</p></li>
+</ul>
+</li>
+</ul>
 </section>
 </section>
 
