@@ -18,12 +18,12 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    if ((dev_fd = open(argv[1], O_RDWR)) < 0) {
+    if ((dev_fd = open(argv[1], O_RDWR)) == -1) {
         perror("open");
         return 1;
     }
 
-    if ((err = ioctl(dev_fd, I2C_SLAVE, 0x49)) < 0) {
+    if ((err = ioctl(dev_fd, I2C_SLAVE, 0x49)) == -1) {
         perror("set address");
         return 1;
     }
