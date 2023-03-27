@@ -1,0 +1,648 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Exercise: Refactoring - Extract CSV Reading Into Function (csv.reader) &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script src="../../../../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/python/exercises/userdb/csvreader-function.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="Exercise: Refactoring - Extract CSV Reading Into Function (csv.dictreader)" href="csvdictreader-function.html" />
+    <link rel="prev" title="Exercise: Read CSV File (csv.dictreader)" href="csvdictreader.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../basics/group.html">Python: The Language Fundamentals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../advanced/group.html">Python: More Language Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../swdev/group.html">Python: Project/Package Management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../misc/group.html">Python: Miscellaneous Topics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../drafts/group.html">Python: Draft Topics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../link-collection.html">Python Links</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pcap-exam.html">PCAP Exam</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../graph.html">Python: All Material, Interrelated</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../group.html">Exercises</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../legacy/group.html">Exercises (Legacy)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../herdt/group.html">Exercises (External)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../csv/group.html">CSV and Databases</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="group.html">User Database (Exercise Series)</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="csvreader.html">Exercise: Read CSV File (<code class="docutils literal notranslate"><span class="pre">csv.reader</span></code>)</a></li>
+<li class="toctree-l6"><a class="reference internal" href="csvdictreader.html">Exercise: Read CSV File (<code class="docutils literal notranslate"><span class="pre">csv.dictreader</span></code>)</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">Exercise: Refactoring - Extract CSV Reading Into Function (<code class="docutils literal notranslate"><span class="pre">csv.reader</span></code>)</a></li>
+<li class="toctree-l6"><a class="reference internal" href="csvdictreader-function.html">Exercise: Refactoring - Extract CSV Reading Into Function (<code class="docutils literal notranslate"><span class="pre">csv.dictreader</span></code>)</a></li>
+<li class="toctree-l6"><a class="reference internal" href="userdb_csv.html">Exercise: Refactoring - Extract Both CSV Formats Into Module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="user_json.html">Exercise: Convert User Record To JSON And Back</a></li>
+<li class="toctree-l6"><a class="reference internal" href="mqtt-publish-csv.html">Exercise: MQTT: Publish User Records</a></li>
+<li class="toctree-l6"><a class="reference internal" href="user-class-person.html">Exercise: Away From Raw Dictionaries</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-design-patterns/group.html">Design Patterns With C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-code/index.html">C++ Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-exercises/group.html">C++ Exercises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../clean-code/group.html">Is Software A Craft? Software Is A Craft! ⟶ <em>Clean Code</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="exercise-refactoring-extract-csv-reading-into-function-csv-reader">
+<h1>Exercise: Refactoring - Extract CSV Reading Into Function (<code class="docutils literal notranslate"><span class="pre">csv.reader</span></code>)<a class="headerlink" href="#exercise-refactoring-extract-csv-reading-into-function-csv-reader" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#requirement" id="id1">Requirement</a></p></li>
+<li><p><a class="reference internal" href="#dependencies" id="id2">Dependencies</a></p></li>
+</ul>
+</div>
+<section id="requirement">
+<h2><a class="toc-backref" href="#id1">Requirement</a><a class="headerlink" href="#requirement" title="Permalink to this headline">¶</a></h2>
+<p>Following <a class="reference internal" href="csvreader.html"><span class="doc">Exercise: Read CSV File (csv.reader)</span></a>, refactor <code class="docutils literal notranslate"><span class="pre">read-userdb.py</span></code> to not
+directly output the user records as specified.</p>
+<p>Rather, create a function that reads the CSV file, and returns a list
+of user records - dictionaries with specified keys - of the form,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>    <span class="c1"># int</span>
+    <span class="s1">&#39;firstname&#39;</span><span class="p">:</span> <span class="s1">&#39;Jörg&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;lastname&#39;</span><span class="p">:</span> <span class="s1">&#39;Faschingbauer&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;birth&#39;</span><span class="p">:</span> <span class="s1">&#39;19.6.1966&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>That list is then used as follows in the main part of the program (the
+part that creates the output which remains the same):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">user_records</span> <span class="o">=</span> <span class="n">read_csv_noheader</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">user_records</span><span class="p">:</span>
+    <span class="o">...</span> <span class="n">create</span> <span class="n">output</span> <span class="n">like</span> <span class="n">before</span><span class="p">,</span> <span class="n">no</span> <span class="n">change</span> <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="dependencies">
+<h2><a class="toc-backref" href="#id2">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<svg 
+ viewBox="0.00 0.00 844.00 1063.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1059)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-1059 840,-1059 840,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_python</title>
+<path fill="none" stroke="black" d="M20,-8C20,-8 816,-8 816,-8 822,-8 828,-14 828,-20 828,-20 828,-1035 828,-1035 828,-1041 822,-1047 816,-1047 816,-1047 20,-1047 20,-1047 14,-1047 8,-1041 8,-1035 8,-1035 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="418" y="-1031.8" font-family="Times,serif" font-size="14.00">Python Programming: From Absolute Beginner to Advanced Productivity</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_python_basics</title>
+<path fill="none" stroke="black" d="M60,-16C60,-16 796,-16 796,-16 802,-16 808,-22 808,-28 808,-28 808,-727 808,-727 808,-733 802,-739 796,-739 796,-739 60,-739 60,-739 54,-739 48,-733 48,-727 48,-727 48,-28 48,-28 48,-22 54,-16 60,-16"/>
+<text text-anchor="middle" x="428" y="-723.8" font-family="Times,serif" font-size="14.00">Python: The Language Fundamentals</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_python_exercises</title>
+<path fill="none" stroke="black" d="M88,-830C88,-830 776,-830 776,-830 782,-830 788,-836 788,-842 788,-842 788,-1004 788,-1004 788,-1010 782,-1016 776,-1016 776,-1016 88,-1016 88,-1016 82,-1016 76,-1010 76,-1004 76,-1004 76,-842 76,-842 76,-836 82,-830 88,-830"/>
+<text text-anchor="middle" x="432" y="-1000.8" font-family="Times,serif" font-size="14.00">Exercises</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_python_exercises_userdb</title>
+<path fill="none" stroke="black" d="M96,-838C96,-838 768,-838 768,-838 774,-838 780,-844 780,-850 780,-850 780,-973 780,-973 780,-979 774,-985 768,-985 768,-985 96,-985 96,-985 90,-985 84,-979 84,-973 84,-973 84,-850 84,-850 84,-844 90,-838 96,-838"/>
+<text text-anchor="middle" x="432" y="-969.8" font-family="Times,serif" font-size="14.00">User Database (Exercise Series)</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_python_misc</title>
+<path fill="none" stroke="black" d="M256,-747C256,-747 459,-747 459,-747 465,-747 471,-753 471,-759 471,-759 471,-810 471,-810 471,-816 465,-822 459,-822 459,-822 256,-822 256,-822 250,-822 244,-816 244,-810 244,-810 244,-759 244,-759 244,-753 250,-747 256,-747"/>
+<text text-anchor="middle" x="357.5" y="-806.8" font-family="Times,serif" font-size="14.00">Python: Miscellaneous Topics</text>
+</g>
+<!-- python_basics_python_0150_datatypes_overview -->
+<g id="node1" class="node">
+<title>python_basics_python_0150_datatypes_overview</title>
+<g id="a_node1"><a xlink:href="../../basics/python_0150_datatypes_overview/topic.html" xlink:title="Datatypes">
+<ellipse fill="#dcdcdc" stroke="black" cx="412" cy="-330" rx="57.69" ry="18"/>
+<text text-anchor="middle" x="412" y="-326.3" font-family="Times,serif" font-size="14.00">Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0140_variables -->
+<g id="node7" class="node">
+<title>python_basics_python_0140_variables</title>
+<g id="a_node7"><a xlink:href="../../basics/python_0140_variables/topic.html" xlink:title="Variables">
+<ellipse fill="#dcdcdc" stroke="black" cx="482" cy="-258" rx="53.89" ry="18"/>
+<text text-anchor="middle" x="482" y="-254.3" font-family="Times,serif" font-size="14.00">Variables</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0150_datatypes_overview&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge1" class="edge">
+<title>python_basics_python_0150_datatypes_overview&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M428.59,-312.41C437.48,-303.52 448.59,-292.41 458.37,-282.63"/>
+<polygon fill="black" stroke="black" points="460.93,-285.02 465.53,-275.47 455.98,-280.07 460.93,-285.02"/>
+</g>
+<!-- python_basics_python_0139_commandline_argv -->
+<g id="node2" class="node">
+<title>python_basics_python_0139_commandline_argv</title>
+<g id="a_node2"><a xlink:href="../../basics/python_0139_commandline_argv/topic.html" xlink:title="Commandline Arguments (sys.argv)">
+<ellipse fill="#dcdcdc" stroke="black" cx="233" cy="-258" rx="177.37" ry="18"/>
+<text text-anchor="middle" x="233" y="-254.3" font-family="Times,serif" font-size="14.00">Commandline Arguments (sys.argv)</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0130_syntax_etc -->
+<g id="node6" class="node">
+<title>python_basics_python_0130_syntax_etc</title>
+<g id="a_node6"><a xlink:href="../../basics/python_0130_syntax_etc/topic.html" xlink:title="Syntax etc.">
+<ellipse fill="#dcdcdc" stroke="black" cx="448" cy="-186" rx="63.09" ry="18"/>
+<text text-anchor="middle" x="448" y="-182.3" font-family="Times,serif" font-size="14.00">Syntax etc.</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0139_commandline_argv&#45;&gt;python_basics_python_0130_syntax_etc -->
+<g id="edge2" class="edge">
+<title>python_basics_python_0139_commandline_argv&#45;&gt;python_basics_python_0130_syntax_etc</title>
+<path fill="none" stroke="black" d="M283.14,-240.68C317.81,-229.39 363.74,-214.43 398.31,-203.18"/>
+<polygon fill="black" stroke="black" points="399.77,-206.38 408.2,-199.96 397.6,-199.73 399.77,-206.38"/>
+</g>
+<!-- python_basics_python_0125_running -->
+<g id="node12" class="node">
+<title>python_basics_python_0125_running</title>
+<g id="a_node12"><a xlink:href="../../basics/python_0125_running/topic.html" xlink:title="Running Python Programs">
+<ellipse fill="#dcdcdc" stroke="black" cx="233" cy="-186" rx="133.78" ry="18"/>
+<text text-anchor="middle" x="233" y="-182.3" font-family="Times,serif" font-size="14.00">Running Python Programs</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0139_commandline_argv&#45;&gt;python_basics_python_0125_running -->
+<g id="edge3" class="edge">
+<title>python_basics_python_0139_commandline_argv&#45;&gt;python_basics_python_0125_running</title>
+<path fill="none" stroke="black" d="M233,-239.7C233,-231.98 233,-222.71 233,-214.11"/>
+<polygon fill="black" stroke="black" points="236.5,-214.1 233,-204.1 229.5,-214.1 236.5,-214.1"/>
+</g>
+<!-- python_basics_python_0330_strings_encoding -->
+<g id="node3" class="node">
+<title>python_basics_python_0330_strings_encoding</title>
+<g id="a_node3"><a xlink:href="../../basics/python_0330_strings_encoding/topic.html" xlink:title="Strings and Encoding">
+<ellipse fill="#dcdcdc" stroke="black" cx="327" cy="-618" rx="111.28" ry="18"/>
+<text text-anchor="middle" x="327" y="-614.3" font-family="Times,serif" font-size="14.00">Strings and Encoding</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0300_strings -->
+<g id="node16" class="node">
+<title>python_basics_python_0300_strings</title>
+<g id="a_node16"><a xlink:href="../../basics/python_0300_strings/topic.html" xlink:title="More About Strings">
+<ellipse fill="#dcdcdc" stroke="black" cx="340" cy="-546" rx="102.88" ry="18"/>
+<text text-anchor="middle" x="340" y="-542.3" font-family="Times,serif" font-size="14.00">More About Strings</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0330_strings_encoding&#45;&gt;python_basics_python_0300_strings -->
+<g id="edge4" class="edge">
+<title>python_basics_python_0330_strings_encoding&#45;&gt;python_basics_python_0300_strings</title>
+<path fill="none" stroke="black" d="M330.21,-599.7C331.65,-591.98 333.37,-582.71 334.96,-574.11"/>
+<polygon fill="black" stroke="black" points="338.44,-574.58 336.82,-564.1 331.56,-573.3 338.44,-574.58"/>
+</g>
+<!-- python_basics_python_0170_if -->
+<g id="node4" class="node">
+<title>python_basics_python_0170_if</title>
+<g id="a_node4"><a xlink:href="../../basics/python_0170_if/topic.html" xlink:title="The if Statement">
+<ellipse fill="#dcdcdc" stroke="black" cx="711" cy="-474" rx="89.08" ry="18"/>
+<text text-anchor="middle" x="711" y="-470.3" font-family="Times,serif" font-size="14.00">The if Statement</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0160_boolean -->
+<g id="node15" class="node">
+<title>python_basics_python_0160_boolean</title>
+<g id="a_node15"><a xlink:href="../../basics/python_0160_boolean/topic.html" xlink:title="Boolean">
+<ellipse fill="#dcdcdc" stroke="black" cx="507" cy="-402" rx="48.19" ry="18"/>
+<text text-anchor="middle" x="507" y="-398.3" font-family="Times,serif" font-size="14.00">Boolean</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0170_if&#45;&gt;python_basics_python_0160_boolean -->
+<g id="edge5" class="edge">
+<title>python_basics_python_0170_if&#45;&gt;python_basics_python_0160_boolean</title>
+<path fill="none" stroke="black" d="M667.74,-458.15C633.35,-446.36 585.46,-429.92 550.91,-418.07"/>
+<polygon fill="black" stroke="black" points="551.69,-414.63 541.09,-414.7 549.42,-421.26 551.69,-414.63"/>
+</g>
+<!-- python_basics_python_0270_functions -->
+<g id="node5" class="node">
+<title>python_basics_python_0270_functions</title>
+<g id="a_node5"><a xlink:href="../../basics/python_0270_functions/topic.html" xlink:title="Functions">
+<ellipse fill="#dcdcdc" stroke="black" cx="630" cy="-402" rx="56.59" ry="18"/>
+<text text-anchor="middle" x="630" y="-398.3" font-family="Times,serif" font-size="14.00">Functions</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0270_functions&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge7" class="edge">
+<title>python_basics_python_0270_functions&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M591.78,-388.73C555.3,-377.02 500.2,-359.32 460.62,-346.61"/>
+<polygon fill="black" stroke="black" points="461.5,-343.22 450.91,-343.5 459.36,-349.88 461.5,-343.22"/>
+</g>
+<!-- python_basics_python_0270_functions&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge6" class="edge">
+<title>python_basics_python_0270_functions&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M613.02,-384.71C586.96,-359.7 536.93,-311.71 506.8,-282.8"/>
+<polygon fill="black" stroke="black" points="508.87,-279.93 499.24,-275.54 504.03,-284.99 508.87,-279.93"/>
+</g>
+<!-- python_basics_python_0120_helloworld -->
+<g id="node10" class="node">
+<title>python_basics_python_0120_helloworld</title>
+<g id="a_node10"><a xlink:href="../../basics/python_0120_helloworld/topic.html" xlink:title="Hello World">
+<ellipse fill="#dcdcdc" stroke="black" cx="340" cy="-114" rx="65.79" ry="18"/>
+<text text-anchor="middle" x="340" y="-110.3" font-family="Times,serif" font-size="14.00">Hello World</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0130_syntax_etc&#45;&gt;python_basics_python_0120_helloworld -->
+<g id="edge8" class="edge">
+<title>python_basics_python_0130_syntax_etc&#45;&gt;python_basics_python_0120_helloworld</title>
+<path fill="none" stroke="black" d="M423.76,-169.29C408.86,-159.63 389.56,-147.12 373.24,-136.55"/>
+<polygon fill="black" stroke="black" points="374.83,-133.4 364.53,-130.9 371.02,-139.28 374.83,-133.4"/>
+</g>
+<!-- python_basics_python_0140_variables&#45;&gt;python_basics_python_0130_syntax_etc -->
+<g id="edge9" class="edge">
+<title>python_basics_python_0140_variables&#45;&gt;python_basics_python_0130_syntax_etc</title>
+<path fill="none" stroke="black" d="M473.77,-240.05C469.9,-232.09 465.2,-222.41 460.88,-213.51"/>
+<polygon fill="black" stroke="black" points="463.91,-211.74 456.39,-204.28 457.61,-214.8 463.91,-211.74"/>
+</g>
+<!-- python_basics_python_0110_blahblah -->
+<g id="node8" class="node">
+<title>python_basics_python_0110_blahblah</title>
+<g id="a_node8"><a xlink:href="../../basics/python_0110_blahblah/topic.html" xlink:title="Blahblah">
+<ellipse fill="#dcdcdc" stroke="black" cx="340" cy="-42" rx="51.99" ry="18"/>
+<text text-anchor="middle" x="340" y="-38.3" font-family="Times,serif" font-size="14.00">Blahblah</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0220_for -->
+<g id="node9" class="node">
+<title>python_basics_python_0220_for</title>
+<g id="a_node9"><a xlink:href="../../basics/python_0220_for/topic.html" xlink:title="for Loops">
+<ellipse fill="#dcdcdc" stroke="black" cx="510" cy="-618" rx="53.89" ry="18"/>
+<text text-anchor="middle" x="510" y="-614.3" font-family="Times,serif" font-size="14.00">for Loops</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0200_sequential_types -->
+<g id="node11" class="node">
+<title>python_basics_python_0200_sequential_types</title>
+<g id="a_node11"><a xlink:href="../../basics/python_0200_sequential_types/topic.html" xlink:title="Sequential Datatypes">
+<ellipse fill="#dcdcdc" stroke="black" cx="474" cy="-474" rx="110.48" ry="18"/>
+<text text-anchor="middle" x="474" y="-470.3" font-family="Times,serif" font-size="14.00">Sequential Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0220_for&#45;&gt;python_basics_python_0200_sequential_types -->
+<g id="edge12" class="edge">
+<title>python_basics_python_0220_for&#45;&gt;python_basics_python_0200_sequential_types</title>
+<path fill="none" stroke="black" d="M505.66,-599.87C499.5,-575.56 488.15,-530.82 480.85,-502.01"/>
+<polygon fill="black" stroke="black" points="484.21,-501.02 478.36,-492.19 477.42,-502.74 484.21,-501.02"/>
+</g>
+<!-- python_basics_python_0193_while -->
+<g id="node18" class="node">
+<title>python_basics_python_0193_while</title>
+<g id="a_node18"><a xlink:href="../../basics/python_0193_while/topic.html" xlink:title="while Loops">
+<ellipse fill="#dcdcdc" stroke="black" cx="603" cy="-546" rx="65.79" ry="18"/>
+<text text-anchor="middle" x="603" y="-542.3" font-family="Times,serif" font-size="14.00">while Loops</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0220_for&#45;&gt;python_basics_python_0193_while -->
+<g id="edge13" class="edge">
+<title>python_basics_python_0220_for&#45;&gt;python_basics_python_0193_while</title>
+<path fill="none" stroke="black" d="M531.1,-601.12C543.62,-591.7 559.67,-579.61 573.44,-569.25"/>
+<polygon fill="black" stroke="black" points="575.77,-571.87 581.66,-563.06 571.56,-566.28 575.77,-571.87"/>
+</g>
+<!-- python_basics_python_0120_helloworld&#45;&gt;python_basics_python_0110_blahblah -->
+<g id="edge14" class="edge">
+<title>python_basics_python_0120_helloworld&#45;&gt;python_basics_python_0110_blahblah</title>
+<path fill="none" stroke="black" d="M340,-95.7C340,-87.98 340,-78.71 340,-70.11"/>
+<polygon fill="black" stroke="black" points="343.5,-70.1 340,-60.1 336.5,-70.1 343.5,-70.1"/>
+</g>
+<!-- python_basics_python_0150_datatypes_overview_compound -->
+<g id="node14" class="node">
+<title>python_basics_python_0150_datatypes_overview_compound</title>
+<g id="a_node14"><a xlink:href="../../basics/python_0150_datatypes_overview_compound/topic.html" xlink:title="Compound Datatypes">
+<ellipse fill="#dcdcdc" stroke="black" cx="196" cy="-402" rx="110.48" ry="18"/>
+<text text-anchor="middle" x="196" y="-398.3" font-family="Times,serif" font-size="14.00">Compound Datatypes</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0200_sequential_types&#45;&gt;python_basics_python_0150_datatypes_overview_compound -->
+<g id="edge18" class="edge">
+<title>python_basics_python_0200_sequential_types&#45;&gt;python_basics_python_0150_datatypes_overview_compound</title>
+<path fill="none" stroke="black" d="M416.74,-458.58C372.22,-447.37 310.35,-431.79 263.44,-419.98"/>
+<polygon fill="black" stroke="black" points="264.22,-416.57 253.67,-417.52 262.51,-423.36 264.22,-416.57"/>
+</g>
+<!-- python_basics_python_0125_running&#45;&gt;python_basics_python_0120_helloworld -->
+<g id="edge19" class="edge">
+<title>python_basics_python_0125_running&#45;&gt;python_basics_python_0120_helloworld</title>
+<path fill="none" stroke="black" d="M258.63,-168.23C273.1,-158.77 291.35,-146.83 306.89,-136.66"/>
+<polygon fill="black" stroke="black" points="309.23,-139.31 315.68,-130.91 305.4,-133.45 309.23,-139.31"/>
+</g>
+<!-- python_basics_python_0500_files -->
+<g id="node13" class="node">
+<title>python_basics_python_0500_files</title>
+<g id="a_node13"><a xlink:href="../../basics/python_0500_files/topic.html" xlink:title="File I/O">
+<ellipse fill="#dcdcdc" stroke="black" cx="357" cy="-690" rx="44.69" ry="18"/>
+<text text-anchor="middle" x="357" y="-686.3" font-family="Times,serif" font-size="14.00">File I/O</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0500_files&#45;&gt;python_basics_python_0330_strings_encoding -->
+<g id="edge21" class="edge">
+<title>python_basics_python_0500_files&#45;&gt;python_basics_python_0330_strings_encoding</title>
+<path fill="none" stroke="black" d="M349.74,-672.05C346.32,-664.09 342.18,-654.41 338.36,-645.51"/>
+<polygon fill="black" stroke="black" points="341.56,-644.09 334.4,-636.28 335.13,-646.85 341.56,-644.09"/>
+</g>
+<!-- python_basics_python_0500_files&#45;&gt;python_basics_python_0220_for -->
+<g id="edge20" class="edge">
+<title>python_basics_python_0500_files&#45;&gt;python_basics_python_0220_for</title>
+<path fill="none" stroke="black" d="M385.42,-676C409.28,-665.08 443.63,-649.36 470.22,-637.2"/>
+<polygon fill="black" stroke="black" points="472,-640.24 479.64,-632.89 469.09,-633.87 472,-640.24"/>
+</g>
+<!-- python_basics_python_0150_datatypes_overview_compound&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge22" class="edge">
+<title>python_basics_python_0150_datatypes_overview_compound&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M243.4,-385.64C279.05,-374.09 327.71,-358.32 363.59,-346.69"/>
+<polygon fill="black" stroke="black" points="364.92,-349.94 373.35,-343.52 362.76,-343.28 364.92,-349.94"/>
+</g>
+<!-- python_basics_python_0160_boolean&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge23" class="edge">
+<title>python_basics_python_0160_boolean&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M485.92,-385.46C472.85,-375.84 455.87,-363.32 441.48,-352.72"/>
+<polygon fill="black" stroke="black" points="443.48,-349.85 433.35,-346.73 439.33,-355.48 443.48,-349.85"/>
+</g>
+<!-- python_basics_python_0300_strings&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge25" class="edge">
+<title>python_basics_python_0300_strings&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M341.54,-527.97C343.48,-509.82 347.52,-480.42 355,-456 365.92,-420.37 384.75,-381.66 397.76,-356.91"/>
+<polygon fill="black" stroke="black" points="400.98,-358.3 402.6,-347.83 394.81,-355.01 400.98,-358.3"/>
+</g>
+<!-- python_basics_python_0300_strings&#45;&gt;python_basics_python_0200_sequential_types -->
+<g id="edge24" class="edge">
+<title>python_basics_python_0300_strings&#45;&gt;python_basics_python_0200_sequential_types</title>
+<path fill="none" stroke="black" d="M371.08,-528.76C389.72,-519.03 413.62,-506.54 433.7,-496.05"/>
+<polygon fill="black" stroke="black" points="435.38,-499.12 442.63,-491.39 432.14,-492.92 435.38,-499.12"/>
+</g>
+<!-- python_basics_python_0250_refs_flat_deep_copy -->
+<g id="node17" class="node">
+<title>python_basics_python_0250_refs_flat_deep_copy</title>
+<g id="a_node17"><a xlink:href="../../basics/python_0250_refs_flat_deep_copy/topic.html" xlink:title="References, (Im)mutability">
+<ellipse fill="#dcdcdc" stroke="black" cx="191" cy="-474" rx="135.38" ry="18"/>
+<text text-anchor="middle" x="191" y="-470.3" font-family="Times,serif" font-size="14.00">References, (Im)mutability</text>
+</a>
+</g>
+</g>
+<!-- python_basics_python_0300_strings&#45;&gt;python_basics_python_0250_refs_flat_deep_copy -->
+<g id="edge26" class="edge">
+<title>python_basics_python_0300_strings&#45;&gt;python_basics_python_0250_refs_flat_deep_copy</title>
+<path fill="none" stroke="black" d="M305.82,-528.94C284.82,-519.08 257.72,-506.34 235.12,-495.73"/>
+<polygon fill="black" stroke="black" points="236.6,-492.55 226.06,-491.47 233.62,-498.89 236.6,-492.55"/>
+</g>
+<!-- python_basics_python_0250_refs_flat_deep_copy&#45;&gt;python_basics_python_0150_datatypes_overview -->
+<g id="edge30" class="edge">
+<title>python_basics_python_0250_refs_flat_deep_copy&#45;&gt;python_basics_python_0150_datatypes_overview</title>
+<path fill="none" stroke="black" d="M244.96,-457.4C268.17,-448.89 294.58,-436.64 315,-420 330.1,-407.69 326.42,-397.96 340,-384 351.43,-372.25 365.69,-361.17 378.49,-352.21"/>
+<polygon fill="black" stroke="black" points="380.78,-354.89 387.07,-346.37 376.83,-349.11 380.78,-354.89"/>
+</g>
+<!-- python_basics_python_0250_refs_flat_deep_copy&#45;&gt;python_basics_python_0140_variables -->
+<g id="edge29" class="edge">
+<title>python_basics_python_0250_refs_flat_deep_copy&#45;&gt;python_basics_python_0140_variables</title>
+<path fill="none" stroke="black" d="M127.77,-458.08C108.1,-450.15 88.56,-438.13 77,-420 68.4,-406.51 67.5,-396.87 77,-384 87.85,-369.3 325.59,-302.18 431.67,-272.82"/>
+<polygon fill="black" stroke="black" points="432.81,-276.14 441.52,-270.1 430.95,-269.39 432.81,-276.14"/>
+</g>
+<!-- python_basics_python_0250_refs_flat_deep_copy&#45;&gt;python_basics_python_0150_datatypes_overview_compound -->
+<g id="edge31" class="edge">
+<title>python_basics_python_0250_refs_flat_deep_copy&#45;&gt;python_basics_python_0150_datatypes_overview_compound</title>
+<path fill="none" stroke="black" d="M192.24,-455.7C192.79,-447.98 193.45,-438.71 194.06,-430.11"/>
+<polygon fill="black" stroke="black" points="197.56,-430.33 194.78,-420.1 190.57,-429.83 197.56,-430.33"/>
+</g>
+<!-- python_basics_python_0193_while&#45;&gt;python_basics_python_0170_if -->
+<g id="edge33" class="edge">
+<title>python_basics_python_0193_while&#45;&gt;python_basics_python_0170_if</title>
+<path fill="none" stroke="black" d="M627.51,-529.12C642.21,-519.59 661.12,-507.33 677.23,-496.89"/>
+<polygon fill="black" stroke="black" points="679.35,-499.68 685.84,-491.31 675.55,-493.81 679.35,-499.68"/>
+</g>
+<!-- python_basics_python_0193_while&#45;&gt;python_basics_python_0160_boolean -->
+<g id="edge32" class="edge">
+<title>python_basics_python_0193_while&#45;&gt;python_basics_python_0160_boolean</title>
+<path fill="none" stroke="black" d="M605.29,-527.82C606.92,-508.75 606.82,-477.8 593,-456 582.87,-440.03 566.02,-428.11 549.9,-419.66"/>
+<polygon fill="black" stroke="black" points="551.07,-416.34 540.55,-415.08 547.99,-422.62 551.07,-416.34"/>
+</g>
+<!-- python_exercises_userdb_csvreader_function -->
+<g id="node19" class="node">
+<title>python_exercises_userdb_csvreader_function</title>
+<ellipse fill="red" stroke="black" stroke-width="3" cx="432" cy="-936" rx="339.84" ry="18"/>
+<text text-anchor="middle" x="432" y="-932.3" font-family="Times,serif" font-size="14.00">Exercise: Refactoring &#45; Extract CSV Reading Into Function (csv.reader)</text>
+</g>
+<!-- python_exercises_userdb_csvreader_function&#45;&gt;python_basics_python_0270_functions -->
+<g id="edge11" class="edge">
+<title>python_exercises_userdb_csvreader_function&#45;&gt;python_basics_python_0270_functions</title>
+<path fill="none" stroke="black" d="M512.66,-918.49C626.08,-892.92 819,-839.77 819,-774 819,-774 819,-774 819,-545 819,-505.2 834.56,-486.51 809,-456 781.68,-423.39 735.31,-410.29 696.61,-405.26"/>
+<polygon fill="black" stroke="black" points="696.77,-401.76 686.44,-404.1 695.98,-408.71 696.77,-401.76"/>
+</g>
+<!-- python_exercises_userdb_csvreader -->
+<g id="node20" class="node">
+<title>python_exercises_userdb_csvreader</title>
+<g id="a_node20"><a xlink:href="csvreader.html" xlink:title="Exercise: Read CSV File (csv.reader)">
+<ellipse fill="red" stroke="black" cx="357" cy="-864" rx="180.07" ry="18"/>
+<text text-anchor="middle" x="357" y="-860.3" font-family="Times,serif" font-size="14.00">Exercise: Read CSV File (csv.reader)</text>
+</a>
+</g>
+</g>
+<!-- python_exercises_userdb_csvreader_function&#45;&gt;python_exercises_userdb_csvreader -->
+<g id="edge10" class="edge">
+<title>python_exercises_userdb_csvreader_function&#45;&gt;python_exercises_userdb_csvreader</title>
+<path fill="none" stroke="black" d="M413.46,-917.7C404.2,-909.05 392.84,-898.45 382.74,-889.03"/>
+<polygon fill="black" stroke="black" points="385.02,-886.37 375.33,-882.1 380.25,-891.49 385.02,-886.37"/>
+</g>
+<!-- python_exercises_userdb_csvreader&#45;&gt;python_basics_python_0139_commandline_argv -->
+<g id="edge27" class="edge">
+<title>python_exercises_userdb_csvreader&#45;&gt;python_basics_python_0139_commandline_argv</title>
+<path fill="none" stroke="black" d="M234.73,-850.77C137.26,-833.47 17,-791.72 17,-691 17,-691 17,-691 17,-401 17,-333.91 90.67,-296.75 151.96,-277.44"/>
+<polygon fill="black" stroke="black" points="153.12,-280.75 161.67,-274.5 151.09,-274.05 153.12,-280.75"/>
+</g>
+<!-- python_misc_csv -->
+<g id="node21" class="node">
+<title>python_misc_csv</title>
+<g id="a_node21"><a xlink:href="../../misc/csv/topic.html" xlink:title="CSV Files">
+<ellipse fill="#dcdcdc" stroke="black" cx="357" cy="-773" rx="55.79" ry="18"/>
+<text text-anchor="middle" x="357" y="-769.3" font-family="Times,serif" font-size="14.00">CSV Files</text>
+</a>
+</g>
+</g>
+<!-- python_exercises_userdb_csvreader&#45;&gt;python_misc_csv -->
+<g id="edge28" class="edge">
+<title>python_exercises_userdb_csvreader&#45;&gt;python_misc_csv</title>
+<path fill="none" stroke="black" d="M357,-845.84C357,-833.28 357,-815.98 357,-801.5"/>
+<polygon fill="black" stroke="black" points="360.5,-801.11 357,-791.11 353.5,-801.11 360.5,-801.11"/>
+</g>
+<!-- python_misc_csv&#45;&gt;python_basics_python_0220_for -->
+<g id="edge15" class="edge">
+<title>python_misc_csv&#45;&gt;python_basics_python_0220_for</title>
+<path fill="none" stroke="black" d="M384.86,-757.38C393.65,-752.15 403.12,-745.84 411,-739 443.84,-710.5 474.54,-670.38 492.79,-644.53"/>
+<polygon fill="black" stroke="black" points="495.87,-646.23 498.71,-636.02 490.13,-642.23 495.87,-646.23"/>
+</g>
+<!-- python_misc_csv&#45;&gt;python_basics_python_0500_files -->
+<g id="edge16" class="edge">
+<title>python_misc_csv&#45;&gt;python_basics_python_0500_files</title>
+<path fill="none" stroke="black" d="M357,-754.82C357,-744.19 357,-730.31 357,-718.2"/>
+<polygon fill="black" stroke="black" points="360.5,-718.15 357,-708.15 353.5,-718.15 360.5,-718.15"/>
+</g>
+<!-- python_misc_csv&#45;&gt;python_basics_python_0150_datatypes_overview_compound -->
+<g id="edge17" class="edge">
+<title>python_misc_csv&#45;&gt;python_basics_python_0150_datatypes_overview_compound</title>
+<path fill="none" stroke="black" d="M301.63,-769.88C210.04,-763.09 37,-734.92 37,-619 37,-619 37,-619 37,-545 37,-505.2 22.27,-487.19 47,-456 61.7,-437.46 83.4,-425.39 105.7,-417.55"/>
+<polygon fill="black" stroke="black" points="106.85,-420.85 115.28,-414.44 104.69,-414.2 106.85,-420.85"/>
+</g>
+</g>
+</svg>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2023 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/python/exercises/userdb/csvreader-function.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
