@@ -157,43 +157,58 @@
 <h1>Screenplay: Pointless Blinking With Python, <code class="docutils literal notranslate"><span class="pre">asyncio</span></code>, and <code class="docutils literal notranslate"><span class="pre">libgpiod</span></code> (and a Raspberry Pi of Course)<a class="headerlink" href="#screenplay-pointless-blinking-with-python-asyncio-and-libgpiod-and-a-raspberry-pi-of-course" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#setup-before-presentation" id="id20">Setup Before Presentation</a></p></li>
-<li><p><a class="reference internal" href="#multiple-background-threads" id="id21">Multiple Background Threads</a></p></li>
-<li><p><a class="reference internal" href="#enter-asyncio" id="id22">Enter <code class="docutils literal notranslate"><span class="pre">asyncio</span></code></a></p></li>
-<li><p><a class="reference internal" href="#character-device-based-gpio" id="id23">Character Device Based GPIO</a></p></li>
-<li><p><a class="reference internal" href="#gpio-device" id="id24">GPIO Device</a></p></li>
-<li><p><a class="reference internal" href="#most-basic-feature-setting-gpio-values" id="id25">Most Basic Feature: Setting GPIO Values</a></p></li>
-<li><p><a class="reference internal" href="#entire-matrix-on-off" id="id26">Entire Matrix On/Off</a></p></li>
-<li><p><a class="reference internal" href="#bringing-all-together" id="id27">Bringing All Together</a></p></li>
-<li><p><a class="reference internal" href="#modularize" id="id28">Modularize</a></p></li>
-<li><p><a class="reference internal" href="#play-a-bit-blink-entire-rows" id="id29">Play A Bit: Blink Entire Rows</a></p></li>
-<li><p><a class="reference internal" href="#coroutines" id="id30">Coroutines?</a></p></li>
-<li><p><a class="reference internal" href="#not-enough-sequence" id="id31">Not Enough: <code class="docutils literal notranslate"><span class="pre">sequence()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#looping-forever" id="id32">Looping: <code class="docutils literal notranslate"><span class="pre">forever()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#a-stripped-down-program-longrightarrow-factory" id="id33">A Stripped-Down Program (⟶ Factory)</a></p></li>
-<li><p><a class="reference internal" href="#turn-blink-into-a-factory" id="id34">Turn <code class="docutils literal notranslate"><span class="pre">blink()</span></code> Into A Factory</a></p></li>
-<li><p><a class="reference internal" href="#anti-clumsy-decorator-blink-wrapper" id="id35">Anti-Clumsy Decorator: <code class="docutils literal notranslate"><span class="pre">blink()</span></code> Wrapper</a></p></li>
-<li><p><a class="reference internal" href="#program-finally" id="id36"><code class="docutils literal notranslate"><span class="pre">&#64;program</span></code>, Finally</a></p></li>
-<li><p><a class="reference internal" href="#playground-cycle" id="id37">Playground: <code class="docutils literal notranslate"><span class="pre">cycle()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#playground-any" id="id38">Playground: <code class="docutils literal notranslate"><span class="pre">any()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#playground-on" id="id39">Playground: <code class="docutils literal notranslate"><span class="pre">on()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#goodbye" id="id40">Goodbye</a></p></li>
+<li><p><a class="reference internal" href="#setup-before-presentation" id="id20">Setup Before Presentation</a></p>
+<ul>
+<li><p><a class="reference internal" href="#starting-point" id="id21">Starting Point</a></p></li>
+<li><p><a class="reference internal" href="#greeting" id="id22">Greeting</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#multiple-background-threads" id="id23">Multiple Background Threads</a></p></li>
+<li><p><a class="reference internal" href="#enter-asyncio" id="id24">Enter <code class="docutils literal notranslate"><span class="pre">asyncio</span></code></a></p></li>
+<li><p><a class="reference internal" href="#character-device-based-gpio" id="id25">Character Device Based GPIO</a></p></li>
+<li><p><a class="reference internal" href="#gpio-device" id="id26">GPIO Device</a></p></li>
+<li><p><a class="reference internal" href="#most-basic-feature-setting-gpio-values" id="id27">Most Basic Feature: Setting GPIO Values</a></p></li>
+<li><p><a class="reference internal" href="#entire-matrix-on-off" id="id28">Entire Matrix On/Off</a></p></li>
+<li><p><a class="reference internal" href="#bringing-all-together" id="id29">Bringing All Together</a></p></li>
+<li><p><a class="reference internal" href="#modularize" id="id30">Modularize</a></p></li>
+<li><p><a class="reference internal" href="#play-a-bit-blink-entire-rows" id="id31">Play A Bit: Blink Entire Rows</a></p></li>
+<li><p><a class="reference internal" href="#coroutines" id="id32">Coroutines?</a></p></li>
+<li><p><a class="reference internal" href="#not-enough-sequence" id="id33">Not Enough: <code class="docutils literal notranslate"><span class="pre">sequence()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#looping-forever" id="id34">Looping: <code class="docutils literal notranslate"><span class="pre">forever()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#a-stripped-down-program-longrightarrow-factory" id="id35">A Stripped-Down Program (⟶ Factory)</a></p></li>
+<li><p><a class="reference internal" href="#turn-blink-into-a-factory" id="id36">Turn <code class="docutils literal notranslate"><span class="pre">blink()</span></code> Into A Factory</a></p></li>
+<li><p><a class="reference internal" href="#anti-clumsy-decorator-blink-wrapper" id="id37">Anti-Clumsy Decorator: <code class="docutils literal notranslate"><span class="pre">blink()</span></code> Wrapper</a></p></li>
+<li><p><a class="reference internal" href="#program-finally" id="id38"><code class="docutils literal notranslate"><span class="pre">&#64;program</span></code>, Finally</a></p></li>
+<li><p><a class="reference internal" href="#playground-cycle" id="id39">Playground: <code class="docutils literal notranslate"><span class="pre">cycle()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fast-forward-any-and-cancellation" id="id40">Fast Forward: <code class="docutils literal notranslate"><span class="pre">any()</span></code>, And Cancellation</a></p></li>
+<li><p><a class="reference internal" href="#playground-on" id="id41">Playground: <code class="docutils literal notranslate"><span class="pre">on()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#goodbye" id="id42">Goodbye</a></p></li>
 </ul>
 </div>
 <section id="setup-before-presentation">
 <h2><a class="toc-backref" href="#id20">Setup Before Presentation</a><a class="headerlink" href="#setup-before-presentation" title="Permalink to this headline">¶</a></h2>
+<section id="starting-point">
+<h3><a class="toc-backref" href="#id21">Starting Point</a><a class="headerlink" href="#starting-point" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Download <a class="reference download internal" download="" href="../../../../_downloads/d25c1a01808ad828c7038823be98ca7e/thread-multi.py"><code class="xref download docutils literal notranslate"><span class="pre">code/thread-multi.py</span></code></a> as <code class="docutils literal notranslate"><span class="pre">blink.py</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">+x</span></code></p></li>
 <li><p>Download <a class="reference download internal" download="" href="../../../../_downloads/619746e8543e43515537b3b9a89861f7/gpio-multi.py"><code class="xref download docutils literal notranslate"><span class="pre">code/gpio-multi.py</span></code></a> as <code class="docutils literal notranslate"><span class="pre">gpio.py</span></code>, and <code class="docutils literal notranslate"><span class="pre">chmod</span>
 <span class="pre">+x</span></code></p></li>
 <li><p>Download <a class="reference download internal" download="" href="../../../../_downloads/f14d8f200bd63dd0e2df4e620fbdbc69/off.py"><code class="xref download docutils literal notranslate"><span class="pre">code/off.py</span></code></a> as <code class="docutils literal notranslate"><span class="pre">off.py</span></code>, and <code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">+x</span></code></p></li>
-<li><p>Download <a class="reference download internal" download="" href="../../../../_downloads/3320b37d1a9dbb23c9c40971c2e06e8e/set_values"><code class="xref download docutils literal notranslate"><span class="pre">snippets/set_values</span></code></a> into <code class="docutils literal notranslate"><span class="pre">snippets</span></code></p></li>
-<li><p>Download <a class="reference download internal" download="" href="../../../../_downloads/e9e49ed17d48664059ce61bd38097711/blink-raw"><code class="xref download docutils literal notranslate"><span class="pre">snippets/blink-raw</span></code></a> into <code class="docutils literal notranslate"><span class="pre">snippets</span></code></p></li>
+<li><p>Download <cite>snippets/*</cite> into <code class="docutils literal notranslate"><span class="pre">snippets</span></code></p></li>
 </ul>
 </section>
+<section id="greeting">
+<h3><a class="toc-backref" href="#id22">Greeting</a><a class="headerlink" href="#greeting" title="Permalink to this headline">¶</a></h3>
+<p>In a subdirectory:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">stuff.py</span></code> from <code class="xref download docutils literal notranslate"><span class="pre">snippets/stuff_complete</span></code></p></li>
+<li><p>Save away blink program with the squares etc</p></li>
+</ul>
+</section>
+</section>
 <section id="multiple-background-threads">
-<h2><a class="toc-backref" href="#id21">Multiple Background Threads</a><a class="headerlink" href="#multiple-background-threads" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id23">Multiple Background Threads</a><a class="headerlink" href="#multiple-background-threads" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>Editor</strong></p>
 <ul class="simple">
@@ -263,7 +278,7 @@ Python’s weird thread management (GIL)</p></li>
 </div>
 </section>
 <section id="enter-asyncio">
-<h2><a class="toc-backref" href="#id22">Enter <code class="docutils literal notranslate"><span class="pre">asyncio</span></code></a><a class="headerlink" href="#enter-asyncio" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id24">Enter <code class="docutils literal notranslate"><span class="pre">asyncio</span></code></a><a class="headerlink" href="#enter-asyncio" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Replace <code class="docutils literal notranslate"><span class="pre">threading</span></code> and <code class="docutils literal notranslate"><span class="pre">time</span></code> with <code class="docutils literal notranslate"><span class="pre">asyncio</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">async</span></code> functions, <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">asyncio.sleep(...)</span></code></p></li>
@@ -318,7 +333,7 @@ parameter</p></li>
 </div>
 </section>
 <section id="character-device-based-gpio">
-<h2><a class="toc-backref" href="#id23">Character Device Based GPIO</a><a class="headerlink" href="#character-device-based-gpio" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id25">Character Device Based GPIO</a><a class="headerlink" href="#character-device-based-gpio" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>Editor</strong></p>
 <ul class="simple">
@@ -356,7 +371,7 @@ Golaszewski</a></p>
       allowfullscreen>
 </iframe></section>
 <section id="gpio-device">
-<h2><a class="toc-backref" href="#id24">GPIO Device</a><a class="headerlink" href="#gpio-device" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id26">GPIO Device</a><a class="headerlink" href="#gpio-device" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">/dev/gpiochip0</span></code>: character device</p></li>
 <li><p>Opened by processes</p></li>
@@ -370,7 +385,7 @@ Golaszewski</a></p>
 </div>
 </section>
 <section id="most-basic-feature-setting-gpio-values">
-<h2><a class="toc-backref" href="#id25">Most Basic Feature: Setting GPIO Values</a><a class="headerlink" href="#most-basic-feature-setting-gpio-values" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id27">Most Basic Feature: Setting GPIO Values</a><a class="headerlink" href="#most-basic-feature-setting-gpio-values" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Request GPIO 11, 10, 27</p></li>
 <li><p>… configuring for output</p></li>
@@ -404,7 +419,7 @@ Golaszewski</a></p>
 </div>
 </section>
 <section id="entire-matrix-on-off">
-<h2><a class="toc-backref" href="#id26">Entire Matrix On/Off</a><a class="headerlink" href="#entire-matrix-on-off" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id28">Entire Matrix On/Off</a><a class="headerlink" href="#entire-matrix-on-off" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>Editor</strong></p>
 <ul class="simple">
@@ -450,7 +465,7 @@ Golaszewski</a></p>
 </div>
 </section>
 <section id="bringing-all-together">
-<h2><a class="toc-backref" href="#id27">Bringing All Together</a><a class="headerlink" href="#bringing-all-together" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id29">Bringing All Together</a><a class="headerlink" href="#bringing-all-together" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>Editor</strong></p>
 <ul class="simple">
@@ -551,7 +566,7 @@ Golaszewski</a></p>
 </div>
 </section>
 <section id="modularize">
-<h2><a class="toc-backref" href="#id28">Modularize</a><a class="headerlink" href="#modularize" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id30">Modularize</a><a class="headerlink" href="#modularize" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>Editor</strong></p>
 <ul class="simple">
@@ -628,7 +643,7 @@ Golaszewski</a></p>
 </div>
 </section>
 <section id="play-a-bit-blink-entire-rows">
-<h2><a class="toc-backref" href="#id29">Play A Bit: Blink Entire Rows</a><a class="headerlink" href="#play-a-bit-blink-entire-rows" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id31">Play A Bit: Blink Entire Rows</a><a class="headerlink" href="#play-a-bit-blink-entire-rows" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>Steps</strong></p>
 <ul class="simple">
@@ -699,7 +714,7 @@ Golaszewski</a></p>
 </div>
 </section>
 <section id="coroutines">
-<h2><a class="toc-backref" href="#id30">Coroutines?</a><a class="headerlink" href="#coroutines" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id32">Coroutines?</a><a class="headerlink" href="#coroutines" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>Steps</strong></p>
 <ul class="simple">
@@ -751,7 +766,7 @@ immediately</p>
 </div>
 </section>
 <section id="not-enough-sequence">
-<h2><a class="toc-backref" href="#id31">Not Enough: <code class="docutils literal notranslate"><span class="pre">sequence()</span></code></a><a class="headerlink" href="#not-enough-sequence" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id33">Not Enough: <code class="docutils literal notranslate"><span class="pre">sequence()</span></code></a><a class="headerlink" href="#not-enough-sequence" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Not using <code class="docutils literal notranslate"><span class="pre">create_task()</span></code>: sequential execution</p></li>
 <li><p>Pass a limit to <code class="docutils literal notranslate"><span class="pre">blink()</span></code></p></li>
@@ -795,7 +810,7 @@ immediately</p>
 </ul>
 </section>
 <section id="looping-forever">
-<h2><a class="toc-backref" href="#id32">Looping: <code class="docutils literal notranslate"><span class="pre">forever()</span></code></a><a class="headerlink" href="#looping-forever" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id34">Looping: <code class="docutils literal notranslate"><span class="pre">forever()</span></code></a><a class="headerlink" href="#looping-forever" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>Steps</strong></p>
 <ul class="simple">
@@ -844,7 +859,7 @@ immediately</p>
 </ul>
 </section>
 <section id="a-stripped-down-program-longrightarrow-factory">
-<h2><a class="toc-backref" href="#id33">A Stripped-Down Program (⟶ Factory)</a><a class="headerlink" href="#a-stripped-down-program-longrightarrow-factory" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id35">A Stripped-Down Program (⟶ Factory)</a><a class="headerlink" href="#a-stripped-down-program-longrightarrow-factory" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>Steps</strong></p>
 <ul class="simple">
@@ -881,7 +896,7 @@ immediately</p>
 </div>
 </section>
 <section id="turn-blink-into-a-factory">
-<h2><a class="toc-backref" href="#id34">Turn <code class="docutils literal notranslate"><span class="pre">blink()</span></code> Into A Factory</a><a class="headerlink" href="#turn-blink-into-a-factory" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id36">Turn <code class="docutils literal notranslate"><span class="pre">blink()</span></code> Into A Factory</a><a class="headerlink" href="#turn-blink-into-a-factory" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>Steps</strong></p>
 <ul class="simple">
@@ -943,7 +958,7 @@ function</p></li>
 </div>
 </section>
 <section id="anti-clumsy-decorator-blink-wrapper">
-<h2><a class="toc-backref" href="#id35">Anti-Clumsy Decorator: <code class="docutils literal notranslate"><span class="pre">blink()</span></code> Wrapper</a><a class="headerlink" href="#anti-clumsy-decorator-blink-wrapper" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id37">Anti-Clumsy Decorator: <code class="docutils literal notranslate"><span class="pre">blink()</span></code> Wrapper</a><a class="headerlink" href="#anti-clumsy-decorator-blink-wrapper" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_factory_for_blink</span><span class="p">(</span><span class="n">blinkfunc</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">factory</span><span class="p">(</span><span class="n">ios</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">ntimes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">create_coro</span><span class="p">():</span>
@@ -1071,7 +1086,7 @@ function</p></li>
 </div>
 </section>
 <section id="program-finally">
-<h2><a class="toc-backref" href="#id36"><code class="docutils literal notranslate"><span class="pre">&#64;program</span></code>, Finally</a><a class="headerlink" href="#program-finally" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id38"><code class="docutils literal notranslate"><span class="pre">&#64;program</span></code>, Finally</a><a class="headerlink" href="#program-finally" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>Steps</strong></p>
 <ul class="simple">
@@ -1175,7 +1190,7 @@ function</p></li>
 </div>
 </section>
 <section id="playground-cycle">
-<h2><a class="toc-backref" href="#id37">Playground: <code class="docutils literal notranslate"><span class="pre">cycle()</span></code></a><a class="headerlink" href="#playground-cycle" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id39">Playground: <code class="docutils literal notranslate"><span class="pre">cycle()</span></code></a><a class="headerlink" href="#playground-cycle" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>Snippets</strong></p>
 <ul class="simple">
@@ -1207,8 +1222,8 @@ function</p></li>
 <li><p>⟶ <strong>A-HA!!</strong></p></li>
 </ul>
 </section>
-<section id="playground-any">
-<h2><a class="toc-backref" href="#id38">Playground: <code class="docutils literal notranslate"><span class="pre">any()</span></code></a><a class="headerlink" href="#playground-any" title="Permalink to this headline">¶</a></h2>
+<section id="fast-forward-any-and-cancellation">
+<h2><a class="toc-backref" href="#id40">Fast Forward: <code class="docutils literal notranslate"><span class="pre">any()</span></code>, And Cancellation</a><a class="headerlink" href="#fast-forward-any-and-cancellation" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>Snippets</strong></p>
 <ul class="simple">
@@ -1217,12 +1232,13 @@ function</p></li>
 </ul>
 </aside>
 <ul class="simple">
-<li><p>Show <code class="docutils literal notranslate"><span class="pre">stuff.any()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">blink.py</span></code>: insert <code class="docutils literal notranslate"><span class="pre">prog-all-demo</span></code> ⟶ explain</p></li>
+<li><p>Show <code class="docutils literal notranslate"><span class="pre">stuff.any()</span></code> ⟶ opposite of <code class="docutils literal notranslate"><span class="pre">all()</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">blink.py</span></code>: insert <code class="docutils literal notranslate"><span class="pre">prog-any-demo</span></code></p></li>
 </ul>
 </section>
 <section id="playground-on">
-<h2><a class="toc-backref" href="#id39">Playground: <code class="docutils literal notranslate"><span class="pre">on()</span></code></a><a class="headerlink" href="#playground-on" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id41">Playground: <code class="docutils literal notranslate"><span class="pre">on()</span></code></a><a class="headerlink" href="#playground-on" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>Snippets</strong></p>
 <ul class="simple">
@@ -1238,7 +1254,7 @@ function</p></li>
 </ul>
 </section>
 <section id="goodbye">
-<h2><a class="toc-backref" href="#id40">Goodbye</a><a class="headerlink" href="#goodbye" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id42">Goodbye</a><a class="headerlink" href="#goodbye" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>Snippets</strong></p>
 <ul class="simple">
