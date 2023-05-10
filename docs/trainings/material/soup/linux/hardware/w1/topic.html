@@ -134,7 +134,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../clean-code/group.html">Is Software A Craft? Software Is A Craft! ⟶ <em>Clean Code</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing With <code class="docutils literal notranslate"><span class="pre">googletest</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../kernel/group.html">Linux Kernel Driver Development</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
 </ul>
@@ -167,54 +167,54 @@
 <h1>Linux and OneWire (using DS18B20 Temperature Sensor as Slave)<a class="headerlink" href="#linux-and-onewire-using-ds18b20-temperature-sensor-as-slave" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#overview" id="id10">Overview</a></p></li>
-<li><p><a class="reference internal" href="#master-device-alterative-1-w1-gpio-onewire-master-in-software" id="id11">Master Device, Alterative 1: <code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code> - OneWire Master in Software</a></p>
+<li><p><a class="reference internal" href="#overview" id="id12">Overview</a></p></li>
+<li><p><a class="reference internal" href="#master-device-alterative-1-w1-gpio-onewire-master-in-software" id="id13">Master Device, Alterative 1: <code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code> - OneWire Master in Software</a></p>
 <ul>
-<li><p><a class="reference internal" href="#wiring-attach-onewire-device-to-gpio-pin" id="id12">Wiring: Attach OneWire Device to GPIO Pin</a></p></li>
+<li><p><a class="reference internal" href="#wiring-attach-onewire-device-to-gpio-pin" id="id14">Wiring: Attach OneWire Device to GPIO Pin</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#master-device-alterative-2-ds2482-i2c-onewire-master-in-hardware" id="id13">Master Device, Alterative 2: DS2482 - I2C OneWire Master in Hardware</a></p>
+<li><p><a class="reference internal" href="#master-device-alterative-2-ds2482-i2c-onewire-master-in-hardware" id="id15">Master Device, Alterative 2: DS2482 - I2C OneWire Master in Hardware</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id1" id="id14">Overview</a></p></li>
-<li><p><a class="reference internal" href="#wiring-attach-ds2482-800-via-i2c" id="id15">Wiring: Attach DS2482-800 via I2C</a></p></li>
-<li><p><a class="reference internal" href="#configure-software" id="id16">Configure Software</a></p>
+<li><p><a class="reference internal" href="#id1" id="id16">Overview</a></p></li>
+<li><p><a class="reference internal" href="#wiring-attach-ds2482-800-via-i2c" id="id17">Wiring: Attach DS2482-800 via I2C</a></p></li>
+<li><p><a class="reference internal" href="#configure-software" id="id18">Configure Software</a></p>
 <ul>
-<li><p><a class="reference internal" href="#enable-i2c-and-check" id="id17">Enable I2C, and Check</a></p></li>
-<li><p><a class="reference internal" href="#verify-that-our-device-is-there" id="id18">Verify That Our Device Is There</a></p></li>
-<li><p><a class="reference internal" href="#announce-hotplug-ds2482-to-linux" id="id19">Announce (“Hotplug”) DS2482 to Linux</a></p></li>
+<li><p><a class="reference internal" href="#enable-i2c-and-check" id="id19">Enable I2C, and Check</a></p></li>
+<li><p><a class="reference internal" href="#verify-that-our-device-is-there" id="id20">Verify That Our Device Is There</a></p></li>
+<li><p><a class="reference internal" href="#announce-hotplug-ds2482-to-linux" id="id21">Announce (“Hotplug”) DS2482 to Linux</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#wiring-attach-onewire-device-to-ds2482-800" id="id20">Wiring: Attach OneWire Device to DS2482-800</a></p></li>
+<li><p><a class="reference internal" href="#wiring-attach-onewire-device-to-ds2482-800" id="id22">Wiring: Attach OneWire Device to DS2482-800</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#over-engineering-beauty" id="id21">Over-Engineering? Beauty?</a></p>
+<li><p><a class="reference internal" href="#over-engineering-beauty" id="id23">Over-Engineering? Beauty?</a></p>
 <ul>
-<li><p><a class="reference internal" href="#hardware-bringup" id="id22">Hardware Bringup</a></p></li>
-<li><p><a class="reference internal" href="#device-usage" id="id23">Device Usage</a></p></li>
+<li><p><a class="reference internal" href="#hardware-bringup" id="id24">Hardware Bringup</a></p></li>
+<li><p><a class="reference internal" href="#device-usage" id="id25">Device Usage</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#slave-device-ds18b20-temperature-sensor" id="id24">Slave Device: DS18B20 Temperature Sensor</a></p>
+<li><p><a class="reference internal" href="#slave-device-ds18b20-temperature-sensor" id="id26">Slave Device: DS18B20 Temperature Sensor</a></p>
 <ul>
-<li><p><a class="reference internal" href="#using-the-device" id="id25">Using the Device</a></p>
+<li><p><a class="reference internal" href="#using-the-device" id="id27">Using the Device</a></p>
 <ul>
-<li><p><a class="reference internal" href="#as-a-generic-onewire-device" id="id26">As a Generic OneWire Device</a></p></li>
-<li><p><a class="reference internal" href="#as-a-hardware-monitoring-hwmon-device" id="id27">As a Hardware Monitoring (<code class="docutils literal notranslate"><span class="pre">hwmon</span></code>) Device</a></p></li>
-<li><p><a class="reference internal" href="#lm-sensors" id="id28"><code class="docutils literal notranslate"><span class="pre">lm-sensors</span></code></a></p></li>
+<li><p><a class="reference internal" href="#as-a-generic-onewire-device" id="id28">As a Generic OneWire Device</a></p></li>
+<li><p><a class="reference internal" href="#as-a-hardware-monitoring-hwmon-device" id="id29">As a Hardware Monitoring (<code class="docutils literal notranslate"><span class="pre">hwmon</span></code>) Device</a></p></li>
+<li><p><a class="reference internal" href="#lm-sensors" id="id30"><code class="docutils literal notranslate"><span class="pre">lm-sensors</span></code></a></p></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#onewire-caveats" id="id29">OneWire Caveats</a></p>
+<li><p><a class="reference internal" href="#onewire-caveats" id="id31">OneWire Caveats</a></p>
 <ul>
-<li><p><a class="reference internal" href="#bus-topology" id="id30">Bus Topology</a></p></li>
-<li><p><a class="reference internal" href="#error-symptoms" id="id31">Error Symptoms</a></p></li>
+<li><p><a class="reference internal" href="#bus-topology" id="id32">Bus Topology</a></p></li>
+<li><p><a class="reference internal" href="#error-symptoms" id="id33">Error Symptoms</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#links" id="id32">Links</a></p></li>
+<li><p><a class="reference internal" href="#links" id="id34">Links</a></p></li>
 </ul>
 </div>
 <section id="overview">
-<h2><a class="toc-backref" href="#id10">Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>This article shows how you use Linux to communicate with <a class="reference external" href="https://en.wikipedia.org/wiki/1-Wire">OneWire</a> devices. Cornerstones are:</p>
 <ul class="simple">
 <li><p>Master, Alternative 1: <code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code> - bus master in software (unstable at
@@ -234,7 +234,7 @@ mandatory, obviously. Power is optional; if omitted, the device is
 said to be operated in <em>parasitic mode</em>.</p>
 </section>
 <section id="master-device-alterative-1-w1-gpio-onewire-master-in-software">
-<h2><a class="toc-backref" href="#id11">Master Device, Alterative 1: <code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code> - OneWire Master in Software</a><a class="headerlink" href="#master-device-alterative-1-w1-gpio-onewire-master-in-software" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">Master Device, Alterative 1: <code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code> - OneWire Master in Software</a><a class="headerlink" href="#master-device-alterative-1-w1-gpio-onewire-master-in-software" title="Permalink to this headline">¶</a></h2>
 <p>Lacking a hardware OneWire master (the Raspi does not have one
 built-in), we use a software implementation of the OneWire protocol -
 the <code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code> kernel driver. You configure one GPIO to act as the
@@ -251,7 +251,7 @@ and out of the CPU.</p>
 the GPIO accordingly.</p>
 </div>
 <section id="wiring-attach-onewire-device-to-gpio-pin">
-<span id="bitbang-device"></span><h3><a class="toc-backref" href="#id12">Wiring: Attach OneWire Device to GPIO Pin</a><a class="headerlink" href="#wiring-attach-onewire-device-to-gpio-pin" title="Permalink to this headline">¶</a></h3>
+<span id="bitbang-device"></span><h3><a class="toc-backref" href="#id14">Wiring: Attach OneWire Device to GPIO Pin</a><a class="headerlink" href="#wiring-attach-onewire-device-to-gpio-pin" title="Permalink to this headline">¶</a></h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Though not exactly necessary 😉, it makes sense to halt and
@@ -306,7 +306,7 @@ encountered - <em>one</em> device appearing as <em>two bogus</em> devices,</p>
 </section>
 </section>
 <section id="master-device-alterative-2-ds2482-i2c-onewire-master-in-hardware">
-<h2><a class="toc-backref" href="#id13">Master Device, Alterative 2: DS2482 - I2C OneWire Master in Hardware</a><a class="headerlink" href="#master-device-alterative-2-ds2482-i2c-onewire-master-in-hardware" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id15">Master Device, Alterative 2: DS2482 - I2C OneWire Master in Hardware</a><a class="headerlink" href="#master-device-alterative-2-ds2482-i2c-onewire-master-in-hardware" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p class="sidebar-title">DS2482-800: 8-Channel 1-Wire Master</p>
 <ul class="simple">
@@ -315,7 +315,7 @@ encountered - <em>one</em> device appearing as <em>two bogus</em> devices,</p>
 </ul>
 </aside>
 <section id="id1">
-<h3><a class="toc-backref" href="#id14">Overview</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id16">Overview</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>The <a class="reference external" href="https://www.maximintegrated.com/en/products/interface/controllers-expanders/DS2482-800.html">DS2482</a>
 is an I2C device - <em>an I2C slave device</em> - that acts as a OneWire
@@ -329,7 +329,7 @@ it.</p></li>
 </ul>
 </section>
 <section id="wiring-attach-ds2482-800-via-i2c">
-<h3><a class="toc-backref" href="#id15">Wiring: Attach DS2482-800 via I2C</a><a class="headerlink" href="#wiring-attach-ds2482-800-via-i2c" title="Permalink to this headline">¶</a></h3>
+<span id="configure-i2c-address"></span><h3><a class="toc-backref" href="#id17">Wiring: Attach DS2482-800 via I2C</a><a class="headerlink" href="#wiring-attach-ds2482-800-via-i2c" title="Permalink to this headline">¶</a></h3>
 <p>The DS2482-800 is an I2C device just like any other I2C device, so we
 attach it just like any other. Here’s the pinout, together with the
 Raspberry header for convenience:</p>
@@ -392,16 +392,16 @@ diagram below this gives address <code class="docutils literal notranslate"><spa
 <img alt="../../../../../../_images/DS2482-800-address.png" src="../../../../../../_images/DS2482-800-address.png" />
 </section>
 <section id="configure-software">
-<h3><a class="toc-backref" href="#id16">Configure Software</a><a class="headerlink" href="#configure-software" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id18">Configure Software</a><a class="headerlink" href="#configure-software" title="Permalink to this headline">¶</a></h3>
 <p>Next, we configure software. Please read <a class="reference internal" href="../i2c/topic.html"><span class="doc">Linux and I2C (using LM73 Temperature Sensor as Slave)</span></a> for
 details; here we just reproduce shortly what is explained there.</p>
 <section id="enable-i2c-and-check">
-<h4><a class="toc-backref" href="#id17">Enable I2C, and Check</a><a class="headerlink" href="#enable-i2c-and-check" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id19">Enable I2C, and Check</a><a class="headerlink" href="#enable-i2c-and-check" title="Permalink to this headline">¶</a></h4>
 <p>In <code class="docutils literal notranslate"><span class="pre">/boot/config.txt</span></code>, add the following line.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>dtparam=i2c_arm=on
 </pre></div>
 </div>
-<p>Reboot and verify all is well.</p>
+<p>Reboot and verify that all is well.</p>
 <div class="literal-block-wrapper docutils container" id="id5">
 <div class="code-block-caption"><span class="caption-text">I2C platform driver loaded?</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>lsmod <span class="p">|</span>grep i2c
@@ -418,8 +418,18 @@ details; here we just reproduce shortly what is explained there.</p>
 </div>
 </section>
 <section id="verify-that-our-device-is-there">
-<h4><a class="toc-backref" href="#id18">Verify That Our Device Is There</a><a class="headerlink" href="#verify-that-our-device-is-there" title="Permalink to this headline">¶</a></h4>
-<p>(Optional if you are sure it is there)</p>
+<h4><a class="toc-backref" href="#id20">Verify That Our Device Is There</a><a class="headerlink" href="#verify-that-our-device-is-there" title="Permalink to this headline">¶</a></h4>
+<aside class="sidebar">
+<p><strong>Documentation</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://linux.die.net/man/8/i2cdetect">man -s 8 i2cdetect</a></p></li>
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man5/modules-load.d.5.html">man -s 5 modules-load.d</a></p></li>
+</ul>
+</aside>
+<p>This is done using the <code class="docutils literal notranslate"><span class="pre">i2cdetect</span></code> tool which accesses the I2C bus
+from userspace; it needs <code class="docutils literal notranslate"><span class="pre">/dev/i2c-1</span></code> to probe I2C bus #1. Load the
+<code class="docutils literal notranslate"><span class="pre">i2c-dev</span></code> driver which provides <code class="docutils literal notranslate"><span class="pre">/dev/i2c-N</span></code> for each bus #N that
+is found on the system.</p>
 <div class="literal-block-wrapper docutils container" id="id7">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">i2c-dev</span></code> exposes bus to userspace</span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo modprobe i2c-dev
@@ -428,9 +438,18 @@ details; here we just reproduce shortly what is explained there.</p>
 </pre></div>
 </div>
 </div>
-<p>Device should be there at configured address (<code class="docutils literal notranslate"><span class="pre">0x18</span></code>),</p>
+<p>You probably want to load <code class="docutils literal notranslate"><span class="pre">i2c-dev</span></code> automatically, at boot time. In
+this case, add the following line either to <code class="docutils literal notranslate"><span class="pre">/etc/modules</span></code> directly,
+or to a new config file, say, <code class="docutils literal notranslate"><span class="pre">/etc/modules-load.d/i2c.conf</span></code> :</p>
 <div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">i2c-detect</span></code> scans bus</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Add to <code class="docutils literal notranslate"><span class="pre">/etc/modules</span></code></span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>dtparam=i2c_arm=on
+</pre></div>
+</div>
+</div>
+<p>The device should now be there at the <a class="reference internal" href="#configure-i2c-address"><span class="std std-ref">configured address</span></a> (<code class="docutils literal notranslate"><span class="pre">0x18</span></code> in our case),</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">i2c-detect</span></code> scans bus</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>i2cdetect -y <span class="m">1</span>
 <span class="go">     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f</span>
 <span class="go">00:          -- -- -- -- -- -- -- -- -- -- -- -- --</span>
@@ -446,7 +465,7 @@ details; here we just reproduce shortly what is explained there.</p>
 </div>
 </section>
 <section id="announce-hotplug-ds2482-to-linux">
-<h4><a class="toc-backref" href="#id19">Announce (“Hotplug”) DS2482 to Linux</a><a class="headerlink" href="#announce-hotplug-ds2482-to-linux" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id21">Announce (“Hotplug”) DS2482 to Linux</a><a class="headerlink" href="#announce-hotplug-ds2482-to-linux" title="Permalink to this headline">¶</a></h4>
 <p>Finally, tell Linux about the new device at address <code class="docutils literal notranslate"><span class="pre">0x18</span></code>. This
 will load the responsible driver - it is that driver that is
 responsible to communicate with the OneWire devices on the new buses
@@ -455,6 +474,21 @@ responsible to communicate with the OneWire devices on the new buses
 <span class="gp"># </span><span class="nb">echo</span> ds2482 0x18 &gt; /sys/bus/i2c/devices/i2c-1/new_device
 <span class="gp"># </span><span class="nb">exit</span>
 </pre></div>
+</div>
+<p>You probably want to do this automatically during boot. Download the
+following file into <code class="docutils literal notranslate"><span class="pre">/usr/local/lib/systemd/system/</span></code> (create that
+directory if it does not exist),</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/1079b40b40dc146db96b877a06a872ed/ds2482.service"><code class="xref download docutils literal notranslate"><span class="pre">ds2482.service</span></code></a></span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Unit</span><span class="p">]</span>
+<span class="n">Description</span><span class="o">=</span><span class="n">DS2482</span><span class="o">-</span><span class="mi">800</span><span class="o">@</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mh">0x18</span><span class="p">)</span>
+
+<span class="p">[</span><span class="n">Service</span><span class="p">]</span>
+<span class="n">ExecStart</span><span class="o">=/</span><span class="nb">bin</span><span class="o">/</span><span class="n">sh</span> <span class="o">-</span><span class="n">c</span> <span class="s1">&#39;echo ds2482 0x18 &gt; /sys/bus/i2c/devices/i2c-1/new_device&#39;</span>
+
+<span class="p">[</span><span class="n">Install</span><span class="p">]</span>
+</pre></div>
+</div>
 </div>
 <p>See if driver is loaded,</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>lsmod <span class="p">|</span>grep ds2482
@@ -478,7 +512,7 @@ responsible to communicate with the OneWire devices on the new buses
 </section>
 </section>
 <section id="wiring-attach-onewire-device-to-ds2482-800">
-<h3><a class="toc-backref" href="#id20">Wiring: Attach OneWire Device to DS2482-800</a><a class="headerlink" href="#wiring-attach-onewire-device-to-ds2482-800" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id22">Wiring: Attach OneWire Device to DS2482-800</a><a class="headerlink" href="#wiring-attach-onewire-device-to-ds2482-800" title="Permalink to this headline">¶</a></h3>
 <p>Finally, in analogy to <a class="reference internal" href="#bitbang-device"><span class="std std-ref">wiring a device to the bitbanging master</span></a>, we now wire our OneWire device to DS2482. Connect
 the device’s data line to any of DS2482-800’s <code class="docutils literal notranslate"><span class="pre">IO*</span></code> pins, and supply
 power and ground.</p>
@@ -526,10 +560,10 @@ power and ground.</p>
 </section>
 </section>
 <section id="over-engineering-beauty">
-<h2><a class="toc-backref" href="#id21">Over-Engineering? Beauty?</a><a class="headerlink" href="#over-engineering-beauty" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id23">Over-Engineering? Beauty?</a><a class="headerlink" href="#over-engineering-beauty" title="Permalink to this headline">¶</a></h2>
 <p>What happened so far sounds complicated, and it is.</p>
 <section id="hardware-bringup">
-<h3><a class="toc-backref" href="#id22">Hardware Bringup</a><a class="headerlink" href="#hardware-bringup" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id24">Hardware Bringup</a><a class="headerlink" href="#hardware-bringup" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>All the wiring</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code> configuration in <code class="docutils literal notranslate"><span class="pre">/boot/config.txt</span></code></p></li>
@@ -562,7 +596,7 @@ enforces. Hardware bringup is the responsibility of the <em>kernel</em> (and
 the bootloader, for that matter).</p>
 </section>
 <section id="device-usage">
-<h3><a class="toc-backref" href="#id23">Device Usage</a><a class="headerlink" href="#device-usage" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id25">Device Usage</a><a class="headerlink" href="#device-usage" title="Permalink to this headline">¶</a></h3>
 <p>Once the hardware is configured to this point (the kernel has booted,
 drivers are loaded), the devices can be used <em>without any knowledge of
 the underlying hardware</em>.</p>
@@ -597,11 +631,11 @@ affordable, and really easy to deploy.</p></td>
 </tbody>
 </table>
 <section id="using-the-device">
-<h3><a class="toc-backref" href="#id25">Using the Device</a><a class="headerlink" href="#using-the-device" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id27">Using the Device</a><a class="headerlink" href="#using-the-device" title="Permalink to this headline">¶</a></h3>
 <p>In most if not all cases, Linux presents hardware as a set of regular
 files in <code class="docutils literal notranslate"><span class="pre">sysfs</span></code>. Read on for how.</p>
 <section id="as-a-generic-onewire-device">
-<h4><a class="toc-backref" href="#id26">As a Generic OneWire Device</a><a class="headerlink" href="#as-a-generic-onewire-device" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id28">As a Generic OneWire Device</a><a class="headerlink" href="#as-a-generic-onewire-device" title="Permalink to this headline">¶</a></h4>
 <p>OneWire masters automatically enumerate their buses, by definition -
 so our device should show up automatically in a dedicated directory
 <code class="docutils literal notranslate"><span class="pre">/sys/bus/w1/devices/&lt;manufacturer&gt;-&lt;device-address&gt;</span></code>. (If all is
@@ -635,7 +669,7 @@ temperature in milli-celsius (22750).</p>
 </div>
 </section>
 <section id="as-a-hardware-monitoring-hwmon-device">
-<h4><a class="toc-backref" href="#id27">As a Hardware Monitoring (<code class="docutils literal notranslate"><span class="pre">hwmon</span></code>) Device</a><a class="headerlink" href="#as-a-hardware-monitoring-hwmon-device" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id29">As a Hardware Monitoring (<code class="docutils literal notranslate"><span class="pre">hwmon</span></code>) Device</a><a class="headerlink" href="#as-a-hardware-monitoring-hwmon-device" title="Permalink to this headline">¶</a></h4>
 <p>A different aspect to our sensor, DS18B20, is that it is a temperature
 sensor - independent of which hardware it is. There is an entire
 framework inside the kernel, <code class="docutils literal notranslate"><span class="pre">hwmon</span></code>, to cover such devices - no
@@ -677,11 +711,11 @@ use that to find the correct <code class="docutils literal notranslate"><span cl
 </div>
 </section>
 <section id="lm-sensors">
-<h4><a class="toc-backref" href="#id28"><code class="docutils literal notranslate"><span class="pre">lm-sensors</span></code></a><a class="headerlink" href="#lm-sensors" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id30"><code class="docutils literal notranslate"><span class="pre">lm-sensors</span></code></a><a class="headerlink" href="#lm-sensors" title="Permalink to this headline">¶</a></h4>
 <p>It is the <code class="docutils literal notranslate"><span class="pre">hwmon</span></code> hardware-independent sensor interface that the
 userspace <code class="docutils literal notranslate"><span class="pre">lm-sensors</span></code> framework builds upon. (<a class="reference external" href="https://github.com/lm-sensors/lm-sensors">Github</a>, <a class="reference external" href="https://en.wikipedia.org/wiki/Lm_sensors">Wikipedia</a>.)</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Installation (on the Raspi)</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Installation (on the Raspi)</span><a class="headerlink" href="#id11" title="Permalink to this code">¶</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>apt install lm-sensors
 </pre></div>
 </div>
@@ -704,9 +738,9 @@ userspace <code class="docutils literal notranslate"><span class="pre">lm-sensor
 </section>
 </section>
 <section id="onewire-caveats">
-<h2><a class="toc-backref" href="#id29">OneWire Caveats</a><a class="headerlink" href="#onewire-caveats" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id31">OneWire Caveats</a><a class="headerlink" href="#onewire-caveats" title="Permalink to this headline">¶</a></h2>
 <section id="bus-topology">
-<h3><a class="toc-backref" href="#id30">Bus Topology</a><a class="headerlink" href="#bus-topology" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id32">Bus Topology</a><a class="headerlink" href="#bus-topology" title="Permalink to this headline">¶</a></h3>
 <p>For stability, a OneWire setup should not exhibit a star
 topology. Rather, it is best to have one long main line, with only
 very short branches off of it where the sensors are attached.</p>
@@ -716,7 +750,7 @@ they define the terms <em>radious</em> and <em>weight</em>; it is definitely wor
 reading.</p>
 </section>
 <section id="error-symptoms">
-<span id="id3"></span><h3><a class="toc-backref" href="#id31">Error Symptoms</a><a class="headerlink" href="#error-symptoms" title="Permalink to this headline">¶</a></h3>
+<span id="id3"></span><h3><a class="toc-backref" href="#id33">Error Symptoms</a><a class="headerlink" href="#error-symptoms" title="Permalink to this headline">¶</a></h3>
 <ul>
 <li><p><strong>Devices disappear</strong>, and are replaced by ones that are named like
 <code class="docutils literal notranslate"><span class="pre">00-0c4000000000</span></code>. Here, <code class="docutils literal notranslate"><span class="pre">00</span></code> is the family which is completely
@@ -759,7 +793,7 @@ another tryout.</p>
 </section>
 </section>
 <section id="links">
-<h2><a class="toc-backref" href="#id32">Links</a><a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id34">Links</a><a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://en.wikipedia.org/wiki/1-Wire">OneWire (WikiPedia)</a></p></li>
 <li><p><a class="reference external" href="https://www.maximintegrated.com/en/app-notes/index.mvp/id/148">Guidelines for Reliable Long Line 1-Wire Networks</a></p></li>

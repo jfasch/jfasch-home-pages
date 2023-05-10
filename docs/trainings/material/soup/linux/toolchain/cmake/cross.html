@@ -137,7 +137,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../clean-code/group.html">Is Software A Craft? Software Is A Craft! ⟶ <em>Clean Code</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing With <code class="docutils literal notranslate"><span class="pre">googletest</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../kernel/group.html">Linux Kernel Driver Development</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
 </ul>
@@ -191,10 +191,21 @@
 (<code class="docutils literal notranslate"><span class="pre">arm-linux-gnueabihf-gcc</span></code>)</p></li>
 <li><p><em>Sysroot</em>: a directory with target artifacts</p></li>
 </ul>
-<p>In its raw form:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">PATH</span><span class="o">=</span>/home/jfasch/cross/toolchains/gcc-linaro-12.0.1-2022.02-x86_64_arm-linux-gnueabihf/bin:<span class="nv">$PATH</span>
-<span class="gp">$ </span><span class="nb">export</span> PATH
-<span class="gp">$ </span>arm-linux-gnueabihf-gcc --sysroot ~/cross/sysroots/raspberry -o hello-single hello-single.c
+<p>For a <code class="docutils literal notranslate"><span class="pre">crosstool-ng</span></code> built toolchain (unpacked to
+<code class="docutils literal notranslate"><span class="pre">/home/jfasch/x-tools/</span></code>), the parameters are:</p>
+<table class="colwidths-auto docutils align-left">
+<tbody>
+<tr class="row-odd"><td><p>Cross tools</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/home/jfasch/x-tools/armv8-rpi4-linux-gnueabihf/bin/</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Sysroot</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/home/jfasch/x-tools/armv8-rpi4-linux-gnueabihf/armv8-rpi4-linux-gnueabihf/</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>/home/jfasch/x-tools/armv8-rpi4-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc <span class="se">\</span>
+      --sysroot /home/jfasch/x-tools/armv8-rpi4-linux-gnueabihf/armv8-rpi4-linux-gnueabihf <span class="se">\</span>
+      -o hello-single hello-single.c
 </pre></div>
 </div>
 </section>
@@ -233,19 +244,22 @@
 “toolchain files”</p></li>
 </ul>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/9949d72bba149b485cf26331e723fe22/Toolchain-RaspberryPi.cmake"><code class="xref download docutils literal notranslate"><span class="pre">../jfasch-home-linux-toolchain/cmake/Toolchain-RaspberryPi.cmake</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/a64cc868ff9fb4fd57e73eea91bf8799/armv8-rpi4-linux-gnueabihf.cmake"><code class="xref download docutils literal notranslate"><span class="pre">../raspberry-pi/armv8-rpi4-linux-gnueabihf.cmake</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
 <div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="c"># the name of the target operating system</span>
 <span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_SYSTEM_NAME</span> <span class="s">Linux</span><span class="p">)</span>
 
+<span class="c"># toolchain base directory (crosstool-ng toolchains bring the sysroot</span>
+<span class="c"># with them)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">TOOLCHAIN_BASE_DIR</span> <span class="s">/home/jfasch/x-tools/armv8-rpi4-linux-gnueabihf</span><span class="p">)</span>
+
 <span class="c"># which compilers to use for C and C++</span>
-<span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_C_COMPILER</span>   <span class="s">arm-linux-gnueabihf-gcc</span><span class="p">)</span>
-<span class="c">#set(CMAKE_CXX_COMPILER arm-linux-gnueabihf-g++)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_C_COMPILER</span>   <span class="o">${</span><span class="nv">TOOLCHAIN_BASE_DIR</span><span class="o">}</span><span class="s">/bin/armv8-rpi4-linux-gnueabihf-gcc</span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_CXX_COMPILER</span> <span class="o">${</span><span class="nv">TOOLCHAIN_BASE_DIR</span><span class="o">}</span><span class="s">/bin/armv8-rpi4-linux-gnueabihf-g++</span><span class="p">)</span>
 
 <span class="c"># where is the target environment located. funny enough, this doesn&#39;t</span>
 <span class="c"># appear to influence the --sysroot compiler setting</span>
-<span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_FIND_ROOT_PATH</span> <span class="s">/home/jfasch/cross/sysroots/raspberry</span><span class="p">)</span>
-
-<span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_SYSROOT</span> <span class="s">/home/jfasch/cross/sysroots/raspberry</span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_FIND_ROOT_PATH</span> <span class="o">${</span><span class="nv">TOOLCHAIN_BASE_DIR</span><span class="o">}</span><span class="s">/armv8-rpi4-linux-gnueabihf/sysroot</span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_SYSROOT</span>        <span class="o">${</span><span class="nv">TOOLCHAIN_BASE_DIR</span><span class="o">}</span><span class="s">/armv8-rpi4-linux-gnueabihf/sysroot</span><span class="p">)</span>
 
 <span class="c"># adjust the default behavior of the FIND_XXX() commands:</span>
 <span class="c"># search programs in the host environment</span>
@@ -257,13 +271,26 @@
 </pre></div>
 </div>
 </div>
+<ul class="simple">
+<li><p>Toolchain files <em>describe</em> toolchian parameters</p></li>
+<li><p>⟶ stored not in the project, but rather <em>next to the
+toolchain</em></p></li>
+<li><p>It depends 😉</p></li>
+</ul>
 </section>
 <section id="step-1-generate-makefile-in-build-directory">
 <h2><a class="toc-backref" href="#id5">Step 1: Generate <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> in Build Directory</a><a class="headerlink" href="#step-1-generate-makefile-in-build-directory" title="Permalink to this headline">¶</a></h2>
 <p>Sadly, cross build is a little more involved than native build - even
-with CMake …</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span> /home/jfasch/build-pi
-<span class="gp">$ </span>cmake -DCMAKE_TOOLCHAIN_FILE<span class="o">=</span>/home/jfasch/source/Toolchain-RaspberryPi.cmake /home/jfasch/source
+with CMake.</p>
+<ul>
+<li><p>In the build directory for the target architecture …</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span> /home/jfasch/build-pi    <span class="c1"># &lt;--- build directory</span>
+</pre></div>
+</div>
+</li>
+<li><p>… you invoke CMake, pointing it to the toolchain file</p></li>
+<li><p>⟶ <code class="docutils literal notranslate"><span class="pre">CMAKE_TOOLCHAIN_FILE</span></code></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cmake -DCMAKE_TOOLCHAIN_FILE<span class="o">=</span>/home/jfasch/armv8-rpi4-linux-gnueabihf.cmake /home/jfasch/source
 <span class="go">-- The CXX compiler identification is GNU 11.2.1</span>
 <span class="go">-- Detecting CXX compiler ABI info</span>
 <span class="go">-- Detecting CXX compiler ABI info - done</span>
@@ -275,8 +302,8 @@ with CMake …</p>
 <span class="go">-- Build files have been written to: /home/jfasch/build-pi</span>
 </pre></div>
 </div>
-<p>This creates a <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> in the <em>build directory</em></p>
-<ul class="simple">
+</li>
+<li><p>This creates a <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> in the <em>build directory</em></p></li>
 <li><p>Used as usual</p></li>
 <li><p>Only generated ⟶ basically unreadable</p></li>
 </ul>
