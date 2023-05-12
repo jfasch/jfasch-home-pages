@@ -178,48 +178,137 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="#download-and-install-toolchain-archive" id="id1">Download And Install Toolchain Archive</a></p></li>
 <li><p><a class="reference internal" href="#establish-cmake-toolchain-file" id="id2">Establish CMake Toolchain File</a></p></li>
+<li><p><a class="reference internal" href="#test-run" id="id3">Test Run</a></p></li>
 </ul>
 </div>
+<aside class="sidebar">
+<p><strong>See also</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="toolchain-build-docker-fedora.html"><span class="doc">Building A Toolchain On Fedora For Ubuntu 18.04 (WSL)</span></a></p></li>
+</ul>
+</aside>
 <section id="download-and-install-toolchain-archive">
 <h2><a class="toc-backref" href="#id1">Download And Install Toolchain Archive</a><a class="headerlink" href="#download-and-install-toolchain-archive" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p><strong>See also</strong></p>
 <ul class="simple">
-<li><p><a class="reference internal" href="toolchain-build-docker-fedora.html"><span class="doc">Building A Toolchain On Fedora For Ubuntu 18.04 (WSL)</span></a></p></li>
 <li><p><a class="reference internal" href="../../basics/archiving-compression/group.html"><span class="doc">Archiving and Compression</span></a></p></li>
 </ul>
-<p><strong>Download</strong>:</p>
+<p><strong>Download</strong></p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://drive.google.com/file/d/1YAlNEQT9UY-z-nVWX-U55i0Zl1TNUfjB/view?usp=share_link">armv8-rpi4-linux-gnueabihf.tar.xz</a></p></li>
 </ul>
 </aside>
-<ul class="simple">
+<ul>
+<li><p>Create a directory, say, <code class="docutils literal notranslate"><span class="pre">~/toolchains</span></code> (you might well choose a
+different name). We will use that directory as a well-known place to
+put our toolchains in. (Toolchains tend to be updated a lot, and
+keeping different versions together in one directory helps
+organizing our work.)</p></li>
 <li><p><a class="reference external" href="https://drive.google.com/file/d/1YAlNEQT9UY-z-nVWX-U55i0Zl1TNUfjB/view?usp=share_link">Download</a>
-the toolchain archive (a whopping 70MB), and <a class="reference internal" href="../../basics/archiving-compression/group.html"><span class="doc">unpack</span></a>
-to <code class="docutils literal notranslate"><span class="pre">&lt;toolchain-dir&gt;</span></code></p></li>
+the toolchain archive (a whopping 70MB)</p></li>
+<li><p>Unpack the archive into <code class="docutils literal notranslate"><span class="pre">~/toolchains</span></code>, as follows</p>
+<ul class="simple">
+<li><p>Change into toolchain install directory</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span> ~/toolchains
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Get an overview of the download, and see what’s in it</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -l ~/Downloads/armv8-rpi4-linux-gnueabihf-gcc-10.2-glibc-2.31.tar.xz
+<span class="go">-rw-r--r--. 1 jfasch jfasch 73018472 May 12 08:16 Downloads/armv8-rpi4-linux-gnueabihf-gcc-10.2-glibc-2.31.tar.xz</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>tar -t -f ~/Downloads/armv8-rpi4-linux-gnueabihf-gcc-10.2-glibc-2.31.tar.xz <span class="p">|</span> head
+<span class="go">armv8-rpi4-linux-gnueabihf/</span>
+<span class="go">armv8-rpi4-linux-gnueabihf/armv8-rpi4-linux-gnueabihf/</span>
+<span class="go">armv8-rpi4-linux-gnueabihf/armv8-rpi4-linux-gnueabihf/sysroot/</span>
+<span class="go">armv8-rpi4-linux-gnueabihf/armv8-rpi4-linux-gnueabihf/sysroot/usr/</span>
+<span class="go">armv8-rpi4-linux-gnueabihf/armv8-rpi4-linux-gnueabihf/sysroot/usr/include/</span>
+<span class="go">armv8-rpi4-linux-gnueabihf/armv8-rpi4-linux-gnueabihf/sysroot/usr/include/asm-generic/</span>
+<span class="go">armv8-rpi4-linux-gnueabihf/armv8-rpi4-linux-gnueabihf/sysroot/usr/include/asm-generic/auxvec.h</span>
+<span class="go">armv8-rpi4-linux-gnueabihf/armv8-rpi4-linux-gnueabihf/sysroot/usr/include/asm-generic/bitsperlong.h</span>
+<span class="go">armv8-rpi4-linux-gnueabihf/armv8-rpi4-linux-gnueabihf/sysroot/usr/include/asm-generic/bpf_perf_event.h</span>
+<span class="go">armv8-rpi4-linux-gnueabihf/armv8-rpi4-linux-gnueabihf/sysroot/usr/include/asm-generic/errno-base.h</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>If you are fine, unpack it. This will create a directory
+<code class="docutils literal notranslate"><span class="pre">~/toolchains/armv8-rpi4-linux-gnueabihf</span></code> - our toolchain base
+directory.</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>tar -x -f ~/Downloads/armv8-rpi4-linux-gnueabihf-gcc-10.2-glibc-2.31.tar.xz
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -l ~/toolchains/
+<span class="go">total 0</span>
+<span class="go">dr-xr-xr-x. 1 jfasch jfasch 128 Apr 17 12:01 armv8-rpi4-linux-gnueabihf</span>
+</pre></div>
+</div>
+</li>
 </ul>
 </section>
 <section id="establish-cmake-toolchain-file">
 <h2><a class="toc-backref" href="#id2">Establish CMake Toolchain File</a><a class="headerlink" href="#establish-cmake-toolchain-file" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
-<p><strong>Documentation</strong></p>
+<p><strong>See also</strong></p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../cross/group.html"><span class="doc">Cross Development</span></a></p></li>
+<li><p><a class="reference internal" href="../cmake/cross.html"><span class="doc">CMake: Cross Build</span></a></p></li>
 </ul>
-<p><strong>CMake Toolchain File</strong></p>
+<p><strong>Download</strong></p>
 <ul class="simple">
-<li><p><a class="reference download internal" download="" href="../../../../../../_downloads/a64cc868ff9fb4fd57e73eea91bf8799/armv8-rpi4-linux-gnueabihf.cmake"><code class="xref download docutils literal notranslate"><span class="pre">toolchain</span> <span class="pre">file</span></code></a></p></li>
+<li><p>CMake toolchain file: <a class="reference download internal" download="" href="../../../../../../_downloads/a64cc868ff9fb4fd57e73eea91bf8799/armv8-rpi4-linux-gnueabihf.cmake"><code class="xref download docutils literal notranslate"><span class="pre">armv8-rpi4-linux-gnueabihf.cmake</span></code></a></p></li>
 </ul>
 </aside>
 <ul>
-<li><p>Download (best into <code class="docutils literal notranslate"><span class="pre">&lt;toolchain-dir&gt;</span></code>) <a class="reference download internal" download="" href="../../../../../../_downloads/a64cc868ff9fb4fd57e73eea91bf8799/armv8-rpi4-linux-gnueabihf.cmake"><code class="xref download docutils literal notranslate"><span class="pre">toolchain</span> <span class="pre">file</span></code></a></p></li>
-<li><p>Open it with a text editor, and modify the following lines to point
-to your toolchain</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>set(TOOLCHAIN_BASE_DIR /home/jfasch/x-tools/armv8-rpi4-linux-gnueabihf)
+<li><p><a class="reference download internal" download="" href="../../../../../../_downloads/a64cc868ff9fb4fd57e73eea91bf8799/armv8-rpi4-linux-gnueabihf.cmake"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">toolchain</span> <span class="pre">file</span></code></a> into <code class="docutils literal notranslate"><span class="pre">~/toolchains</span></code></p></li>
+<li><p>The <em>toolchain file</em> describes toolchain parameters for cross builds
+that you will perform using CMake, eventually. Modify the downloaded
+file to reflect your situation, by changing the following line:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>set(TOOLCHAIN_BASE_DIR /home/jfasch/toolchains/armv8-rpi4-linux-gnueabihf)
 </pre></div>
 </div>
 </li>
-<li><p>Build your project with it (<a class="reference internal" href="../cmake/cross.html"><span class="doc">CMake: Cross Build</span></a>)</p></li>
+</ul>
+</section>
+<section id="test-run">
+<h2><a class="toc-backref" href="#id3">Test Run</a><a class="headerlink" href="#test-run" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p><strong>See also</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../cmake/cross.html"><span class="doc">CMake: Cross Build</span></a></p></li>
+</ul>
+</aside>
+<ul>
+<li><p>You already have a CMake project that you maintain. Lets assume this
+is <code class="docutils literal notranslate"><span class="pre">~/project-source</span></code> (a Git clone maybe).</p></li>
+<li><p>Create another build directory - this time for a Raspi cross build:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>mkdir ~/project-build-raspi
+</pre></div>
+</div>
+<p>… and change into it:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span> ~/project-build-raspi
+</pre></div>
+</div>
+</li>
+<li><p>Create the cross build instructions</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">pwd</span>
+<span class="go">/home/jfasch/project-build-raspi</span>
+<span class="gp">$ </span>cmake -DCMAKE_TOOLCHAIN_FILE<span class="o">=</span><span class="nv">$HOME</span>/toolchains/armv8-rpi4-linux-gnueabihf.cmake ~/project-source
+<span class="go">... roedel ...</span>
+</pre></div>
+</div>
+</li>
+<li><p>Build it</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">pwd</span>
+<span class="go">/home/jfasch/project-build-raspi</span>
+<span class="gp">$ </span>make
+<span class="go">... roedel roedel...</span>
+</pre></div>
+</div>
+</li>
 </ul>
 </section>
 </section>
