@@ -1,0 +1,443 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Exercise: Create Files (I/O Redirection) &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../../../" id="documentation_options" src="../../../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../../../_static/doctools.js"></script>
+    <script src="../../../../../../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/basics/shell/exercises/cp-mv-mkdir-rm/echo-create-files.html" />
+    <link rel="index" title="Index" href="../../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../../search.html" />
+    <link rel="next" title="Exercise: Copy Files" href="echo-copy-files.html" />
+    <link rel="prev" title="Exercise: mkdir" href="mkdir-p-rm-r.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../../../index.html">
+    <img class="logo" src="../../../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../cxx-design-patterns/group.html">Design Patterns With C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../cxx-code/index.html">C++ Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../cxx-exercises/group.html">C++ Exercises</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../../../group.html">Linux</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../../../group.html">Linux Basics</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../../../intro/group.html">Introduction: Concepts and Terminology</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="../../group.html">The Shell (Bash - “Bourne Again Shell”)</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="../../commandline.html">Commandline</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../paths.html">Absolute and Relative Paths</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../ls.html">Directory Listings: The <code class="docutils literal notranslate"><span class="pre">ls</span></code> Command</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../cwd.html">Current Working Directory</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../file_dir_create_rm.html">Creating And Removing Files and Directories</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../cp.html">Copying: <code class="docutils literal notranslate"><span class="pre">cp</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../mv.html">Moving and Renaming: <code class="docutils literal notranslate"><span class="pre">mv</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../links.html">Symbolic Links, Hard Links</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../configfiles.html">Shell Configuration File: <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code></a></li>
+<li class="toctree-l6 current"><a class="reference internal" href="../group.html">The Shell - Exercises</a><ul class="current">
+<li class="toctree-l7 current"><a class="reference internal" href="group.html">Exercises: Create/Copy/Move/Remove</a><ul class="current">
+<li class="toctree-l8"><a class="reference internal" href="mkdir-p-rm-r.html">Exercise: <code class="docutils literal notranslate"><span class="pre">mkdir</span></code></a></li>
+<li class="toctree-l8 current"><a class="current reference internal" href="#">Exercise: Create Files (I/O Redirection)</a></li>
+<li class="toctree-l8"><a class="reference internal" href="echo-copy-files.html">Exercise: Copy Files</a></li>
+<li class="toctree-l8"><a class="reference internal" href="echo-move-files.html">Exercise: Move Files</a></li>
+<li class="toctree-l8"><a class="reference internal" href="verify-hierarchy.html">Exercise: Verify, Repeat</a></li>
+<li class="toctree-l8"><a class="reference internal" href="copy-tree.html">Exercise: Copy Directory Tree</a></li>
+<li class="toctree-l8"><a class="reference internal" href="rm-tree.html">Exercise: Remove Directory Tree</a></li>
+<li class="toctree-l8"><a class="reference internal" href="rm-rf.html">Exercise: Funny Stuff</a></li>
+</ul>
+</li>
+<li class="toctree-l7"><a class="reference internal" href="../ls/group.html">Exercises: The <code class="docutils literal notranslate"><span class="pre">ls</span></code> Command</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../fh-questions.html">FH/Moodle Quiz: Shell</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../../../permissions/group.html">File System Permissions</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../text-tools/group.html">Tools: Inspecting Text Files</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../archiving-compression/group.html">Archiving and Compression</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../io-redirection-pipes/group.html">I/O Redirection And Pipes</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../exercises/group.html">Exercises/Exams: Linux Basics</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../ssh/group.html">SSH: Secure Shell</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../toolchain/group.html">Toolchain, And Cross Development</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../sysprog/group.html">Linux Systems Programming</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../hardware/group.html">Linux Hardware Interfaces</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../drafts/group.html">Drafts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../clean-code/group.html">Is Software A Craft? Software Is A Craft! ⟶ <em>Clean Code</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../unittest/group.html">Unit Testing With <code class="docutils literal notranslate"><span class="pre">googletest</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="exercise-create-files-i-o-redirection">
+<h1>Exercise: Create Files (I/O Redirection)<a class="headerlink" href="#exercise-create-files-i-o-redirection" title="Permalink to this headline">¶</a></h1>
+<aside class="sidebar">
+<p><strong>See also</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../cwd.html"><span class="doc">Current Working Directory</span></a></p></li>
+<li><p><a class="reference internal" href="../../file_dir_create_rm.html"><span class="doc">Creating And Removing Files and Directories</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Make your home directory your <em>current working diretory</em> (“Change
+into your home directory”)</p></li>
+<li><p><em>From there</em>, fill the directory hierarchy from <a class="reference internal" href="mkdir-p-rm-r.html"><span class="doc">Exercise: mkdir</span></a>
+with files</p>
+<ul>
+<li><p>Create a file <code class="docutils literal notranslate"><span class="pre">hello</span></code> in the <code class="docutils literal notranslate"><span class="pre">parent</span></code> directory, containing a
+single line, <code class="docutils literal notranslate"><span class="pre">hello</span> <span class="pre">sweetheart</span></code></p></li>
+<li><p>Create a file <code class="docutils literal notranslate"><span class="pre">business-card</span></code> in the <code class="docutils literal notranslate"><span class="pre">child</span></code> directory,
+containing four lines</p>
+<ul>
+<li><p>Your first name</p></li>
+<li><p>Your last name</p></li>
+<li><p>Your street (including number)</p></li>
+<li><p>Your ZIP code and city</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>You use the <code class="docutils literal notranslate"><span class="pre">&gt;&gt;</span></code> operator to <em>append</em> a line to an existing file
+(or to create that file if it doesn’t exist:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">echo</span> <span class="m">8020</span> Graz &gt;&gt; somefile.txt
+</pre></div>
+</div>
+</div>
+<svg 
+ viewBox="0.00 0.00 988.00 674.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 670)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-670 984,-670 984,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_linux</title>
+<path fill="none" stroke="black" d="M20,-8C20,-8 960,-8 960,-8 966,-8 972,-14 972,-20 972,-20 972,-646 972,-646 972,-652 966,-658 960,-658 960,-658 20,-658 20,-658 14,-658 8,-652 8,-646 8,-646 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="490" y="-642.8" font-family="Times,serif" font-size="14.00">Linux</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_linux_basics</title>
+<path fill="none" stroke="black" d="M28,-16C28,-16 952,-16 952,-16 958,-16 964,-22 964,-28 964,-28 964,-615 964,-615 964,-621 958,-627 952,-627 952,-627 28,-627 28,-627 22,-627 16,-621 16,-615 16,-615 16,-28 16,-28 16,-22 22,-16 28,-16"/>
+<text text-anchor="middle" x="490" y="-611.8" font-family="Times,serif" font-size="14.00">Linux Basics</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_linux_basics_intro</title>
+<path fill="none" stroke="black" d="M564,-24C564,-24 944,-24 944,-24 950,-24 956,-30 956,-36 956,-36 956,-159 956,-159 956,-165 950,-171 944,-171 944,-171 564,-171 564,-171 558,-171 552,-165 552,-159 552,-159 552,-36 552,-36 552,-30 558,-24 564,-24"/>
+<text text-anchor="middle" x="754" y="-155.8" font-family="Times,serif" font-size="14.00">Introduction: Concepts and Terminology</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_linux_basics_shell</title>
+<path fill="none" stroke="black" d="M36,-96C36,-96 532,-96 532,-96 538,-96 544,-102 544,-108 544,-108 544,-584 544,-584 544,-590 538,-596 532,-596 532,-596 36,-596 36,-596 30,-596 24,-590 24,-584 24,-584 24,-108 24,-108 24,-102 30,-96 36,-96"/>
+<text text-anchor="middle" x="284" y="-580.8" font-family="Times,serif" font-size="14.00">The Shell (Bash &#45; “Bourne Again Shell”)</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_linux_basics_shell_exercises</title>
+<path fill="none" stroke="black" d="M71,-379C71,-379 465,-379 465,-379 471,-379 477,-385 477,-391 477,-391 477,-553 477,-553 477,-559 471,-565 465,-565 465,-565 71,-565 71,-565 65,-565 59,-559 59,-553 59,-553 59,-391 59,-391 59,-385 65,-379 71,-379"/>
+<text text-anchor="middle" x="268" y="-549.8" font-family="Times,serif" font-size="14.00">The Shell &#45; Exercises</text>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_linux_basics_shell_exercises_cp_mv_mkdir_rm</title>
+<path fill="none" stroke="black" d="M79,-387C79,-387 457,-387 457,-387 463,-387 469,-393 469,-399 469,-399 469,-522 469,-522 469,-528 463,-534 457,-534 457,-534 79,-534 79,-534 73,-534 67,-528 67,-522 67,-522 67,-399 67,-399 67,-393 73,-387 79,-387"/>
+<text text-anchor="middle" x="268" y="-518.8" font-family="Times,serif" font-size="14.00">Exercises: Create/Copy/Move/Remove</text>
+</g>
+<!-- linux_basics_intro_overview -->
+<g id="node1" class="node">
+<title>linux_basics_intro_overview</title>
+<g id="a_node1"><a xlink:href="../../../intro/overview.html" xlink:title="Overview">
+<ellipse fill="#dcdcdc" stroke="black" cx="684" cy="-50" rx="54.69" ry="18"/>
+<text text-anchor="middle" x="684" y="-46.3" font-family="Times,serif" font-size="14.00">Overview</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_intro_process -->
+<g id="node2" class="node">
+<title>linux_basics_intro_process</title>
+<g id="a_node2"><a xlink:href="../../../intro/process.html" xlink:title="Processes, Scheduling, Address Spaces">
+<ellipse fill="#dcdcdc" stroke="black" cx="754" cy="-122" rx="193.87" ry="18"/>
+<text text-anchor="middle" x="754" y="-118.3" font-family="Times,serif" font-size="14.00">Processes, Scheduling, Address Spaces</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_intro_process&#45;&gt;linux_basics_intro_overview -->
+<g id="edge1" class="edge">
+<title>linux_basics_intro_process&#45;&gt;linux_basics_intro_overview</title>
+<path fill="none" stroke="black" d="M737.05,-104.05C728.16,-95.16 717.11,-84.11 707.41,-74.41"/>
+<polygon fill="black" stroke="black" points="709.85,-71.9 700.31,-67.31 704.9,-76.85 709.85,-71.9"/>
+</g>
+<!-- linux_basics_shell_file_dir_create_rm -->
+<g id="node3" class="node">
+<title>linux_basics_shell_file_dir_create_rm</title>
+<g id="a_node3"><a xlink:href="../../file_dir_create_rm.html" xlink:title="Creating And Removing Files and Directories">
+<ellipse fill="#dcdcdc" stroke="black" cx="294" cy="-341" rx="221.76" ry="18"/>
+<text text-anchor="middle" x="294" y="-337.3" font-family="Times,serif" font-size="14.00">Creating And Removing Files and Directories</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_paths -->
+<g id="node4" class="node">
+<title>linux_basics_shell_paths</title>
+<g id="a_node4"><a xlink:href="../../paths.html" xlink:title="Absolute and Relative Paths">
+<ellipse fill="#dcdcdc" stroke="black" cx="395" cy="-197" rx="141.07" ry="18"/>
+<text text-anchor="middle" x="395" y="-193.3" font-family="Times,serif" font-size="14.00">Absolute and Relative Paths</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_paths -->
+<g id="edge7" class="edge">
+<title>linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M337.99,-323.19C354.33,-314.76 371.43,-302.89 382,-287 394.06,-268.87 396.84,-244.09 396.87,-225.28"/>
+<polygon fill="black" stroke="black" points="400.37,-225.18 396.63,-215.26 393.37,-225.34 400.37,-225.18"/>
+</g>
+<!-- linux_basics_shell_cwd -->
+<g id="node5" class="node">
+<title>linux_basics_shell_cwd</title>
+<g id="a_node5"><a xlink:href="../../cwd.html" xlink:title="Current Working Directory">
+<ellipse fill="#dcdcdc" stroke="black" cx="237" cy="-269" rx="135.68" ry="18"/>
+<text text-anchor="middle" x="237" y="-265.3" font-family="Times,serif" font-size="14.00">Current Working Directory</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_cwd -->
+<g id="edge6" class="edge">
+<title>linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_cwd</title>
+<path fill="none" stroke="black" d="M279.91,-322.7C273.08,-314.3 264.74,-304.07 257.24,-294.86"/>
+<polygon fill="black" stroke="black" points="259.96,-292.65 250.93,-287.1 254.53,-297.07 259.96,-292.65"/>
+</g>
+<!-- linux_basics_shell_commandline -->
+<g id="node6" class="node">
+<title>linux_basics_shell_commandline</title>
+<g id="a_node6"><a xlink:href="../../commandline.html" xlink:title="Commandline">
+<ellipse fill="#dcdcdc" stroke="black" cx="395" cy="-122" rx="74.99" ry="18"/>
+<text text-anchor="middle" x="395" y="-118.3" font-family="Times,serif" font-size="14.00">Commandline</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_paths&#45;&gt;linux_basics_shell_commandline -->
+<g id="edge8" class="edge">
+<title>linux_basics_shell_paths&#45;&gt;linux_basics_shell_commandline</title>
+<path fill="none" stroke="black" d="M395,-178.7C395,-170.25 395,-159.87 395,-150.37"/>
+<polygon fill="black" stroke="black" points="398.5,-150.18 395,-140.18 391.5,-150.18 398.5,-150.18"/>
+</g>
+<!-- linux_basics_shell_cwd&#45;&gt;linux_basics_intro_process -->
+<g id="edge10" class="edge">
+<title>linux_basics_shell_cwd&#45;&gt;linux_basics_intro_process</title>
+<path fill="none" stroke="black" d="M337.96,-256.95C398.79,-248.74 477.33,-235.38 545,-215 605.7,-196.72 672.12,-165.38 713.42,-144.43"/>
+<polygon fill="black" stroke="black" points="715.04,-147.53 722.35,-139.86 711.85,-141.3 715.04,-147.53"/>
+</g>
+<!-- linux_basics_shell_cwd&#45;&gt;linux_basics_shell_paths -->
+<g id="edge11" class="edge">
+<title>linux_basics_shell_cwd&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M274.04,-251.59C296.35,-241.71 324.94,-229.04 348.72,-218.5"/>
+<polygon fill="black" stroke="black" points="350.19,-221.68 357.91,-214.43 347.35,-215.28 350.19,-221.68"/>
+</g>
+<!-- linux_basics_shell_cwd&#45;&gt;linux_basics_shell_commandline -->
+<g id="edge9" class="edge">
+<title>linux_basics_shell_cwd&#45;&gt;linux_basics_shell_commandline</title>
+<path fill="none" stroke="black" d="M233.53,-250.68C230.67,-231.2 229.29,-199.6 245,-179 263.1,-155.27 292.39,-141.6 320.31,-133.72"/>
+<polygon fill="black" stroke="black" points="321.31,-137.07 330.11,-131.17 319.55,-130.3 321.31,-137.07"/>
+</g>
+<!-- linux_basics_shell_commandline&#45;&gt;linux_basics_intro_overview -->
+<g id="edge12" class="edge">
+<title>linux_basics_shell_commandline&#45;&gt;linux_basics_intro_overview</title>
+<path fill="none" stroke="black" d="M445.67,-108.73C497.83,-96.09 578.74,-76.5 631.55,-63.7"/>
+<polygon fill="black" stroke="black" points="632.5,-67.08 641.39,-61.32 630.85,-60.27 632.5,-67.08"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files -->
+<g id="node7" class="node">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files</title>
+<ellipse fill="red" stroke="black" stroke-width="3" cx="268" cy="-485" rx="193.07" ry="18"/>
+<text text-anchor="middle" x="268" y="-481.3" font-family="Times,serif" font-size="14.00">Exercise: Create Files (I/O Redirection)</text>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files&#45;&gt;linux_basics_shell_file_dir_create_rm -->
+<g id="edge3" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files&#45;&gt;linux_basics_shell_file_dir_create_rm</title>
+<path fill="none" stroke="black" d="M274.14,-466.54C277.53,-456.3 281.53,-443.05 284,-431 288.2,-410.57 290.74,-387.11 292.21,-369.41"/>
+<polygon fill="black" stroke="black" points="295.72,-369.44 292.99,-359.21 288.74,-368.91 295.72,-369.44"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files&#45;&gt;linux_basics_shell_paths -->
+<g id="edge4" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M348.29,-468.61C408.39,-452.43 486.58,-420.41 525,-359 558.52,-305.42 484.57,-249.44 435.03,-219.67"/>
+<polygon fill="black" stroke="black" points="436.79,-216.65 426.4,-214.6 433.25,-222.68 436.79,-216.65"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files&#45;&gt;linux_basics_shell_cwd -->
+<g id="edge5" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files&#45;&gt;linux_basics_shell_cwd</title>
+<path fill="none" stroke="black" d="M178.89,-468.89C150.97,-460.99 121.37,-449.04 98,-431 68.12,-407.95 63.4,-395.27 53,-359 48.59,-343.62 43.38,-335.78 53,-323 64.93,-307.14 105.77,-294.55 145.94,-285.62"/>
+<polygon fill="black" stroke="black" points="146.81,-289.01 155.85,-283.49 145.34,-282.17 146.81,-289.01"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r -->
+<g id="node8" class="node">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r</title>
+<g id="a_node8"><a xlink:href="mkdir-p-rm-r.html" xlink:title="Exercise: mkdir">
+<ellipse fill="red" stroke="black" cx="191" cy="-413" rx="83.69" ry="18"/>
+<text text-anchor="middle" x="191" y="-409.3" font-family="Times,serif" font-size="14.00">Exercise: mkdir</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r -->
+<g id="edge2" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_echo_create_files&#45;&gt;linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r</title>
+<path fill="none" stroke="black" d="M249.36,-467.05C239.62,-458.2 227.54,-447.22 216.9,-437.55"/>
+<polygon fill="black" stroke="black" points="219.22,-434.93 209.47,-430.79 214.51,-440.11 219.22,-434.93"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r&#45;&gt;linux_basics_shell_file_dir_create_rm -->
+<g id="edge13" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r&#45;&gt;linux_basics_shell_file_dir_create_rm</title>
+<path fill="none" stroke="black" d="M215.15,-395.59C228.67,-386.4 245.73,-374.8 260.52,-364.75"/>
+<polygon fill="black" stroke="black" points="262.62,-367.56 268.93,-359.04 258.69,-361.77 262.62,-367.56"/>
+</g>
+<!-- linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r&#45;&gt;linux_basics_shell_cwd -->
+<g id="edge14" class="edge">
+<title>linux_basics_shell_exercises_cp_mv_mkdir_rm_mkdir_p_rm_r&#45;&gt;linux_basics_shell_cwd</title>
+<path fill="none" stroke="black" d="M151.97,-397.05C115.31,-382.83 65.68,-363.01 63,-359 54.11,-345.7 53.48,-335.86 63,-323 77.14,-303.91 98.01,-291.46 120.42,-283.4"/>
+<polygon fill="black" stroke="black" points="121.7,-286.66 130.1,-280.21 119.51,-280.01 121.7,-286.66"/>
+</g>
+</g>
+</svg>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2023 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../../../_sources/trainings/material/soup/linux/basics/shell/exercises/cp-mv-mkdir-rm/echo-create-files.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

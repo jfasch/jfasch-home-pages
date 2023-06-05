@@ -1,0 +1,780 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<meta content="How to build raspberry kernel (plus explanations)" name="description" />
+<meta content="cross compile, kernel, raspberry, pi, embedded, architecture, target" name="keywords" />
+
+    <title>Rasperry Pi: Kernel Build &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/kernel/raspi-kernel-build/story.html" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="Coding: Fix Sleep While Atomic" href="../spinlock-coding/topic.html" />
+    <link rel="prev" title="Raspberry Pi: Building the Kernel" href="topic.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../index.html">
+    <img class="logo" src="../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx-design-patterns/group.html">Design Patterns With C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx-code/index.html">C++ Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cxx-exercises/group.html">C++ Exercises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../clean-code/group.html">Is Software A Craft? Software Is A Craft! ⟶ <em>Clean Code</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../unittest/group.html">Unit Testing With <code class="docutils literal notranslate"><span class="pre">googletest</span></code></a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../group.html">Linux Kernel Driver Development</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../cdev-auto/topic.html">Modern Character Devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cdev-file-operations/topic.html">File Operations on Character Devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cdev-first-functionality/topic.html">Coding: First Functionality</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cdev-manual/topic.html">Character Device Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cdev-multiple-devices/topic.html">Coding: Multiple Devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cdev-refactoring/topic.html">Coding: Refactoring</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dma/topic.html">DMA</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../fedora-kernel-build/topic.html">Fedora: Building the Kernel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../fedora-module-build/topic.html">Fedora: Building External Kernel Modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../hello-world/topic.html">Module Loading, Hello World</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../interrupt-coding/topic.html">Coding: Raspi GPIO Interrupts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../interrupt/topic.html">Interrupts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../iomemory/topic.html">IO Memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../kmalloc/topic.html">Dynamic Memory: <code class="docutils literal notranslate"><span class="pre">kmalloc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../list/topic.html">Doubly Linked Lists</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../mutex-coding/topic.html">Coding: Fix Race Condition (Mutex)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../mutex/topic.html">Mutex (and RT Mutex)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../netdev/topic.html">Network Devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pci/topic.html">PCI</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../process-vs-atomic/topic.html">Process vs.Atomic Context</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="topic.html">Raspberry Pi: Building the Kernel</a><ul class="current">
+<li class="toctree-l5 current"><a class="current reference internal" href="#">Rasperry Pi: Kernel Build</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../spinlock-coding/topic.html">Coding: Fix <em>Sleep While Atomic</em></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../spinlock/topic.html">Spinlock (vs. Mutex)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stub-sysprog-dup/topic.html"><code class="docutils literal notranslate"><span class="pre">dup()</span></code>, <code class="docutils literal notranslate"><span class="pre">fork()</span></code>, and Reference Counting (Stub)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../time_timer-coding/topic.html">Coding: Timed Event</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../time_timer/topic.html">Timer Management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../usermem/topic.html">Accessing Userspace Memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../waitqueue/topic.html">Waiting for Something</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../workqueue/topic.html">Workqueue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sample-project.html">Sample Code Maintenance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../todo.html">To Do List</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="rasperry-pi-kernel-build">
+<h1>Rasperry Pi: Kernel Build<a class="headerlink" href="#rasperry-pi-kernel-build" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#introduction" id="id2">Introduction</a></p></li>
+<li><p><a class="reference internal" href="#cross-toolchain-on-host" id="id3">Cross Toolchain on Host</a></p>
+<ul>
+<li><p><a class="reference internal" href="#architecture-name-what-s-that" id="id4">Architecture Name - What’s That?</a></p></li>
+<li><p><a class="reference internal" href="#building-a-toolchain-with-gentoo-s-crossdev" id="id5">Building a Toolchain with Gentoo’s <code class="docutils literal notranslate"><span class="pre">crossdev</span></code></a></p></li>
+<li><p><a class="reference internal" href="#other-toolchains" id="id6">Other Toolchains</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#kernel-source" id="id7">Kernel Source</a></p></li>
+<li><p><a class="reference internal" href="#kernel-compilation" id="id8">Kernel Compilation</a></p>
+<ul>
+<li><p><a class="reference internal" href="#parameters-for-the-build" id="id9">Parameters for the Build</a></p></li>
+<li><p><a class="reference internal" href="#preparing-the-kernel-config-file" id="id10">Preparing the Kernel <code class="docutils literal notranslate"><span class="pre">.config</span></code> File</a></p></li>
+<li><p><a class="reference internal" href="#building-the-kernel-artifacts" id="id11">Building the Kernel Artifacts</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#packaging" id="id12">Packaging</a></p>
+<ul>
+<li><p><a class="reference internal" href="#bootloader-artifacts" id="id13">Bootloader Artifacts</a></p></li>
+<li><p><a class="reference internal" href="#module-tree" id="id14">Module Tree</a></p></li>
+<li><p><a class="reference internal" href="#summary" id="id15">Summary</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#deployment" id="id16">Deployment</a></p>
+<ul>
+<li><p><a class="reference internal" href="#variation" id="id17">Variation</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id1" id="id18">Summary</a></p></li>
+</ul>
+</div>
+<section id="introduction">
+<h2><a class="toc-backref" href="#id2">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>This document is a transcript of a shell script I use to do repeated
+Linux kernel builds for the Raspberry Pi. I use the Raspi a lot, both
+for educational purposes (I give courses on various topics around
+Linux), and for hardware prototyping.</p>
+<p>Note that the entire process of building the Rasperry Pi kernel is
+described <a class="reference external" href="https://www.raspberrypi.org/documentation/linux/kernel/building.md">over at raspberrypi.org</a>. The
+foundation’s description is targetted to the end user who wants to get
+the problem solved. Enable one more drivers in the build, and be done.</p>
+<p>This description borrows heavily from the foundation’s, but deviates
+in a few places. It is for people who want to do more, for example,</p>
+<ul class="simple">
+<li><p>Maintain their own kernels using Git</p></li>
+<li><p>Build kernels for different architectures, and not only for the Rasperry</p></li>
+<li><p>Use different toolchains (I use Gentoo’s <code class="docutils literal notranslate"><span class="pre">crossdev</span></code> to create
+toolchains)</p></li>
+<li><p>Understand better what’s involved</p></li>
+</ul>
+</section>
+<section id="cross-toolchain-on-host">
+<h2><a class="toc-backref" href="#id3">Cross Toolchain on Host</a><a class="headerlink" href="#cross-toolchain-on-host" title="Permalink to this headline">¶</a></h2>
+<p>It’s no fun to do large compilations on the Pi. The Pi2 has become a
+lot more powerful - 4 processors can do more than just one. RAM has
+also doubled but there is still “only” 1GB which soon becomes the
+limiting factor for a parallel kernel compilation.</p>
+<p>This is why we do <em>cross compiling</em>. One could compile on the Pi if
+one wants, things become simpler when done without cross compiling -
+but not much as we will see. Anyway, there are other platforms which
+are not as capable as the Pi - where there is no native compilation no
+matter what -, and the same principles apply there.</p>
+<section id="architecture-name-what-s-that">
+<h3><a class="toc-backref" href="#id4">Architecture Name - What’s That?</a><a class="headerlink" href="#architecture-name-what-s-that" title="Permalink to this headline">¶</a></h3>
+<p>I am not exactly sure where those <em>architecture names</em> come from, and
+what their canonical definition is. I understand that one needs a
+<em>cross toolchain</em> to build code <em>on the workstation</em>, and that code
+will run <em>on the target machine</em> (Pi in our case).</p>
+<p><em>So how to select the toolchain?</em> Every toolchain has a <em>name</em>, and I
+cannot come up with a good explanation of how these names are made up.
+Here two examples,</p>
+<ul class="simple">
+<li><p><em>The Raspberry Foundation’s toolchain</em>. See <a class="reference external" href="https://www.raspberrypi.org/documentation/linux/kernel/building.md">here</a>
+for how to get it (it boils down to cloning a Github
+repository). Obviously they use the target name
+<code class="docutils literal notranslate"><span class="pre">arm-linux-gnueabihf</span></code>. Makes sense, the <code class="docutils literal notranslate"><span class="pre">...hf</span></code> stands for
+<em>hardware floatingpoint</em>.</p></li>
+<li><p><em>Gentoo’s crossdev</em>. Here the Pi toolchain is referred to as
+<code class="docutils literal notranslate"><span class="pre">armv6j-hardfloat-linux-gnueabi</span></code> (see <a class="reference external" href="https://wiki.gentoo.org/wiki/Raspberry_Pi">here</a>) which also makes
+sense. <code class="docutils literal notranslate"><span class="pre">hardfloat</span></code> as above, plus there we are more specific about
+the processor type: <code class="docutils literal notranslate"><span class="pre">armv6j</span></code>.</p></li>
+</ul>
+<p>The point is that there is no magic behind the toolchain name (except
+that you should choose the right toolchain for your target
+architecture of course). All you need to know is that the target name
+is part of the name of the binaries,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls -1 /usr/bin/armv6j-hardfloat-linux-gnueabi-*
+<span class="go">/usr/bin/armv6j-hardfloat-linux-gnueabi-ar</span>
+<span class="go">/usr/bin/armv6j-hardfloat-linux-gnueabi-as</span>
+<span class="go">/usr/bin/armv6j-hardfloat-linux-gnueabi-g++</span>
+<span class="go">/usr/bin/armv6j-hardfloat-linux-gnueabi-gcc</span>
+<span class="go">/usr/bin/armv6j-hardfloat-linux-gnueabi-ld</span>
+<span class="go">/usr/bin/armv6j-hardfloat-linux-gnueabi-nm</span>
+<span class="go">/usr/bin/armv6j-hardfloat-linux-gnueabi-objcopy</span>
+<span class="go">...</span>
+</pre></div>
+</div>
+<p>I, being a Gentoo user, will use <code class="docutils literal notranslate"><span class="pre">armv6j-hardfloat-linux-gnueabi</span></code>
+for the remainder.</p>
+</section>
+<section id="building-a-toolchain-with-gentoo-s-crossdev">
+<h3><a class="toc-backref" href="#id5">Building a Toolchain with Gentoo’s <code class="docutils literal notranslate"><span class="pre">crossdev</span></code></a><a class="headerlink" href="#building-a-toolchain-with-gentoo-s-crossdev" title="Permalink to this headline">¶</a></h3>
+<p>Links:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://wiki.gentoo.org/wiki/Raspberry_Pi">https://wiki.gentoo.org/wiki/Raspberry_Pi</a></p></li>
+<li><p><a class="reference external" href="https://wiki.gentoo.org/wiki/Overlay/Local_overlay">https://wiki.gentoo.org/wiki/Overlay/Local_overlay</a></p></li>
+</ul>
+<p>Crossdev will pull in a lot of Ebuilds which are used to build the
+members (<code class="docutils literal notranslate"><span class="pre">binutils</span></code>, <code class="docutils literal notranslate"><span class="pre">gcc</span></code>, …) of the toolchain. These will not
+be stored in the main portage tree, but rather in a <a class="reference external" href="https://wiki.gentoo.org/wiki/Overlay/Local_overlay">local portage
+overlay</a> that
+you will have to create.</p>
+<p>To create a local overlay for the crossdev artifacts,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>mkdir -p /usr/local/portage-crossdev/profiles
+<span class="gp"># </span><span class="nb">echo</span> local-crossdev &gt; /usr/local/portage-crossdev/profiles/repo_name
+</pre></div>
+</div>
+<p>In <code class="docutils literal notranslate"><span class="pre">/etc/portage/repos.conf/crossdev.conf</span></code> (create if it does not
+exist), add</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[local-crossdev]</span>
+<span class="go">location = /usr/local/portage-crossdev</span>
+<span class="go">priority = 9999</span>
+<span class="go">masters = gentoo</span>
+<span class="go">auto-sync = no</span>
+</pre></div>
+</div>
+<p>Build the toolchain (this can take a while),</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>crossdev --stable --target armv6j-hardfloat-linux-gnueabi
+</pre></div>
+</div>
+</section>
+<section id="other-toolchains">
+<h3><a class="toc-backref" href="#id6">Other Toolchains</a><a class="headerlink" href="#other-toolchains" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference external" href="https://www.raspberrypi.org/documentation/linux/kernel/building.md">Raspberry Foundation’s documentation</a>
+has a precompiled toolchain available from a Git repository. (What
+mindset leads you to using Git for this?)</p>
+<p>If you are developing for industry embedded platforms, as I do from
+time to time, chances are that you will be using a vendor supplied
+toolchain. No difference, basically, other than probably very outdated
+versions. If the pain becomes too hard because the version are way too
+outdated, Gentoo’s <code class="docutils literal notranslate"><span class="pre">crossdev</span></code> can always come to the rescue.</p>
+</section>
+</section>
+<section id="kernel-source">
+<h2><a class="toc-backref" href="#id7">Kernel Source</a><a class="headerlink" href="#kernel-source" title="Permalink to this headline">¶</a></h2>
+<p>I use to track Linus’s repository, and pull stuff from others as
+needed. Occasional kernel work is also done there. Together with
+out-of-source kernel builds, this is what is in this description:</p>
+<ul class="simple">
+<li><p>Get the mainline kernel</p></li>
+<li><p>Augment it with the Raspi tree on Github</p></li>
+</ul>
+<p>Kernel source from Linus’s repository (I use to have it in
+<code class="docutils literal notranslate"><span class="pre">~/work/linux</span></code>),</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git clone https://github.com/torvalds/linux.git ~/work/linux
+</pre></div>
+</div>
+<p>The Raspberry kernel source is in
+<a class="reference external" href="https://github.com/raspberrypi/linux.git">https://github.com/raspberrypi/linux.git</a> - add this as a <em>git remote</em>,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span> ~/work/linux
+<span class="gp">$ </span>git remote add raspberrypi https://github.com/raspberrypi/linux.git
+<span class="gp">$ </span>git remote -v
+<span class="go">origin       https://github.com/torvalds/linux.git (fetch)</span>
+<span class="go">origin       https://github.com/torvalds/linux.git (push)</span>
+<span class="go">raspberrypi  https://github.com/raspberrypi/linux.git (fetch)</span>
+<span class="go">raspberrypi  https://github.com/raspberrypi/linux.git (push)</span>
+</pre></div>
+</div>
+<p>Initial fetch,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git fetch raspberrypi
+</pre></div>
+</div>
+<p>Add a local tracking branch (and check it out) for the one remote
+branch that we want to work on. <code class="docutils literal notranslate"><span class="pre">rpi-4.1.y</span></code> is the current version
+as of this writing.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git checkout -b rpi-4.1.y remotes/raspberrypi/rpi-4.1.y
+</pre></div>
+</div>
+</section>
+<section id="kernel-compilation">
+<h2><a class="toc-backref" href="#id8">Kernel Compilation</a><a class="headerlink" href="#kernel-compilation" title="Permalink to this headline">¶</a></h2>
+<section id="parameters-for-the-build">
+<h3><a class="toc-backref" href="#id9">Parameters for the Build</a><a class="headerlink" href="#parameters-for-the-build" title="Permalink to this headline">¶</a></h3>
+<p>In order to make the million command lines that follow more concise
+and maintainable, I set a few variables that are referred to in the
+remainder as needed. In real life all this would be done in a shell
+script (it is), but it is easier to make things clear in a
+step-by-step manner.</p>
+<p><code class="docutils literal notranslate"><span class="pre">SOURCEDIR</span></code> is where the kernel source is. The build will leave that
+tree untouched.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">SOURCEDIR</span><span class="o">=</span><span class="nv">$HOME</span>/work/linux
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">BUILDDIR</span></code> is where the kernel build goes. Initially empty.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">BUILDDIR</span><span class="o">=</span>/var/jfasch/raspi/kernel/rpi-4.1.y-jfasch/build
+<span class="gp">$ </span>mkdir -p <span class="nv">$BUILDDIR</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">BUILDPARAM</span></code> is supplied to the kernel build as a whole, as a
+commandline parameter to the <code class="docutils literal notranslate"><span class="pre">make</span></code> program. This one’s for cross
+compilation - select the ARM architecture, and specify your cross
+toolchain.</p>
+<p><strong>Important</strong>: when supplying the toolchain name
+(<code class="docutils literal notranslate"><span class="pre">armv6j-hardfloat-linux-gnueabi</span></code>) to the kernel build, we have to
+add an extra ‘-’ at the end, making it into
+<code class="docutils literal notranslate"><span class="pre">armv6j-hardfloat-linux-gnueabi-</span></code>. The kernel build system prepends
+the supplied value to <code class="docutils literal notranslate"><span class="pre">gcc</span></code> literally.</p>
+<p>Otherwise the build will fail with a rather unobvious message,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scripts/kconfig/zconf.tab.c:199:24: fatal error: zconf.hash.c: No such file or directory</span>
+</pre></div>
+</div>
+<p>So,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">BUILDPARAM</span><span class="o">=</span><span class="s2">&quot;ARCH=arm CROSS_COMPILE=armv6j-hardfloat-linux-gnueabi-&quot;</span>
+</pre></div>
+</div>
+<p>Next, I like the build to take place out-of-source, and this is how it
+is done.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">BUILDPARAM</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$BUILDPARAM</span><span class="s2"> -C </span><span class="nv">$SOURCEDIR</span><span class="s2">&quot;</span>
+<span class="gp">$ </span><span class="nv">BUILDPARAM</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$BUILDPARAM</span><span class="s2"> O=</span><span class="nv">$BUILDDIR</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>When the build is done, the build artifacts have to be collected and
+transferred to the Raspi. There are two places on the Raspi that are
+relevant for the boot,</p>
+<ul class="simple">
+<li><p>Bootloader stuff. This is on a <code class="docutils literal notranslate"><span class="pre">fat32</span></code> partition; the kernel,
+device tree, and device tree overlays go there.</p></li>
+<li><p>Kernel modules. The module tree is part of the regular root
+filesystem which is <code class="docutils literal notranslate"><span class="pre">ext4</span></code> formatted partition (not necessarily,
+but Raspbian images come in that shape).</p></li>
+</ul>
+<p>When the build is done, we will prepare two tar files, out of two
+directory trees that we fill. This is what the following variables are
+there for,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">BOOTDIR</span><span class="o">=</span>/var/jfasch/raspi/kernel/rpi-4.1.y-jfasch/bootfs
+<span class="gp">$ </span><span class="nv">ROOTDIR</span><span class="o">=</span>/var/jfasch/raspi/kernel/rpi-4.1.y-jfasch/rootfs
+<span class="gp">$ </span>mkdir -p <span class="nv">$BOOTDIR</span> <span class="nv">$ROOTDIR</span>
+</pre></div>
+</div>
+<p>Finally, the kernels for Raspi versions 1 and 2 are
+different. (Further down we’ll create different kernel configurations
+for the two.) The bootloader decides which one to load, based on its
+filename,</p>
+<p>For the Pi 1, choose</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">SOURCEDIR</span><span class="o">=</span><span class="nv">$HOME</span>/work/linux
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">BUILDDIR</span></code> is where the kernel build goes. Initially empty.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">BUILDDIR</span><span class="o">=</span>/var/jfasch/raspi/kernel/rpi-4.1.y-jfasch/build
+<span class="gp">$ </span>mkdir -p <span class="nv">$BUILDDIR</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">BUILDPARAM</span></code> is supplied to the kernel build as a whole, as a
+commandline parameter to the <code class="docutils literal notranslate"><span class="pre">make</span></code> program. This one’s for cross
+compilation - select the ARM architecture, and specify your cross
+toolchain.</p>
+<p><strong>Important</strong>: when supplying the toolchain name
+(<code class="docutils literal notranslate"><span class="pre">armv6j-hardfloat-linux-gnueabi</span></code>) to the kernel build, we have to
+add an extra ‘-’ at the end, making it into
+<code class="docutils literal notranslate"><span class="pre">armv6j-hardfloat-linux-gnueabi-</span></code>. The kernel build system prepends
+the supplied value to <code class="docutils literal notranslate"><span class="pre">gcc</span></code> literally.</p>
+<p>Otherwise the build will fail with a rather unobvious message,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scripts/kconfig/zconf.tab.c:199:24: fatal error: zconf.hash.c: No such file or directory</span>
+</pre></div>
+</div>
+<p>So,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">BUILDPARAM</span><span class="o">=</span><span class="s2">&quot;ARCH=arm CROSS_COMPILE=armv6j-hardfloat-linux-gnueabi-&quot;</span>
+</pre></div>
+</div>
+<p>Next, I like the build to take place out-of-source, and this is how it
+is done.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">BUILDPARAM</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$BUILDPARAM</span><span class="s2"> -C </span><span class="nv">$SOURCEDIR</span><span class="s2">&quot;</span>
+<span class="gp">$ </span><span class="nv">BUILDPARAM</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$BUILDPARAM</span><span class="s2"> O=</span><span class="nv">$BUILDDIR</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>When the build is done, the build artifacts have to be collected and
+transferred to the Raspi. There are two places on the Raspi that are
+relevant for the boot,</p>
+<ul class="simple">
+<li><p>Bootloader stuff. This is on a <code class="docutils literal notranslate"><span class="pre">fat32</span></code> partition; the kernel,
+device tree, and device tree overlays go there.</p></li>
+<li><p>Kernel modules. The module tree is part of the regular root
+filesystem which is <code class="docutils literal notranslate"><span class="pre">ext4</span></code> formatted partition (not necessarily,
+but Raspbian images come in that shape).</p></li>
+</ul>
+<p>When the build is done, we will prepare two tar files, out of two
+directory trees that we fill. This is what the following variables are
+there for,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">KERNEL</span><span class="o">=</span>kernel
+</pre></div>
+</div>
+<p>For the Pi 2, choose</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">KERNEL</span><span class="o">=</span>kernel7
+</pre></div>
+</div>
+</section>
+<section id="preparing-the-kernel-config-file">
+<h3><a class="toc-backref" href="#id10">Preparing the Kernel <code class="docutils literal notranslate"><span class="pre">.config</span></code> File</a><a class="headerlink" href="#preparing-the-kernel-config-file" title="Permalink to this headline">¶</a></h3>
+<p>If you have a running Raspi, you can retrieve the kernel configuration
+from the running kernel (logged in as root on the Raspi),</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>modprobe configs    <span class="c1"># suddenly /proc/config.gz appears</span>
+<span class="gp"># </span>gzip -cd /proc/config.gz &gt; /tmp/raspi-config
+</pre></div>
+</div>
+<p>Then, on the host, copy that file into the build directory (which is
+still empty at this point), and let the build assimilate it,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cp raspi-config <span class="nv">$BUILDDIR</span>/.config
+<span class="gp">$ </span>make <span class="nv">$BUILDPARAM</span> oldconfig
+</pre></div>
+</div>
+<p>Alternatively, for the Raspi tree, there is a way to create the same
+configuration without having a running Raspi.</p>
+<p>For the Pi 1, call</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>make <span class="nv">$BUILDPARAM</span> bcmrpi_defconfig
+</pre></div>
+</div>
+<p>For the Pi 2, call</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>make <span class="nv">$BUILDPARAM</span> bcm2709_defconfig
+</pre></div>
+</div>
+<p>This creates the same <code class="docutils literal notranslate"><span class="pre">$BUILDDIR/.config</span></code> kernel configuration file
+that we extracted from the live Raspi above. Assimilate,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>make <span class="nv">$BUILDPARAM</span> oldconfig
+</pre></div>
+</div>
+<p>Now is the time to make adjustments - this is why we are compiling a
+custom kernel in the first place. Enter the configuration menu,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>make <span class="nv">$BUILDPARAM</span> menuconfig
+</pre></div>
+</div>
+<p>Your modification demands may vary - here are demands that I can
+imagine.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CONFIG_LOCALVERSION</span></code>: it make sense to differentiate (with
+<code class="docutils literal notranslate"><span class="pre">uname</span> <span class="pre">-r</span></code> for example) your custom kernel from the original. I
+append <code class="docutils literal notranslate"><span class="pre">-jfasch</span></code>, at a minimum or something more precise.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CONFIG_IKCONFIG</span></code>: link <code class="docutils literal notranslate"><span class="pre">/proc/config.gz</span></code> statically. Otherwise
+one has to <code class="docutils literal notranslate"><span class="pre">modprobe</span> <span class="pre">configs</span></code> to see it. I use the file often
+during development, and don’t want to load a module eveytime I need
+it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CONFIG_CAN_MCP251X</span></code>: a CAN controller that I needed to talk to
+in one of my recent projects. Already there, as a module - but
+better check.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CONFIG_SENSORS_LM73</span></code>: an I2C temperature sensor. Configure as
+module.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="building-the-kernel-artifacts">
+<h3><a class="toc-backref" href="#id11">Building the Kernel Artifacts</a><a class="headerlink" href="#building-the-kernel-artifacts" title="Permalink to this headline">¶</a></h3>
+<p>Now, having created and edited the configuration, the tree is fit for
+building. Note how we didn’t yet make any modifications to the source
+(<code class="docutils literal notranslate"><span class="pre">$SOURCEDIR</span></code>) itself - all we did takes place in <code class="docutils literal notranslate"><span class="pre">$BUILDDIR</span></code>. Let
+the system build all the necessary artifacts,</p>
+<ul class="simple">
+<li><p>The main kernel image</p></li>
+<li><p>Modules</p></li>
+<li><p>Device tree blobs</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>make <span class="nv">$BUILDPARAM</span> zImage modules dtbs
+</pre></div>
+</div>
+<p>If your host machine happens to have multiple cores (likely), gain a
+speed up by doing parallel compilation (mine has four cores, and I
+specify one less because I usually want to do other work during the
+build),</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>make -j3 <span class="nv">$BUILDPARAM</span> zImage modules dtbs
+</pre></div>
+</div>
+</section>
+</section>
+<section id="packaging">
+<h2><a class="toc-backref" href="#id12">Packaging</a><a class="headerlink" href="#packaging" title="Permalink to this headline">¶</a></h2>
+<p>Now’s the time to collect all the artifacts together, and transfer
+them onto the Raspi. We create two “packages” so to say, in the form
+of tar files. One package contains the artifacts that are read by the
+bootloader, the other package contains the module tree of the kernel
+we just built.</p>
+<section id="bootloader-artifacts">
+<h3><a class="toc-backref" href="#id13">Bootloader Artifacts</a><a class="headerlink" href="#bootloader-artifacts" title="Permalink to this headline">¶</a></h3>
+<p>The kernel image, <code class="docutils literal notranslate"><span class="pre">arch/arm/boot/zImage</span></code>, has to be wrapped into an
+envelope that is understood by the bootloader. As root,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">$SOURCEDIR</span>/scripts/mkknlimg <span class="nv">$BUILDDIR</span>/arch/arm/boot/zImage <span class="nv">$BOOTDIR</span>/<span class="nv">$KERNEL</span>.img
+</pre></div>
+</div>
+<p>In addition to the kernel, the bootloader loads the <em>device
+tree</em>. Before starting te kernel, it composes a complete tree out of a
+<em>main device tree</em> and overlays. Copy these artifacts,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cp <span class="nv">$BUILDDIR</span>/arch/arm/boot/dts/*.dtb <span class="nv">$BOOTDIR</span>/
+<span class="gp">$ </span>mkdir <span class="nv">$BOOTDIR</span>/overlays
+<span class="gp">$ </span>cp <span class="nv">$BUILDDIR</span>/arch/arm/boot/dts/overlays/*.dtb <span class="nv">$BOOTDIR</span>/overlays/
+</pre></div>
+</div>
+<p>Having all this in <code class="docutils literal notranslate"><span class="pre">$BOOTDIR</span></code>, create a tar file from it,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>tar -C <span class="nv">$BOOTDIR</span> -jcf /tmp/raspi-boot.tar.bz2 .
+</pre></div>
+</div>
+</section>
+<section id="module-tree">
+<h3><a class="toc-backref" href="#id14">Module Tree</a><a class="headerlink" href="#module-tree" title="Permalink to this headline">¶</a></h3>
+<p>Install the kernel modules into <code class="docutils literal notranslate"><span class="pre">$ROOTDIR</span></code>. This will create a
+module tree starting at <code class="docutils literal notranslate"><span class="pre">$ROOTDIR/lib/modules/&lt;kernel-version&gt;</span></code> - so
+<code class="docutils literal notranslate"><span class="pre">$ROOTDIR</span></code> can be thought of as an <em>overlay</em> over the target root
+filesystem.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>make <span class="nv">$BUILDPARAM</span> <span class="nv">INSTALL_MOD_PATH</span><span class="o">=</span><span class="nv">$ROOTDIR</span> modules_install
+</pre></div>
+</div>
+<p>Then, create another tar package containing <code class="docutils literal notranslate"><span class="pre">$ROOTDIR</span></code>. The root
+filesystem (<code class="docutils literal notranslate"><span class="pre">ext4</span></code>) has an idea what owners and groups are, so it
+makes sense to create a tar file reflecting the ideal situation -
+modules are owned by root -,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>tar -C <span class="nv">$ROOTDIR</span> --owner root --group root -jcf /tmp/raspi-root.tar.bz2 .
+</pre></div>
+</div>
+</section>
+<section id="summary">
+<h3><a class="toc-backref" href="#id15">Summary</a><a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h3>
+<p>The outcome of our kernel build is two “packages” in the form of tar
+files. Each of these files functions as an “overlay” over one of the
+two filesystems that are usually employed by a Raspberry distribution.</p>
+<p>It is worth noting that …</p>
+<ul class="simple">
+<li><p>We did not have to become superuser during the build. (We did for
+the cross toolchain installation, clearly. But this is a one-time
+operation.)</p></li>
+<li><p>The packages contain only relative paths.</p></li>
+</ul>
+<p>The “boot” overlay file contains those artifacts that are relevant for
+the bootloader, and they are read before the kernel is started. This
+package looks as follows,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>tar jtf /tmp/raspi-boot.tar.bz2
+<span class="go">./</span>
+<span class="go">./bcm2709-rpi-2-b.dtb</span>
+<span class="go">./kernel7.img</span>
+<span class="go">./overlays/</span>
+<span class="go">./overlays/smi-overlay.dtb</span>
+<span class="go">./overlays/rpi-ft5406-overlay.dtb</span>
+<span class="go">./overlays/mcp2515-can1-overlay.dtb</span>
+<span class="go">./overlays/pwm-overlay.dtb</span>
+<span class="go">...</span>
+</pre></div>
+</div>
+<p>The “root” overlay contains the kernel module tree. It contains kernel
+modules, and these are loaded <em>by the running kernel</em>. This package
+looks as follows,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>tar jtf /tmp/raspi-root.tar.bz2
+<span class="go">./</span>
+<span class="go">./lib/</span>
+<span class="go">./lib/modules/</span>
+<span class="go">./lib/modules/4.1.10-v7-jfasch+/</span>
+<span class="go">./lib/modules/4.1.10-v7-jfasch+/source</span>
+<span class="go">./lib/modules/4.1.10-v7-jfasch+/modules.order</span>
+<span class="go">./lib/modules/4.1.10-v7-jfasch+/modules.symbols.bin</span>
+<span class="go">./lib/modules/4.1.10-v7-jfasch+/kernel/</span>
+<span class="go">./lib/modules/4.1.10-v7-jfasch+/kernel/net/</span>
+<span class="go">./lib/modules/4.1.10-v7-jfasch+/kernel/net/ipv4/</span>
+<span class="go">./lib/modules/4.1.10-v7-jfasch+/kernel/net/ipv4/xfrm4_mode_beet.ko</span>
+<span class="go">./lib/modules/4.1.10-v7-jfasch+/kernel/net/ipv4/inet_lro.ko</span>
+<span class="go">./lib/modules/4.1.10-v7-jfasch+/kernel/net/ipv4/esp4.ko</span>
+<span class="go">./lib/modules/4.1.10-v7-jfasch+/kernel/net/ipv4/xfrm4_mode_transport.ko</span>
+<span class="go">./lib/modules/4.1.10-v7-jfasch+/kernel/net/ipv4/udp_tunnel.ko</span>
+<span class="go">... (many more) ...</span>
+</pre></div>
+</div>
+<p>Next (and last), we have to bring these packages onto the target in
+order to boot our new versions.</p>
+</section>
+</section>
+<section id="deployment">
+<h2><a class="toc-backref" href="#id16">Deployment</a><a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h2>
+<p>Given our two packages, deployment is simple. Insert an SD card that
+is prepared with your favorite Raspberry distribution (I only tested
+with Raspbian, but there’s no real reason why it shouldn’t work with
+any other), and you’ll get presented with two partitions (mine are
+<code class="docutils literal notranslate"><span class="pre">/dev/sdb*</span></code>),</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cat /proc/partitions
+<span class="go">...</span>
+<span class="go">   8       17      57344 sdb1</span>
+<span class="go">   8       18    4162560 sdb2</span>
+<span class="go">...</span>
+</pre></div>
+</div>
+<p>I use Gnome 3 and systemd which is a bit decadent, but I sure enjoy
+external storage being mounted automatically,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>mount
+<span class="go">/dev/sdb1 on /run/media/jfasch/boot type vfat (...)</span>
+<span class="go">/dev/sdb2 on /run/media/jfasch/ec2aa3d2-eee7-454e-8260-d145df5ddcba type ext4 (...)</span>
+</pre></div>
+</div>
+<p>(You might have to take manual care to establish a similar situation.)</p>
+<p>First, the “boot” stuff. We don’t have to become root since <code class="docutils literal notranslate"><span class="pre">fat32</span></code>
+is permission-agnostic, so we just unpack the “boot” package onto the
+SD card’s boot partition,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>tar -C /run/media/jfasch/boot -jxf /tmp/raspi-boot.tar.bz2
+</pre></div>
+</div>
+<p>Next, the “root” stuff. We cannot unpack our “root” package into the
+mounted <code class="docutils literal notranslate"><span class="pre">ext4</span></code> filesystem - its <code class="docutils literal notranslate"><span class="pre">/lib/modules/</span></code> directory is owned
+by root, and that’s where the module tree is supposed to go to. So, as
+root,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>tar -C /run/media/jfasch/ec2aa3d2-eee7-454e-8260-d145df5ddcba -jxf /tmp/raspi-root.tar.bz2
+</pre></div>
+</div>
+<p>Finally,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sync
+</pre></div>
+</div>
+<p>Done. Pull out card, insert into Raspi, boot.</p>
+<section id="variation">
+<h3><a class="toc-backref" href="#id17">Variation</a><a class="headerlink" href="#variation" title="Permalink to this headline">¶</a></h3>
+<p>If you have a running Raspi and you don’t want to shut it down for too
+long (pull out card, do the deployment as described above, insert card
+back in, boot), then you can do the deployment onto the filesystems
+while the Raspi is running from them. There no danger of overwriting
+files while they are in use - all that’s being use is loaded into
+memory and runs from there. The bootloader is done, the kernel is
+loaded into memory, has interpreted the device tree, and the modules
+are in place. Transfer the packages onto the Raspi, and do the same
+with the running filesystems.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">fat32</span></code> “boot” filesystem is mounted at <code class="docutils literal notranslate"><span class="pre">/boot</span></code>. Files are
+only accessible as root because that is the user who mounted the
+filesystem - so we have to become root.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>tar -C /boot -jxf /tmp/raspi-boot.tar.bz2
+</pre></div>
+</div>
+<p>Same for the <code class="docutils literal notranslate"><span class="pre">ext4</span></code> “root” filesystem, which in fact <em>is</em> the root
+filesystem for the running kernel,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>tar -C / -jxf /tmp/raspi-root.tar.bz2
+</pre></div>
+</div>
+<p>Done. Reboot.</p>
+</section>
+</section>
+<section id="id1">
+<h2><a class="toc-backref" href="#id18">Summary</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Now what have we done?</p>
+<ul class="simple">
+<li><p>We built a cross toolchain, using Gentoo’s extremely cool
+<code class="docutils literal notranslate"><span class="pre">crossdev</span></code>. We could use just about any other toolchain, as long
+as it can build code that can run on the target processor. With
+embedded “industry boards” you usually receive a vendor provided
+toolchain, so this is likely the way to go in such cases. Remember
+that the toolchain name is just a prefix of the toolchain’s
+executables (compiler, linker, etc.)</p></li>
+<li><p>We used Git heavily (no, not heavily) to get to our kernel
+source. This is not necessary if you receive the kernel source from
+elsewhere - all that’s needed is the kernel tree, no matter where it
+comes from. Nevertheless, if you plan for proper forward
+development, I recommend you to urge vendors to communicate properly
+via Git.</p></li>
+<li><p>We did some kernel configuration, enabling modules, features, and
+whatnot. Play around.</p></li>
+<li><p>We built the kernel <em>out-of-source</em>. This is a very cool way of
+keeping the source tree read-only - which is definitely recommended
+when you use one Git repository for work on multiple kernel
+versions.</p></li>
+<li><p>We prepared “packages”. This is not necessary, but it is a good way
+to structure your deployments - and, most of all, to get an
+understanding of which goes where. There are distributions
+(Debian/Raspbian being only one of them) and even meta-distributions
+(Yocto, and to some extent, Gentoo) that are based on a great deal
+of that knowledge.</p></li>
+</ul>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2023 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../_sources/trainings/material/soup/kernel/raspi-kernel-build/story.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
