@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Coroutines &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script src="../../../../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx11/020-new-language-features/coroutines/topic.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">Unterlagen &amp; Download</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="coroutines">
+<h1>Coroutines<a class="headerlink" href="#coroutines" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#overview" id="id1">Overview</a></p></li>
+<li><p><a class="reference internal" href="#pitfalls" id="id2">Pitfalls</a></p></li>
+<li><p><a class="reference internal" href="#oasch" id="id3">Oasch</a></p></li>
+<li><p><a class="reference internal" href="#further-topics" id="id4">Further Topics</a></p></li>
+</ul>
+</div>
+<section id="overview">
+<h2><a class="toc-backref" href="#id1">Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>blah re-enter/pause/suspend/resume</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;coroutine&gt;</span></code></p></li>
+<li><p>New keywords</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">co_yield</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">co_return</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">co_await</span></code></p></li>
+</ul>
+</li>
+<li><p><em>“Stackless”</em> (whatever that means)</p></li>
+</ul>
+</section>
+<section id="pitfalls">
+<h2><a class="toc-backref" href="#id2">Pitfalls</a><a class="headerlink" href="#pitfalls" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>In a coroutine, don’t operate on parameters that are passed by-reference</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Cycle</span><span class="w"> </span><span class="nf">cycle</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">elems</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="nl">e</span><span class="p">:</span><span class="w"> </span><span class="n">elems</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="k">co_yield</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w">             </span><span class="c1">// &lt;--- not reached as cycle() is called</span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cycle</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">});</span><span class="w">          </span><span class="c1">// &lt;--- temporary, passed as reference!</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="oasch">
+<h2><a class="toc-backref" href="#id3">Oasch</a><a class="headerlink" href="#oasch" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>19:00 glue; bidirectional communication in and out of a coroutine</p></li>
+<li><p>32:00 simpler generator</p></li>
+<li><p><a class="reference external" href="https://youtu.be/8sEe-4tig_A">C++20’s Coroutines for Beginners - Andreas Fertig - CppCon 2022</a></p></li>
+</ul>
+<iframe width="560" height="315"
+        src="https://www.youtube.com/embed/8sEe-4tig_A"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+</iframe></section>
+<section id="further-topics">
+<h2><a class="toc-backref" href="#id4">Further Topics</a><a class="headerlink" href="#further-topics" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Ranges</p></li>
+<li><p>and together: <a class="reference external" href="https://en.cppreference.com/w/cpp/coroutine/generator">https://en.cppreference.com/w/cpp/coroutine/generator</a></p></li>
+</ul>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2023 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/cxx11/020-new-language-features/coroutines/topic.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
