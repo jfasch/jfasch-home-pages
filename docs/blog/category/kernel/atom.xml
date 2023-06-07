@@ -1,0 +1,326 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>https://www.faschingbauer.me</id>
+  <title>Jörg Faschingbauer - Posts in kernel</title>
+  <updated>2023-06-07T08:35:35.469717+00:00</updated>
+  <link href="https://www.faschingbauer.me"/>
+  <link href="https://www.faschingbauer.me/blog/category/kernel/atom.xml" rel="self"/>
+  <generator uri="https://ablog.readthedocs.org/" version="0.10.19">ABlog</generator>
+  <entry>
+    <id>https://www.faschingbauer.me/blog/2020/02/fedora-kernel-build.html</id>
+    <title>Patching and Building the Fedora Kernel</title>
+    <updated>2020-02-27T00:00:00+01:00</updated>
+    <author>
+      <name>Jörg Faschingbauer</name>
+    </author>
+    <content type="html">&lt;section id="patching-and-building-the-fedora-kernel"&gt;
+
+&lt;p&gt;It’s not easy to get up to date information on how to create a custom
+kernel on Fedora. There’s plenty of information out there, but most of
+it is outdated and only halfway true.&lt;/p&gt;
+&lt;p&gt;Here’s what I was able to find out by combining non-outdated
+information into a working procedure. It goes as follows.&lt;/p&gt;
+&lt;aside class="sidebar"&gt;
+&lt;p class="sidebar-title"&gt;Contents&lt;/p&gt;
+&lt;div class="contents local topic" id="contents"&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#why" id="id5"&gt;Why?&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#find-kernel-source-git-fix-it-and-create-patch" id="id6"&gt;Find Kernel Source (Git), Fix It, and Create Patch&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#prepare-the-rpm-build" id="id7"&gt;Prepare the RPM Build&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#download-and-install-source-rpm-for-crashing-kernel" id="id8"&gt;Download and Install Source RPM For Crashing Kernel&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#apply-the-patch" id="id9"&gt;Apply the Patch&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#build-the-kernel-rpms" id="id10"&gt;Build the Kernel RPMs&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#install-kernel" id="id11"&gt;Install Kernel&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/aside&gt;
+&lt;section id="why"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id5"&gt;Why?&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Tracking down a bug on my new USB-C/Thunderbolt-only laptop where an
+external HDMI monitor is plugged via an adapter.&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Plug external monitor&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Unplug external monitor&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Wait a few seconds&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Watch kernel go up in flames&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="literal-block-wrapper docutils container" id="id3"&gt;
+&lt;div class="code-block-caption"&gt;&lt;span class="caption-text"&gt;The Oops&lt;/span&gt;&lt;/div&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: BUG: kernel NULL pointer dereference, address: 0000000000000080&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: #PF: supervisor read access in kernel mode&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: #PF: error_code(0x0000) - not-present page&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: PGD 0 P4D 0&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: Oops: 0000 [#1] SMP PTI&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: CPU: 0 PID: 281 Comm: kworker/0:2 Not tainted 5.4.13-201.fc31.x86_64 #1&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: Hardware name: ASUSTeK COMPUTER INC. ZenBook S UX391UA/UX391UA, BIOS UX391UA.204 05/18/2018&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: Workqueue: events ucsi_connector_change [typec_ucsi]&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: RIP: 0010:ucsi_displayport_remove_partner+0xa/0x20 [typec_ucsi]&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: Code: 38 00 c7 43 28 00 00 00 00 48 83 c7 10 5b e9 6d f3 3d fb 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 0f 1f 44 00 00 48 85 ff 74 0f &amp;lt;48&amp;gt; 8b 47 78 48 c7 00 00 00 00 00 c6 40 3d 00 c3 66 0f 1f 44 00 00&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: RSP: 0018:ffff9daa002d3df8 EFLAGS: 00010202&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: RAX: 0000000000000008 RBX: ffff901f4ce35710 RCX: 0000000000003c7d&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: RDX: 0000000000003c7c RSI: 0000000000000001 RDI: 0000000000000008&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: RBP: 0000000000000000 R08: ffffffffbc7dbe60 R09: ffff9daa002d3cf0&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: R10: ffff901f54951a18 R11: ffff901f56a68a78 R12: ffff901f4ce35710&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: R13: 0000000000000001 R14: ffff901f4ce35860 R15: ffff901f4ce355d8&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: FS:  0000000000000000(0000) GS:ffff901f56a00000(0000) knlGS:0000000000000000&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: CR2: 0000000000000080 CR3: 000000028fbbc003 CR4: 00000000003606f0&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: Call Trace:&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel:  ucsi_unregister_altmodes+0x77/0x90 [typec_ucsi]&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel:  ucsi_unregister_partner.part.0+0x13/0x30 [typec_ucsi]&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel:  ucsi_connector_change+0x247/0x340 [typec_ucsi]&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel:  process_one_work+0x1b5/0x360&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel:  worker_thread+0x50/0x3c0&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel:  kthread+0xf9/0x130&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel:  ? process_one_work+0x360/0x360&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel:  ? kthread_park+0x90/0x90&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel:  ret_from_fork+0x35/0x40&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: Modules linked in: cdc_ether usbnet r8152 mii rc_cec typec_displayport thunderbolt uinput rfcomm ccm xt_CHECKSUM xt_MASQUERADE nf_nat_tftp nf_conntrack_tftp tun bridge stp llc nf_conntrack_netbios_ns nf_conntrack_broadcast xt_CT ip6t_REJECT nf_reject_ipv6 ip6t_rpfilter ipt_REJECT nf_reject_ipv4 xt_conntrack ebtable_nat ebtable_broute ip6table_nat ip6table_mangle ip6table_raw ip6table_security iptable_nat nf_nat iptable_mangle iptable_raw iptable_security nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 libcrc32c ip_set nfnetlink ebtable_filter ebtables ip6table_filter ip6_tables iptable_filter cmac bnep sunrpc vfat fat snd_hda_codec_hdmi snd_soc_skl snd_soc_sst_ipc snd_soc_sst_dsp snd_hda_ext_core x86_pkg_temp_thermal intel_powerclamp snd_soc_acpi_intel_match coretemp snd_soc_acpi kvm_intel snd_soc_core snd_hda_codec_realtek snd_hda_codec_generic snd_compress ledtrig_audio ac97_bus kvm snd_pcm_dmaengine iwlmvm snd_hda_intel snd_intel_dspcfg irqbypass snd_hda_codec uvcvideo mac80211&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel:  btusb iTCO_wdt btrtl crct10dif_pclmul videobuf2_vmalloc iTCO_vendor_support videobuf2_memops mei_hdcp btbcm btintel crc32_pclmul intel_rapl_msr snd_hda_core videobuf2_v4l2 libarc4 ghash_clmulni_intel videobuf2_common snd_hwdep intel_cstate bluetooth snd_seq asus_nb_wmi iwlwifi videodev snd_seq_device intel_uncore asus_wmi snd_pcm intel_rapl_perf mc cdc_acm sparse_keymap wmi_bmof ecdh_generic cfg80211 intel_wmi_thunderbolt ecc pcspkr snd_timer snd i2c_i801 soundcore joydev idma64 intel_xhci_usb_role_switch mei_me ucsi_acpi processor_thermal_device typec_ucsi intel_rapl_common mei roles intel_soc_dts_iosf intel_pch_thermal typec int3403_thermal int340x_thermal_zone int3400_thermal acpi_thermal_rel acpi_pad binfmt_misc ip_tables rfkill i915 i2c_algo_bit drm_kms_helper hid_multitouch drm nvme crc32c_intel nvme_core serio_raw wmi i2c_hid video fuse&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: CR2: 0000000000000080&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: ---[ end trace 76d248e576fee192 ]---&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: RIP: 0010:ucsi_displayport_remove_partner+0xa/0x20 [typec_ucsi]&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: Code: 38 00 c7 43 28 00 00 00 00 48 83 c7 10 5b e9 6d f3 3d fb 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 0f 1f 44 00 00 48 85 ff 74 0f &amp;lt;48&amp;gt; 8b 47 78 48 c7 00 00 00 00 00 c6 40 3d 00 c3 66 0f 1f 44 00 00&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: RSP: 0018:ffff9daa002d3df8 EFLAGS: 00010202&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: RAX: 0000000000000008 RBX: ffff901f4ce35710 RCX: 0000000000003c7d&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: RDX: 0000000000003c7c RSI: 0000000000000001 RDI: 0000000000000008&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: RBP: 0000000000000000 R08: ffffffffbc7dbe60 R09: ffff9daa002d3cf0&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: R10: ffff901f54951a18 R11: ffff901f56a68a78 R12: ffff901f4ce35710&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: R13: 0000000000000001 R14: ffff901f4ce35860 R15: ffff901f4ce355d8&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: FS:  0000000000000000(0000) GS:ffff901f56a00000(0000) knlGS:0000000000000000&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: CR2: 0000000000000080 CR3: 000000028fbbc003 CR4: 00000000003606f0&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Looking at the cause, we see that the crash is a NULL pointer that is
+deferenced in &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;ucsi_displayport_remove_partner()&lt;/span&gt;&lt;/code&gt;,&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: BUG: kernel NULL pointer dereference, address: 0000000000000080&lt;/span&gt;
+&lt;span class="go"&gt;... (blah) ...&lt;/span&gt;
+&lt;span class="go"&gt;Feb 26 13:58:08 zen kernel: RIP: 0010:ucsi_displayport_remove_partner+0xa/0x20 [typec_ucsi]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;A look at the offending source code shows that the fix must be
+easy. The only pointer that is being accessed is &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;dp&lt;/span&gt;&lt;/code&gt;, and that
+pointer is not checked for NULL-ness.&lt;/p&gt;
+&lt;div class="literal-block-wrapper docutils container" id="id4"&gt;
+&lt;div class="code-block-caption"&gt;&lt;span class="caption-text"&gt;drivers/usb/typec/ucsi/displayport.c (taken from Linus
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;master&lt;/span&gt;&lt;/code&gt;)&lt;/span&gt;&lt;/div&gt;
+&lt;div class="highlight-c notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="linenos"&gt; 1&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;ucsi_displayport_remove_partner&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="nc"&gt;typec_altmode&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;alt&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="linenos"&gt; 2&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="linenos"&gt; 3&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="nc"&gt;ucsi_dp&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;dp&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="linenos"&gt; 4&lt;/span&gt;
+&lt;span class="linenos"&gt; 5&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="n"&gt;alt&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="linenos"&gt; 6&lt;/span&gt;&lt;span class="w"&gt;             &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="linenos"&gt; 7&lt;/span&gt;
+&lt;span class="hll"&gt;&lt;span class="linenos"&gt; 8&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;dp&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;typec_altmode_get_drvdata&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;alt&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;span class="hll"&gt;&lt;span class="linenos"&gt; 9&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;dp&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;conf&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;span class="linenos"&gt;10&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;dp&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;status&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="linenos"&gt;11&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;dp&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;initialized&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;false&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="linenos"&gt;12&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;The fix is really easy,&lt;/p&gt;
+&lt;div class="highlight-udiff notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gd"&gt;--- /home/jfasch/work/jfasch-home/blog/2020/02/displayport.c.orig&lt;/span&gt;
+&lt;span class="gi"&gt;+++ /home/jfasch/work/jfasch-home/blog/2020/02/displayport.c&lt;/span&gt;
+&lt;span class="gu"&gt;@@ -271,6 +271,8 @@&lt;/span&gt;
+ 		return;
+ 
+ 	dp = typec_altmode_get_drvdata(alt);
+&lt;span class="gi"&gt;+    if (!dp)&lt;/span&gt;
+&lt;span class="gi"&gt;+		return;&lt;/span&gt;
+ 	dp-&amp;gt;data.conf = 0;
+ 	dp-&amp;gt;data.status = 0;
+ 	dp-&amp;gt;initialized = false;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;The bug is tracked as &lt;a class="reference external" href="https://bugzilla.redhat.com/show_bug.cgi?id=1785972"&gt;Red Hat Bugzilla – Bug 1785972&lt;/a&gt;, and upstream
+is already involved. John Stebbins and I provided testing, but
+roundtrips are rather long. What makes things worse is that there
+appear to be multiple issues, not just one.&lt;/p&gt;
+&lt;p&gt;I’ll focus on mine: patch, build, report, and help with
+testing. First, see how kernels are built in Fedora.&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id="find-kernel-source-git-fix-it-and-create-patch"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id6"&gt;Find Kernel Source (Git), Fix It, and Create Patch&lt;/a&gt;&lt;/h2&gt;
+&lt;aside class="sidebar"&gt;
+&lt;p class="sidebar-title"&gt;Link&lt;/p&gt;
+&lt;p&gt;&lt;a class="reference external" href="https://fedoraproject.org/wiki/Building_a_custom_kernel#Building_a_kernel_from_the_exploded_git_trees"&gt;Fedora Wiki: “Exploded Git Trees”&lt;/a&gt;&lt;/p&gt;
+&lt;/aside&gt;
+&lt;p&gt;Fedora has a Git repository at &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;kernel.org&lt;/span&gt;&lt;/code&gt; where they apply their
+own patches on top of the vanilla kernel. Clone that, and create a
+development branch. (I am on Fedora 31, so I’m basing the branch on
+that.)&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;git clone git://git.kernel.org/pub/scm/linux/kernel/git/jwboyer/fedora.git
+&lt;span class="gp"&gt;$ &lt;/span&gt;git checkout -b jfasch-fix remotes/origin/f31
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Fix &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;drivers/usb/typec/ucsi/displayport.c&lt;/span&gt;&lt;/code&gt; as sketched above, and
+commit.&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;git commit -am &lt;span class="s1"&gt;&amp;#39;fix RIP:ucsi_displayport_remove_partner()&amp;#39;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;The remainder of the procedure will build the kernel RPM. A kernel RPM
+build works by applying a set of patches on top of the base vanilla
+kernel &lt;a class="footnote-reference brackets" href="#exploded-tree" id="id1"&gt;1&lt;/a&gt;, so we create a patch for later use.&lt;/p&gt;
+&lt;p&gt;I made only one commit for which I want to create a patch. Find out
+the revision that this patch is based upon; it is one revision before
+the &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;HEAD&lt;/span&gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;git show --quiet HEAD~1
+&lt;span class="go"&gt;commit 4382f76bc8ef9fce5e7e96d4cdb0c073564ad249 (tag: kernel-5.5.6-201.fc31, origin/f31)&lt;/span&gt;
+&lt;span class="go"&gt;Author: Josh Boyer &amp;lt;jwboyer@fedoraproject.org&amp;gt;&lt;/span&gt;
+&lt;span class="go"&gt;Date:   Mon Feb 24 23:09:20 2020 +0000&lt;/span&gt;
+
+&lt;span class="go"&gt;    kernel-5.5.6-201.fc31 configs&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Create the patch which we will pick up later,&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;git format-patch -o /tmp 4382f76bc8ef9fce5e7e96d4cdb0c073564ad249
+&lt;span class="go"&gt;/tmp/0001-fix-RIP-ucsi_displayport_remove_partner.patch&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/section&gt;
+&lt;section id="prepare-the-rpm-build"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id7"&gt;Prepare the RPM Build&lt;/a&gt;&lt;/h2&gt;
+&lt;aside class="sidebar"&gt;
+&lt;p class="sidebar-title"&gt;Link&lt;/p&gt;
+&lt;p&gt;&lt;a class="reference external" href="https://fedoraproject.org/wiki/Building_a_custom_kernel/Source_RPM#Prepare_Build_Files"&gt;Building a custom kernel/Source RPM&lt;/a&gt;&lt;/p&gt;
+&lt;/aside&gt;
+&lt;div class="contents local topic" id="id2"&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#install-prerequisites" id="id12"&gt;Install Prerequisites&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a class="reference internal" href="#setup-rpmbuild-directory" id="id13"&gt;Setup &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;rpmbuild&lt;/span&gt;&lt;/code&gt; Directory&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;section id="install-prerequisites"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id12"&gt;Install Prerequisites&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;sudo dnf install rpmdevtools koji
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/section&gt;
+&lt;section id="setup-rpmbuild-directory"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id13"&gt;Setup &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;rpmbuild&lt;/span&gt;&lt;/code&gt; Directory&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Setup an empty RPM tree. This will simply create a directory
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;rpmbuild&lt;/span&gt;&lt;/code&gt; skeleton tree in the home directory.&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;rpmdev-setuptree
+&lt;span class="gp"&gt;$ &lt;/span&gt;tree ~/rpmbuild/
+&lt;span class="go"&gt;/home/jfasch/rpmbuild/&lt;/span&gt;
+&lt;span class="go"&gt;├── BUILD&lt;/span&gt;
+&lt;span class="go"&gt;├── RPMS&lt;/span&gt;
+&lt;span class="go"&gt;├── SOURCES&lt;/span&gt;
+&lt;span class="go"&gt;├── SPECS&lt;/span&gt;
+&lt;span class="go"&gt;└── SRPMS&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+&lt;section id="download-and-install-source-rpm-for-crashing-kernel"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id8"&gt;Download and Install Source RPM For Crashing Kernel&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Find out the version of the crashing kernel (the one that is currently
+running),&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;uname -r
+&lt;span class="go"&gt;5.4.13-201.local.fc31.x86_64&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Download the corresponding source RPM from their build engine,&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;koji download-build --arch&lt;span class="o"&gt;=&lt;/span&gt;src kernel-5.4.13-201.fc31
+&lt;span class="gp"&gt;$ &lt;/span&gt;ls -l *.rpm
+&lt;span class="go"&gt;kernel-5.4.13-201.fc31.src.rpm&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Install the RPM. This will fill the &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;~/rpmbuild/&lt;/span&gt;&lt;/code&gt; skeleton with the
+kenrel build instructions.&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;rpm -ivh kernel-5.4.13-201.fc31.src.rpm
+&lt;span class="gp"&gt;$ &lt;/span&gt;tree ~/rpmbuild/
+&lt;span class="go"&gt;/home/jfasch/rpmbuild/&lt;/span&gt;
+&lt;span class="go"&gt;├── BUILD&lt;/span&gt;
+&lt;span class="go"&gt;├── RPMS&lt;/span&gt;
+&lt;span class="go"&gt;├── SOURCES&lt;/span&gt;
+&lt;span class="go"&gt;│   ├── 0001-crypto-ccp-Release-all-allocated-memory-if-sha-type-.patch&lt;/span&gt;
+&lt;span class="go"&gt;│   ├── 0001-Drop-that-for-now.patch&lt;/span&gt;
+&lt;span class="go"&gt;... (blah) ...&lt;/span&gt;
+&lt;span class="go"&gt;├── SPECS&lt;/span&gt;
+&lt;span class="go"&gt;│   └── kernel.spec&lt;/span&gt;
+&lt;span class="go"&gt;└── SRPMS&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/section&gt;
+&lt;section id="apply-the-patch"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id9"&gt;Apply the Patch&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Copy the patch from above into the build tree, where the other patches
+are,&lt;/p&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;cp /tmp/0001-fix-RIP-ucsi_displayport_remove_partner.patch &lt;span class="se"&gt;\&lt;/span&gt;
+    ~/rpmbuild/SOURCES/RIP-ucsi_displayport_remove_partner.patch
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Edit the build specification, &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;~/rpmbuild/SPECS/kernel.spec&lt;/span&gt;&lt;/code&gt;, to&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;contain a descriptive version&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;apply the patch&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight-udiff notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gd"&gt;--- /home/jfasch/work/jfasch-home/blog/2020/02/kernel.spec.orig&lt;/span&gt;
+&lt;span class="gi"&gt;+++ /home/jfasch/work/jfasch-home/blog/2020/02/kernel.spec&lt;/span&gt;
+&lt;span class="gu"&gt;@@ -53,7 +53,7 @@&lt;/span&gt;
+ %global zipsed -e &amp;#39;s/\.ko$/\.ko.xz/&amp;#39;
+ %endif
+ 
+&lt;span class="gd"&gt;-# define buildid .local&lt;/span&gt;
+&lt;span class="gi"&gt;+%define buildid .jfasch&lt;/span&gt;
+ 
+ %if 0%{?fedora}
+ %define primary_target fedora
+&lt;span class="gu"&gt;@@ -825,6 +825,7 @@&lt;/span&gt;
+ 
+ # ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
+ Patch601: alsa-5.6.patch
+&lt;span class="gi"&gt;+Patch999: RIP-ucsi_displayport_remove_partner.patch&lt;/span&gt;
+ 
+ # END OF PATCH DEFINITIONS
+ 
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/section&gt;
+&lt;section id="build-the-kernel-rpms"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id10"&gt;Build the Kernel RPMs&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; ~/rpmbuild/SPECS/
+&lt;span class="gp"&gt;$ &lt;/span&gt;rpmbuild -bb --target&lt;span class="o"&gt;=&lt;/span&gt;x86_64 kernel.spec
+&lt;span class="go"&gt;... roedel ...&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Before doing this, make sure the following is available:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Enough RAM&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Enough disk&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Patience, coffee, or something else to do&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+&lt;section id="install-kernel"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id11"&gt;Install Kernel&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="highlight-console notranslate"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;sudo rpm -ivh --oldpackage &lt;span class="se"&gt;\&lt;/span&gt;
+   ~/rpmbuild/RPMS/x86_64/kernel-core-5.4.13-201.jfasch.fc31.x86_64.rpm &lt;span class="se"&gt;\&lt;/span&gt;
+   ~/rpmbuild/RPMS/x86_64/kernel-modules-5.4.13-201.jfasch.fc31.x86_64.rpm
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="admonition note"&gt;
+&lt;p class="admonition-title"&gt;Note&lt;/p&gt;
+&lt;p&gt;The kernel is not signed, obviously, so you might have to disable
+Secure Boot in your UEFI.&lt;/p&gt;
+&lt;/div&gt;
+&lt;p class="rubric"&gt;Footnotes&lt;/p&gt;
+&lt;dl class="footnote brackets"&gt;
+&lt;dt class="label" id="exploded-tree"&gt;&lt;span class="brackets"&gt;&lt;a class="fn-backref" href="#id1"&gt;1&lt;/a&gt;&lt;/span&gt;&lt;/dt&gt;
+&lt;dd&gt;&lt;p&gt;Yes, the patches are created from the Git
+repository we are working with.&lt;/p&gt;
+&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://www.faschingbauer.me/blog/2020/02/fedora-kernel-build.html" rel="alternate"/>
+    <summary>It’s not easy to get up to date information on how to create a custom
+kernel on Fedora. There’s plenty of information out there, but most of
+it is outdated and only halfway true.</summary>
+    <published>2020-02-27T00:00:00+01:00</published>
+  </entry>
+</feed>

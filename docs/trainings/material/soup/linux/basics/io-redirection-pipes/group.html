@@ -1,0 +1,341 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>I/O Redirection And Pipes &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script src="../../../../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/basics/io-redirection-pipes/group.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="I/O Redirection" href="io-redirection.html" />
+    <link rel="prev" title="Exercises: Archiving And Compression" href="../archiving-compression/exercises.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-design-patterns/group.html">Design Patterns With C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-code/index.html">C++ Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-exercises/group.html">C++ Exercises</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">Linux</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../group.html">Linux Basics</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../intro/group.html">Introduction: Concepts and Terminology</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../shell/group.html">The Shell (Bash - “Bourne Again Shell”)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../permissions/group.html">File System Permissions</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../text-tools/group.html">Tools: Inspecting Text Files</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../archiving-compression/group.html">Archiving and Compression</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">I/O Redirection And Pipes</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="io-redirection.html">I/O Redirection</a></li>
+<li class="toctree-l6"><a class="reference internal" href="io-redirection-swap-stdout-stderr.html">I/O Redirection: Swap <code class="docutils literal notranslate"><span class="pre">stdout</span></code> And <code class="docutils literal notranslate"><span class="pre">stderr</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="pipes.html">Pipes</a></li>
+<li class="toctree-l6"><a class="reference internal" href="exercises.html">Exercises: IO-Redirection, Pipes</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../exercises/group.html">Exercises/Exams: Linux Basics</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../ssh/group.html">SSH: Secure Shell</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../toolchain/group.html">Toolchain, And Cross Development</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../sysprog/group.html">Linux Systems Programming</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../hardware/group.html">Linux Hardware Interfaces</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../drafts/group.html">Drafts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../clean-code/group.html">Is Software A Craft? Software Is A Craft! ⟶ <em>Clean Code</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing With <code class="docutils literal notranslate"><span class="pre">googletest</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="i-o-redirection-and-pipes">
+<h1>I/O Redirection And Pipes<a class="headerlink" href="#i-o-redirection-and-pipes" title="Permalink to this headline">¶</a></h1>
+<p><strong>Topics</strong></p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="io-redirection.html">I/O Redirection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io-redirection-swap-stdout-stderr.html">I/O Redirection: Swap <code class="docutils literal notranslate"><span class="pre">stdout</span></code> And <code class="docutils literal notranslate"><span class="pre">stderr</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipes.html">Pipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exercises.html">Exercises: IO-Redirection, Pipes</a></li>
+</ul>
+</div>
+<p><strong>Dependencies</strong></p>
+<svg 
+ viewBox="0.00 0.00 578.00 487.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 483)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-483 574,-483 574,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_linux</title>
+<path fill="none" stroke="black" d="M20,-8C20,-8 550,-8 550,-8 556,-8 562,-14 562,-20 562,-20 562,-459 562,-459 562,-465 556,-471 550,-471 550,-471 20,-471 20,-471 14,-471 8,-465 8,-459 8,-459 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="285" y="-455.8" font-family="Times,serif" font-size="14.00">Linux</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_linux_basics</title>
+<path fill="none" stroke="black" d="M28,-16C28,-16 542,-16 542,-16 548,-16 554,-22 554,-28 554,-28 554,-428 554,-428 554,-434 548,-440 542,-440 542,-440 28,-440 28,-440 22,-440 16,-434 16,-428 16,-428 16,-28 16,-28 16,-22 22,-16 28,-16"/>
+<text text-anchor="middle" x="285" y="-424.8" font-family="Times,serif" font-size="14.00">Linux Basics</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_linux_basics_intro</title>
+<path fill="none" stroke="black" d="M225,-24C225,-24 505,-24 505,-24 511,-24 517,-30 517,-36 517,-36 517,-87 517,-87 517,-93 511,-99 505,-99 505,-99 225,-99 225,-99 219,-99 213,-93 213,-87 213,-87 213,-36 213,-36 213,-30 219,-24 225,-24"/>
+<text text-anchor="middle" x="365" y="-83.8" font-family="Times,serif" font-size="14.00">Introduction: Concepts and Terminology</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_linux_basics_io_redir_pipes</title>
+<path fill="none" stroke="black" d="M36,-190C36,-190 534,-190 534,-190 540,-190 546,-196 546,-202 546,-202 546,-397 546,-397 546,-403 540,-409 534,-409 534,-409 36,-409 36,-409 30,-409 24,-403 24,-397 24,-397 24,-202 24,-202 24,-196 30,-190 36,-190"/>
+<text text-anchor="middle" x="285" y="-393.8" font-family="Times,serif" font-size="14.00">I/O Redirection And Pipes</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_linux_basics_shell</title>
+<path fill="none" stroke="black" d="M229,-107C229,-107 504,-107 504,-107 510,-107 516,-113 516,-119 516,-119 516,-170 516,-170 516,-176 510,-182 504,-182 504,-182 229,-182 229,-182 223,-182 217,-176 217,-170 217,-170 217,-119 217,-119 217,-113 223,-107 229,-107"/>
+<text text-anchor="middle" x="366.5" y="-166.8" font-family="Times,serif" font-size="14.00">The Shell (Bash &#45; “Bourne Again Shell”)</text>
+</g>
+<!-- linux_basics_intro_overview -->
+<g id="node1" class="node">
+<title>linux_basics_intro_overview</title>
+<g id="a_node1"><a xlink:href="../intro/overview.html" xlink:title="Overview">
+<ellipse fill="#dcdcdc" stroke="black" cx="425" cy="-50" rx="54.69" ry="18"/>
+<text text-anchor="middle" x="425" y="-46.3" font-family="Times,serif" font-size="14.00">Overview</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_io_redir_pipes_exercises -->
+<g id="node2" class="node">
+<title>linux_basics_io_redir_pipes_exercises</title>
+<g id="a_node2"><a xlink:href="exercises.html" xlink:title="Exercises: IO&#45;Redirection, Pipes">
+<ellipse fill="red" stroke="black" cx="377" cy="-360" rx="160.57" ry="18"/>
+<text text-anchor="middle" x="377" y="-356.3" font-family="Times,serif" font-size="14.00">Exercises: IO&#45;Redirection, Pipes</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_io_redir_pipes_io_redir_swap_stdout_stderr -->
+<g id="node3" class="node">
+<title>linux_basics_io_redir_pipes_io_redir_swap_stdout_stderr</title>
+<g id="a_node3"><a xlink:href="io-redirection-swap-stdout-stderr.html" xlink:title="I/O Redirection: Swap stdout And stderr">
+<ellipse fill="#dcdcdc" stroke="black" cx="230" cy="-288" rx="197.66" ry="18"/>
+<text text-anchor="middle" x="230" y="-284.3" font-family="Times,serif" font-size="14.00">I/O Redirection: Swap stdout And stderr</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_io_redir_pipes_exercises&#45;&gt;linux_basics_io_redir_pipes_io_redir_swap_stdout_stderr -->
+<g id="edge2" class="edge">
+<title>linux_basics_io_redir_pipes_exercises&#45;&gt;linux_basics_io_redir_pipes_io_redir_swap_stdout_stderr</title>
+<path fill="none" stroke="black" d="M342.16,-342.41C321.88,-332.75 296.11,-320.48 274.39,-310.14"/>
+<polygon fill="black" stroke="black" points="275.89,-306.97 265.35,-305.83 272.88,-313.29 275.89,-306.97"/>
+</g>
+<!-- linux_basics_io_redir_pipes_io_redir -->
+<g id="node4" class="node">
+<title>linux_basics_io_redir_pipes_io_redir</title>
+<g id="a_node4"><a xlink:href="io-redirection.html" xlink:title="I/O Redirection">
+<ellipse fill="#dcdcdc" stroke="black" cx="410" cy="-216" rx="81.49" ry="18"/>
+<text text-anchor="middle" x="410" y="-212.3" font-family="Times,serif" font-size="14.00">I/O Redirection</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_io_redir_pipes_exercises&#45;&gt;linux_basics_io_redir_pipes_io_redir -->
+<g id="edge1" class="edge">
+<title>linux_basics_io_redir_pipes_exercises&#45;&gt;linux_basics_io_redir_pipes_io_redir</title>
+<path fill="none" stroke="black" d="M404.95,-342.2C417.21,-333.17 430.32,-320.82 437,-306 446.27,-285.44 437.39,-260.83 427.4,-242.7"/>
+<polygon fill="black" stroke="black" points="430.28,-240.69 422.17,-233.87 424.26,-244.26 430.28,-240.69"/>
+</g>
+<!-- linux_basics_io_redir_pipes_pipes -->
+<g id="node5" class="node">
+<title>linux_basics_io_redir_pipes_pipes</title>
+<g id="a_node5"><a xlink:href="pipes.html" xlink:title="Pipes">
+<ellipse fill="#dcdcdc" stroke="black" cx="502" cy="-288" rx="36.29" ry="18"/>
+<text text-anchor="middle" x="502" y="-284.3" font-family="Times,serif" font-size="14.00">Pipes</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_io_redir_pipes_exercises&#45;&gt;linux_basics_io_redir_pipes_pipes -->
+<g id="edge3" class="edge">
+<title>linux_basics_io_redir_pipes_exercises&#45;&gt;linux_basics_io_redir_pipes_pipes</title>
+<path fill="none" stroke="black" d="M406.94,-342.23C425.9,-331.62 450.39,-317.9 469.77,-307.05"/>
+<polygon fill="black" stroke="black" points="471.54,-310.07 478.55,-302.13 468.12,-303.96 471.54,-310.07"/>
+</g>
+<!-- linux_basics_io_redir_pipes_io_redir_swap_stdout_stderr&#45;&gt;linux_basics_io_redir_pipes_io_redir -->
+<g id="edge4" class="edge">
+<title>linux_basics_io_redir_pipes_io_redir_swap_stdout_stderr&#45;&gt;linux_basics_io_redir_pipes_io_redir</title>
+<path fill="none" stroke="black" d="M272.66,-270.41C299.53,-259.96 334.28,-246.45 362.1,-235.63"/>
+<polygon fill="black" stroke="black" points="363.58,-238.81 371.63,-231.92 361.04,-232.28 363.58,-238.81"/>
+</g>
+<!-- linux_basics_shell_commandline -->
+<g id="node6" class="node">
+<title>linux_basics_shell_commandline</title>
+<g id="a_node6"><a xlink:href="../shell/commandline.html" xlink:title="Commandline">
+<ellipse fill="#dcdcdc" stroke="black" cx="425" cy="-133" rx="74.99" ry="18"/>
+<text text-anchor="middle" x="425" y="-129.3" font-family="Times,serif" font-size="14.00">Commandline</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_io_redir_pipes_io_redir&#45;&gt;linux_basics_shell_commandline -->
+<g id="edge6" class="edge">
+<title>linux_basics_io_redir_pipes_io_redir&#45;&gt;linux_basics_shell_commandline</title>
+<path fill="none" stroke="black" d="M413.18,-197.82C415.15,-187.19 417.72,-173.31 419.96,-161.2"/>
+<polygon fill="black" stroke="black" points="423.44,-161.62 421.82,-151.15 416.56,-160.35 423.44,-161.62"/>
+</g>
+<!-- linux_basics_io_redir_pipes_pipes&#45;&gt;linux_basics_io_redir_pipes_io_redir -->
+<g id="edge8" class="edge">
+<title>linux_basics_io_redir_pipes_pipes&#45;&gt;linux_basics_io_redir_pipes_io_redir</title>
+<path fill="none" stroke="black" d="M482.94,-272.5C470.44,-262.99 453.85,-250.37 439.65,-239.56"/>
+<polygon fill="black" stroke="black" points="441.69,-236.72 431.62,-233.45 437.46,-242.29 441.69,-236.72"/>
+</g>
+<!-- linux_basics_io_redir_pipes_pipes&#45;&gt;linux_basics_shell_commandline -->
+<g id="edge7" class="edge">
+<title>linux_basics_io_redir_pipes_pipes&#45;&gt;linux_basics_shell_commandline</title>
+<path fill="none" stroke="black" d="M505.97,-269.78C509.72,-249.48 513.02,-215.31 500,-190 492.5,-175.42 479.26,-163.63 465.97,-154.7"/>
+<polygon fill="black" stroke="black" points="467.62,-151.61 457.29,-149.25 463.9,-157.53 467.62,-151.61"/>
+</g>
+<!-- linux_basics_shell_commandline&#45;&gt;linux_basics_intro_overview -->
+<g id="edge5" class="edge">
+<title>linux_basics_shell_commandline&#45;&gt;linux_basics_intro_overview</title>
+<path fill="none" stroke="black" d="M425,-114.82C425,-104.19 425,-90.31 425,-78.2"/>
+<polygon fill="black" stroke="black" points="428.5,-78.15 425,-68.15 421.5,-78.15 428.5,-78.15"/>
+</g>
+</g>
+</svg>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2023 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/linux/basics/io-redirection-pipes/group.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
