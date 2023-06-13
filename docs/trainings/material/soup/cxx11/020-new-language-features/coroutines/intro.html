@@ -145,6 +145,7 @@
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../ranges/group.html">Ranges</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../concepts/group.html">Concepts</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html">Modules</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../030-smart-pointers/group.html">Smart Pointers (<code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code>, <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>)</a></li>
@@ -411,6 +412,12 @@ type)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">.resume()</span></code>: re-enters coroutine - <em>this is the definition of
 coroutines</em></p></li>
 </ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">promise_type</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">suspend_always</span><span class="w"> </span><span class="nf">yield_value</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Coro</span><span class="w"> </span><span class="nf">hello</span><span class="p">()</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Saying Hello&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
@@ -422,8 +429,10 @@ coroutines</em></p></li>
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">hello_instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hello</span><span class="p">();</span><span class="w"></span>
-<span class="w">    </span><span class="n">hello_instance</span><span class="p">.</span><span class="n">resume</span><span class="p">();</span><span class="w">                        </span><span class="c1">// &lt;--- run until first yield</span>
-<span class="w">    </span><span class="n">hello_instance</span><span class="p">.</span><span class="n">resume</span><span class="p">();</span><span class="w">                        </span><span class="c1">// &lt;--- resume after yield</span>
+<span class="w">    </span><span class="n">hello_instance</span><span class="p">.</span><span class="n">resume</span><span class="p">();</span><span class="w">                           </span><span class="c1">// &lt;--- yields into promise</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hello_instance</span><span class="p">.</span><span class="n">last_value</span><span class="p">();</span><span class="w">          </span><span class="c1">// &lt;--- get yielded value from promise</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;coro produced: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">hello_instance</span><span class="p">.</span><span class="n">resume</span><span class="p">();</span><span class="w">                           </span><span class="c1">// &lt;--- terminate: resume until co_return</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </pre></div>
