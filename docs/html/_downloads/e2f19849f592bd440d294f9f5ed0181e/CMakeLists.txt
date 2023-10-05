@@ -1,0 +1,5 @@
+ADD_LIBRARY(hello greeter-simple.cpp greeter-name.cpp)
+SET_PROPERTY(TARGET hello PROPERTY VERSION "1")
+INSTALL(TARGETS hello DESTINATION lib)
+
+TARGET_INCLUDE_DIRECTORIES(hello PUBLIC .)

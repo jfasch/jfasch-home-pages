@@ -1,0 +1,19 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
+PROJECT(Demo VERSION 42.666)
+SET(CMAKE_CXX_STANDARD 23)
+
+OPTION(USE_BLACKLIST "Refuse to greet blacklisted names" ON)
+
+# for configure-file macro, define parallel variable with bool values
+IF (${USE_BLACKLIST})
+  SET(MACRO_USE_BLACKLIST 1)
+ELSE()
+  SET(MACRO_USE_BLACKLIST 0)
+ENDIF()
+
+CONFIGURE_FILE(DemoConfig.h.in DemoConfig.h)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+
+ADD_SUBDIRECTORY(blacklist)
+ADD_SUBDIRECTORY(libhello)
+ADD_SUBDIRECTORY(bin)
