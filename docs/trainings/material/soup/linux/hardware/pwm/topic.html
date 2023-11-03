@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=4f649999" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css?v=665e07de" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=eafc0fe6" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css?v=70eaaddc" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css?v=5c84f910" />
@@ -380,26 +380,9 @@ exports the device in a directory under the <code class="docutils literal notran
 <p><code class="docutils literal notranslate"><span class="pre">/sys/class/pwm/pwmchip0</span></code> is actually a symbolic link to a device
 which obviously is located in an area in the <code class="docutils literal notranslate"><span class="pre">sysfs</span></code> tree that is
 responsible for I2C. We do not care. Change the current working
-directory into there.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Unfortunately, the default permissions of the sysfs PWM interface
-are <code class="docutils literal notranslate"><span class="pre">root/root</span></code>, so we have to be logged in as root. <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">-i</span></code>
-will do the job, for example.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>-i
-
-<span class="go">SSH is enabled and the default password for the &#39;pi&#39; user has not been changed.</span>
-<span class="go">This is a security risk - please login as the &#39;pi&#39; user and type &#39;passwd&#39; to set a new password.</span>
-
-<span class="gp">#</span>
-</pre></div>
-</div>
-<p>(The <code class="docutils literal notranslate"><span class="pre">#</span></code> prompt shows us that we are logged in as root now. We
-ignore security warnings.)</p>
-</div>
-<p>Now, shift our butt into the chip, and see what’s there,</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span><span class="nb">cd</span><span class="w"> </span>/sys/class/pwm/pwmchip0
-<span class="gp"># </span>ls<span class="w"> </span>-l
+directory into <code class="docutils literal notranslate"><span class="pre">/sys/class/pwm/pwmchip0</span></code>, and see what’s there.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>/sys/class/pwm/pwmchip0
+<span class="gp">$ </span>ls<span class="w"> </span>-l
 <span class="go">total 0</span>
 <span class="go">lrwxrwxrwx 1 root root    0 Aug 10 10:14 device -&gt; ../../../1-0040</span>
 <span class="go">--w------- 1 root root 4096 Aug 10 10:14 export</span>
@@ -414,8 +397,8 @@ ignore security warnings.)</p>
 channels. We connected the LED to the PCA’s pin 6, which is PWM
 channel 0. Export that to userspace, by writing <code class="docutils literal notranslate"><span class="pre">0</span></code> into the
 <code class="docutils literal notranslate"><span class="pre">export</span></code> file <a class="footnote-reference brackets" href="#pwm-export" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span><span class="nb">echo</span><span class="w"> </span><span class="m">0</span><span class="w"> </span>&gt;<span class="w"> </span><span class="nb">export</span>
-<span class="gp"># </span>ls<span class="w"> </span>-l
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">echo</span><span class="w"> </span><span class="m">0</span><span class="w"> </span>&gt;<span class="w"> </span><span class="nb">export</span>
+<span class="gp">$ </span>ls<span class="w"> </span>-l
 <span class="go">total 0</span>
 <span class="go">...</span>
 <span class="go">drwxr-xr-x 3 root root    0 Aug 10 10:21 pwm0</span>
@@ -424,7 +407,7 @@ channel 0. Export that to userspace, by writing <code class="docutils literal no
 </div>
 <p>Aha, that created a chip subdirectory, <code class="docutils literal notranslate"><span class="pre">pwm0</span></code>. Shift butt into, and
 see what’s there.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>ls<span class="w"> </span>-l
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls<span class="w"> </span>-l
 <span class="go">total 0</span>
 <span class="go">...</span>
 <span class="go">-rw-r--r-- 1 root root 4096 Aug 10 10:23 duty_cycle</span>
@@ -438,16 +421,16 @@ media. Rather, they are actually provided by the kernel who sits under
 the surface and intercepts any read/write operations on the files.</p>
 <p>Lets configure PWM, by writing time periods (in nanoseconds) into
 those files. First the PWM period,</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span><span class="nb">echo</span><span class="w"> </span><span class="m">1000000</span><span class="w"> </span>&gt;<span class="w"> </span>period
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">echo</span><span class="w"> </span><span class="m">1000000</span><span class="w"> </span>&gt;<span class="w"> </span>period
 </pre></div>
 </div>
 <p>This does nothing because the duty cycle is still 0,</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>cat<span class="w"> </span>duty_cycle
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cat<span class="w"> </span>duty_cycle
 <span class="go">0</span>
 </pre></div>
 </div>
 <p>Bring LED to full brightness,</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span><span class="nb">echo</span><span class="w"> </span><span class="m">1000000</span><span class="w"> </span>&gt;<span class="w"> </span>duty_cycle
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">echo</span><span class="w"> </span><span class="m">1000000</span><span class="w"> </span>&gt;<span class="w"> </span>duty_cycle
 </pre></div>
 </div>
 <p>Dim it,</p>
@@ -458,7 +441,7 @@ those files. First the PWM period,</p>
 </pre></div>
 </div>
 <p>Fade it programmatically <a class="footnote-reference brackets" href="#dim-not-linear" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>,</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span><span class="k">for</span><span class="w"> </span>d<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1000000</span><span class="w"> </span><span class="m">800000</span><span class="w"> </span><span class="m">600000</span><span class="w"> </span><span class="m">400000</span><span class="w"> </span><span class="m">200000</span><span class="w"> </span><span class="m">100000</span><span class="w"> </span><span class="m">50000</span><span class="w"> </span><span class="m">0</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="k">for</span><span class="w"> </span>d<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1000000</span><span class="w"> </span><span class="m">800000</span><span class="w"> </span><span class="m">600000</span><span class="w"> </span><span class="m">400000</span><span class="w"> </span><span class="m">200000</span><span class="w"> </span><span class="m">100000</span><span class="w"> </span><span class="m">50000</span><span class="w"> </span><span class="m">0</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
 <span class="go">&gt;    echo $d &gt; duty_cycle</span>
 <span class="go">&gt;    sleep 0.5</span>
 <span class="go">&gt; done</span>

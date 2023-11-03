@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Sending A V4L Camera Device Output Over SSH &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=665e07de" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css?v=572af1d6" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/jf-alabaster.css?v=70eaaddc" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css?v=5c84f910" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=ffc8af2d"></script>
+    <script src="../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/about/site/recipes/camera-ssh.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../trainings/index.html">Kursangebot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../trainings/material/index.html">Unterlagen &amp; Download</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../trainings/org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../trainings/codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../trainings/log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="sending-a-v4l-camera-device-output-over-ssh">
+<h1>Sending A V4L Camera Device Output Over SSH<a class="headerlink" href="#sending-a-v4l-camera-device-output-over-ssh" title="Link to this heading">¶</a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#capture-video-to-file" id="id1">Capture Video To File</a></p></li>
+<li><p><a class="reference internal" href="#play-video-from-remote-system-using-ssh" id="id2">Play Video From Remote System, Using SSH</a></p></li>
+</ul>
+</nav>
+<section id="capture-video-to-file">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Capture Video To File</a><a class="headerlink" href="#capture-video-to-file" title="Link to this heading">¶</a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ffmpeg<span class="w"> </span>-an<span class="w"> </span>-f<span class="w"> </span>video4linux2<span class="w"> </span>-s<span class="w"> </span>640x480<span class="w"> </span>-i<span class="w"> </span>/dev/video0<span class="w"> </span>-r<span class="w"> </span><span class="m">10</span><span class="w"> </span>-b:v<span class="w"> </span>500k<span class="w"> </span>-f<span class="w"> </span>matroska<span class="w"> </span>out.mks
+</pre></div>
+</div>
+<table class="docutils align-left">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-an</span></code></p></td>
+<td><p>Disable audio</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">video4linux2</span></code></p></td>
+<td><p>Force format to <code class="docutils literal notranslate"><span class="pre">video4linux2</span></code>. Apparently this for the next
+file (<code class="docutils literal notranslate"><span class="pre">-i</span></code>) mentioned on the commandline.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">640x480</span></code></p></td>
+<td><p>Frame size 640x480</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-i</span> <span class="pre">/dev/video0</span></code></p></td>
+<td><p>Input file be <code class="docutils literal notranslate"><span class="pre">/dev/video0</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-r</span> <span class="pre">10</span></code></p></td>
+<td><p>Frame rate 10 Hz</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-b:v</span> <span class="pre">500k</span></code></p></td>
+<td><p>Video bitrate 500k</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">matroska</span></code></p></td>
+<td><p>Force format to <code class="docutils literal notranslate"><span class="pre">matroska</span></code> (next file mentioned is
+<code class="docutils literal notranslate"><span class="pre">out.mks</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="play-video-from-remote-system-using-ssh">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Play Video From Remote System, Using SSH</a><a class="headerlink" href="#play-video-from-remote-system-using-ssh" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p><strong>See also</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../trainings/material/soup/linux/ssh/basics.html"><span class="doc">SSH: Basics</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">ffmpeg</span></code> sees <code class="docutils literal notranslate"><span class="pre">-</span></code> (instead of <code class="docutils literal notranslate"><span class="pre">out.mks</span></code>) as output file,
+then it uses <code class="docutils literal notranslate"><span class="pre">stdout</span></code>.</p></li>
+<li><p>Same holds for <code class="docutils literal notranslate"><span class="pre">mplayer</span></code>, it then uses <code class="docutils literal notranslate"><span class="pre">stdin</span></code></p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ssh<span class="w"> </span>USER@REMOTE<span class="w"> </span><span class="s1">&#39;ffmpeg -an -f video4linux2 -s 640x480 -i /dev/video0 -r 10 -b:v 500k -f matroska -&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>mplayer<span class="w"> </span>-
+</pre></div>
+</div>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2023 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../_sources/about/site/recipes/camera-ssh.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
