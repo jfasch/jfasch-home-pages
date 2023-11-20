@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Data Logger: MQTT Sink &#8212; Jörg Faschingbauer</title>
+    <title>libgpiod Switch &#8212; Jörg Faschingbauer</title>
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=4f649999" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css?v=665e07de" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=eafc0fe6" />
@@ -22,11 +22,11 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=ffc8af2d"></script>
     <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
-    <link rel="canonical" href="https://www.faschingbauer.me/about/site/work-in-progress/fh-joanneum/2021/tasks/datalogger-mqtt-sink.html" />
+    <link rel="canonical" href="https://www.faschingbauer.me/about/site/work-in-progress/fh-joanneum/2021/tasks/libgpiod-switch.html" />
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../search.html" />
-    <link rel="next" title="Data Logger: CSV Sink" href="datalogger-csv-sink.html" />
-    <link rel="prev" title="libgpiod Switch" href="libgpiod-switch.html" /> 
+    <link rel="next" title="Data Logger: MQTT Sink" href="datalogger-mqtt-sink.html" />
+    <link rel="prev" title="SysFS GPIO Switch" href="sysfs-gpio-switch.html" /> 
    
   <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
   
@@ -133,8 +133,8 @@
 <li class="toctree-l7"><a class="reference internal" href="pwm-display.html">Temperature Display: LED Via A PWM Controller</a></li>
 <li class="toctree-l7"><a class="reference internal" href="switch-interface.html">Switch Interface</a></li>
 <li class="toctree-l7"><a class="reference internal" href="sysfs-gpio-switch.html">SysFS GPIO Switch</a></li>
-<li class="toctree-l7"><a class="reference internal" href="libgpiod-switch.html"><code class="docutils literal notranslate"><span class="pre">libgpiod</span></code> Switch</a></li>
-<li class="toctree-l7 current"><a class="current reference internal" href="#">Data Logger: MQTT Sink</a></li>
+<li class="toctree-l7 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">libgpiod</span></code> Switch</a></li>
+<li class="toctree-l7"><a class="reference internal" href="datalogger-mqtt-sink.html">Data Logger: MQTT Sink</a></li>
 <li class="toctree-l7"><a class="reference internal" href="datalogger-csv-sink.html">Data Logger: CSV Sink</a></li>
 </ul>
 </li>
@@ -169,94 +169,57 @@
           
 
           <div class="body" role="main">
-             <section id="data-logger-mqtt-sink">
-<h1>Data Logger: MQTT Sink<a class="headerlink" href="#data-logger-mqtt-sink" title="Link to this heading">¶</a></h1>
+             <section id="libgpiod-switch">
+<h1><code class="docutils literal notranslate"><span class="pre">libgpiod</span></code> Switch<a class="headerlink" href="#libgpiod-switch" title="Link to this heading">¶</a></h1>
 <section id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">¶</a></h2>
 <aside class="sidebar">
 <p><strong>See also</strong></p>
 <ul class="simple">
-<li><p>Predecessor task: <a class="reference internal" href="datalogger.html"><span class="doc">Data Logger</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">libgpiod</span></code> Link jjj</p></li>
+<li><p><a class="reference internal" href="boiling-pot.html"><span class="doc">An IoT Boiling Pot (The Beginning)</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Hysteresis</span></code> in our project</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">LEDStripeDisplay</span></code> in our project</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">MockSwitch</span></code> in our project</p></li>
 </ul>
 </aside>
-<ul>
-<li><p>An MQTT implementation of the <code class="docutils literal notranslate"><span class="pre">SinkLogger</span></code> interface, using
-<code class="docutils literal notranslate"><span class="pre">mosquitto</span></code> (see below)</p></li>
-<li><p>A wrapper class around the plain C <code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">mosquitto</span></code> that can
-take a <code class="docutils literal notranslate"><span class="pre">SensorValues</span></code> instance, like</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">SensorValues</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sensor_config</span><span class="p">.</span><span class="n">getAllMeasurements</span><span class="p">();</span>
-<span class="c1">// ...</span>
-<span class="n">Mosquitto</span><span class="w"> </span><span class="n">client</span><span class="p">(</span><span class="s">&quot;localhost&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1883</span><span class="w"> </span><span class="cm">/*default MQTT port*/</span><span class="p">);</span>
-<span class="n">client</span><span class="p">.</span><span class="n">publish</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
-</pre></div>
-</div>
-</li>
-<li><p>A definition of the MQTT transport format in JSON, like</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s2">&quot;sensor1&quot;</span><span class="p">:</span> <span class="mf">37.5</span><span class="p">,</span>
-  <span class="s2">&quot;sensor2&quot;</span><span class="p">:</span> <span class="mf">42.666</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p><strong>Write unit tests</strong> to define the format</p>
-</li>
-</ul>
+<p>Write a class <code class="docutils literal notranslate"><span class="pre">LibGPIODSwitch</span></code> that uses jjj link internally.</p>
+<p>This class is going to be used to implement switches that software
+might want to use in real life.</p>
 </section>
 <section id="implementation">
 <h2>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">¶</a></h2>
 <aside class="sidebar">
 <p><strong>See also</strong></p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://mosquitto.org/api/files/mosquitto-h.html">Mosquitto API</a></p></li>
-<li><p>Sample client implementation using Mosquitto API:
-<a class="reference external" href="https://github.com/jfasch/FH-ECE21/blob/main/bin/mosquitto-publish-demo.cpp">bin/mosquitto-publish-demo.cpp</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">libgpiod</span></code> Link jjj</p></li>
 </ul>
 </aside>
-<section id="mqtt-implementation-mosquitto">
-<h3>MQTT Implementation: <code class="docutils literal notranslate"><span class="pre">mosquitto</span></code><a class="headerlink" href="#mqtt-implementation-mosquitto" title="Link to this heading">¶</a></h3>
-<p>Cross development is a burden, especially when you do C++ with a
-handmade Raspberry toolchain. <code class="docutils literal notranslate"><span class="pre">mosquitto</span></code> is written in pure C.</p>
-<section id="installation">
-<h4>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h4>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Ubuntu</span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>mosquitto-dev
-</pre></div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>This task has a dependency on <a class="reference internal" href="switch-interface.html"><span class="doc">Switch Interface</span></a>.</p>
 </div>
-</div>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Fedora</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>mosquitto-devel
-</pre></div>
-</div>
-</div>
-</section>
-<section id="wrapper">
-<h4>Wrapper<a class="headerlink" href="#wrapper" title="Link to this heading">¶</a></h4>
 <ul class="simple">
-<li><p>Constructor: allocate client using <code class="docutils literal notranslate"><span class="pre">mosquitto_new()</span></code>, and use
-<code class="docutils literal notranslate"><span class="pre">mosquitto_connect()</span></code> on it</p></li>
-<li><p>Destructor: <code class="docutils literal notranslate"><span class="pre">mosquitto_destroy()</span></code></p></li>
-<li><p><em>Prohibit copy</em></p></li>
+<li><p>Write a <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">LibGPIODSwitch</span></code> that has methods</p>
+<ul>
+<li><p>(Constructor). Configures the GPIO.</p>
+<ul>
+<li><p>jjj initialization</p></li>
+<li><p>Configure for output</p></li>
 </ul>
-</section>
-</section>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">set_state(bool);</span></code></p></li>
+</ul>
+</li>
+</ul>
 </section>
 <section id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p>Unit test for JSON format</p></li>
-<li><p>Sample publish program using the wrapper class, in <code class="docutils literal notranslate"><span class="pre">bin/</span></code></p></li>
-</ul>
+<p>Write a test program in <code class="docutils literal notranslate"><span class="pre">bin/</span></code> that you use
+interactively/manually. Much like <a class="reference internal" href="sysfs-gpio-switch.html"><span class="doc">SysFS GPIO Switch</span></a>.</p>
 </section>
 <section id="future-not-part-of-this-development-cycle">
 <h2>Future (<em>Not</em> Part Of This Development Cycle)<a class="headerlink" href="#future-not-part-of-this-development-cycle" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p>The wrapper class will become more widely available when the boiling
-pot (<a class="reference internal" href="boiling-pot.html"><span class="doc">An IoT Boiling Pot (The Beginning)</span></a>) goes IoT. The pot will broadcast
-“switch-on”/”switch-off” events and temperature measurements (it
-only has a single sensor, <em>the temperature of the pot itself</em>) -
-will need a more flexible input than just <code class="docutils literal notranslate"><span class="pre">SensorValues</span></code></p></li>
-</ul>
 </section>
 <section id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h2>
@@ -269,24 +232,24 @@ will need a more flexible input than just <code class="docutils literal notransl
 <path fill="none" stroke="black" d="M20,-8C20,-8 257,-8 257,-8 263,-8 269,-14 269,-20 269,-20 269,-143 269,-143 269,-149 263,-155 257,-155 257,-155 20,-155 20,-155 14,-155 8,-149 8,-143 8,-143 8,-20 8,-20 8,-14 14,-8 20,-8"/>
 <text text-anchor="middle" x="138.5" y="-139.8" font-family="Times,serif" font-size="14.00">WS2023/24: Group Project &#45; Tasks</text>
 </g>
-<!-- fh2021_datalogger -->
+<!-- fh2021_libgpiod_switch -->
 <g id="node1" class="node">
-<title>fh2021_datalogger</title>
-<g id="a_node1"><a xlink:href="datalogger.html" xlink:title="Data Logger">
-<polygon fill="lightgrey" stroke="black" points="190.5,-52 85.5,-52 85.5,-16 190.5,-16 190.5,-52"/>
-<text text-anchor="start" x="93.5" y="-30.3" font-family="Times,serif" font-size="14.00">Data Logger</text>
+<title>fh2021_libgpiod_switch</title>
+<polygon fill="lightgrey" stroke="black" stroke-width="3" points="202,-124 74,-124 74,-88 202,-88 202,-124"/>
+<text text-anchor="start" x="82" y="-102.3" font-family="Times,serif" font-size="14.00">libgpiod Switch</text>
+</g>
+<!-- fh2021_switch_interface -->
+<g id="node2" class="node">
+<title>fh2021_switch_interface</title>
+<g id="a_node2"><a xlink:href="switch-interface.html" xlink:title="Switch Interface">
+<polygon fill="lightgrey" stroke="black" points="205,-52 71,-52 71,-16 205,-16 205,-52"/>
+<text text-anchor="start" x="79" y="-30.3" font-family="Times,serif" font-size="14.00">Switch Interface</text>
 </a>
 </g>
 </g>
-<!-- fh2021_datalogger_mqtt_sink -->
-<g id="node2" class="node">
-<title>fh2021_datalogger_mqtt_sink</title>
-<polygon fill="lightgrey" stroke="black" stroke-width="3" points="235,-124 41,-124 41,-88 235,-88 235,-124"/>
-<text text-anchor="start" x="49" y="-102.3" font-family="Times,serif" font-size="14.00">Data Logger: MQTT Sink</text>
-</g>
-<!-- fh2021_datalogger_mqtt_sink&#45;&gt;fh2021_datalogger -->
+<!-- fh2021_libgpiod_switch&#45;&gt;fh2021_switch_interface -->
 <g id="edge1" class="edge">
-<title>fh2021_datalogger_mqtt_sink&#45;&gt;fh2021_datalogger</title>
+<title>fh2021_libgpiod_switch&#45;&gt;fh2021_switch_interface</title>
 <path fill="none" stroke="black" d="M138,-87.7C138,-79.98 138,-70.71 138,-62.11"/>
 <polygon fill="black" stroke="black" points="141.5,-62.1 138,-52.1 134.5,-62.1 141.5,-62.1"/>
 </g>
@@ -309,7 +272,7 @@ will need a more flexible input than just <code class="docutils literal notransl
       &copy;2019-2023 (GPLv3), Jörg Faschingbauer.
       
       |
-      <a href="../../../../../../_sources/about/site/work-in-progress/fh-joanneum/2021/tasks/datalogger-mqtt-sink.rst.txt"
+      <a href="../../../../../../_sources/about/site/work-in-progress/fh-joanneum/2021/tasks/libgpiod-switch.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
