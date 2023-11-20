@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Permissions: Mode, User and Group Ownership &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css?v=665e07de" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css?v=70eaaddc" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css?v=5c84f910" />
+    <script src="../../../../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=ffc8af2d"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/basics/permissions/basics.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="SetUID Programs: passwd, sudo, …" href="setuid.html" />
+    <link rel="prev" title="File System Permissions" href="group.html" /> 
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+ 
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/group.html">C++ 03</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx11/group.html">C++ 11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-design-patterns/group.html">Design Patterns With C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-code/index.html">C++ Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-exercises/group.html">C++ Exercises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cmake/group.html">CMake: An Introduction</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">Linux</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../group.html">Linux Basics</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../intro/group.html">Introduction: Concepts and Terminology</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../shell/group.html">The Shell (Bash - “Bourne Again Shell”)</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="group.html">File System Permissions</a><ul class="current">
+<li class="toctree-l6 current"><a class="current reference internal" href="#">Permissions: Mode, User and Group Ownership</a></li>
+<li class="toctree-l6"><a class="reference internal" href="setuid.html">SetUID Programs: <code class="docutils literal notranslate"><span class="pre">passwd</span></code>, <code class="docutils literal notranslate"><span class="pre">sudo</span></code>, …</a></li>
+<li class="toctree-l6"><a class="reference internal" href="setuid-livedemo.html">SetUID: Live Demo</a></li>
+<li class="toctree-l6"><a class="reference internal" href="umask.html">Default Permissions: <code class="docutils literal notranslate"><span class="pre">umask</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="sticky.html">Ugly Hack: Sticky Bit</a></li>
+<li class="toctree-l6"><a class="reference internal" href="exercises/group.html">Exercises: File System Permissions</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../text-tools/group.html">Tools: Inspecting Text Files</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../archiving-compression/group.html">Archiving and Compression</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../io-redirection-pipes/group.html">I/O Redirection And Pipes</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../exercises/group.html">Exercises/Exams: Linux Basics</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../ssh/group.html">SSH: Secure Shell</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../toolchain/group.html">Toolchain, And Cross Development</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../sysprog/group.html">Linux Systems Programming</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../hardware/group.html">Linux Hardware Interfaces</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../drafts/group.html">Drafts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../clean-code/group.html">Is Software A Craft? Software Is A Craft! ⟶ <em>Clean Code</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing With <code class="docutils literal notranslate"><span class="pre">googletest</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="permissions-mode-user-and-group-ownership">
+<h1>Permissions: Mode, User and Group Ownership<a class="headerlink" href="#permissions-mode-user-and-group-ownership" title="Link to this heading">¶</a></h1>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<p><em>Tune Permissions</em></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://linux.die.net/man/1/chmod">man -s 1 chmod</a></p></li>
+</ul>
+<p><em>Change Ownership</em></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://linux.die.net/man/1/chgrp">man -s 1 chgrp</a></p></li>
+<li><p><a class="reference external" href="https://linux.die.net/man/1/chown">man -s 1 chown</a></p></li>
+</ul>
+<p><em>Create and Modify Users and Groups</em></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man8/useradd.8.html">man -s 8 useradd</a></p></li>
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man8/groupadd.8.html">man -s 8 groupadd</a></p></li>
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man8/usermod.8.html">man -s 8 usermod</a></p></li>
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man8/groupmod.8.html">man -s 8 groupmod</a></p></li>
+</ul>
+</aside>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#owner-and-permissions" id="id1">Owner and Permissions</a></p></li>
+<li><p><a class="reference internal" href="#a-simple-example" id="id2">A Simple Example</a></p></li>
+<li><p><a class="reference internal" href="#permission-check-user" id="id3">Permission Check: User</a></p></li>
+<li><p><a class="reference internal" href="#permission-check-group" id="id4">Permission Check: Group</a></p></li>
+<li><p><a class="reference internal" href="#permission-check-others" id="id5">Permission Check: Others</a></p></li>
+<li><p><a class="reference internal" href="#programs-execute-permissions" id="id6">Programs: Execute Permissions</a></p></li>
+<li><p><a class="reference internal" href="#directory-permissions" id="id7">Directory Permissions</a></p></li>
+<li><p><a class="reference internal" href="#permission-bits-octal" id="id8">Permission Bits, octal</a></p></li>
+<li><p><a class="reference internal" href="#shell-commands-tuning-permissions" id="id9">Shell Commands: Tuning Permissions</a></p></li>
+<li><p><a class="reference internal" href="#shell-commands-changing-user-group-ownership" id="id10">Shell Commands: Changing User/Group Ownership</a></p></li>
+</ul>
+</nav>
+<section id="owner-and-permissions">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Owner and Permissions</a><a class="headerlink" href="#owner-and-permissions" title="Link to this heading">¶</a></h2>
+<p><strong>Types of permissions</strong></p>
+<ul class="simple">
+<li><p>Read (<code class="docutils literal notranslate"><span class="pre">r</span></code>)</p></li>
+<li><p>Write (<code class="docutils literal notranslate"><span class="pre">w</span></code>)</p></li>
+<li><p>Execute (<code class="docutils literal notranslate"><span class="pre">x</span></code>)</p></li>
+</ul>
+<p><strong>Separate permissions for …</strong></p>
+<ul class="simple">
+<li><p>User (<code class="docutils literal notranslate"><span class="pre">u</span></code>): the owning <em>user</em> of the entry</p></li>
+<li><p>Group (<code class="docutils literal notranslate"><span class="pre">g</span></code>): the owning <em>group</em> of the entry</p></li>
+<li><p>Others (<code class="docutils literal notranslate"><span class="pre">o</span></code>): all others</p></li>
+</ul>
+</section>
+<section id="a-simple-example">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">A Simple Example</a><a class="headerlink" href="#a-simple-example" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Teacher’s note: create that constellation (as root)</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>groupadd<span class="w"> </span>team
+<span class="gp"># </span>useradd<span class="w"> </span>--groups<span class="w"> </span>team<span class="w"> </span>--home-dir<span class="w"> </span>/home/teammember42<span class="w"> </span>--create-home<span class="w"> </span>teammember42
+<span class="gp"># </span>usermod<span class="w"> </span>--append<span class="w"> </span>--groups<span class="w"> </span>team<span class="w"> </span>jfasch
+<span class="gp">$ </span>touch<span class="w"> </span>tasks.csv
+<span class="gp">$ </span>chmod<span class="w"> </span><span class="m">664</span><span class="w"> </span>tasks.csv
+<span class="gp">$ </span>chgrp<span class="w"> </span>team<span class="w"> </span>tasks.csv
+</pre></div>
+</div>
+</aside>
+<ul class="simple">
+<li><p>Group <code class="docutils literal notranslate"><span class="pre">team</span></code></p></li>
+<li><p>User <code class="docutils literal notranslate"><span class="pre">jfasch</span></code>, member (among possibly others) of group <code class="docutils literal notranslate"><span class="pre">team</span></code></p></li>
+<li><p>User <code class="docutils literal notranslate"><span class="pre">teammember42</span></code>, also member of group <code class="docutils literal notranslate"><span class="pre">team</span></code></p></li>
+<li><p>User <code class="docutils literal notranslate"><span class="pre">manfromthestreet</span></code>, <em>not</em> member of group <code class="docutils literal notranslate"><span class="pre">team</span></code></p></li>
+</ul>
+<p>The typical <code class="docutils literal notranslate"><span class="pre">ls</span> <span class="pre">-l</span></code> output:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls<span class="w"> </span>-l<span class="w"> </span>tasks.csv
+<span class="go">-rw-rw-r-- 1 jfasch team 396 Jun  8 14:49 tasks.csv</span>
+</pre></div>
+</div>
+<p>Three groups of “bits”: <code class="docutils literal notranslate"><span class="pre">rw-</span></code>, <code class="docutils literal notranslate"><span class="pre">rw-</span></code>, <code class="docutils literal notranslate"><span class="pre">r--</span></code></p>
+<table class="docutils align-left">
+<thead>
+<tr class="row-odd"><th class="head"><p>Bits</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rw-</span></code></p></td>
+<td><p>Read- and writable for owning <em>user</em> (<code class="docutils literal notranslate"><span class="pre">jfasch</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rw-</span></code></p></td>
+<td><p>Read- and writable for (members of) owning <em>group</em> (<code class="docutils literal notranslate"><span class="pre">team</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">r--</span></code></p></td>
+<td><p>Readable for all <em>others</em>: those who are <em>neither</em> user
+<code class="docutils literal notranslate"><span class="pre">jfasch</span></code> nor belong to group <code class="docutils literal notranslate"><span class="pre">team</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>First column (<code class="docutils literal notranslate"><span class="pre">-</span></code>) is irrelevant (it’s the type: <em>regular file</em>)</p>
+</section>
+<section id="permission-check-user">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Permission Check: User</a><a class="headerlink" href="#permission-check-user" title="Link to this heading">¶</a></h2>
+<p><strong>Can user</strong> <code class="docutils literal notranslate"><span class="pre">jfasch</span></code> <strong>write the file?</strong></p>
+<ul class="simple">
+<li><p>Which triplet to check?</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">jfasch</span></code> is the owner of the file</p></li>
+<li><p>⟶ The first triplet: <code class="docutils literal notranslate"><span class="pre">rw-</span></code></p></li>
+</ul>
+</li>
+<li><p>⟶ yes, <code class="docutils literal notranslate"><span class="pre">jfasch</span></code> can write</p></li>
+<li><p>(likewise, <code class="docutils literal notranslate"><span class="pre">jfasch</span></code> will be able to read)</p></li>
+</ul>
+</section>
+<section id="permission-check-group">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Permission Check: Group</a><a class="headerlink" href="#permission-check-group" title="Link to this heading">¶</a></h2>
+<p><strong>Can user</strong> <code class="docutils literal notranslate"><span class="pre">teammember42</span></code> <strong>write the file?</strong></p>
+<ul>
+<li><p>Which triplet to check?</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">teammember42</span></code> <em>is not</em> <code class="docutils literal notranslate"><span class="pre">jfasch</span></code> ⟶ <em>not</em> the
+first triplet</p></li>
+<li><p>Is <code class="docutils literal notranslate"><span class="pre">teammember42</span></code> a member of group <code class="docutils literal notranslate"><span class="pre">team</span></code>?</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>id<span class="w"> </span>teammember42
+<span class="go">uid=1001(teammember42) gid=1002(teammember42) groups=1002(teammember42),1001(team)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Answer: <em>yes</em></p></li>
+<li><p>⟶ second triplet, <code class="docutils literal notranslate"><span class="pre">rw-</span></code></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>⟶ yes, <code class="docutils literal notranslate"><span class="pre">teammember42</span></code> can write</p></li>
+<li><p>(likewise, <code class="docutils literal notranslate"><span class="pre">teammember42</span></code> will be able to read)</p></li>
+</ul>
+</section>
+<section id="permission-check-others">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Permission Check: Others</a><a class="headerlink" href="#permission-check-others" title="Link to this heading">¶</a></h2>
+<p><strong>Can user</strong> <code class="docutils literal notranslate"><span class="pre">manfromthestreet</span></code> <strong>read the file?</strong></p>
+<ul>
+<li><p>Which triplet to check?</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">manfromthestreet</span></code> <em>is not</em> <code class="docutils literal notranslate"><span class="pre">jfasch</span></code> ⟶ <em>not</em>
+the first triplet</p></li>
+<li><p>Is <code class="docutils literal notranslate"><span class="pre">manfromthestreet</span></code> a member of group <code class="docutils literal notranslate"><span class="pre">team</span></code>?</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>id<span class="w"> </span>manfromthestreet
+<span class="go">uid=1002(manfromthestreet) gid=1003(manfromthestreet) groups=1003(manfromthestreet)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Answer: <em>no</em></p></li>
+<li><p>⟶ not the second triplet</p></li>
+</ul>
+</li>
+<li><p>⟶ <code class="docutils literal notranslate"><span class="pre">manfromthestreet</span></code> is among the <em>others</em></p>
+<ul class="simple">
+<li><p>Third triplet, <code class="docutils literal notranslate"><span class="pre">r--</span></code></p></li>
+<li><p>⟶ no, <code class="docutils literal notranslate"><span class="pre">manfromthestreet</span></code> cannot write</p></li>
+<li><p>(<code class="docutils literal notranslate"><span class="pre">manfromthestreet</span></code> can read though)</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="programs-execute-permissions">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Programs: Execute Permissions</a><a class="headerlink" href="#programs-execute-permissions" title="Link to this heading">¶</a></h2>
+<p><strong>What makes a file a program?</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls<span class="w"> </span>-l<span class="w"> </span>/bin/ls
+<span class="go">-rwxr-xr-x ... /bin/ls</span>
+</pre></div>
+</div>
+<p><strong>Facts …</strong></p>
+<ul class="simple">
+<li><p>An executable file does not have to end with <code class="docutils literal notranslate"><span class="pre">.exe</span></code> to be
+executable</p></li>
+<li><p>… it simply <em>is</em> executable</p></li>
+</ul>
+</section>
+<section id="directory-permissions">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Directory Permissions</a><a class="headerlink" href="#directory-permissions" title="Link to this heading">¶</a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls<span class="w"> </span>-ld<span class="w"> </span>/etc
+<span class="go">drwxr-xr-x 1 root root 4882 Mar 22 12:20 /etc</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Read permissions: <em>content</em> (list of names) is readable</p></li>
+<li><p>Execute permissions: to access a file (e.g. for reading), one has to
+have <em>execute permissions</em> on the parent directory and all
+directories along the path</p></li>
+<li><p><em>The right to</em> <code class="docutils literal notranslate"><span class="pre">cd</span></code> <em>into the directory</em></p></li>
+</ul>
+</section>
+<section id="permission-bits-octal">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Permission Bits, octal</a><a class="headerlink" href="#permission-bits-octal" title="Link to this heading">¶</a></h2>
+<table class="docutils align-left">
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">ls</span> <span class="pre">-l</span></code> Output</p></th>
+<th class="head"><p>Binary</p></th>
+<th class="head"><p>Shell command</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-rw-r--r--</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">110100100</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">0644</span> <span class="pre">&lt;path&gt;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-rw-------</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">110000000</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">0600</span> <span class="pre">&lt;path&gt;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-rwxr-xr-x</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">111101101</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">0755</span> <span class="pre">&lt;path&gt;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="shell-commands-tuning-permissions">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Shell Commands: Tuning Permissions</a><a class="headerlink" href="#shell-commands-tuning-permissions" title="Link to this heading">¶</a></h2>
+<ul>
+<li><p>Permission modification (set to octal value, absolutely, the whole
+bitmask no matter what)</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls<span class="w"> </span>-l<span class="w"> </span>/bin/script.sh
+<span class="go">-rw-rw-r-- 1 jfasch jfasch 612 Mar 23 18:39 script.sh</span>
+<span class="gp">$ </span>chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span>/bin/script.sh
+<span class="go">-rwxr-xr-x 1 jfasch jfasch 0 Mar 23 18:39 script.sh</span>
+</pre></div>
+</div>
+</li>
+<li><p>Permission modification (differential symbolic)</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls<span class="w"> </span>-l<span class="w"> </span>/bin/script.sh
+<span class="go">-rw-rw-r-- 1 jfasch jfasch 612 Mar 23 18:39 script.sh</span>
+<span class="gp">$ </span>chmod<span class="w"> </span>u+x,g-w,g+x,o+x<span class="w"> </span>script.sh
+<span class="gp">$ </span>ls<span class="w"> </span>-l<span class="w"> </span>script.sh
+<span class="go">-rwxr-xr-x. 1 jfasch jfasch 0 Mar 23 18:42 script.sh</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="shell-commands-changing-user-group-ownership">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Shell Commands: Changing User/Group Ownership</a><a class="headerlink" href="#shell-commands-changing-user-group-ownership" title="Link to this heading">¶</a></h2>
+<ul>
+<li><p>Group ownership modification (only root and members of the group can
+do this)</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>chgrp<span class="w"> </span>team<span class="w"> </span>/tmp/file
+</pre></div>
+</div>
+</li>
+<li><p>Ownership modification (only root)</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>chown<span class="w"> </span>jfasch<span class="w"> </span>/tmp/file
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">chmod</span></code>, <code class="docutils literal notranslate"><span class="pre">chown</span></code>, and <code class="docutils literal notranslate"><span class="pre">chgrp</span></code> understand <code class="docutils literal notranslate"><span class="pre">-R</span></code> for
+“recursive”.</p></li>
+</ul>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019-2023 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/linux/basics/permissions/basics.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
