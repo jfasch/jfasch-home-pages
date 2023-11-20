@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=4f649999" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css?v=665e07de" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=eafc0fe6" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css?v=70eaaddc" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css?v=5c84f910" />
@@ -127,17 +127,18 @@
 <li class="toctree-l4 current"><a class="reference internal" href="../index.html">Embedded Computing 2021</a><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="../ss2023.html">SS2023</a></li>
 <li class="toctree-l5 current"><a class="reference internal" href="../ws2023-2024.html">WS2023/24</a><ul class="current">
-<li class="toctree-l6 current"><a class="reference internal" href="group.html">WS2023/24: Project</a><ul class="current">
+<li class="toctree-l6 current"><a class="reference internal" href="group.html">WS2023/24: Group Project - Tasks</a><ul class="current">
 <li class="toctree-l7"><a class="reference internal" href="boiling-pot.html">An IoT Boiling Pot (The Beginning)</a></li>
 <li class="toctree-l7 current"><a class="current reference internal" href="#">Data Logger</a></li>
 <li class="toctree-l7"><a class="reference internal" href="pwm-display.html">Temperature Display: LED Via A PWM Controller</a></li>
 <li class="toctree-l7"><a class="reference internal" href="switch-interface.html">Switch Interface</a></li>
 <li class="toctree-l7"><a class="reference internal" href="sysfs-gpio-switch.html">SysFS GPIO Switch</a></li>
+<li class="toctree-l7"><a class="reference internal" href="libgpiod-switch.html"><code class="docutils literal notranslate"><span class="pre">libgpiod</span></code> Switch</a></li>
 <li class="toctree-l7"><a class="reference internal" href="datalogger-mqtt-sink.html">Data Logger: MQTT Sink</a></li>
 <li class="toctree-l7"><a class="reference internal" href="datalogger-csv-sink.html">Data Logger: CSV Sink</a></li>
 </ul>
 </li>
-<li class="toctree-l6"><a class="reference internal" href="../git.html">Working with Git In Our <code class="docutils literal notranslate"><span class="pre">FH-ECE21</span></code> Project</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../git/git.html">Working with Git In Our <code class="docutils literal notranslate"><span class="pre">FH-ECE21</span></code> Project</a></li>
 </ul>
 </li>
 </ul>
@@ -189,6 +190,47 @@ to constrain the interface to what’s needed.</p></li>
 (CSV/Terminal?).</p></li>
 <li><p>Problem: decoupling ⟶ <em>interface</em> (eg. <code class="docutils literal notranslate"><span class="pre">Sink</span></code>)</p></li>
 </ul>
+<section id="standup-records">
+<h2>Standup Records<a class="headerlink" href="#standup-records" title="Link to this heading">¶</a></h2>
+<section id="id1">
+<h3>2023-11-20<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<ul>
+<li><p>Structure: <code class="docutils literal notranslate"><span class="pre">datalogger/CMakeLists.txt</span></code></p>
+<p><em>Explain:</em> <code class="docutils literal notranslate"><span class="pre">TARGET_INCLUDE_DIRECTORIES()</span></code> announces <code class="docutils literal notranslate"><span class="pre">.</span></code>
+<code class="docutils literal notranslate"><span class="pre">PUBLIC</span></code> to anyone who needs that node</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">DataLogger::startLogging(uint16_t</span> <span class="pre">count</span> <span class="pre">=</span> <span class="pre">0);</span></code>, with <code class="docutils literal notranslate"><span class="pre">0</span></code>
+having the special meaning <em>infinity</em> ⟶ unification
+into <em>one single</em> method</p></li>
+<li><p>Remove leftover <code class="docutils literal notranslate"><span class="pre">DataLogger::getTime()</span></code>. Defer implementation
+until we need timestamps</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/logger-suite.cpp</span></code>: don’t use <code class="docutils literal notranslate"><span class="pre">SinkFile</span></code> - test <em>in terms
+of</em> <code class="docutils literal notranslate"><span class="pre">SinkMock</span></code></p>
+<p>⟶ make <code class="docutils literal notranslate"><span class="pre">SinkMock</span></code> usable for that purpose</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/sink-suite.cpp</span></code></p>
+<ul>
+<li><p>use <code class="docutils literal notranslate"><span class="pre">SinkMock</span></code> instead of <code class="docutils literal notranslate"><span class="pre">SinkFile</span></code> (like above)</p></li>
+<li><p>don’t use <code class="docutils literal notranslate"><span class="pre">SensorConfig</span></code> to create a <code class="docutils literal notranslate"><span class="pre">SensorValues</span></code> object -
+create it directly, inside the test (we’re not testing
+<code class="docutils literal notranslate"><span class="pre">SensorConfig</span></code>, only the sink)</p>
+<p>Best to create <code class="docutils literal notranslate"><span class="pre">tests/sensor-values-suite.cpp</span></code> to define the
+behavior of <code class="docutils literal notranslate"><span class="pre">SensorValues</span></code></p>
+</li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/sensor-config-suite.cpp</span></code></p>
+<ul class="simple">
+<li><p>Adding the same name three times should be an error (lets use
+<code class="docutils literal notranslate"><span class="pre">throw</span> <span class="pre">runtime_error(&quot;...message</span> <span class="pre">here...&quot;)</span></code> as an error handling
+replacement)</p></li>
+<li><p>Three sensors should lead to a measurement size (.size()) of 3</p></li>
+<li><p>…</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
 <section id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">¶</a></h2>
 <p>Modify the program <code class="docutils literal notranslate"><span class="pre">bin/data-logger.cpp</span></code> to compose itself out of
@@ -251,19 +293,19 @@ that it receives in a <code class="docutils literal notranslate"><span class="pr
 <section id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h2>
 <svg 
- viewBox="0.00 0.00 183.00 99.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ viewBox="0.00 0.00 285.00 99.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 95)">
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-95 179,-95 179,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-95 281,-95 281,4 -4,4"/>
 <g id="clust1" class="cluster">
 <title>cluster_fh2021</title>
-<path fill="none" stroke="black" d="M20,-8C20,-8 155,-8 155,-8 161,-8 167,-14 167,-20 167,-20 167,-71 167,-71 167,-77 161,-83 155,-83 155,-83 20,-83 20,-83 14,-83 8,-77 8,-71 8,-71 8,-20 8,-20 8,-14 14,-8 20,-8"/>
-<text text-anchor="middle" x="87.5" y="-67.8" font-family="Times,serif" font-size="14.00">WS2023/24: Project</text>
+<path fill="none" stroke="black" d="M20,-8C20,-8 257,-8 257,-8 263,-8 269,-14 269,-20 269,-20 269,-71 269,-71 269,-77 263,-83 257,-83 257,-83 20,-83 20,-83 14,-83 8,-77 8,-71 8,-71 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="138.5" y="-67.8" font-family="Times,serif" font-size="14.00">WS2023/24: Group Project &#45; Tasks</text>
 </g>
 <!-- fh2021_datalogger -->
 <g id="node1" class="node">
 <title>fh2021_datalogger</title>
-<polygon fill="lightgrey" stroke="black" stroke-width="3" points="139.5,-52 34.5,-52 34.5,-16 139.5,-16 139.5,-52"/>
-<text text-anchor="start" x="42.5" y="-30.3" font-family="Times,serif" font-size="14.00">Data Logger</text>
+<polygon fill="lightgrey" stroke="black" stroke-width="3" points="190.5,-52 85.5,-52 85.5,-16 190.5,-16 190.5,-52"/>
+<text text-anchor="start" x="93.5" y="-30.3" font-family="Times,serif" font-size="14.00">Data Logger</text>
 </g>
 </g>
 </svg>
