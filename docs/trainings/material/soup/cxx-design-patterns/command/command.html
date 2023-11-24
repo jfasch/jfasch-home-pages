@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=4f649999" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/alabaster.css?v=665e07de" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=eafc0fe6" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/jf-alabaster.css?v=70eaaddc" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css?v=5c84f910" />
@@ -369,7 +369,14 @@ that in the object, and re-throw it in the <code class="docutils literal notrans
 <span class="w">    </span><span class="n">SocialDBCommand</span><span class="o">*</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">fc</span><span class="p">;</span><span class="w">           </span><span class="c1">// &lt;--- used as-a base</span>
 <span class="w">    </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">execute</span><span class="p">(</span><span class="n">db</span><span class="p">);</span>
 
-<span class="w">    </span><span class="n">ASSERT_THROW</span><span class="p">(</span><span class="n">fc</span><span class="p">.</span><span class="n">result</span><span class="p">(),</span><span class="w"> </span><span class="n">SocialDB</span><span class="o">::</span><span class="n">NotFound</span><span class="p">);</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">fc</span><span class="p">.</span><span class="n">result</span><span class="p">();</span>
+<span class="w">        </span><span class="n">FAIL</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SocialDB</span><span class="o">::</span><span class="n">NotFound</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">    </span><span class="c1">// -Werror=restrict</span>
+<span class="w">    </span><span class="c1">// ASSERT_THROW(fc.result(), SocialDB::NotFound);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -400,7 +407,14 @@ when the issuer requests the <code class="docutils literal notranslate"><span cl
 <span class="w">    </span><span class="n">SocialDBCommand</span><span class="w"> </span><span class="o">*</span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ic</span><span class="p">;</span>
 <span class="w">    </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">execute</span><span class="p">(</span><span class="n">db</span><span class="p">);</span>
 
-<span class="w">    </span><span class="n">ASSERT_THROW</span><span class="p">(</span><span class="n">ic</span><span class="p">.</span><span class="n">result</span><span class="p">(),</span><span class="w"> </span><span class="n">SocialDB</span><span class="o">::</span><span class="n">NotInserted</span><span class="p">);</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">ic</span><span class="p">.</span><span class="n">result</span><span class="p">();</span>
+<span class="w">        </span><span class="n">FAIL</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SocialDB</span><span class="o">::</span><span class="n">NotInserted</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">    </span><span class="c1">// -Werror=restrict</span>
+<span class="w">    </span><span class="c1">// ASSERT_THROW(ic.result(), SocialDB::NotInserted);</span>
 <span class="p">}</span>
 </pre></div>
 </div>

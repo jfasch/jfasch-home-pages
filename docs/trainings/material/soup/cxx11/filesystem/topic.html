@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=4f649999" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/alabaster.css?v=665e07de" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=eafc0fe6" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/jf-alabaster.css?v=70eaaddc" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css?v=5c84f910" />
@@ -477,8 +477,37 @@ multiple levels</p></li>
 
 <span class="n">TEST_F</span><span class="p">(</span><span class="n">filesystem_suite</span><span class="p">,</span><span class="w"> </span><span class="n">create_directory_error</span><span class="p">)</span>
 <span class="p">{</span>
-<span class="w">    </span><span class="n">ASSERT_THROW</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">create_directory</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;parent/child&quot;</span><span class="p">),</span>
-<span class="w">                 </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">filesystem_error</span><span class="p">);</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">create_directory</span><span class="p">(</span><span class="n">dirname</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s">&quot;parent/child&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">ASSERT_FALSE</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">filesystem_error</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">    </span><span class="c1">// this would be more to the point ...</span>
+
+<span class="w">    </span><span class="c1">//     ASSERT_THROW(std::filesystem::create_directory(dirname / &quot;parent/child&quot;),</span>
+<span class="w">    </span><span class="c1">//                  std::filesystem::filesystem_error);</span>
+
+<span class="w">    </span><span class="c1">// ... but (using -O3) ...</span>
+
+<span class="w">    </span><span class="c1">// In file included from /usr/include/c++/12/ios:40,</span>
+<span class="w">    </span><span class="c1">//                  from /usr/include/c++/12/ostream:38,</span>
+<span class="w">    </span><span class="c1">//                  from /usr/include/c++/12/bits/unique_ptr.h:41,</span>
+<span class="w">    </span><span class="c1">//                  from /usr/include/c++/12/memory:76,</span>
+<span class="w">    </span><span class="c1">//                  from /home/jfasch/work/jfasch-home/googletest/googletest/include/gtest/gtest.h:55,</span>
+<span class="w">    </span><span class="c1">//                  from /home/jfasch/work/jfasch-home/trainings/material/soup/cxx-code/fixtures/./fixture-tmpdir.h:3,</span>
+<span class="w">    </span><span class="c1">//                  from /home/jfasch/work/jfasch-home/trainings/material/soup/cxx-code/fixtures/./fixture-tmpdir-cwd.h:3,</span>
+<span class="w">    </span><span class="c1">//                  from /home/jfasch/work/jfasch-home/trainings/material/soup/cxx11/filesystem/code/suite.h:3,</span>
+<span class="w">    </span><span class="c1">//                  from /home/jfasch/work/jfasch-home/trainings/material/soup/cxx11/filesystem/code/create_directory_error.cpp:1:</span>
+<span class="w">    </span><span class="c1">// In static member function ‘static constexpr std::char_traits&lt;char&gt;::char_type* std::char_traits&lt;char&gt;::copy(char_type*, const char_type*, std::size_t)’,</span>
+<span class="w">    </span><span class="c1">//     inlined from ‘static constexpr void std::__cxx11::basic_string&lt;_CharT, _Traits, _Alloc&gt;::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits&lt;char&gt;; _Alloc = std::allocator&lt;char&gt;]’ at /usr/include/c++/12/bits/basic_string.h:423:21,</span>
+<span class="w">    </span><span class="c1">//     inlined from ‘constexpr std::__cxx11::basic_string&lt;_CharT, _Traits, _Allocator&gt;&amp; std::__cxx11::basic_string&lt;_CharT, _Traits, _Alloc&gt;::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits&lt;char&gt;; _Alloc = std::allocator&lt;char&gt;]’ at /usr/include/c++/12/bits/basic_string.tcc:532:22,</span>
+<span class="w">    </span><span class="c1">//     inlined from ‘constexpr std::__cxx11::basic_string&lt;_CharT, _Traits, _Alloc&gt;&amp; std::__cxx11::basic_string&lt;_CharT, _Traits, _Alloc&gt;::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits&lt;char&gt;; _Alloc = std::allocator&lt;char&gt;]’ at /usr/include/c++/12/bits/basic_string.h:2171:19,</span>
+<span class="w">    </span><span class="c1">//     inlined from ‘constexpr std::__cxx11::basic_string&lt;_CharT, _Traits, _Alloc&gt;&amp; std::__cxx11::basic_string&lt;_CharT, _Traits, _Alloc&gt;::replace(size_type, size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits&lt;char&gt;; _Alloc = std::allocator&lt;char&gt;]’ at /usr/include/c++/12/bits/basic_string.h:2196:22,</span>
+<span class="w">    </span><span class="c1">//     inlined from ‘std::string testing::internal::CanonicalizeForStdLibVersioning(std::string)’ at /home/jfasch/work/jfasch-home/googletest/googletest/include/gtest/internal/gtest-type-util.h:83:14:</span>
+<span class="w">    </span><span class="c1">// /usr/include/c++/12/bits/char_traits.h:431:56: error: ‘void* __builtin_memcpy(void*, const void*, long unsigned int)’ accessing 9223372036854775810 or more bytes at offsets [2, 9223372036854775807] and 1 may overlap up to 9223372036854775813 bytes at offset -3 [-Werror=restrict]</span>
+<span class="w">    </span><span class="c1">//   431 |         return static_cast&lt;char_type*&gt;(__builtin_memcpy(__s1, __s2, __n));</span>
+<span class="w">    </span><span class="c1">//       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~</span>
 <span class="p">}</span>
 </pre></div>
 </div>
