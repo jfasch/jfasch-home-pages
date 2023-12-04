@@ -108,8 +108,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/group.html">C++ 03</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">C++ 11</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/group.html">C++</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">The New C++ (11-…)</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../../010-introduction/group.html">Introduction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../020-new-language-features/group.html">New Language Features</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../030-smart-pointers/group.html">Smart Pointers (<code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code>, <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>)</a></li>
@@ -123,7 +123,7 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../filesystem/topic.html"><code class="docutils literal notranslate"><span class="pre">std::filesystem</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../drafts/group.html">Drafts</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../exercises/group.html">Introduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../exercises/group.html">Exercises</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../cxx-design-patterns/group.html">Design Patterns With C++</a></li>
@@ -163,6 +163,188 @@
           <div class="body" role="main">
              <section id="new-style-union-std-variant">
 <h1>New-Style Union: <code class="docutils literal notranslate"><span class="pre">std::variant</span></code><a class="headerlink" href="#new-style-union-std-variant" title="Link to this heading">¶</a></h1>
+<aside class="sidebar">
+<p><strong>Documentation</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/utility/variant">std::variant</a></p></li>
+</ul>
+</aside>
+<section id="problems-with-c-unions-and-c-types">
+<h2>Problems With C Unions, And C++ Types<a class="headerlink" href="#problems-with-c-unions-and-c-types" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">union</span></code> with C++ can be gotten right</p></li>
+<li><p>Need to call destructors explicitly</p></li>
+<li><p>Other weirdnesses</p></li>
+<li><p>⟶ <em>no!</em></p></li>
+<li><p>⟶ <code class="docutils literal notranslate"><span class="pre">std::variant</span></code></p></li>
+</ul>
+</section>
+<section id="instantiation-default-initialization-member-access">
+<h2>Instantiation, Default Initialization, Member Access<a class="headerlink" href="#instantiation-default-initialization-member-access" title="Link to this heading">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/cc601843abc942dc2582e1cf3079a463/variant-default_ctor.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/variant-default_ctor.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;variant&gt;</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">variant_suite</span><span class="p">,</span><span class="w"> </span><span class="n">default_ctor</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">v</span><span class="p">;</span><span class="w">                        </span><span class="c1">// &lt;--- default: int{}</span>
+
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w">                    </span><span class="c1">// &lt;--- by-type: does not fail</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w">                      </span><span class="c1">// &lt;--- by-position</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">index</span><span class="p">(),</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w">                           </span><span class="c1">// &lt;--- which position does it hold?</span>
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">holds_alternative</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">));</span><span class="w">       </span><span class="c1">// &lt;--- which type does it hold?</span>
+
+<span class="w">    </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">36.5f</span><span class="p">;</span><span class="w">                                         </span><span class="c1">// &lt;--- now has float</span>
+<span class="w">                                                       </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="n">ASSERT_FLOAT_EQ</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">),</span><span class="w"> </span><span class="mf">36.5</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_FLOAT_EQ</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">),</span><span class="w"> </span><span class="mf">36.5</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">index</span><span class="p">(),</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">holds_alternative</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">));</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="non-default-initialization">
+<h2>Non-Default Initialization<a class="headerlink" href="#non-default-initialization" title="Link to this heading">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/67d7d1e08d87f691d4c014cc2f1c20a1/variant-converting_ctor.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/variant-converting_ctor.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;variant&gt;</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">variant_suite</span><span class="p">,</span><span class="w"> </span><span class="n">converting_ctor</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">v</span><span class="p">{</span><span class="mf">36.5f</span><span class="p">};</span><span class="w">                 </span><span class="c1">// &lt;--- holds float</span>
+
+<span class="w">    </span><span class="n">ASSERT_FLOAT_EQ</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">),</span><span class="w"> </span><span class="mf">36.5</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_FLOAT_EQ</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">),</span><span class="w"> </span><span class="mf">36.5</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">index</span><span class="p">(),</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="accessing-non-current-member-std-bad-variant-access">
+<h2>Accessing Non-Current Member: <code class="docutils literal notranslate"><span class="pre">std::bad_variant_access</span></code><a class="headerlink" href="#accessing-non-current-member-std-bad-variant-access" title="Link to this heading">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/176ee7ebbfa4310801667a16efe44bc9/variant-bad-access.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/variant-bad-access.cpp</span></code></a></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;variant&gt;</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">variant_suite</span><span class="p">,</span><span class="w"> </span><span class="n">bad_access</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">v</span><span class="p">{</span><span class="mi">42</span><span class="p">};</span>
+
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">bad_variant_access</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/6a86eea6f3feb68efdcf0e769b1ac669/variant-visit.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/variant-visit.cpp</span></code></a></span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;variant&gt;</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">Visitor</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Visitor</span><span class="p">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">int_seen</span><span class="p">{</span><span class="nb">false</span><span class="p">},</span><span class="w"> </span><span class="n">float_seen</span><span class="p">{</span><span class="nb">false</span><span class="p">}</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="k">operator</span><span class="p">()(</span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">int_seen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="k">operator</span><span class="p">()(</span><span class="kt">float</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">float_seen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">int_seen</span><span class="p">,</span><span class="w"> </span><span class="n">float_seen</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">variant_suite</span><span class="p">,</span><span class="w"> </span><span class="n">visit</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">v</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">Visitor</span><span class="w"> </span><span class="n">vis</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">visit</span><span class="p">(</span><span class="n">vis</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">vis</span><span class="p">.</span><span class="n">int_seen</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">36.5f</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="non-throwing-accessor-std-get-if">
+<h2>Non-Throwing Accessor: <code class="docutils literal notranslate"><span class="pre">std::get_if&lt;&gt;</span></code><a class="headerlink" href="#non-throwing-accessor-std-get-if" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Exceptions are bad (at least in Embedded)</p></li>
+<li><p>⟶ back to pointers 🤘</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/e2e2df4402d4fe902cfb9bad457a6f06/variant-get-if.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/variant-get-if.cpp</span></code></a></span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;variant&gt;</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">variant_suite</span><span class="p">,</span><span class="w"> </span><span class="n">get_if</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">tmp</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">};</span>
+<span class="w">    </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">tmp</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">v</span><span class="p">{</span><span class="mi">42</span><span class="p">};</span>
+
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="o">*</span><span class="w"> </span><span class="n">pi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">get_if</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="w"> </span><span class="cm">/*REALLY!*/</span><span class="w"> </span><span class="n">v</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_NE</span><span class="p">(</span><span class="n">pi</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="o">*</span><span class="w"> </span><span class="n">pf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">get_if</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">v</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">pf</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="and-non-fundamental-types">
+<h2>And Non-Fundamental Types?<a class="headerlink" href="#and-non-fundamental-types" title="Link to this heading">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/9f92ec81cca25a1a9837af73af6e60a3/variant-string-and-charp.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/variant-string-and-charp.cpp</span></code></a></span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;variant&gt;</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">variant_suite</span><span class="p">,</span><span class="w"> </span><span class="n">string_charp</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*&gt;</span><span class="w"> </span><span class="n">v</span><span class="p">;</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">());</span>
+
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;blah&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">;</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">),</span><span class="w"> </span><span class="n">s</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;blah&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get_if</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">v</span><span class="p">),</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/354f0227761d1252e860d6d90e7c0608/variant-no-default-ctor.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/variant-no-default-ctor.cpp</span></code></a></span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;variant&gt;</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">Foo</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Foo</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Foo</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="p">};</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">variant_suite</span><span class="p">,</span><span class="w"> </span><span class="n">no_default_ctor</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// std::variant&lt;Foo&gt; v;                            // &lt;--- error: no default ctor</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="n">Foo</span><span class="o">&gt;</span><span class="w"> </span><span class="n">v</span><span class="p">{</span><span class="k">nullptr</span><span class="p">};</span><span class="w">                      </span><span class="c1">// &lt;--- OK</span>
+
+<span class="w">    </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">v</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
 </section>
 
 <div class="section">
