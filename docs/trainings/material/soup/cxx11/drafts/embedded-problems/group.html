@@ -157,13 +157,19 @@
 <h1>Embedded Problems? Code Bloat? Type Erasure? Solutions?<a class="headerlink" href="#embedded-problems-code-bloat-type-erasure-solutions" title="Link to this heading">¶</a></h1>
 <nav class="contents local" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#type-erasure-was-eliminating-virtual" id="id1">Type Erasure (Was: Eliminating <code class="docutils literal notranslate"><span class="pre">virtual</span></code>)</a></p></li>
-<li><p><a class="reference internal" href="#allocators" id="id2">Allocators</a></p></li>
-<li><p><a class="reference internal" href="#dependencies" id="id3">Dependencies</a></p></li>
+<li><p><a class="reference internal" href="#virtual-is-bad-is-virtual-bad-type-erasure" id="id1"><code class="docutils literal notranslate"><span class="pre">virtual</span></code> Is Bad. Is <code class="docutils literal notranslate"><span class="pre">virtual</span></code> Bad? (Type Erasure)</a></p>
+<ul>
+<li><p><a class="reference internal" href="#and-crtp" id="id2">And CRTP?</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#allocators" id="id3">Allocators</a></p></li>
+<li><p><a class="reference internal" href="#std-string-view" id="id4">std::string_view</a></p></li>
+<li><p><a class="reference internal" href="#more" id="id5">More</a></p></li>
+<li><p><a class="reference internal" href="#dependencies" id="id6">Dependencies</a></p></li>
 </ul>
 </nav>
-<section id="type-erasure-was-eliminating-virtual">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">Type Erasure (Was: Eliminating <code class="docutils literal notranslate"><span class="pre">virtual</span></code>)</a><a class="headerlink" href="#type-erasure-was-eliminating-virtual" title="Link to this heading">¶</a></h2>
+<section id="virtual-is-bad-is-virtual-bad-type-erasure">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">virtual</span></code> Is Bad. Is <code class="docutils literal notranslate"><span class="pre">virtual</span></code> Bad? (Type Erasure)</a><a class="headerlink" href="#virtual-is-bad-is-virtual-bad-type-erasure" title="Link to this heading">¶</a></h2>
 <p>Type erasure appears to be a C++ hype currently. Speakers on C++
 conferences beat each others in creating incomprehensible crap that
 solves no obvious problem. This is my personal attempt to create
@@ -194,35 +200,104 @@ Iglberger - CppCon 2021</a></p>
       allowfullscreen>
 </iframe></li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>TODO</strong></p>
+<ul class="simple">
+<li><p>Strip down the hacking story to a minimum. It is sufficient to</p>
+<ul>
+<li><p>Show that a <code class="docutils literal notranslate"><span class="pre">std::vector</span></code> of (smart) pointers to polymorphic
+object is sub-optimal, memory-wise (and cache-performance-wise)</p></li>
+<li><p>Show the final version where a <code class="docutils literal notranslate"><span class="pre">std::variant</span></code> holds unrelated
+types, and <code class="docutils literal notranslate"><span class="pre">std::visit</span></code> is used for dynamic dispatch.</p></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="and-crtp">
+<h3><a class="toc-backref" href="#id2" role="doc-backlink">And CRTP?</a><a class="headerlink" href="#and-crtp" title="Link to this heading">¶</a></h3>
+<p>Show that CRTP creates <em>unrelated</em> types that cannot be held in a
+container.</p>
+</section>
 </section>
 <section id="allocators">
-<h2><a class="toc-backref" href="#id2" role="doc-backlink">Allocators</a><a class="headerlink" href="#allocators" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Allocators</a><a class="headerlink" href="#allocators" title="Link to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="allocator.html">std::vector&lt;&gt;: Allocators (<em>Very</em> Incomplete)</a></li>
 </ul>
 </div>
+<ul>
+<li><p>Arena allocators</p>
+<p><a class="reference external" href="https://youtu.be/6pXhQ28FVlU?si=RMEFz1OxPSPkyGlP">Modern C++: C++ Patterns to Make Embedded Programming More
+Productive - Steve Bush - CppCon 2022</a> (44:30)</p>
+</li>
+</ul>
+</section>
+<section id="std-string-view">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">std::string_view</a><a class="headerlink" href="#std-string-view" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Use as parameters instead of <code class="docutils literal notranslate"><span class="pre">std::string</span></code></p></li>
+<li><p>Never as member (obviously)</p></li>
+</ul>
+</section>
+<section id="more">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">More</a><a class="headerlink" href="#more" title="Link to this heading">¶</a></h2>
+<ul>
+<li><p><a class="reference external" href="https://youtu.be/6pXhQ28FVlU?si=RMEFz1OxPSPkyGlP">Modern C++: C++ Patterns to Make Embedded Programming More Productive - Steve Bush - CppCon 2022</a></p>
+<iframe width="560" height="315"
+        src="https://www.youtube.com/embed/6pXhQ28FVlU?si=RMEFz1OxPSPkyGlP"
+      title="YouTube video player"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen>
+</iframe></li>
+<li><p><a class="reference external" href="https://youtu.be/qCjEN5XRzHc?si=EJEtQ6Py0O2r7WEG">The Most Important Optimizations to Apply in Your C++ Programs - Jan Bielak - CppCon 2022</a></p>
+<iframe width="560" height="315"
+        src="https://www.youtube.com/embed/qCjEN5XRzHc?si=EJEtQ6Py0O2r7WEG"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+</iframe></li>
+<li><p><a class="reference external" href="https://youtu.be/2BuJjaGuInI?si=oECDiESeoJWVWIfl">C++ in Constrained Environments - Bjarne Stroustrup - CppCon 2022</a></p>
+<iframe width="560" height="315"
+        src="https://www.youtube.com/embed/2BuJjaGuInI?si=oECDiESeoJWVWIfl"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+</iframe></li>
+<li><p><a class="reference external" href="https://youtu.be/gTNJXVmuRRA?si=2gWfQo4uuBMvVFtP">Using Modern C++ to Eliminate Virtual Functions - Jonathan Gopel - CppCon 2022</a></p>
+<iframe width="560" height="315"
+        src="https://www.youtube.com/embed/gTNJXVmuRRA?si=2gWfQo4uuBMvVFtP"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+</iframe></li>
+</ul>
 </section>
 <section id="dependencies">
-<h2><a class="toc-backref" href="#id3" role="doc-backlink">Dependencies</a><a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Dependencies</a><a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h2>
 <svg 
- viewBox="0.00 0.00 1006.00 1400.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ viewBox="0.00 0.00 960.00 1400.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1396)">
-<polygon fill="white" stroke="none" points="-4,4 -4,-1396 1002,-1396 1002,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-1396 956,-1396 956,4 -4,4"/>
 <g id="clust1" class="cluster">
 <title>cluster_cxx03</title>
-<path fill="none" stroke="black" d="M180,-133C180,-133 978,-133 978,-133 984,-133 990,-139 990,-145 990,-145 990,-882.5 990,-882.5 990,-888.5 984,-894.5 978,-894.5 978,-894.5 180,-894.5 180,-894.5 174,-894.5 168,-888.5 168,-882.5 168,-882.5 168,-145 168,-145 168,-139 174,-133 180,-133"/>
-<text text-anchor="middle" x="579" y="-877.2" font-family="Times,serif" font-size="14.00">C++</text>
+<path fill="none" stroke="black" d="M134,-133C134,-133 932,-133 932,-133 938,-133 944,-139 944,-145 944,-145 944,-882.5 944,-882.5 944,-888.5 938,-894.5 932,-894.5 932,-894.5 134,-894.5 134,-894.5 128,-894.5 122,-888.5 122,-882.5 122,-882.5 122,-145 122,-145 122,-139 128,-133 134,-133"/>
+<text text-anchor="middle" x="533" y="-877.2" font-family="Times,serif" font-size="14.00">C++</text>
 </g>
 <g id="clust2" class="cluster">
-<title>cluster_cxx03_inheritance_oo</title>
-<path fill="none" stroke="black" d="M188,-493C188,-493 572,-493 572,-493 578,-493 584,-499 584,-505 584,-505 584,-850 584,-850 584,-856 578,-862 572,-862 572,-862 188,-862 188,-862 182,-862 176,-856 176,-850 176,-850 176,-505 176,-505 176,-499 182,-493 188,-493"/>
-<text text-anchor="middle" x="380" y="-844.7" font-family="Times,serif" font-size="14.00">Inheritance And Object Oriented Design</text>
+<title>cluster_cxx03_data_encapsulation</title>
+<path fill="none" stroke="black" d="M558,-205C558,-205 912,-205 912,-205 918,-205 924,-211 924,-217 924,-217 924,-557.5 924,-557.5 924,-563.5 918,-569.5 912,-569.5 912,-569.5 558,-569.5 558,-569.5 552,-569.5 546,-563.5 546,-557.5 546,-557.5 546,-217 546,-217 546,-211 552,-205 558,-205"/>
+<text text-anchor="middle" x="735" y="-552.2" font-family="Times,serif" font-size="14.00">Data Encapsulation</text>
 </g>
 <g id="clust3" class="cluster">
-<title>cluster_cxx03_data_encapsulation</title>
-<path fill="none" stroke="black" d="M604,-205C604,-205 958,-205 958,-205 964,-205 970,-211 970,-217 970,-217 970,-557.5 970,-557.5 970,-563.5 964,-569.5 958,-569.5 958,-569.5 604,-569.5 604,-569.5 598,-569.5 592,-563.5 592,-557.5 592,-557.5 592,-217 592,-217 592,-211 598,-205 604,-205"/>
-<text text-anchor="middle" x="781" y="-552.2" font-family="Times,serif" font-size="14.00">Data Encapsulation</text>
+<title>cluster_cxx03_inheritance_oo</title>
+<path fill="none" stroke="black" d="M142,-493C142,-493 526,-493 526,-493 532,-493 538,-499 538,-505 538,-505 538,-850 538,-850 538,-856 532,-862 526,-862 526,-862 142,-862 142,-862 136,-862 130,-856 130,-850 130,-850 130,-505 130,-505 130,-499 136,-493 142,-493"/>
+<text text-anchor="middle" x="334" y="-844.7" font-family="Times,serif" font-size="14.00">Inheritance And Object Oriented Design</text>
 </g>
 <g id="clust4" class="cluster">
 <title>cluster_cxx11</title>
@@ -241,20 +316,20 @@ Iglberger - CppCon 2021</a></p>
 </g>
 <g id="clust7" class="cluster">
 <title>cluster_c</title>
-<path fill="none" stroke="black" d="M758,-8C758,-8 920,-8 920,-8 926,-8 932,-14 932,-20 932,-20 932,-113 932,-113 932,-119 926,-125 920,-125 920,-125 758,-125 758,-125 752,-125 746,-119 746,-113 746,-113 746,-20 746,-20 746,-14 752,-8 758,-8"/>
-<text text-anchor="middle" x="839" y="-107.7" font-family="Times,serif" font-size="14.00">The C Programming Language</text>
+<path fill="none" stroke="black" d="M712,-8C712,-8 874,-8 874,-8 880,-8 886,-14 886,-20 886,-20 886,-113 886,-113 886,-119 880,-125 874,-125 874,-125 712,-125 712,-125 706,-125 700,-119 700,-113 700,-113 700,-20 700,-20 700,-14 706,-8 712,-8"/>
+<text text-anchor="middle" x="793" y="-107.7" font-family="Times,serif" font-size="14.00">The C Programming Language</text>
 </g>
 <g id="clust8" class="cluster">
 <title>cluster_c_introduction</title>
-<path fill="none" stroke="black" d="M791,-16C791,-16 887,-16 887,-16 893,-16 899,-22 899,-28 899,-28 899,-80.5 899,-80.5 899,-86.5 893,-92.5 887,-92.5 887,-92.5 791,-92.5 791,-92.5 785,-92.5 779,-86.5 779,-80.5 779,-80.5 779,-28 779,-28 779,-22 785,-16 791,-16"/>
-<text text-anchor="middle" x="839" y="-75.2" font-family="Times,serif" font-size="14.00">Introduction</text>
+<path fill="none" stroke="black" d="M745,-16C745,-16 841,-16 841,-16 847,-16 853,-22 853,-28 853,-28 853,-80.5 853,-80.5 853,-86.5 847,-92.5 841,-92.5 841,-92.5 745,-92.5 745,-92.5 739,-92.5 733,-86.5 733,-80.5 733,-80.5 733,-28 733,-28 733,-22 739,-16 745,-16"/>
+<text text-anchor="middle" x="793" y="-75.2" font-family="Times,serif" font-size="14.00">Introduction</text>
 </g>
 <!-- cxx03_introduction -->
 <g id="node1" class="node">
 <title>cxx03_introduction</title>
 <g id="a_node1"><a xlink:href="../../../cxx03/001-introduction/topic.html" xlink:title="Introduction">
-<ellipse fill="#dcdcdc" stroke="black" cx="839" cy="-159" rx="56.47" ry="18"/>
-<text text-anchor="middle" x="839" y="-153.95" font-family="Times,serif" font-size="14.00">Introduction</text>
+<ellipse fill="#dcdcdc" stroke="black" cx="793" cy="-159" rx="56.47" ry="18"/>
+<text text-anchor="middle" x="793" y="-153.95" font-family="Times,serif" font-size="14.00">Introduction</text>
 </a>
 </g>
 </g>
@@ -262,244 +337,304 @@ Iglberger - CppCon 2021</a></p>
 <g id="node20" class="node">
 <title>c_introduction_installation</title>
 <g id="a_node20"><a xlink:href="../../../c/010-introduction/000-installation/topic.html" xlink:title="Installation">
-<ellipse fill="#dcdcdc" stroke="black" cx="839" cy="-42" rx="52.38" ry="18"/>
-<text text-anchor="middle" x="839" y="-36.95" font-family="Times,serif" font-size="14.00">Installation</text>
+<ellipse fill="#dcdcdc" stroke="black" cx="793" cy="-42" rx="52.38" ry="18"/>
+<text text-anchor="middle" x="793" y="-36.95" font-family="Times,serif" font-size="14.00">Installation</text>
 </a>
 </g>
 </g>
 <!-- cxx03_introduction&#45;&gt;c_introduction_installation -->
-<g id="edge6" class="edge">
+<g id="edge9" class="edge">
 <title>cxx03_introduction&#45;&gt;c_introduction_installation</title>
-<path fill="none" stroke="black" d="M839,-140.53C839,-122.11 839,-92.79 839,-71.1"/>
-<polygon fill="black" stroke="black" points="842.5,-71.25 839,-61.25 835.5,-71.25 842.5,-71.25"/>
+<path fill="none" stroke="black" d="M793,-140.53C793,-122.11 793,-92.79 793,-71.1"/>
+<polygon fill="black" stroke="black" points="796.5,-71.25 793,-61.25 789.5,-71.25 796.5,-71.25"/>
 </g>
-<!-- cxx03_inheritance_oo_polymorphism -->
+<!-- cxx03_data_encapsulation_ctor_dtor -->
 <g id="node2" class="node">
-<title>cxx03_inheritance_oo_polymorphism</title>
-<g id="a_node2"><a xlink:href="../../../cxx03/100-inheritance-oo-design/polymorphism.html" xlink:title="Polymorphic Usage Of Objects">
-<ellipse fill="#dcdcdc" stroke="black" cx="332" cy="-667.5" rx="127.61" ry="18"/>
-<text text-anchor="middle" x="332" y="-662.45" font-family="Times,serif" font-size="14.00">Polymorphic Usage Of Objects</text>
+<title>cxx03_data_encapsulation_ctor_dtor</title>
+<g id="a_node2"><a xlink:href="../../../cxx03/020-data-encapsulation/ctor-dtor.html" xlink:title="More Constructors, Destructors">
+<ellipse fill="#dcdcdc" stroke="black" cx="683" cy="-519" rx="128.63" ry="18"/>
+<text text-anchor="middle" x="683" y="-513.95" font-family="Times,serif" font-size="14.00">More Constructors, Destructors</text>
 </a>
 </g>
 </g>
-<!-- cxx03_inheritance_oo_virtual_method -->
-<g id="node3" class="node">
-<title>cxx03_inheritance_oo_virtual_method</title>
-<g id="a_node3"><a xlink:href="../../../cxx03/100-inheritance-oo-design/virtual-method.html" xlink:title="Virtual Methods">
-<ellipse fill="#dcdcdc" stroke="black" cx="256" cy="-595.5" rx="71.82" ry="18"/>
-<text text-anchor="middle" x="256" y="-590.45" font-family="Times,serif" font-size="14.00">Virtual Methods</text>
-</a>
-</g>
-</g>
-<!-- cxx03_inheritance_oo_polymorphism&#45;&gt;cxx03_inheritance_oo_virtual_method -->
-<g id="edge1" class="edge">
-<title>cxx03_inheritance_oo_polymorphism&#45;&gt;cxx03_inheritance_oo_virtual_method</title>
-<path fill="none" stroke="black" d="M313.6,-649.55C304.17,-640.87 292.53,-630.14 282.18,-620.61"/>
-<polygon fill="black" stroke="black" points="284.95,-618.49 275.23,-614.29 280.21,-623.64 284.95,-618.49"/>
-</g>
-<!-- cxx03_inheritance_oo_basics -->
+<!-- cxx03_data_encapsulation_ctor_default -->
 <g id="node4" class="node">
-<title>cxx03_inheritance_oo_basics</title>
-<g id="a_node4"><a xlink:href="../../../cxx03/100-inheritance-oo-design/basics.html" xlink:title="Inheritance Basics">
-<ellipse fill="#dcdcdc" stroke="black" cx="461" cy="-519" rx="78.99" ry="18"/>
-<text text-anchor="middle" x="461" y="-513.95" font-family="Times,serif" font-size="14.00">Inheritance Basics</text>
+<title>cxx03_data_encapsulation_ctor_default</title>
+<g id="a_node4"><a xlink:href="../../../cxx03/020-data-encapsulation/ctor-default.html" xlink:title="Default Constructor">
+<ellipse fill="#dcdcdc" stroke="black" cx="661" cy="-447" rx="84.62" ry="18"/>
+<text text-anchor="middle" x="661" y="-441.95" font-family="Times,serif" font-size="14.00">Default Constructor</text>
 </a>
 </g>
 </g>
-<!-- cxx03_inheritance_oo_virtual_method&#45;&gt;cxx03_inheritance_oo_basics -->
-<g id="edge3" class="edge">
-<title>cxx03_inheritance_oo_virtual_method&#45;&gt;cxx03_inheritance_oo_basics</title>
-<path fill="none" stroke="black" d="M295.53,-580.14C328.14,-568.28 374.65,-551.38 410.05,-538.51"/>
-<polygon fill="black" stroke="black" points="410.99,-541.54 419.19,-534.83 408.6,-534.96 410.99,-541.54"/>
+<!-- cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_default -->
+<g id="edge1" class="edge">
+<title>cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_default</title>
+<path fill="none" stroke="black" d="M677.56,-500.7C675.16,-493.07 672.29,-483.92 669.61,-475.4"/>
+<polygon fill="black" stroke="black" points="672.71,-474.59 666.38,-466.1 666.03,-476.69 672.71,-474.59"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_custom -->
+<g id="node6" class="node">
+<title>cxx03_data_encapsulation_ctor_custom</title>
+<g id="a_node6"><a xlink:href="../../../cxx03/020-data-encapsulation/ctor-custom.html" xlink:title="Custom Constructor">
+<ellipse fill="#dcdcdc" stroke="black" cx="735" cy="-375" rx="86.15" ry="18"/>
+<text text-anchor="middle" x="735" y="-369.95" font-family="Times,serif" font-size="14.00">Custom Constructor</text>
+</a>
+</g>
+</g>
+<!-- cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_custom -->
+<g id="edge2" class="edge">
+<title>cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_custom</title>
+<path fill="none" stroke="black" d="M718.27,-501.28C732.39,-492.6 747.16,-480.51 755,-465 764.84,-445.53 758.3,-421.25 750.16,-402.97"/>
+<polygon fill="black" stroke="black" points="752.95,-401.7 745.43,-394.24 746.66,-404.77 752.95,-401.7"/>
 </g>
 <!-- cxx03_data_encapsulation_classes_objects -->
-<g id="node10" class="node">
+<g id="node3" class="node">
 <title>cxx03_data_encapsulation_classes_objects</title>
-<g id="a_node10"><a xlink:href="../../../cxx03/020-data-encapsulation/cpp-introduction.html" xlink:title="Classes and Objects">
-<ellipse fill="#dcdcdc" stroke="black" cx="781" cy="-303" rx="85.13" ry="18"/>
-<text text-anchor="middle" x="781" y="-297.95" font-family="Times,serif" font-size="14.00">Classes and Objects</text>
+<g id="a_node3"><a xlink:href="../../../cxx03/020-data-encapsulation/cpp-introduction.html" xlink:title="Classes and Objects">
+<ellipse fill="#dcdcdc" stroke="black" cx="735" cy="-303" rx="85.13" ry="18"/>
+<text text-anchor="middle" x="735" y="-297.95" font-family="Times,serif" font-size="14.00">Classes and Objects</text>
 </a>
 </g>
 </g>
-<!-- cxx03_inheritance_oo_basics&#45;&gt;cxx03_data_encapsulation_classes_objects -->
-<g id="edge8" class="edge">
-<title>cxx03_inheritance_oo_basics&#45;&gt;cxx03_data_encapsulation_classes_objects</title>
-<path fill="none" stroke="black" d="M482.47,-501.4C521.86,-471.22 608.72,-405.99 686,-357 703.63,-345.82 723.75,-334.42 740.92,-325.06"/>
-<polygon fill="black" stroke="black" points="741.98,-327.93 749.12,-320.09 738.65,-321.77 741.98,-327.93"/>
+<!-- cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_introduction -->
+<g id="edge10" class="edge">
+<title>cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_introduction</title>
+<path fill="none" stroke="black" d="M802.97,-291.86C851.23,-283.1 910.01,-268.74 925,-249 936.83,-233.42 936.38,-220.9 925,-205 909.65,-183.55 883.46,-172.21 858.44,-166.25"/>
+<polygon fill="black" stroke="black" points="859.33,-162.65 848.82,-164.02 857.88,-169.5 859.33,-162.65"/>
 </g>
-<!-- cxx03_inheritance_oo_virtual_destructor -->
+<!-- cxx03_data_encapsulation_c -->
 <g id="node5" class="node">
-<title>cxx03_inheritance_oo_virtual_destructor</title>
-<g id="a_node5"><a xlink:href="../../../cxx03/100-inheritance-oo-design/virtual-destructor.html" xlink:title="Virtual Destructors">
-<ellipse fill="#dcdcdc" stroke="black" cx="456" cy="-739.5" rx="81.55" ry="18"/>
-<text text-anchor="middle" x="456" y="-734.45" font-family="Times,serif" font-size="14.00">Virtual Destructors</text>
+<title>cxx03_data_encapsulation_c</title>
+<g id="a_node5"><a xlink:href="../../../cxx03/020-data-encapsulation/c.html" xlink:title="Object Oriented Programming In Good Ol’ C">
+<ellipse fill="#dcdcdc" stroke="black" cx="735" cy="-231" rx="180.84" ry="18"/>
+<text text-anchor="middle" x="735" y="-225.95" font-family="Times,serif" font-size="14.00">Object Oriented Programming In Good Ol’ C</text>
 </a>
 </g>
 </g>
-<!-- cxx03_inheritance_oo_virtual_destructor&#45;&gt;cxx03_inheritance_oo_polymorphism -->
+<!-- cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_data_encapsulation_c -->
 <g id="edge11" class="edge">
-<title>cxx03_inheritance_oo_virtual_destructor&#45;&gt;cxx03_inheritance_oo_polymorphism</title>
-<path fill="none" stroke="black" d="M427.24,-722.26C410.62,-712.88 389.48,-700.95 371.34,-690.71"/>
-<polygon fill="black" stroke="black" points="373.33,-687.25 362.9,-685.38 369.89,-693.34 373.33,-687.25"/>
+<title>cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_data_encapsulation_c</title>
+<path fill="none" stroke="black" d="M735,-284.7C735,-277.24 735,-268.32 735,-259.97"/>
+<polygon fill="black" stroke="black" points="738.5,-260.1 735,-250.1 731.5,-260.1 738.5,-260.1"/>
 </g>
-<!-- cxx03_inheritance_oo_virtual_destructor&#45;&gt;cxx03_inheritance_oo_virtual_method -->
-<g id="edge9" class="edge">
-<title>cxx03_inheritance_oo_virtual_destructor&#45;&gt;cxx03_inheritance_oo_virtual_method</title>
-<path fill="none" stroke="black" d="M465.44,-721.16C474.63,-701.66 485.06,-670.05 469,-649.5 464.27,-643.45 380.92,-623.98 319.92,-610.4"/>
-<polygon fill="black" stroke="black" points="320.71,-606.77 310.19,-608.03 319.2,-613.61 320.71,-606.77"/>
+<!-- cxx03_data_encapsulation_ctor_default&#45;&gt;cxx03_data_encapsulation_ctor_custom -->
+<g id="edge13" class="edge">
+<title>cxx03_data_encapsulation_ctor_default&#45;&gt;cxx03_data_encapsulation_ctor_custom</title>
+<path fill="none" stroke="black" d="M678.91,-429.05C688.03,-420.43 699.27,-409.8 709.29,-400.32"/>
+<polygon fill="black" stroke="black" points="711.14,-403.45 716,-394.03 706.33,-398.36 711.14,-403.45"/>
+</g>
+<!-- cxx03_data_encapsulation_c&#45;&gt;cxx03_introduction -->
+<g id="edge14" class="edge">
+<title>cxx03_data_encapsulation_c&#45;&gt;cxx03_introduction</title>
+<path fill="none" stroke="black" d="M749.34,-212.7C756.25,-204.35 764.68,-194.18 772.27,-185.02"/>
+<polygon fill="black" stroke="black" points="775.54,-187.56 779.23,-177.62 770.15,-183.09 775.54,-187.56"/>
+</g>
+<!-- cxx03_data_encapsulation_ctor_custom&#45;&gt;cxx03_data_encapsulation_classes_objects -->
+<g id="edge17" class="edge">
+<title>cxx03_data_encapsulation_ctor_custom&#45;&gt;cxx03_data_encapsulation_classes_objects</title>
+<path fill="none" stroke="black" d="M735,-356.7C735,-349.24 735,-340.32 735,-331.97"/>
+<polygon fill="black" stroke="black" points="738.5,-332.1 735,-322.1 731.5,-332.1 738.5,-332.1"/>
 </g>
 <!-- cxx03_inheritance_oo_destructor -->
 <g id="node7" class="node">
 <title>cxx03_inheritance_oo_destructor</title>
 <g id="a_node7"><a xlink:href="../../../cxx03/100-inheritance-oo-design/destructor.html" xlink:title="Destructors And Inheritance">
-<ellipse fill="#dcdcdc" stroke="black" cx="461" cy="-595.5" rx="115.33" ry="18"/>
-<text text-anchor="middle" x="461" y="-590.45" font-family="Times,serif" font-size="14.00">Destructors And Inheritance</text>
+<ellipse fill="#dcdcdc" stroke="black" cx="415" cy="-595.5" rx="115.33" ry="18"/>
+<text text-anchor="middle" x="415" y="-590.45" font-family="Times,serif" font-size="14.00">Destructors And Inheritance</text>
 </a>
 </g>
 </g>
-<!-- cxx03_inheritance_oo_virtual_destructor&#45;&gt;cxx03_inheritance_oo_destructor -->
-<g id="edge10" class="edge">
-<title>cxx03_inheritance_oo_virtual_destructor&#45;&gt;cxx03_inheritance_oo_destructor</title>
-<path fill="none" stroke="black" d="M467.89,-721.22C474.01,-711.26 480.84,-698.23 484,-685.5 487.85,-669.97 487.25,-665.17 484,-649.5 482.16,-640.66 478.78,-631.49 475.16,-623.3"/>
-<polygon fill="black" stroke="black" points="477.99,-622.11 470.54,-614.57 471.66,-625.11 477.99,-622.11"/>
+<!-- cxx03_inheritance_oo_destructor&#45;&gt;cxx03_data_encapsulation_ctor_dtor -->
+<g id="edge4" class="edge">
+<title>cxx03_inheritance_oo_destructor&#45;&gt;cxx03_data_encapsulation_ctor_dtor</title>
+<path fill="none" stroke="black" d="M490.29,-581.53C507.4,-578.07 525.41,-574.02 542,-569.5 571.94,-561.34 604.69,-550 631.08,-540.23"/>
+<polygon fill="black" stroke="black" points="632.09,-543.22 640.23,-536.43 629.64,-536.66 632.09,-543.22"/>
+</g>
+<!-- cxx03_inheritance_oo_basics -->
+<g id="node9" class="node">
+<title>cxx03_inheritance_oo_basics</title>
+<g id="a_node9"><a xlink:href="../../../cxx03/100-inheritance-oo-design/basics.html" xlink:title="Inheritance Basics">
+<ellipse fill="#dcdcdc" stroke="black" cx="415" cy="-519" rx="78.99" ry="18"/>
+<text text-anchor="middle" x="415" y="-513.95" font-family="Times,serif" font-size="14.00">Inheritance Basics</text>
+</a>
+</g>
+</g>
+<!-- cxx03_inheritance_oo_destructor&#45;&gt;cxx03_inheritance_oo_basics -->
+<g id="edge3" class="edge">
+<title>cxx03_inheritance_oo_destructor&#45;&gt;cxx03_inheritance_oo_basics</title>
+<path fill="none" stroke="black" d="M415,-577.22C415,-568.63 415,-558.03 415,-548.3"/>
+<polygon fill="black" stroke="black" points="418.5,-548.44 415,-538.44 411.5,-548.44 418.5,-548.44"/>
 </g>
 <!-- cxx03_inheritance_oo_interface -->
-<g id="node6" class="node">
+<g id="node8" class="node">
 <title>cxx03_inheritance_oo_interface</title>
-<g id="a_node6"><a xlink:href="../../../cxx03/100-inheritance-oo-design/interface.html" xlink:title="C++ “Interfaces”">
+<g id="a_node8"><a xlink:href="../../../cxx03/100-inheritance-oo-design/interface.html" xlink:title="C++ “Interfaces”">
 <ellipse fill="#dcdcdc" stroke="black" cx="332" cy="-811.5" rx="75.41" ry="18"/>
 <text text-anchor="middle" x="332" y="-806.45" font-family="Times,serif" font-size="14.00">C++ “Interfaces”</text>
 </a>
 </g>
 </g>
-<!-- cxx03_inheritance_oo_interface&#45;&gt;cxx03_inheritance_oo_polymorphism -->
-<g id="edge20" class="edge">
-<title>cxx03_inheritance_oo_interface&#45;&gt;cxx03_inheritance_oo_polymorphism</title>
-<path fill="none" stroke="black" d="M332,-793.09C332,-769 332,-725.25 332,-696.53"/>
-<polygon fill="black" stroke="black" points="335.5,-696.61 332,-686.61 328.5,-696.61 335.5,-696.61"/>
+<!-- cxx03_inheritance_oo_polymorphism -->
+<g id="node10" class="node">
+<title>cxx03_inheritance_oo_polymorphism</title>
+<g id="a_node10"><a xlink:href="../../../cxx03/100-inheritance-oo-design/polymorphism.html" xlink:title="Polymorphic Usage Of Objects">
+<ellipse fill="#dcdcdc" stroke="black" cx="266" cy="-667.5" rx="127.61" ry="18"/>
+<text text-anchor="middle" x="266" y="-662.45" font-family="Times,serif" font-size="14.00">Polymorphic Usage Of Objects</text>
+</a>
 </g>
-<!-- cxx03_inheritance_oo_interface&#45;&gt;cxx03_inheritance_oo_virtual_method -->
-<g id="edge19" class="edge">
-<title>cxx03_inheritance_oo_interface&#45;&gt;cxx03_inheritance_oo_virtual_method</title>
-<path fill="none" stroke="black" d="M303.19,-794.43C269.95,-774.04 217.03,-735.43 195,-685.5 188.54,-670.86 188.36,-664.06 195,-649.5 200.46,-637.53 210.1,-627.22 220.12,-618.96"/>
-<polygon fill="black" stroke="black" points="221.74,-621.37 227.56,-612.51 217.49,-615.81 221.74,-621.37"/>
+</g>
+<!-- cxx03_inheritance_oo_interface&#45;&gt;cxx03_inheritance_oo_polymorphism -->
+<g id="edge6" class="edge">
+<title>cxx03_inheritance_oo_interface&#45;&gt;cxx03_inheritance_oo_polymorphism</title>
+<path fill="none" stroke="black" d="M288.65,-796.35C270.57,-788.06 251.39,-775.57 241,-757.5 229.88,-738.16 238.21,-713.58 248.14,-695.15"/>
+<polygon fill="black" stroke="black" points="251.54,-697.28 253.55,-686.88 245.49,-693.75 251.54,-697.28"/>
+</g>
+<!-- cxx03_inheritance_oo_virtual_destructor -->
+<g id="node11" class="node">
+<title>cxx03_inheritance_oo_virtual_destructor</title>
+<g id="a_node11"><a xlink:href="../../../cxx03/100-inheritance-oo-design/virtual-destructor.html" xlink:title="Virtual Destructors">
+<ellipse fill="#dcdcdc" stroke="black" cx="332" cy="-739.5" rx="81.55" ry="18"/>
+<text text-anchor="middle" x="332" y="-734.45" font-family="Times,serif" font-size="14.00">Virtual Destructors</text>
+</a>
+</g>
 </g>
 <!-- cxx03_inheritance_oo_interface&#45;&gt;cxx03_inheritance_oo_virtual_destructor -->
-<g id="edge21" class="edge">
+<g id="edge7" class="edge">
 <title>cxx03_inheritance_oo_interface&#45;&gt;cxx03_inheritance_oo_virtual_destructor</title>
-<path fill="none" stroke="black" d="M360.45,-794.44C377.5,-784.82 399.39,-772.46 417.92,-762"/>
-<polygon fill="black" stroke="black" points="419.27,-764.69 426.25,-756.73 415.83,-758.6 419.27,-764.69"/>
+<path fill="none" stroke="black" d="M332,-793.2C332,-785.74 332,-776.82 332,-768.47"/>
+<polygon fill="black" stroke="black" points="335.5,-768.6 332,-758.6 328.5,-768.6 335.5,-768.6"/>
 </g>
-<!-- cxx03_inheritance_oo_destructor&#45;&gt;cxx03_inheritance_oo_basics -->
-<g id="edge22" class="edge">
-<title>cxx03_inheritance_oo_destructor&#45;&gt;cxx03_inheritance_oo_basics</title>
-<path fill="none" stroke="black" d="M461,-577.22C461,-568.63 461,-558.03 461,-548.3"/>
-<polygon fill="black" stroke="black" points="464.5,-548.44 461,-538.44 457.5,-548.44 464.5,-548.44"/>
-</g>
-<!-- cxx03_data_encapsulation_ctor_dtor -->
+<!-- cxx03_inheritance_oo_virtual_method -->
 <g id="node12" class="node">
-<title>cxx03_data_encapsulation_ctor_dtor</title>
-<g id="a_node12"><a xlink:href="../../../cxx03/020-data-encapsulation/ctor-dtor.html" xlink:title="More Constructors, Destructors">
-<ellipse fill="#dcdcdc" stroke="black" cx="729" cy="-519" rx="128.63" ry="18"/>
-<text text-anchor="middle" x="729" y="-513.95" font-family="Times,serif" font-size="14.00">More Constructors, Destructors</text>
+<title>cxx03_inheritance_oo_virtual_method</title>
+<g id="a_node12"><a xlink:href="../../../cxx03/100-inheritance-oo-design/virtual-method.html" xlink:title="Virtual Methods">
+<ellipse fill="#dcdcdc" stroke="black" cx="210" cy="-595.5" rx="71.82" ry="18"/>
+<text text-anchor="middle" x="210" y="-590.45" font-family="Times,serif" font-size="14.00">Virtual Methods</text>
 </a>
 </g>
 </g>
-<!-- cxx03_inheritance_oo_destructor&#45;&gt;cxx03_data_encapsulation_ctor_dtor -->
-<g id="edge23" class="edge">
-<title>cxx03_inheritance_oo_destructor&#45;&gt;cxx03_data_encapsulation_ctor_dtor</title>
-<path fill="none" stroke="black" d="M536.29,-581.53C553.4,-578.07 571.41,-574.02 588,-569.5 617.94,-561.34 650.69,-550 677.08,-540.23"/>
-<polygon fill="black" stroke="black" points="678.09,-543.22 686.23,-536.43 675.64,-536.66 678.09,-543.22"/>
+<!-- cxx03_inheritance_oo_interface&#45;&gt;cxx03_inheritance_oo_virtual_method -->
+<g id="edge5" class="edge">
+<title>cxx03_inheritance_oo_interface&#45;&gt;cxx03_inheritance_oo_virtual_method</title>
+<path fill="none" stroke="black" d="M375.35,-796.35C393.43,-788.06 412.61,-775.57 423,-757.5 435.48,-735.8 417.67,-656.81 411,-649.5 401.58,-639.16 329.87,-621.91 274.76,-609.91"/>
+<polygon fill="black" stroke="black" points="275.85,-606.35 265.34,-607.66 274.37,-613.19 275.85,-606.35"/>
 </g>
-<!-- cxx03_data_encapsulation_c -->
-<g id="node8" class="node">
-<title>cxx03_data_encapsulation_c</title>
-<g id="a_node8"><a xlink:href="../../../cxx03/020-data-encapsulation/c.html" xlink:title="Object Oriented Programming In Good Ol’ C">
-<ellipse fill="#dcdcdc" stroke="black" cx="781" cy="-231" rx="180.84" ry="18"/>
-<text text-anchor="middle" x="781" y="-225.95" font-family="Times,serif" font-size="14.00">Object Oriented Programming In Good Ol’ C</text>
-</a>
+<!-- cxx03_inheritance_oo_basics&#45;&gt;cxx03_data_encapsulation_classes_objects -->
+<g id="edge12" class="edge">
+<title>cxx03_inheritance_oo_basics&#45;&gt;cxx03_data_encapsulation_classes_objects</title>
+<path fill="none" stroke="black" d="M436.47,-501.4C475.86,-471.22 562.72,-405.99 640,-357 657.63,-345.82 677.75,-334.42 694.92,-325.06"/>
+<polygon fill="black" stroke="black" points="695.98,-327.93 703.12,-320.09 692.65,-321.77 695.98,-327.93"/>
 </g>
-</g>
-<!-- cxx03_data_encapsulation_c&#45;&gt;cxx03_introduction -->
-<g id="edge2" class="edge">
-<title>cxx03_data_encapsulation_c&#45;&gt;cxx03_introduction</title>
-<path fill="none" stroke="black" d="M795.34,-212.7C802.25,-204.35 810.68,-194.18 818.27,-185.02"/>
-<polygon fill="black" stroke="black" points="821.54,-187.56 825.23,-177.62 816.15,-183.09 821.54,-187.56"/>
-</g>
-<!-- cxx03_data_encapsulation_ctor_default -->
-<g id="node9" class="node">
-<title>cxx03_data_encapsulation_ctor_default</title>
-<g id="a_node9"><a xlink:href="../../../cxx03/020-data-encapsulation/ctor-default.html" xlink:title="Default Constructor">
-<ellipse fill="#dcdcdc" stroke="black" cx="707" cy="-447" rx="84.62" ry="18"/>
-<text text-anchor="middle" x="707" y="-441.95" font-family="Times,serif" font-size="14.00">Default Constructor</text>
-</a>
-</g>
-</g>
-<!-- cxx03_data_encapsulation_ctor_custom -->
-<g id="node11" class="node">
-<title>cxx03_data_encapsulation_ctor_custom</title>
-<g id="a_node11"><a xlink:href="../../../cxx03/020-data-encapsulation/ctor-custom.html" xlink:title="Custom Constructor">
-<ellipse fill="#dcdcdc" stroke="black" cx="781" cy="-375" rx="86.15" ry="18"/>
-<text text-anchor="middle" x="781" y="-369.95" font-family="Times,serif" font-size="14.00">Custom Constructor</text>
-</a>
-</g>
-</g>
-<!-- cxx03_data_encapsulation_ctor_default&#45;&gt;cxx03_data_encapsulation_ctor_custom -->
-<g id="edge13" class="edge">
-<title>cxx03_data_encapsulation_ctor_default&#45;&gt;cxx03_data_encapsulation_ctor_custom</title>
-<path fill="none" stroke="black" d="M724.91,-429.05C734.03,-420.43 745.27,-409.8 755.29,-400.32"/>
-<polygon fill="black" stroke="black" points="757.14,-403.45 762,-394.03 752.33,-398.36 757.14,-403.45"/>
-</g>
-<!-- cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_introduction -->
-<g id="edge15" class="edge">
-<title>cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_introduction</title>
-<path fill="none" stroke="black" d="M848.97,-291.86C897.23,-283.1 956.01,-268.74 971,-249 982.83,-233.42 982.38,-220.9 971,-205 955.65,-183.55 929.46,-172.21 904.44,-166.25"/>
-<polygon fill="black" stroke="black" points="905.33,-162.65 894.82,-164.02 903.88,-169.5 905.33,-162.65"/>
-</g>
-<!-- cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_data_encapsulation_c -->
+<!-- cxx03_inheritance_oo_polymorphism&#45;&gt;cxx03_inheritance_oo_virtual_method -->
 <g id="edge16" class="edge">
-<title>cxx03_data_encapsulation_classes_objects&#45;&gt;cxx03_data_encapsulation_c</title>
-<path fill="none" stroke="black" d="M781,-284.7C781,-277.24 781,-268.32 781,-259.97"/>
-<polygon fill="black" stroke="black" points="784.5,-260.1 781,-250.1 777.5,-260.1 784.5,-260.1"/>
+<title>cxx03_inheritance_oo_polymorphism&#45;&gt;cxx03_inheritance_oo_virtual_method</title>
+<path fill="none" stroke="black" d="M252.16,-649.2C245.58,-640.97 237.59,-630.98 230.34,-621.92"/>
+<polygon fill="black" stroke="black" points="232.66,-620.23 223.68,-614.6 227.2,-624.6 232.66,-620.23"/>
 </g>
-<!-- cxx03_data_encapsulation_ctor_custom&#45;&gt;cxx03_data_encapsulation_classes_objects -->
-<g id="edge18" class="edge">
-<title>cxx03_data_encapsulation_ctor_custom&#45;&gt;cxx03_data_encapsulation_classes_objects</title>
-<path fill="none" stroke="black" d="M781,-356.7C781,-349.24 781,-340.32 781,-331.97"/>
-<polygon fill="black" stroke="black" points="784.5,-332.1 781,-322.1 777.5,-332.1 784.5,-332.1"/>
+<!-- cxx03_inheritance_oo_virtual_destructor&#45;&gt;cxx03_inheritance_oo_destructor -->
+<g id="edge20" class="edge">
+<title>cxx03_inheritance_oo_virtual_destructor&#45;&gt;cxx03_inheritance_oo_destructor</title>
+<path fill="none" stroke="black" d="M373.48,-723.56C390.45,-715.16 408.34,-702.8 418,-685.5 428.3,-667.06 426.75,-642.95 423.06,-624.47"/>
+<polygon fill="black" stroke="black" points="426.26,-623.75 420.58,-614.8 419.44,-625.33 426.26,-623.75"/>
 </g>
-<!-- cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_default -->
-<g id="edge24" class="edge">
-<title>cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_default</title>
-<path fill="none" stroke="black" d="M723.56,-500.7C721.16,-493.07 718.29,-483.92 715.61,-475.4"/>
-<polygon fill="black" stroke="black" points="718.71,-474.59 712.38,-466.1 712.03,-476.69 718.71,-474.59"/>
+<!-- cxx03_inheritance_oo_virtual_destructor&#45;&gt;cxx03_inheritance_oo_polymorphism -->
+<g id="edge21" class="edge">
+<title>cxx03_inheritance_oo_virtual_destructor&#45;&gt;cxx03_inheritance_oo_polymorphism</title>
+<path fill="none" stroke="black" d="M316.02,-721.55C308.12,-713.17 298.41,-702.88 289.66,-693.6"/>
+<polygon fill="black" stroke="black" points="292.69,-691.65 283.29,-686.78 287.6,-696.45 292.69,-691.65"/>
 </g>
-<!-- cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_custom -->
+<!-- cxx03_inheritance_oo_virtual_destructor&#45;&gt;cxx03_inheritance_oo_virtual_method -->
+<g id="edge19" class="edge">
+<title>cxx03_inheritance_oo_virtual_destructor&#45;&gt;cxx03_inheritance_oo_virtual_method</title>
+<path fill="none" stroke="black" d="M365.3,-722.6C379.67,-713.83 395,-701.45 403,-685.5 410.17,-671.2 412.7,-662.22 403,-649.5 394.92,-638.9 327.2,-621.97 274.23,-610.1"/>
+<polygon fill="black" stroke="black" points="275.04,-606.47 264.52,-607.73 273.52,-613.31 275.04,-606.47"/>
+</g>
+<!-- cxx03_inheritance_oo_virtual_method&#45;&gt;cxx03_inheritance_oo_basics -->
 <g id="edge25" class="edge">
-<title>cxx03_data_encapsulation_ctor_dtor&#45;&gt;cxx03_data_encapsulation_ctor_custom</title>
-<path fill="none" stroke="black" d="M764.27,-501.28C778.39,-492.6 793.16,-480.51 801,-465 810.84,-445.53 804.3,-421.25 796.16,-402.97"/>
-<polygon fill="black" stroke="black" points="798.95,-401.7 791.43,-394.24 792.66,-404.77 798.95,-401.7"/>
+<title>cxx03_inheritance_oo_virtual_method&#45;&gt;cxx03_inheritance_oo_basics</title>
+<path fill="none" stroke="black" d="M249.53,-580.14C282.14,-568.28 328.65,-551.38 364.05,-538.51"/>
+<polygon fill="black" stroke="black" points="364.99,-541.54 373.19,-534.83 362.6,-534.96 364.99,-541.54"/>
 </g>
-<!-- cxx11_embedded_problems_variant_manual_if -->
+<!-- cxx11_embedded_problems_related_no_virtual -->
 <g id="node13" class="node">
-<title>cxx11_embedded_problems_variant_manual_if</title>
-<g id="a_node13"><a xlink:href="variant-manual-if.html" xlink:title="std::variant (Manual Virtual Dispatch, Using if)">
-<ellipse fill="#dcdcdc" stroke="black" cx="332" cy="-1157" rx="188" ry="18"/>
-<text text-anchor="middle" x="332" y="-1151.95" font-family="Times,serif" font-size="14.00">std::variant (Manual Virtual Dispatch, Using if)</text>
+<title>cxx11_embedded_problems_related_no_virtual</title>
+<g id="a_node13"><a xlink:href="related-no-virtual.html" xlink:title="Non&#45;Virtual, But Related">
+<ellipse fill="#dcdcdc" stroke="black" cx="332" cy="-1008.5" rx="104.58" ry="18"/>
+<text text-anchor="middle" x="332" y="-1003.45" font-family="Times,serif" font-size="14.00">Non&#45;Virtual, But Related</text>
 </a>
 </g>
+</g>
+<!-- cxx11_embedded_problems_classic_virtual -->
+<g id="node18" class="node">
+<title>cxx11_embedded_problems_classic_virtual</title>
+<g id="a_node18"><a xlink:href="classic-virtual.html" xlink:title="Classic Virtual">
+<ellipse fill="#dcdcdc" stroke="black" cx="332" cy="-936.5" rx="65.17" ry="18"/>
+<text text-anchor="middle" x="332" y="-931.45" font-family="Times,serif" font-size="14.00">Classic Virtual</text>
+</a>
+</g>
+</g>
+<!-- cxx11_embedded_problems_related_no_virtual&#45;&gt;cxx11_embedded_problems_classic_virtual -->
+<g id="edge8" class="edge">
+<title>cxx11_embedded_problems_related_no_virtual&#45;&gt;cxx11_embedded_problems_classic_virtual</title>
+<path fill="none" stroke="black" d="M332,-990.2C332,-982.74 332,-973.82 332,-965.47"/>
+<polygon fill="black" stroke="black" points="335.5,-965.6 332,-955.6 328.5,-965.6 335.5,-965.6"/>
 </g>
 <!-- cxx11_embedded_problems_unrelated -->
-<g id="node17" class="node">
+<g id="node14" class="node">
 <title>cxx11_embedded_problems_unrelated</title>
-<g id="a_node17"><a xlink:href="unrelated.html" xlink:title="Unrelated (Duck&#45;Typed)">
+<g id="a_node14"><a xlink:href="unrelated.html" xlink:title="Unrelated (Duck&#45;Typed)">
 <ellipse fill="#dcdcdc" stroke="black" cx="332" cy="-1080.5" rx="102.02" ry="18"/>
 <text text-anchor="middle" x="332" y="-1075.45" font-family="Times,serif" font-size="14.00">Unrelated (Duck&#45;Typed)</text>
 </a>
 </g>
 </g>
+<!-- cxx11_embedded_problems_unrelated&#45;&gt;cxx11_embedded_problems_related_no_virtual -->
+<g id="edge15" class="edge">
+<title>cxx11_embedded_problems_unrelated&#45;&gt;cxx11_embedded_problems_related_no_virtual</title>
+<path fill="none" stroke="black" d="M332,-1062.2C332,-1054.74 332,-1045.82 332,-1037.47"/>
+<polygon fill="black" stroke="black" points="335.5,-1037.6 332,-1027.6 328.5,-1037.6 335.5,-1037.6"/>
+</g>
+<!-- cxx11_embedded_problems_variant_automatic_visit -->
+<g id="node15" class="node">
+<title>cxx11_embedded_problems_variant_automatic_visit</title>
+<g id="a_node15"><a xlink:href="variant-automatic-visit.html" xlink:title="std::variant (Automatic Virtual Dispatch Using Template Method)">
+<ellipse fill="#dcdcdc" stroke="black" cx="281" cy="-1301" rx="256.59" ry="18"/>
+<text text-anchor="middle" x="281" y="-1295.95" font-family="Times,serif" font-size="14.00">std::variant (Automatic Virtual Dispatch Using Template Method)</text>
+</a>
+</g>
+</g>
+<!-- cxx11_embedded_problems_variant_manual_visit -->
+<g id="node16" class="node">
+<title>cxx11_embedded_problems_variant_manual_visit</title>
+<g id="a_node16"><a xlink:href="variant-manual-visit.html" xlink:title="std::variant (Manual Virtual Dispatch, Using std::visit)">
+<ellipse fill="#dcdcdc" stroke="black" cx="298" cy="-1229" rx="214.11" ry="18"/>
+<text text-anchor="middle" x="298" y="-1223.95" font-family="Times,serif" font-size="14.00">std::variant (Manual Virtual Dispatch, Using std::visit)</text>
+</a>
+</g>
+</g>
+<!-- cxx11_embedded_problems_variant_automatic_visit&#45;&gt;cxx11_embedded_problems_variant_manual_visit -->
+<g id="edge18" class="edge">
+<title>cxx11_embedded_problems_variant_automatic_visit&#45;&gt;cxx11_embedded_problems_variant_manual_visit</title>
+<path fill="none" stroke="black" d="M285.2,-1282.7C287.03,-1275.15 289.23,-1266.12 291.28,-1257.68"/>
+<polygon fill="black" stroke="black" points="294.89,-1258.65 293.85,-1248.1 288.08,-1257 294.89,-1258.65"/>
+</g>
+<!-- cxx11_embedded_problems_variant_manual_if -->
+<g id="node17" class="node">
+<title>cxx11_embedded_problems_variant_manual_if</title>
+<g id="a_node17"><a xlink:href="variant-manual-if.html" xlink:title="std::variant (Manual Virtual Dispatch, Using if)">
+<ellipse fill="#dcdcdc" stroke="black" cx="332" cy="-1157" rx="188" ry="18"/>
+<text text-anchor="middle" x="332" y="-1151.95" font-family="Times,serif" font-size="14.00">std::variant (Manual Virtual Dispatch, Using if)</text>
+</a>
+</g>
+</g>
+<!-- cxx11_embedded_problems_variant_manual_visit&#45;&gt;cxx11_embedded_problems_variant_manual_if -->
+<g id="edge22" class="edge">
+<title>cxx11_embedded_problems_variant_manual_visit&#45;&gt;cxx11_embedded_problems_variant_manual_if</title>
+<path fill="none" stroke="black" d="M306.4,-1210.7C310.19,-1202.9 314.75,-1193.51 318.97,-1184.83"/>
+<polygon fill="black" stroke="black" points="322.47,-1186.63 323.69,-1176.1 316.17,-1183.57 322.47,-1186.63"/>
+</g>
 <!-- cxx11_embedded_problems_variant_manual_if&#45;&gt;cxx11_embedded_problems_unrelated -->
-<g id="edge4" class="edge">
+<g id="edge23" class="edge">
 <title>cxx11_embedded_problems_variant_manual_if&#45;&gt;cxx11_embedded_problems_unrelated</title>
 <path fill="none" stroke="black" d="M332,-1138.72C332,-1130.13 332,-1119.53 332,-1109.8"/>
 <polygon fill="black" stroke="black" points="335.5,-1109.94 332,-1099.94 328.5,-1109.94 335.5,-1109.94"/>
@@ -514,76 +649,16 @@ Iglberger - CppCon 2021</a></p>
 </g>
 </g>
 <!-- cxx11_embedded_problems_variant_manual_if&#45;&gt;cxx11_miscellaneous_variant -->
-<g id="edge5" class="edge">
+<g id="edge24" class="edge">
 <title>cxx11_embedded_problems_variant_manual_if&#45;&gt;cxx11_miscellaneous_variant</title>
 <path fill="none" stroke="black" d="M473.29,-1144.8C499.01,-1141.35 525.45,-1136.85 550,-1131 579.47,-1123.97 611.33,-1112.38 636.59,-1102.18"/>
 <polygon fill="black" stroke="black" points="637.71,-1105.09 645.63,-1098.06 635.05,-1098.62 637.71,-1105.09"/>
 </g>
-<!-- cxx11_embedded_problems_variant_automatic_visit -->
-<g id="node14" class="node">
-<title>cxx11_embedded_problems_variant_automatic_visit</title>
-<g id="a_node14"><a xlink:href="variant-automatic-visit.html" xlink:title="std::variant (Automatic Virtual Dispatch Using Template Method)">
-<ellipse fill="#dcdcdc" stroke="black" cx="281" cy="-1301" rx="256.59" ry="18"/>
-<text text-anchor="middle" x="281" y="-1295.95" font-family="Times,serif" font-size="14.00">std::variant (Automatic Virtual Dispatch Using Template Method)</text>
-</a>
-</g>
-</g>
-<!-- cxx11_embedded_problems_variant_manual_visit -->
-<g id="node18" class="node">
-<title>cxx11_embedded_problems_variant_manual_visit</title>
-<g id="a_node18"><a xlink:href="variant-manual-visit.html" xlink:title="std::variant (Manual Virtual Dispatch, Using std::visit)">
-<ellipse fill="#dcdcdc" stroke="black" cx="298" cy="-1229" rx="214.11" ry="18"/>
-<text text-anchor="middle" x="298" y="-1223.95" font-family="Times,serif" font-size="14.00">std::variant (Manual Virtual Dispatch, Using std::visit)</text>
-</a>
-</g>
-</g>
-<!-- cxx11_embedded_problems_variant_automatic_visit&#45;&gt;cxx11_embedded_problems_variant_manual_visit -->
-<g id="edge7" class="edge">
-<title>cxx11_embedded_problems_variant_automatic_visit&#45;&gt;cxx11_embedded_problems_variant_manual_visit</title>
-<path fill="none" stroke="black" d="M285.2,-1282.7C287.03,-1275.15 289.23,-1266.12 291.28,-1257.68"/>
-<polygon fill="black" stroke="black" points="294.89,-1258.65 293.85,-1248.1 288.08,-1257 294.89,-1258.65"/>
-</g>
-<!-- cxx11_embedded_problems_related_no_virtual -->
-<g id="node15" class="node">
-<title>cxx11_embedded_problems_related_no_virtual</title>
-<g id="a_node15"><a xlink:href="related-no-virtual.html" xlink:title="Non&#45;Virtual, But Related">
-<ellipse fill="#dcdcdc" stroke="black" cx="332" cy="-1008.5" rx="104.58" ry="18"/>
-<text text-anchor="middle" x="332" y="-1003.45" font-family="Times,serif" font-size="14.00">Non&#45;Virtual, But Related</text>
-</a>
-</g>
-</g>
-<!-- cxx11_embedded_problems_classic_virtual -->
-<g id="node16" class="node">
-<title>cxx11_embedded_problems_classic_virtual</title>
-<g id="a_node16"><a xlink:href="classic-virtual.html" xlink:title="Classic Virtual">
-<ellipse fill="#dcdcdc" stroke="black" cx="332" cy="-936.5" rx="65.17" ry="18"/>
-<text text-anchor="middle" x="332" y="-931.45" font-family="Times,serif" font-size="14.00">Classic Virtual</text>
-</a>
-</g>
-</g>
-<!-- cxx11_embedded_problems_related_no_virtual&#45;&gt;cxx11_embedded_problems_classic_virtual -->
-<g id="edge12" class="edge">
-<title>cxx11_embedded_problems_related_no_virtual&#45;&gt;cxx11_embedded_problems_classic_virtual</title>
-<path fill="none" stroke="black" d="M332,-990.2C332,-982.74 332,-973.82 332,-965.47"/>
-<polygon fill="black" stroke="black" points="335.5,-965.6 332,-955.6 328.5,-965.6 335.5,-965.6"/>
-</g>
 <!-- cxx11_embedded_problems_classic_virtual&#45;&gt;cxx03_inheritance_oo_interface -->
-<g id="edge14" class="edge">
+<g id="edge26" class="edge">
 <title>cxx11_embedded_problems_classic_virtual&#45;&gt;cxx03_inheritance_oo_interface</title>
 <path fill="none" stroke="black" d="M332,-918.14C332,-897.99 332,-864.49 332,-840.62"/>
 <polygon fill="black" stroke="black" points="335.5,-840.77 332,-830.77 328.5,-840.77 335.5,-840.77"/>
-</g>
-<!-- cxx11_embedded_problems_unrelated&#45;&gt;cxx11_embedded_problems_related_no_virtual -->
-<g id="edge17" class="edge">
-<title>cxx11_embedded_problems_unrelated&#45;&gt;cxx11_embedded_problems_related_no_virtual</title>
-<path fill="none" stroke="black" d="M332,-1062.2C332,-1054.74 332,-1045.82 332,-1037.47"/>
-<polygon fill="black" stroke="black" points="335.5,-1037.6 332,-1027.6 328.5,-1037.6 335.5,-1037.6"/>
-</g>
-<!-- cxx11_embedded_problems_variant_manual_visit&#45;&gt;cxx11_embedded_problems_variant_manual_if -->
-<g id="edge26" class="edge">
-<title>cxx11_embedded_problems_variant_manual_visit&#45;&gt;cxx11_embedded_problems_variant_manual_if</title>
-<path fill="none" stroke="black" d="M306.4,-1210.7C310.19,-1202.9 314.75,-1193.51 318.97,-1184.83"/>
-<polygon fill="black" stroke="black" points="322.47,-1186.63 323.69,-1176.1 316.17,-1183.57 322.47,-1186.63"/>
 </g>
 </g>
 </svg>
