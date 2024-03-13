@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File I/O &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css?v=cf071e93" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css?v=70eaaddc" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css?v=5c84f910" />
+    <script src="../../../../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=ffc8af2d"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/sysprog/file-io/group.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="File I/O: Basics" href="basics.html" />
+    <link rel="prev" title="Error Handling" href="../basics/errorhandling.html" />
+
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+
+
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet"/>
+
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/group.html">C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx11/group.html">The New C++ (11-…)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-design-patterns/group.html">Design Patterns With C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-code/index.html">C++ Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-exercises/group.html">C++ Exercises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cmake/group.html">CMake: An Introduction</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">Linux</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../basics/group.html">Linux Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ssh/group.html">SSH: Secure Shell</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../toolchain/group.html">Toolchain, And Cross Development</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../group.html">Linux Systems Programming</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../intro-hw/group.html">Introductory Live Hacking, Hardware-Wise (<code class="docutils literal notranslate"><span class="pre">sysfs</span></code> GPIO)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../basics/group.html">Linux Systems Programming: Basics</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">File I/O</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="basics.html">File I/O: Basics</a></li>
+<li class="toctree-l6"><a class="reference internal" href="example-O_RDONLY.html"><code class="docutils literal notranslate"><span class="pre">O_RDONLY</span></code>: Reading a File</a></li>
+<li class="toctree-l6"><a class="reference internal" href="example-O_WRONLY.html"><code class="docutils literal notranslate"><span class="pre">O_WRONLY</span></code>: Writing A File (Which Must Exist)</a></li>
+<li class="toctree-l6"><a class="reference internal" href="example-O_CREAT.html"><code class="docutils literal notranslate"><span class="pre">O_CREAT</span></code>: Creating A File</a></li>
+<li class="toctree-l6"><a class="reference internal" href="example-O_EXCL.html"><code class="docutils literal notranslate"><span class="pre">O_EXCL</span></code>: Creating A File, But Failing If It Already Exists</a></li>
+<li class="toctree-l6"><a class="reference internal" href="basics-exercise-copy.html">Exercise: Copy A File</a></li>
+<li class="toctree-l6"><a class="reference internal" href="basics-exercise-hole.html">Exercise: Create File With Hole</a></li>
+<li class="toctree-l6"><a class="reference internal" href="exercise-sensor-read.html">Exercise: Read Temperature From Onewire Sensor</a></li>
+<li class="toctree-l6"><a class="reference internal" href="duplicate.html">Duplicating (Whats Going On?)</a></li>
+<li class="toctree-l6"><a class="reference internal" href="misc.html">Miscellaneous</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../blocking-io/group.html">Blocking I/O: What Is That?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../process/group.html">Processes</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../posix-threads/group.html">POSIX Threads</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../scheduling/group.html">Scheduling</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../sysprog_events/topic.html">Sysprog: Events</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../sysprog_ipc/topic.html">Sysprog: POSIX IPC</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../sysprog_signals/topic.html">Sysprog: Signals</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../hardware/group.html">Linux Hardware Interfaces</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../drafts/group.html">Drafts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../clean-code/group.html">Is Software A Craft? Software Is A Craft! ⟶ <em>Clean Code</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing With <code class="docutils literal notranslate"><span class="pre">googletest</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+<section id="file-i-o">
+<h1>File I/O<a class="headerlink" href="#file-i-o" title="Link to this heading">¶</a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#id1" id="id2">Contents</a></p></li>
+<li><p><a class="reference internal" href="#dependencies" id="id3">Dependencies</a></p></li>
+</ul>
+</nav>
+<section id="id1">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Contents</a><a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basics.html">File I/O: Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example-O_RDONLY.html"><code class="docutils literal notranslate"><span class="pre">O_RDONLY</span></code>: Reading a File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example-O_WRONLY.html"><code class="docutils literal notranslate"><span class="pre">O_WRONLY</span></code>: Writing A File (Which Must Exist)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example-O_CREAT.html"><code class="docutils literal notranslate"><span class="pre">O_CREAT</span></code>: Creating A File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example-O_EXCL.html"><code class="docutils literal notranslate"><span class="pre">O_EXCL</span></code>: Creating A File, But Failing If It Already Exists</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basics-exercise-copy.html">Exercise: Copy A File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basics-exercise-hole.html">Exercise: Create File With Hole</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exercise-sensor-read.html">Exercise: Read Temperature From Onewire Sensor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="duplicate.html">Duplicating (Whats Going On?)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellaneous</a></li>
+</ul>
+</div>
+</section>
+<section id="dependencies">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Dependencies</a><a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h2>
+<svg 
+ viewBox="0.00 0.00 1377.00 1200.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1196)">
+<polygon fill="white" stroke="none" points="-4,4 -4,-1196 1373,-1196 1373,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_linux</title>
+<path fill="none" stroke="black" d="M20,-8C20,-8 1349,-8 1349,-8 1355,-8 1361,-14 1361,-20 1361,-20 1361,-1172 1361,-1172 1361,-1178 1355,-1184 1349,-1184 1349,-1184 20,-1184 20,-1184 14,-1184 8,-1178 8,-1172 8,-1172 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="684.5" y="-1166.7" font-family="Times,serif" font-size="14.00">Linux</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_linux_sysprog</title>
+<path fill="none" stroke="black" d="M28,-518C28,-518 1297,-518 1297,-518 1303,-518 1309,-524 1309,-530 1309,-530 1309,-1139.5 1309,-1139.5 1309,-1145.5 1303,-1151.5 1297,-1151.5 1297,-1151.5 28,-1151.5 28,-1151.5 22,-1151.5 16,-1145.5 16,-1139.5 16,-1139.5 16,-530 16,-530 16,-524 22,-518 28,-518"/>
+<text text-anchor="middle" x="662.5" y="-1134.2" font-family="Times,serif" font-size="14.00">Linux Systems Programming</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_linux_sysprog_fileio</title>
+<path fill="none" stroke="black" d="M36,-754.5C36,-754.5 1289,-754.5 1289,-754.5 1295,-754.5 1301,-760.5 1301,-766.5 1301,-766.5 1301,-1107 1301,-1107 1301,-1113 1295,-1119 1289,-1119 1289,-1119 36,-1119 36,-1119 30,-1119 24,-1113 24,-1107 24,-1107 24,-766.5 24,-766.5 24,-760.5 30,-754.5 36,-754.5"/>
+<text text-anchor="middle" x="662.5" y="-1101.7" font-family="Times,serif" font-size="14.00">File I/O</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_linux_sysprog_basics</title>
+<path fill="none" stroke="black" d="M488,-526C488,-526 780,-526 780,-526 786,-526 792,-532 792,-538 792,-538 792,-734.5 792,-734.5 792,-740.5 786,-746.5 780,-746.5 780,-746.5 488,-746.5 488,-746.5 482,-746.5 476,-740.5 476,-734.5 476,-734.5 476,-538 476,-538 476,-532 482,-526 488,-526"/>
+<text text-anchor="middle" x="634" y="-729.2" font-family="Times,serif" font-size="14.00">Linux Systems Programming: Basics</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_linux_basics</title>
+<path fill="none" stroke="black" d="M307,-16C307,-16 1341,-16 1341,-16 1347,-16 1353,-22 1353,-28 1353,-28 1353,-498 1353,-498 1353,-504 1347,-510 1341,-510 1341,-510 307,-510 307,-510 301,-510 295,-504 295,-498 295,-498 295,-28 295,-28 295,-22 301,-16 307,-16"/>
+<text text-anchor="middle" x="824" y="-492.7" font-family="Times,serif" font-size="14.00">Linux Basics</text>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_linux_basics_intro</title>
+<path fill="none" stroke="black" d="M1017,-24C1017,-24 1321,-24 1321,-24 1327,-24 1333,-30 1333,-36 1333,-36 1333,-160.5 1333,-160.5 1333,-166.5 1327,-172.5 1321,-172.5 1321,-172.5 1017,-172.5 1017,-172.5 1011,-172.5 1005,-166.5 1005,-160.5 1005,-160.5 1005,-36 1005,-36 1005,-30 1011,-24 1017,-24"/>
+<text text-anchor="middle" x="1169" y="-155.2" font-family="Times,serif" font-size="14.00">Introduction: Concepts and Terminology</text>
+</g>
+<g id="clust7" class="cluster">
+<title>cluster_linux_basics_permissions</title>
+<path fill="none" stroke="black" d="M827,-401C827,-401 1201,-401 1201,-401 1207,-401 1213,-407 1213,-413 1213,-413 1213,-465.5 1213,-465.5 1213,-471.5 1207,-477.5 1201,-477.5 1201,-477.5 827,-477.5 827,-477.5 821,-477.5 815,-471.5 815,-465.5 815,-465.5 815,-413 815,-413 815,-407 821,-401 827,-401"/>
+<text text-anchor="middle" x="1014" y="-460.2" font-family="Times,serif" font-size="14.00">File System Permissions</text>
+</g>
+<g id="clust8" class="cluster">
+<title>cluster_linux_basics_shell</title>
+<path fill="none" stroke="black" d="M315,-96C315,-96 985,-96 985,-96 991,-96 997,-102 997,-108 997,-108 997,-381 997,-381 997,-387 991,-393 985,-393 985,-393 315,-393 315,-393 309,-393 303,-387 303,-381 303,-381 303,-108 303,-108 303,-102 309,-96 315,-96"/>
+<text text-anchor="middle" x="650" y="-375.7" font-family="Times,serif" font-size="14.00">The Shell (Bash &#45; “Bourne Again Shell”)</text>
+</g>
+<g id="clust9" class="cluster">
+<title>cluster_linux_toolchain</title>
+<path fill="none" stroke="black" d="M88,-401C88,-401 275,-401 275,-401 281,-401 287,-407 287,-413 287,-413 287,-465.5 287,-465.5 287,-471.5 281,-477.5 275,-477.5 275,-477.5 88,-477.5 88,-477.5 82,-477.5 76,-471.5 76,-465.5 76,-465.5 76,-413 76,-413 76,-407 82,-401 88,-401"/>
+<text text-anchor="middle" x="181.5" y="-460.2" font-family="Times,serif" font-size="14.00">Toolchain, And Cross Development</text>
+</g>
+<!-- linux_sysprog_fileio_duplicate -->
+<g id="node1" class="node">
+<title>linux_sysprog_fileio_duplicate</title>
+<g id="a_node1"><a xlink:href="duplicate.html" xlink:title="Duplicating (Whats Going On?)">
+<ellipse fill="#dcdcdc" stroke="black" cx="243" cy="-852.5" rx="130.68" ry="18"/>
+<text text-anchor="middle" x="243" y="-847.45" font-family="Times,serif" font-size="14.00">Duplicating (Whats Going On?)</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_fileio_basics -->
+<g id="node9" class="node">
+<title>linux_sysprog_fileio_basics</title>
+<g id="a_node9"><a xlink:href="basics.html" xlink:title="File I/O: Basics">
+<ellipse fill="#dcdcdc" stroke="black" cx="594" cy="-780.5" rx="69.26" ry="18"/>
+<text text-anchor="middle" x="594" y="-775.45" font-family="Times,serif" font-size="14.00">File I/O: Basics</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_fileio_duplicate&#45;&gt;linux_sysprog_fileio_basics -->
+<g id="edge1" class="edge">
+<title>linux_sysprog_fileio_duplicate&#45;&gt;linux_sysprog_fileio_basics</title>
+<path fill="none" stroke="black" d="M315.3,-837.08C378.34,-824.51 468.94,-806.44 529.55,-794.35"/>
+<polygon fill="black" stroke="black" points="530.01,-797.63 539.13,-792.24 528.64,-790.77 530.01,-797.63"/>
+</g>
+<!-- linux_sysprog_fileio_fileio_group -->
+<g id="node2" class="node">
+<title>linux_sysprog_fileio_fileio_group</title>
+<ellipse fill="#dcdcdc" stroke="black" cx="499" cy="-996.5" rx="40.09" ry="18"/>
+<text text-anchor="middle" x="499" y="-991.45" font-family="Times,serif" font-size="14.00">File I/O</text>
+</g>
+<!-- linux_sysprog_fileio_fileio_group&#45;&gt;linux_sysprog_fileio_duplicate -->
+<g id="edge7" class="edge">
+<title>linux_sysprog_fileio_fileio_group&#45;&gt;linux_sysprog_fileio_duplicate</title>
+<path fill="none" stroke="black" d="M502.43,-978.4C505.34,-958.53 506.63,-925.99 489,-906.5 478.49,-894.87 402.45,-879.63 337.66,-868.47"/>
+<polygon fill="black" stroke="black" points="338.41,-864.88 327.96,-866.65 337.23,-871.78 338.41,-864.88"/>
+</g>
+<!-- linux_sysprog_fileio_basics_exercise_copy -->
+<g id="node3" class="node">
+<title>linux_sysprog_fileio_basics_exercise_copy</title>
+<g id="a_node3"><a xlink:href="basics-exercise-copy.html" xlink:title="Exercise: Copy A File">
+<ellipse fill="red" stroke="black" cx="484" cy="-852.5" rx="92.81" ry="18"/>
+<text text-anchor="middle" x="484" y="-847.45" font-family="Times,serif" font-size="14.00">Exercise: Copy A File</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_fileio_fileio_group&#45;&gt;linux_sysprog_fileio_basics_exercise_copy -->
+<g id="edge5" class="edge">
+<title>linux_sysprog_fileio_fileio_group&#45;&gt;linux_sysprog_fileio_basics_exercise_copy</title>
+<path fill="none" stroke="black" d="M502.35,-978.29C505.3,-960.25 508.5,-931.16 504,-906.5 502.43,-897.89 499.53,-888.86 496.42,-880.74"/>
+<polygon fill="black" stroke="black" points="499.34,-879.63 492.31,-871.71 492.87,-882.29 499.34,-879.63"/>
+</g>
+<!-- linux_sysprog_fileio_basics_exercise_hole -->
+<g id="node5" class="node">
+<title>linux_sysprog_fileio_basics_exercise_hole</title>
+<g id="a_node5"><a xlink:href="basics-exercise-hole.html" xlink:title="Exercise: Create File With Hole">
+<ellipse fill="red" stroke="black" cx="182" cy="-924.5" rx="129.66" ry="18"/>
+<text text-anchor="middle" x="182" y="-919.45" font-family="Times,serif" font-size="14.00">Exercise: Create File With Hole</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_fileio_fileio_group&#45;&gt;linux_sysprog_fileio_basics_exercise_hole -->
+<g id="edge6" class="edge">
+<title>linux_sysprog_fileio_fileio_group&#45;&gt;linux_sysprog_fileio_basics_exercise_hole</title>
+<path fill="none" stroke="black" d="M463.56,-987.67C414.51,-976.84 324.63,-957 259.59,-942.63"/>
+<polygon fill="black" stroke="black" points="260.49,-939.03 249.97,-940.29 258.98,-945.86 260.49,-939.03"/>
+</g>
+<!-- linux_sysprog_fileio_example_O_RDONLY -->
+<g id="node8" class="node">
+<title>linux_sysprog_fileio_example_O_RDONLY</title>
+<g id="a_node8"><a xlink:href="example-O_RDONLY.html" xlink:title="O_RDONLY: Reading a File">
+<ellipse fill="#dcdcdc" stroke="black" cx="1174" cy="-852.5" rx="118.91" ry="18"/>
+<text text-anchor="middle" x="1174" y="-847.45" font-family="Times,serif" font-size="14.00">O_RDONLY: Reading a File</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_fileio_fileio_group&#45;&gt;linux_sysprog_fileio_example_O_RDONLY -->
+<g id="edge3" class="edge">
+<title>linux_sysprog_fileio_fileio_group&#45;&gt;linux_sysprog_fileio_example_O_RDONLY</title>
+<path fill="none" stroke="black" d="M525.78,-982.66C568.25,-962.89 654.11,-925.32 731,-906.5 867.87,-873 906.15,-887.78 1046,-870.5 1055.99,-869.27 1066.41,-867.94 1076.81,-866.6"/>
+<polygon fill="black" stroke="black" points="1077.15,-869.95 1086.62,-865.19 1076.25,-863.01 1077.15,-869.95"/>
+</g>
+<!-- linux_sysprog_fileio_fileio_group&#45;&gt;linux_sysprog_fileio_basics -->
+<g id="edge2" class="edge">
+<title>linux_sysprog_fileio_fileio_group&#45;&gt;linux_sysprog_fileio_basics</title>
+<path fill="none" stroke="black" d="M460.73,-990.65C426.13,-984.55 375.48,-971.17 341,-942.5 326.93,-930.8 336.03,-916.94 321,-906.5 233.5,-845.71 153.45,-951.3 84,-870.5 73.57,-858.37 73.29,-846.38 84,-834.5 112.25,-803.16 378.45,-789.17 514.6,-784.02"/>
+<polygon fill="black" stroke="black" points="514.51,-787.49 524.37,-783.62 514.25,-780.49 514.51,-787.49"/>
+</g>
+<!-- linux_sysprog_fileio_misc -->
+<g id="node10" class="node">
+<title>linux_sysprog_fileio_misc</title>
+<g id="a_node10"><a xlink:href="misc.html" xlink:title="Miscellaneous">
+<ellipse fill="#dcdcdc" stroke="black" cx="415" cy="-924.5" rx="64.66" ry="18"/>
+<text text-anchor="middle" x="415" y="-919.45" font-family="Times,serif" font-size="14.00">Miscellaneous</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_fileio_fileio_group&#45;&gt;linux_sysprog_fileio_misc -->
+<g id="edge8" class="edge">
+<title>linux_sysprog_fileio_fileio_group&#45;&gt;linux_sysprog_fileio_misc</title>
+<path fill="none" stroke="black" d="M480.77,-980.31C469.72,-971.1 455.38,-959.15 442.92,-948.77"/>
+<polygon fill="black" stroke="black" points="445.58,-945.59 435.66,-941.88 441.1,-950.97 445.58,-945.59"/>
+</g>
+<!-- linux_sysprog_fileio_example_O_WRONLY -->
+<g id="node11" class="node">
+<title>linux_sysprog_fileio_example_O_WRONLY</title>
+<g id="a_node11"><a xlink:href="example-O_WRONLY.html" xlink:title="O_WRONLY: Writing A File (Which Must Exist)">
+<ellipse fill="#dcdcdc" stroke="black" cx="938" cy="-924.5" rx="197.73" ry="18"/>
+<text text-anchor="middle" x="938" y="-919.45" font-family="Times,serif" font-size="14.00">O_WRONLY: Writing A File (Which Must Exist)</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_fileio_fileio_group&#45;&gt;linux_sysprog_fileio_example_O_WRONLY -->
+<g id="edge4" class="edge">
+<title>linux_sysprog_fileio_fileio_group&#45;&gt;linux_sysprog_fileio_example_O_WRONLY</title>
+<path fill="none" stroke="black" d="M536.43,-989.53C601.28,-979.19 736.76,-957.59 832.37,-942.34"/>
+<polygon fill="black" stroke="black" points="832.63,-945.69 841.95,-940.66 831.52,-938.77 832.63,-945.69"/>
+</g>
+<!-- linux_sysprog_fileio_basics_exercise_copy&#45;&gt;linux_sysprog_fileio_basics -->
+<g id="edge9" class="edge">
+<title>linux_sysprog_fileio_basics_exercise_copy&#45;&gt;linux_sysprog_fileio_basics</title>
+<path fill="none" stroke="black" d="M510.07,-834.91C524.94,-825.45 543.75,-813.47 559.8,-803.26"/>
+<polygon fill="black" stroke="black" points="561.32,-805.81 567.88,-797.49 557.56,-799.9 561.32,-805.81"/>
+</g>
+<!-- linux_sysprog_basics_errorhandling -->
+<g id="node12" class="node">
+<title>linux_sysprog_basics_errorhandling</title>
+<g id="a_node12"><a xlink:href="../basics/errorhandling.html" xlink:title="Error Handling">
+<ellipse fill="#dcdcdc" stroke="black" cx="551" cy="-624" rx="67.22" ry="18"/>
+<text text-anchor="middle" x="551" y="-618.95" font-family="Times,serif" font-size="14.00">Error Handling</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_fileio_basics_exercise_copy&#45;&gt;linux_sysprog_basics_errorhandling -->
+<g id="edge10" class="edge">
+<title>linux_sysprog_fileio_basics_exercise_copy&#45;&gt;linux_sysprog_basics_errorhandling</title>
+<path fill="none" stroke="black" d="M474.05,-834.48C468.73,-824.39 462.73,-811.14 460,-798.5 448.7,-746.15 433.31,-724.43 460,-678 468.83,-662.64 484.01,-651.32 499.47,-643.17"/>
+<polygon fill="black" stroke="black" points="500.61,-646.02 508.08,-638.51 497.55,-639.73 500.61,-646.02"/>
+</g>
+<!-- linux_basics_permissions_basics -->
+<g id="node17" class="node">
+<title>linux_basics_permissions_basics</title>
+<g id="a_node17"><a xlink:href="../../basics/permissions/basics.html" xlink:title="Permissions: Mode, User and Group Ownership">
+<ellipse fill="#dcdcdc" stroke="black" cx="1014" cy="-427" rx="190.56" ry="18"/>
+<text text-anchor="middle" x="1014" y="-421.95" font-family="Times,serif" font-size="14.00">Permissions: Mode, User and Group Ownership</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_fileio_basics_exercise_copy&#45;&gt;linux_basics_permissions_basics -->
+<g id="edge11" class="edge">
+<title>linux_sysprog_fileio_basics_exercise_copy&#45;&gt;linux_basics_permissions_basics</title>
+<path fill="none" stroke="black" d="M557.81,-841.2C683.36,-821.59 925,-773.87 925,-697 925,-697 925,-697 925,-623 925,-557.3 967.32,-489.48 993.6,-453.71"/>
+<polygon fill="black" stroke="black" points="996.69,-456.42 999.9,-446.33 991.09,-452.22 996.69,-456.42"/>
+</g>
+<!-- linux_sysprog_fileio_example_O_CREAT -->
+<g id="node4" class="node">
+<title>linux_sysprog_fileio_example_O_CREAT</title>
+<g id="a_node4"><a xlink:href="example-O_CREAT.html" xlink:title="O_CREAT: Creating A File">
+<ellipse fill="#dcdcdc" stroke="black" cx="938" cy="-996.5" rx="112.77" ry="18"/>
+<text text-anchor="middle" x="938" y="-991.45" font-family="Times,serif" font-size="14.00">O_CREAT: Creating A File</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_fileio_example_O_CREAT&#45;&gt;linux_sysprog_fileio_basics -->
+<g id="edge14" class="edge">
+<title>linux_sysprog_fileio_example_O_CREAT&#45;&gt;linux_sysprog_fileio_basics</title>
+<path fill="none" stroke="black" d="M834.95,-988.94C755.45,-977.71 650.89,-948.04 601,-870.5 589.47,-852.58 588.31,-828.24 589.7,-809.55"/>
+<polygon fill="black" stroke="black" points="593.27,-810.05 590.83,-799.74 586.31,-809.33 593.27,-810.05"/>
+</g>
+<!-- linux_sysprog_fileio_example_O_CREAT&#45;&gt;linux_sysprog_fileio_example_O_WRONLY -->
+<g id="edge15" class="edge">
+<title>linux_sysprog_fileio_example_O_CREAT&#45;&gt;linux_sysprog_fileio_example_O_WRONLY</title>
+<path fill="none" stroke="black" d="M938,-978.2C938,-970.74 938,-961.82 938,-953.47"/>
+<polygon fill="black" stroke="black" points="941.5,-953.6 938,-943.6 934.5,-953.6 941.5,-953.6"/>
+</g>
+<!-- linux_sysprog_fileio_example_O_CREAT&#45;&gt;linux_basics_permissions_basics -->
+<g id="edge16" class="edge">
+<title>linux_sysprog_fileio_example_O_CREAT&#45;&gt;linux_basics_permissions_basics</title>
+<path fill="none" stroke="black" d="M1017.26,-983.43C1132.31,-963.64 1332,-919.76 1332,-853.5 1332,-853.5 1332,-853.5 1332,-623 1332,-571.69 1322.17,-552.29 1284,-518 1241.36,-479.69 1181.92,-457.62 1129.66,-444.94"/>
+<polygon fill="black" stroke="black" points="1130.51,-441.31 1119.97,-442.45 1128.92,-448.13 1130.51,-441.31"/>
+</g>
+<!-- linux_sysprog_fileio_basics_exercise_hole&#45;&gt;linux_sysprog_fileio_basics -->
+<g id="edge19" class="edge">
+<title>linux_sysprog_fileio_basics_exercise_hole&#45;&gt;linux_sysprog_fileio_basics</title>
+<path fill="none" stroke="black" d="M118.47,-908.46C98.91,-900.53 79.5,-888.53 68,-870.5 59.4,-857.01 57.27,-846.37 68,-834.5 97.36,-802.03 375.09,-788.52 514.69,-783.75"/>
+<polygon fill="black" stroke="black" points="514.44,-787.22 524.31,-783.39 514.2,-780.23 514.44,-787.22"/>
+</g>
+<!-- linux_sysprog_fileio_example_O_EXCL -->
+<g id="node6" class="node">
+<title>linux_sysprog_fileio_example_O_EXCL</title>
+<g id="a_node6"><a xlink:href="example-O_EXCL.html" xlink:title="O_EXCL: Creating A File, But Failing If It Already Exists">
+<ellipse fill="#dcdcdc" stroke="black" cx="938" cy="-1068.5" rx="228.95" ry="18"/>
+<text text-anchor="middle" x="938" y="-1063.45" font-family="Times,serif" font-size="14.00">O_EXCL: Creating A File, But Failing If It Already Exists</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_fileio_example_O_EXCL&#45;&gt;linux_sysprog_fileio_example_O_CREAT -->
+<g id="edge21" class="edge">
+<title>linux_sysprog_fileio_example_O_EXCL&#45;&gt;linux_sysprog_fileio_example_O_CREAT</title>
+<path fill="none" stroke="black" d="M938,-1050.2C938,-1042.74 938,-1033.82 938,-1025.47"/>
+<polygon fill="black" stroke="black" points="941.5,-1025.6 938,-1015.6 934.5,-1025.6 941.5,-1025.6"/>
+</g>
+<!-- linux_sysprog_fileio_example_O_EXCL&#45;&gt;linux_sysprog_fileio_basics -->
+<g id="edge20" class="edge">
+<title>linux_sysprog_fileio_example_O_EXCL&#45;&gt;linux_sysprog_fileio_basics</title>
+<path fill="none" stroke="black" d="M769.4,-1055.99C523.07,-1037.41 88.93,-997.27 43,-942.5 26.13,-922.38 44.35,-846.02 57,-834.5 90.12,-804.34 373.51,-789.66 514.71,-784.17"/>
+<polygon fill="black" stroke="black" points="514.59,-787.64 524.45,-783.76 514.32,-780.64 514.59,-787.64"/>
+</g>
+<!-- linux_sysprog_fileio_example_O_EXCL&#45;&gt;linux_basics_permissions_basics -->
+<g id="edge22" class="edge">
+<title>linux_sysprog_fileio_example_O_EXCL&#45;&gt;linux_basics_permissions_basics</title>
+<path fill="none" stroke="black" d="M1045.96,-1052.19C1168.63,-1031.7 1352,-990.23 1352,-925.5 1352,-925.5 1352,-925.5 1352,-623 1352,-572.57 1346.27,-551.97 1309,-518 1265.04,-477.93 1203.68,-455.69 1148.3,-443.35"/>
+<polygon fill="black" stroke="black" points="1149.18,-439.74 1138.67,-441.08 1147.72,-446.59 1149.18,-439.74"/>
+</g>
+<!-- linux_sysprog_fileio_exercise_w1_sensor -->
+<g id="node7" class="node">
+<title>linux_sysprog_fileio_exercise_w1_sensor</title>
+<g id="a_node7"><a xlink:href="exercise-sensor-read.html" xlink:title="Exercise: Read Temperature From Onewire Sensor">
+<ellipse fill="red" stroke="black" cx="836" cy="-852.5" rx="200.8" ry="18"/>
+<text text-anchor="middle" x="836" y="-847.45" font-family="Times,serif" font-size="14.00">Exercise: Read Temperature From Onewire Sensor</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_fileio_exercise_w1_sensor&#45;&gt;linux_sysprog_fileio_basics -->
+<g id="edge23" class="edge">
+<title>linux_sysprog_fileio_exercise_w1_sensor&#45;&gt;linux_sysprog_fileio_basics</title>
+<path fill="none" stroke="black" d="M778.34,-834.82C739.37,-823.55 688.18,-808.74 649.64,-797.59"/>
+<polygon fill="black" stroke="black" points="650.7,-793.97 640.12,-794.55 648.76,-800.69 650.7,-793.97"/>
+</g>
+<!-- linux_sysprog_fileio_exercise_w1_sensor&#45;&gt;linux_sysprog_basics_errorhandling -->
+<g id="edge24" class="edge">
+<title>linux_sysprog_fileio_exercise_w1_sensor&#45;&gt;linux_sysprog_basics_errorhandling</title>
+<path fill="none" stroke="black" d="M700.54,-838.9C627.97,-830.24 547.21,-816.94 516,-798.5 467.29,-769.72 448.83,-728.15 475,-678 482.13,-664.34 494.55,-653.49 507.32,-645.25"/>
+<polygon fill="black" stroke="black" points="508.81,-647.84 515.61,-639.71 505.23,-641.83 508.81,-647.84"/>
+</g>
+<!-- linux_sysprog_fileio_exercise_w1_sensor&#45;&gt;linux_basics_permissions_basics -->
+<g id="edge25" class="edge">
+<title>linux_sysprog_fileio_exercise_w1_sensor&#45;&gt;linux_basics_permissions_basics</title>
+<path fill="none" stroke="black" d="M878.2,-834.64C895.92,-825.92 915.7,-813.86 930,-798.5 964,-761.97 978,-746.9 978,-697 978,-697 978,-697 978,-623 978,-562.37 995.04,-492.87 1005.67,-455.4"/>
+<polygon fill="black" stroke="black" points="1009.18,-456.86 1008.61,-446.28 1002.46,-454.91 1009.18,-456.86"/>
+</g>
+<!-- linux_sysprog_fileio_example_O_RDONLY&#45;&gt;linux_sysprog_fileio_basics -->
+<g id="edge26" class="edge">
+<title>linux_sysprog_fileio_example_O_RDONLY&#45;&gt;linux_sysprog_fileio_basics</title>
+<path fill="none" stroke="black" d="M1087.27,-839.8C1073.47,-837.99 1059.35,-836.17 1046,-834.5 912.6,-817.82 756.85,-799.9 667.39,-789.76"/>
+<polygon fill="black" stroke="black" points="667.88,-786.18 657.55,-788.53 667.09,-793.13 667.88,-786.18"/>
+</g>
+<!-- linux_sysprog_fileio_example_O_RDONLY&#45;&gt;linux_basics_permissions_basics -->
+<g id="edge27" class="edge">
+<title>linux_sysprog_fileio_example_O_RDONLY&#45;&gt;linux_basics_permissions_basics</title>
+<path fill="none" stroke="black" d="M1151.78,-834.43C1120.7,-808.44 1068,-755.71 1068,-697 1068,-697 1068,-697 1068,-623 1068,-561.29 1042.58,-492.46 1026.62,-455.33"/>
+<polygon fill="black" stroke="black" points="1029.43,-454.04 1022.2,-446.3 1023.03,-456.86 1029.43,-454.04"/>
+</g>
+<!-- linux_sysprog_basics_groupnode -->
+<g id="node14" class="node">
+<title>linux_sysprog_basics_groupnode</title>
+<g id="a_node14"><a xlink:href="../basics/group.html" xlink:title="Linux Systems Programming: Basics">
+<ellipse fill="#dcdcdc" stroke="black" cx="634" cy="-696" rx="150.13" ry="18"/>
+<text text-anchor="middle" x="634" y="-690.95" font-family="Times,serif" font-size="14.00">Linux Systems Programming: Basics</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_fileio_basics&#45;&gt;linux_sysprog_basics_groupnode -->
+<g id="edge28" class="edge">
+<title>linux_sysprog_fileio_basics&#45;&gt;linux_sysprog_basics_groupnode</title>
+<path fill="none" stroke="black" d="M602.29,-762.41C607.67,-751.31 614.8,-736.61 620.93,-723.96"/>
+<polygon fill="black" stroke="black" points="624.37,-725.88 625.58,-715.36 618.07,-722.83 624.37,-725.88"/>
+</g>
+<!-- linux_sysprog_fileio_basics&#45;&gt;linux_basics_permissions_basics -->
+<g id="edge29" class="edge">
+<title>linux_sysprog_fileio_basics&#45;&gt;linux_basics_permissions_basics</title>
+<path fill="none" stroke="black" d="M660.33,-774.94C710.62,-770.35 774.6,-761.71 796,-746.5 890.19,-679.57 849.87,-609.83 920,-518 938.75,-493.44 964.3,-469.44 984.02,-452.4"/>
+<polygon fill="black" stroke="black" points="986,-454.46 991.36,-445.32 981.47,-449.13 986,-454.46"/>
+</g>
+<!-- linux_sysprog_fileio_misc&#45;&gt;linux_sysprog_fileio_basics -->
+<g id="edge31" class="edge">
+<title>linux_sysprog_fileio_misc&#45;&gt;linux_sysprog_fileio_basics</title>
+<path fill="none" stroke="black" d="M365.78,-912.44C355.94,-910.36 345.66,-908.28 336,-906.5 229.42,-886.82 30.59,-915.15 103,-834.5 129.95,-804.48 382.66,-789.96 514.61,-784.37"/>
+<polygon fill="black" stroke="black" points="514.6,-787.83 524.45,-783.92 514.31,-780.83 514.6,-787.83"/>
+</g>
+<!-- linux_sysprog_fileio_example_O_WRONLY&#45;&gt;linux_sysprog_fileio_example_O_RDONLY -->
+<g id="edge37" class="edge">
+<title>linux_sysprog_fileio_example_O_WRONLY&#45;&gt;linux_sysprog_fileio_example_O_RDONLY</title>
+<path fill="none" stroke="black" d="M994.23,-906.82C1029.34,-896.41 1074.63,-882.98 1110.96,-872.2"/>
+<polygon fill="black" stroke="black" points="1111.84,-875.29 1120.44,-869.09 1109.85,-868.58 1111.84,-875.29"/>
+</g>
+<!-- linux_sysprog_fileio_example_O_WRONLY&#45;&gt;linux_sysprog_fileio_basics -->
+<g id="edge36" class="edge">
+<title>linux_sysprog_fileio_example_O_WRONLY&#45;&gt;linux_sysprog_fileio_basics</title>
+<path fill="none" stroke="black" d="M788.38,-912.39C721.12,-904.57 651.23,-891.62 626,-870.5 608.02,-855.45 600.15,-829.51 596.69,-809.5"/>
+<polygon fill="black" stroke="black" points="600.05,-809.22 595.16,-799.82 593.12,-810.21 600.05,-809.22"/>
+</g>
+<!-- linux_sysprog_fileio_example_O_WRONLY&#45;&gt;linux_basics_permissions_basics -->
+<g id="edge38" class="edge">
+<title>linux_sysprog_fileio_example_O_WRONLY&#45;&gt;linux_basics_permissions_basics</title>
+<path fill="none" stroke="black" d="M1120.42,-917.34C1197.75,-910.72 1276.02,-897.34 1302,-870.5 1329.68,-841.9 1312,-821.3 1312,-781.5 1312,-781.5 1312,-781.5 1312,-623 1312,-522.15 1191.01,-470.65 1103.22,-446.55"/>
+<polygon fill="black" stroke="black" points="1104.25,-442.94 1093.69,-443.75 1102.45,-449.7 1104.25,-442.94"/>
+</g>
+<!-- linux_sysprog_basics_syscalls -->
+<g id="node13" class="node">
+<title>linux_sysprog_basics_syscalls</title>
+<g id="a_node13"><a xlink:href="../basics/syscalls.html" xlink:title="System Calls vs. Library Functions">
+<ellipse fill="#dcdcdc" stroke="black" cx="626" cy="-552" rx="142.45" ry="18"/>
+<text text-anchor="middle" x="626" y="-546.95" font-family="Times,serif" font-size="14.00">System Calls vs. Library Functions</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_basics_errorhandling&#45;&gt;linux_sysprog_basics_syscalls -->
+<g id="edge18" class="edge">
+<title>linux_sysprog_basics_errorhandling&#45;&gt;linux_sysprog_basics_syscalls</title>
+<path fill="none" stroke="black" d="M568.77,-606.41C578,-597.8 589.46,-587.1 599.69,-577.55"/>
+<polygon fill="black" stroke="black" points="601.65,-580.58 606.57,-571.2 596.87,-575.47 601.65,-580.58"/>
+</g>
+<!-- linux_toolchain_basics -->
+<g id="node23" class="node">
+<title>linux_toolchain_basics</title>
+<g id="a_node23"><a xlink:href="../../toolchain/basics/topic.html" xlink:title="Toolchain: Basics">
+<ellipse fill="#dcdcdc" stroke="black" cx="202" cy="-427" rx="76.94" ry="18"/>
+<text text-anchor="middle" x="202" y="-421.95" font-family="Times,serif" font-size="14.00">Toolchain: Basics</text>
+</a>
+</g>
+</g>
+<!-- linux_sysprog_basics_syscalls&#45;&gt;linux_toolchain_basics -->
+<g id="edge35" class="edge">
+<title>linux_sysprog_basics_syscalls&#45;&gt;linux_toolchain_basics</title>
+<path fill="none" stroke="black" d="M571,-535.05C490.51,-511.69 341.3,-468.41 259.44,-444.66"/>
+<polygon fill="black" stroke="black" points="260.65,-441.08 250.07,-441.66 258.7,-447.8 260.65,-441.08"/>
+</g>
+<!-- linux_sysprog_basics_groupnode&#45;&gt;linux_sysprog_basics_errorhandling -->
+<g id="edge46" class="edge">
+<title>linux_sysprog_basics_groupnode&#45;&gt;linux_sysprog_basics_errorhandling</title>
+<path fill="none" stroke="black" d="M613.48,-677.7C603.08,-668.92 590.28,-658.13 578.99,-648.61"/>
+<polygon fill="black" stroke="black" points="581.61,-645.39 571.71,-641.62 577.1,-650.74 581.61,-645.39"/>
+</g>
+<!-- linux_sysprog_basics_groupnode&#45;&gt;linux_sysprog_basics_syscalls -->
+<g id="edge45" class="edge">
+<title>linux_sysprog_basics_groupnode&#45;&gt;linux_sysprog_basics_syscalls</title>
+<path fill="none" stroke="black" d="M633.02,-677.59C631.66,-653.5 629.2,-609.75 627.58,-581.03"/>
+<polygon fill="black" stroke="black" points="631.02,-580.9 626.96,-571.11 624.03,-581.29 631.02,-580.9"/>
+</g>
+<!-- linux_basics_intro_overview -->
+<g id="node15" class="node">
+<title>linux_basics_intro_overview</title>
+<g id="a_node15"><a xlink:href="../../basics/intro/overview.html" xlink:title="Overview">
+<ellipse fill="#dcdcdc" stroke="black" cx="1169" cy="-50" rx="47.26" ry="18"/>
+<text text-anchor="middle" x="1169" y="-44.95" font-family="Times,serif" font-size="14.00">Overview</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_intro_process -->
+<g id="node16" class="node">
+<title>linux_basics_intro_process</title>
+<g id="a_node16"><a xlink:href="../../basics/intro/process.html" xlink:title="Processes, Scheduling, Address Spaces">
+<ellipse fill="#dcdcdc" stroke="black" cx="1169" cy="-122" rx="156.27" ry="18"/>
+<text text-anchor="middle" x="1169" y="-116.95" font-family="Times,serif" font-size="14.00">Processes, Scheduling, Address Spaces</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_intro_process&#45;&gt;linux_basics_intro_overview -->
+<g id="edge13" class="edge">
+<title>linux_basics_intro_process&#45;&gt;linux_basics_intro_overview</title>
+<path fill="none" stroke="black" d="M1169,-103.7C1169,-96.24 1169,-87.32 1169,-78.97"/>
+<polygon fill="black" stroke="black" points="1172.5,-79.1 1169,-69.1 1165.5,-79.1 1172.5,-79.1"/>
+</g>
+<!-- linux_basics_shell_ls -->
+<g id="node22" class="node">
+<title>linux_basics_shell_ls</title>
+<g id="a_node22"><a xlink:href="../../basics/shell/ls.html" xlink:title="Directory Listings: The ls Command">
+<ellipse fill="#dcdcdc" stroke="black" cx="841" cy="-342.5" rx="148.08" ry="18"/>
+<text text-anchor="middle" x="841" y="-337.45" font-family="Times,serif" font-size="14.00">Directory Listings: The ls Command</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_permissions_basics&#45;&gt;linux_basics_shell_ls -->
+<g id="edge12" class="edge">
+<title>linux_basics_permissions_basics&#45;&gt;linux_basics_shell_ls</title>
+<path fill="none" stroke="black" d="M978.15,-408.91C951.51,-396.2 914.95,-378.77 886.29,-365.1"/>
+<polygon fill="black" stroke="black" points="888.04,-361.58 877.5,-360.43 885.02,-367.89 888.04,-361.58"/>
+</g>
+<!-- linux_basics_shell_paths -->
+<g id="node18" class="node">
+<title>linux_basics_shell_paths</title>
+<g id="a_node18"><a xlink:href="../../basics/shell/paths.html" xlink:title="Absolute and Relative Paths">
+<ellipse fill="#dcdcdc" stroke="black" cx="729" cy="-198.5" rx="115.84" ry="18"/>
+<text text-anchor="middle" x="729" y="-193.45" font-family="Times,serif" font-size="14.00">Absolute and Relative Paths</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_commandline -->
+<g id="node20" class="node">
+<title>linux_basics_shell_commandline</title>
+<g id="a_node20"><a xlink:href="../../basics/shell/commandline.html" xlink:title="Commandline">
+<ellipse fill="#dcdcdc" stroke="black" cx="864" cy="-122" rx="64.15" ry="18"/>
+<text text-anchor="middle" x="864" y="-116.95" font-family="Times,serif" font-size="14.00">Commandline</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_paths&#45;&gt;linux_basics_shell_commandline -->
+<g id="edge30" class="edge">
+<title>linux_basics_shell_paths&#45;&gt;linux_basics_shell_commandline</title>
+<path fill="none" stroke="black" d="M759.3,-180.78C779.25,-169.77 805.51,-155.28 826.74,-143.56"/>
+<polygon fill="black" stroke="black" points="828.04,-146.29 835.1,-138.39 824.66,-140.16 828.04,-146.29"/>
+</g>
+<!-- linux_basics_shell_file_dir_create_rm -->
+<g id="node19" class="node">
+<title>linux_basics_shell_file_dir_create_rm</title>
+<g id="a_node19"><a xlink:href="../../basics/shell/file_dir_create_rm.html" xlink:title="Creating And Removing Files and Directories">
+<ellipse fill="#dcdcdc" stroke="black" cx="493" cy="-342.5" rx="181.86" ry="18"/>
+<text text-anchor="middle" x="493" y="-337.45" font-family="Times,serif" font-size="14.00">Creating And Removing Files and Directories</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_paths -->
+<g id="edge33" class="edge">
+<title>linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M521.47,-324.37C564.13,-298.7 644.68,-250.23 691.9,-221.82"/>
+<polygon fill="black" stroke="black" points="693.4,-224.4 700.16,-216.25 689.79,-218.41 693.4,-224.4"/>
+</g>
+<!-- linux_basics_shell_cwd -->
+<g id="node21" class="node">
+<title>linux_basics_shell_cwd</title>
+<g id="a_node21"><a xlink:href="../../basics/shell/cwd.html" xlink:title="Current Working Directory">
+<ellipse fill="#dcdcdc" stroke="black" cx="859" cy="-270.5" rx="111.23" ry="18"/>
+<text text-anchor="middle" x="859" y="-265.45" font-family="Times,serif" font-size="14.00">Current Working Directory</text>
+</a>
+</g>
+</g>
+<!-- linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_cwd -->
+<g id="edge32" class="edge">
+<title>linux_basics_shell_file_dir_create_rm&#45;&gt;linux_basics_shell_cwd</title>
+<path fill="none" stroke="black" d="M574.23,-325.96C635.02,-314.34 717.78,-298.51 778.42,-286.91"/>
+<polygon fill="black" stroke="black" points="778.93,-290.19 788.09,-284.87 777.61,-283.31 778.93,-290.19"/>
+</g>
+<!-- linux_basics_shell_commandline&#45;&gt;linux_basics_intro_overview -->
+<g id="edge34" class="edge">
+<title>linux_basics_shell_commandline&#45;&gt;linux_basics_intro_overview</title>
+<path fill="none" stroke="black" d="M912.67,-109.83C969.07,-96.89 1061.57,-75.66 1118.67,-62.55"/>
+<polygon fill="black" stroke="black" points="1119.29,-65.77 1128.25,-60.12 1117.72,-58.95 1119.29,-65.77"/>
+</g>
+<!-- linux_basics_shell_cwd&#45;&gt;linux_basics_intro_process -->
+<g id="edge40" class="edge">
+<title>linux_basics_shell_cwd&#45;&gt;linux_basics_intro_process</title>
+<path fill="none" stroke="black" d="M893.96,-252.98C950.32,-226.34 1061.25,-173.92 1123.64,-144.44"/>
+<polygon fill="black" stroke="black" points="1124.67,-147.35 1132.22,-139.91 1121.68,-141.02 1124.67,-147.35"/>
+</g>
+<!-- linux_basics_shell_cwd&#45;&gt;linux_basics_shell_paths -->
+<g id="edge41" class="edge">
+<title>linux_basics_shell_cwd&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M827.86,-252.73C810.34,-243.3 788.25,-231.4 769.4,-221.26"/>
+<polygon fill="black" stroke="black" points="771.35,-217.79 760.88,-216.13 768.03,-223.95 771.35,-217.79"/>
+</g>
+<!-- linux_basics_shell_cwd&#45;&gt;linux_basics_shell_commandline -->
+<g id="edge39" class="edge">
+<title>linux_basics_shell_cwd&#45;&gt;linux_basics_shell_commandline</title>
+<path fill="none" stroke="black" d="M859.59,-252.12C860.44,-227.23 862.02,-181.15 863.03,-151.3"/>
+<polygon fill="black" stroke="black" points="866.56,-151.47 863.41,-141.36 859.57,-151.23 866.56,-151.47"/>
+</g>
+<!-- linux_basics_shell_ls&#45;&gt;linux_basics_intro_overview -->
+<g id="edge44" class="edge">
+<title>linux_basics_shell_ls&#45;&gt;linux_basics_intro_overview</title>
+<path fill="none" stroke="black" d="M979.69,-335.86C1095.51,-322.94 1254.13,-284.32 1334,-172.5 1353.76,-144.83 1354.64,-123.02 1334,-96 1320.53,-78.36 1266.53,-65.98 1223.93,-58.73"/>
+<polygon fill="black" stroke="black" points="1224.53,-55.12 1214.09,-56.95 1223.39,-62.02 1224.53,-55.12"/>
+</g>
+<!-- linux_basics_shell_ls&#45;&gt;linux_basics_shell_paths -->
+<g id="edge43" class="edge">
+<title>linux_basics_shell_ls&#45;&gt;linux_basics_shell_paths</title>
+<path fill="none" stroke="black" d="M787.45,-325.37C769.24,-317.22 750.58,-305.36 739,-288.5 726.9,-270.88 724.91,-246.52 725.66,-227.74"/>
+<polygon fill="black" stroke="black" points="729.22,-228.1 726.42,-217.88 722.23,-227.61 729.22,-228.1"/>
+</g>
+<!-- linux_basics_shell_ls&#45;&gt;linux_basics_shell_cwd -->
+<g id="edge42" class="edge">
+<title>linux_basics_shell_ls&#45;&gt;linux_basics_shell_cwd</title>
+<path fill="none" stroke="black" d="M845.45,-324.2C847.39,-316.65 849.71,-307.62 851.88,-299.18"/>
+<polygon fill="black" stroke="black" points="855.5,-300.16 854.6,-289.6 848.72,-298.42 855.5,-300.16"/>
+</g>
+<!-- linux_toolchain_basics&#45;&gt;linux_basics_shell_file_dir_create_rm -->
+<g id="edge17" class="edge">
+<title>linux_toolchain_basics&#45;&gt;linux_basics_shell_file_dir_create_rm</title>
+<path fill="none" stroke="black" d="M249.73,-412.47C297.19,-399.01 370.5,-378.23 424.24,-363"/>
+<polygon fill="black" stroke="black" points="425.04,-366.12 433.71,-360.03 423.13,-359.39 425.04,-366.12"/>
+</g>
+</g>
+</svg>
+</section>
+</section>
+
+<div class="section ablog__blog_comments">
+  
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2019-2024 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/linux/sysprog/file-io/group.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>pytest Introduction, By Example &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css?v=cf071e93" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css?v=70eaaddc" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css?v=5c84f910" />
+    <script src="../../../../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=ffc8af2d"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/python/swdev/pytest/intro.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="Python: Miscellaneous Topics" href="../../misc/group.html" />
+    <link rel="prev" title="PyTest" href="group.html" />
+
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+
+
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet"/>
+
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../basics/group.html">Python: The Language Fundamentals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../advanced/group.html">Python: More Language Features</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../group.html">Python: Project/Package Management</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../pip/topic.html">Python Package Index</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../venv/topic.html">Virtual Environments</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../pypi.html">Packaging, PyPI Upload (Link Collection)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../unittest.html">The <code class="docutils literal notranslate"><span class="pre">unittest</span></code> Module</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="group.html">PyTest</a><ul class="current">
+<li class="toctree-l6 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">pytest</span></code> Introduction, By Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../misc/group.html">Python: Miscellaneous Topics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../drafts/group.html">Python: Draft Topics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../link-collection.html">Python Links</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../graph.html">Python: All Material, Interrelated</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../exercises/group.html">Exercises</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/group.html">C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx11/group.html">The New C++ (11-…)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-design-patterns/group.html">Design Patterns With C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-code/index.html">C++ Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-exercises/group.html">C++ Exercises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cmake/group.html">CMake: An Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../clean-code/group.html">Is Software A Craft? Software Is A Craft! ⟶ <em>Clean Code</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing With <code class="docutils literal notranslate"><span class="pre">googletest</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+<section id="pytest-introduction-by-example">
+<h1><code class="docutils literal notranslate"><span class="pre">pytest</span></code> Introduction, By Example<a class="headerlink" href="#pytest-introduction-by-example" title="Link to this heading">¶</a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#sample-project-structure" id="id8">Sample Project Structure</a></p></li>
+<li><p><a class="reference internal" href="#pytest-installation-documentation" id="id9"><code class="docutils literal notranslate"><span class="pre">pytest</span></code>: Installation, Documentation</a></p></li>
+<li><p><a class="reference internal" href="#running-tests" id="id10">Running Tests</a></p></li>
+<li><p><a class="reference internal" href="#and-pythonpath" id="id11">And <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code>?</a></p></li>
+<li><p><a class="reference internal" href="#a-simple-test" id="id12">A Simple Test</a></p></li>
+<li><p><a class="reference internal" href="#failing-tests" id="id13">Failing Tests</a></p></li>
+<li><p><a class="reference internal" href="#a-more-realistic-example" id="id14">A More Realistic Example</a></p></li>
+<li><p><a class="reference internal" href="#fixtures" id="id15">Fixtures</a></p></li>
+<li><p><a class="reference internal" href="#temporary-test-directory" id="id16">Temporary Test Directory</a></p></li>
+<li><p><a class="reference internal" href="#marking-tests-as-expected-to-fail" id="id17">Marking Tests as Expected to Fail</a></p></li>
+</ul>
+</nav>
+<aside class="sidebar">
+<p><strong>Documentation</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.pytest.org/en/latest/index.html" title="(in pytest v8.2.0.dev25+gb777b05)"><span>pytest: helps you write better programs</span></a></p></li>
+</ul>
+</aside>
+<section id="sample-project-structure">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Sample Project Structure</a><a class="headerlink" href="#sample-project-structure" title="Link to this heading">¶</a></h2>
+<p>Common project layout:</p>
+<ul class="simple">
+<li><p>Package in <code class="docutils literal notranslate"><span class="pre">src/</span></code></p>
+<ul>
+<li><p>The project’s name is <code class="docutils literal notranslate"><span class="pre">opentraining</span></code></p></li>
+<li><p>So is the name of the root package: <code class="docutils literal notranslate"><span class="pre">src/opentraining</span></code></p></li>
+<li><p>This is where most of the code is (programs are supposed to
+<code class="docutils literal notranslate"><span class="pre">import</span></code> from there).</p></li>
+</ul>
+</li>
+<li><p>Tests are in <code class="docutils literal notranslate"><span class="pre">tests</span></code></p></li>
+<li><p>Package root is <code class="docutils literal notranslate"><span class="pre">/home/jfasch/work/opentraining/</span></code> (your mileage
+might vary)</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>tree<span class="w"> </span>~/work/opentraining/
+<span class="go">/home/jfasch/work/opentraining/</span>
+<span class="go">├── src</span>
+<span class="go">│    └── opentraining</span>
+<span class="go">│        ├── __init__.py</span>
+<span class="go">│        └── core</span>
+<span class="go">│            ├── element.py</span>
+<span class="go">│            ├── errors.py</span>
+<span class="go">│            ├── exercise.py</span>
+<span class="go">│            ├── group.py</span>
+<span class="go">│            ├── node.py</span>
+<span class="go">│            ├── person.py</span>
+<span class="go">│            ├── project.py</span>
+<span class="go">│            ├── soup.py</span>
+<span class="go">│            ├── task.py</span>
+<span class="go">│            └── topic.py</span>
+<span class="go">└── tests</span>
+<span class="go">    ├── __init__.py</span>
+<span class="go">    ├── test_project.py</span>
+<span class="go">    ├── test_soup.py</span>
+<span class="go">    └── test_task.py</span>
+</pre></div>
+</div>
+</section>
+<section id="pytest-installation-documentation">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">pytest</span></code>: Installation, Documentation</a><a class="headerlink" href="#pytest-installation-documentation" title="Link to this heading">¶</a></h2>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">pytest</span></code> is a PyPi package (<a class="reference external" href="https://pypi.org/project/pytest/">here</a>)</p></li>
+<li><p>Suggest to create a project-specific <a class="reference internal" href="../venv/topic.html"><span class="doc">virtual environment</span></a>, and install it into that.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>.<span class="w"> </span>~/venv/opentraining/bin/activate
+<span class="gp gp-VirtualEnv">(opentraining)</span> <span class="gp">$ </span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>pytest
+</pre></div>
+</div>
+</li>
+<li><p><a class="reference external" href="https://docs.pytest.org/en/latest/index.html" title="(in pytest v8.2.0.dev25+gb777b05)"><span class="xref std std-doc">Homepage and documentation</span></a></p></li>
+</ul>
+</section>
+<section id="running-tests">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Running Tests</a><a class="headerlink" href="#running-tests" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pytest</span></code> has no stringent requirements - only sane defaults</p></li>
+<li><p>Awesome <em>test discovery</em> ⟶ working against <em>Lost
+Tests Syndrome</em></p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Run all tests</span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp gp-VirtualEnv">(opentraining)</span> <span class="gp">$ </span><span class="nb">pwd</span>
+<span class="go">/home/jfasch/work/opentraining</span>
+<span class="gp gp-VirtualEnv">(opentraining)</span> <span class="gp">$ </span>python<span class="w"> </span>-m<span class="w"> </span>pytest
+<span class="go">============================= test session starts =============================</span>
+<span class="go">platform linux -- Python 3.9.7, pytest-6.2.5, py-1.11.0, pluggy-1.0.0</span>
+<span class="go">rootdir: /home/jfasch/work/opentraining</span>
+<span class="go">collected 10 items</span>
+
+<span class="go">tests/test_project.py .....                                             [ 50%]</span>
+<span class="go">tests/test_soup.py ...                                                  [ 80%]</span>
+<span class="go">tests/test_task.py ..                                                   [100%]</span>
+
+<span class="go">============================== 5 passed in 0.19s ==============================</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Run all tests in a file</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp gp-VirtualEnv">(opentraining)</span> <span class="gp">$ </span>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>tests/test_project.py
+<span class="go">============================= test session starts =============================</span>
+<span class="go">platform linux -- Python 3.9.7, pytest-6.2.5, py-1.11.0, pluggy-1.0.0</span>
+<span class="go">rootdir: /home/jfasch/work/opentraining</span>
+<span class="go">collected 5 items</span>
+
+<span class="go">tests/test_project.py .....                                             [100%]</span>
+
+<span class="go">============================== 5 passed in 0.19s ==============================</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Run single test from file</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>tests/test_project.py<span class="w"> </span>-k<span class="w"> </span>test_person_points
+<span class="go">============================= test session starts =============================</span>
+<span class="go">platform linux -- Python 3.9.7, pytest-6.2.5, py-1.11.0, pluggy-1.0.0</span>
+<span class="go">rootdir: /home/jfasch/work/opentraining</span>
+<span class="go">collected 5 items / 4 deselected / 1 selected</span>
+
+<span class="go">tests/test_project.py .                                                 [100%]</span>
+
+<span class="go">======================= 1 passed, 4 deselected in 0.19s =======================</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="and-pythonpath">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">And <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code>?</a><a class="headerlink" href="#and-pythonpath" title="Link to this heading">¶</a></h2>
+<ul>
+<li><p>How do tests (in <code class="docutils literal notranslate"><span class="pre">tests/</span></code>) import modules from
+<code class="docutils literal notranslate"><span class="pre">src/opentraining</span></code>?</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pytest</span></code> does not help us in this regard. Arguments:</p>
+<ul class="simple">
+<li><p>Tests are not always run against code in the same package (in
+<code class="docutils literal notranslate"><span class="pre">../src/</span></code> for example) - the <em>uninstalled</em> case.</p></li>
+<li><p>Tests might also be run against installed packages
+⟶ path already points there, nothing to do.</p></li>
+</ul>
+</li>
+<li><p>When running tests against <em>uninstalled</em> code in the same package,
+an easy workaround is to tweak <code class="docutils literal notranslate"><span class="pre">sys.path</span></code> in the topmost test
+<code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file, <code class="docutils literal notranslate"><span class="pre">tests/__init__.py</span></code></p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/__init__.py</span></code></span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;src&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Normally, when hacking about on your project, you have the
+<code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> point into <code class="docutils literal notranslate"><span class="pre">src/</span></code> anyway - so <em>for you as a
+developer</em>, tweaking the module search path in such a way is not
+necessary.</p>
+<p>It should be easy to run tests for <em>everybody</em> though, not only
+developers who generally know the package, but also</p>
+<ul class="simple">
+<li><p>Testers and integrators</p></li>
+<li><p>Aspiring developers</p></li>
+<li><p>Build and CI bots</p></li>
+</ul>
+</div>
+</section>
+<section id="a-simple-test">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">A Simple Test</a><a class="headerlink" href="#a-simple-test" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>What is in a test? What’s it that a <code class="docutils literal notranslate"><span class="pre">test_*.py</span></code> file contains?</p></li>
+<li><p>⟶ in the simplest case, a number of functions whose
+names start with <code class="docutils literal notranslate"><span class="pre">test_</span></code></p></li>
+<li><p>(Such test discovery strategies are only the default, and can be
+overridden if necessary)</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Simple test (passes), in file <code class="docutils literal notranslate"><span class="pre">tests/test_simple.py</span></code></span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_trivial</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="mi">1</span><span class="o">+</span><span class="mi">1</span> <span class="o">==</span> <span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Run simple test (just like explained above)</span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp gp-VirtualEnv">(opentraining)</span> <span class="gp">$ </span>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>tests/test_simple.py
+<span class="go">============================= test session starts =============================</span>
+<span class="go">platform linux -- Python 3.9.7, pytest-6.2.5, py-1.11.0, pluggy-1.0.0</span>
+<span class="go">rootdir: /home/jfasch/work/opentraining</span>
+<span class="go">collected 1 item</span>
+
+<span class="go">tests/test_simple.py .                                                  [100%]</span>
+
+<span class="go">============================== 1 passed in 0.00s ==============================</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="failing-tests">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Failing Tests</a><a class="headerlink" href="#failing-tests" title="Link to this heading">¶</a></h2>
+<p>That was simple. Lets add another test to the same file,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_trivial_but_fails</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="mi">1</span><span class="o">+</span><span class="mi">1</span> <span class="o">==</span> <span class="mi">3</span>
+</pre></div>
+</div>
+<p>Run both tests,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>tests/test_simple.py
+<span class="go">============================= test session starts =============================</span>
+<span class="go">platform linux -- Python 3.9.7, pytest-6.2.5, py-1.11.0, pluggy-1.0.0</span>
+<span class="go">rootdir: /home/jfasch/work/opentraining</span>
+<span class="go">collected 2 items</span>
+
+<span class="go">tests/test_simple.py .F                                                 [100%]</span>
+
+<span class="go">================================== FAILURES ===================================</span>
+<span class="go">___________________________ test_trivial_but_fails ____________________________</span>
+
+<span class="go">    def test_trivial_but_fails():</span>
+<span class="go">&gt;       assert 1+1 == 3</span>
+<span class="go">E       assert (1 + 1) == 3</span>
+
+<span class="go">tests/test_simple.py:5: AssertionError</span>
+<span class="go">=========================== short test summary info ===========================</span>
+<span class="go">FAILED tests/test_simple.py::test_trivial_but_fails - assert (1 + 1) == 3</span>
+<span class="go">========================= 1 failed, 1 passed in 0.04s =========================</span>
+</pre></div>
+</div>
+</section>
+<section id="a-more-realistic-example">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">A More Realistic Example</a><a class="headerlink" href="#a-more-realistic-example" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">opentraining</span></code> <a class="reference external" href="https://opentraining.readthedocs.io/en/latest/index.html" title="(in OpenTraining)"><span class="xref std std-doc">framework</span></a> of <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> extensions has a “project management”
+subsystem that allows a trainer to conduct a light form of
+grading. Among others, there is a class <code class="docutils literal notranslate"><span class="pre">Task</span></code>, one of whose
+responsiblities is to calculate <em>statistics</em>.</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_task.py</span></code></span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_stats</span><span class="p">():</span>
+    <span class="n">task</span> <span class="o">=</span> <span class="n">Task</span><span class="p">(</span>
+        <span class="c1"># ... stuff omitted ...</span>
+
+        <span class="n">implementation_points</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span>
+        <span class="n">implementors</span><span class="o">=</span><span class="p">[([</span><span class="s1">&#39;implementor1&#39;</span><span class="p">],</span> <span class="mi">30</span><span class="p">),</span> <span class="p">([</span><span class="s1">&#39;implementor2&#39;</span><span class="p">],</span> <span class="mi">20</span><span class="p">)],</span>
+        <span class="n">documentation_points</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+        <span class="n">documenters</span><span class="o">=</span><span class="p">[([</span><span class="s1">&#39;documenter&#39;</span><span class="p">],</span> <span class="mi">30</span><span class="p">)],</span>
+        <span class="n">integration_points</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span>
+        <span class="n">integrators</span><span class="o">=</span><span class="p">[([</span><span class="s1">&#39;integrator&#39;</span><span class="p">],</span> <span class="mi">10</span><span class="p">)],</span>
+    <span class="p">)</span>
+
+    <span class="n">implementation_percent</span><span class="p">,</span> <span class="n">documentation_percent</span><span class="p">,</span> <span class="n">integration_percent</span><span class="p">,</span> <span class="n">total_percent</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">stats</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">implementation_percent</span> <span class="o">==</span> <span class="mi">30</span><span class="o">+</span><span class="mi">20</span>
+    <span class="k">assert</span> <span class="n">documentation_percent</span> <span class="o">==</span> <span class="mi">30</span>
+    <span class="k">assert</span> <span class="n">integration_percent</span> <span class="o">==</span> <span class="mi">10</span>
+
+    <span class="n">total_points</span> <span class="o">=</span> <span class="mi">70</span><span class="o">+</span><span class="mi">30</span><span class="o">+</span><span class="mi">90</span>
+    <span class="n">gathered_points</span> <span class="o">=</span> <span class="mi">70</span><span class="o">*</span><span class="p">(</span><span class="mi">30</span><span class="o">+</span><span class="mi">20</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span> <span class="o">+</span> <span class="mi">30</span><span class="o">*</span><span class="mi">30</span><span class="o">/</span><span class="mi">100</span> <span class="o">+</span> <span class="mi">90</span><span class="o">*</span><span class="mi">10</span><span class="o">/</span><span class="mi">100</span>
+
+    <span class="k">assert</span> <span class="n">total_percent</span> <span class="o">==</span> <span class="n">pytest</span><span class="o">.</span><span class="n">approx</span><span class="p">(</span><span class="n">gathered_points</span><span class="o">/</span><span class="n">total_points</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><p>Subject Under Test: <code class="docutils literal notranslate"><span class="pre">Task.stats()</span></code></p></li>
+<li><p>Four <code class="docutils literal notranslate"><span class="pre">assert</span></code> statements ⟶ check that <code class="docutils literal notranslate"><span class="pre">Task</span></code> has
+done its job</p></li>
+</ul>
+</section>
+<section id="fixtures">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Fixtures</a><a class="headerlink" href="#fixtures" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p>See <a class="reference external" href="https://docs.pytest.org/en/latest/how-to/fixtures.html" title="(in pytest v8.2.0.dev25+gb777b05)"><span class="xref std std-doc">here</span></a> much more about fixtures.</p>
+</aside>
+<p><strong>Problem</strong></p>
+<ul class="simple">
+<li><p>What if I want to write another test upon the same task?</p></li>
+<li><p>Do I duplicate the entire task constructor in the new test?</p></li>
+</ul>
+<p>⟶ <strong>No, create a fixture!</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;pytest.fixture</span></code> decorator</p></li>
+<li><p><em>Request</em> the fixture: give its name as the argument name to the
+test function (magic happens!)</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span> <span class="nf">task</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">Task</span><span class="p">(</span>
+        <span class="c1"># ... stuff omitted ...</span>
+
+        <span class="n">implementation_points</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span>
+        <span class="n">implementors</span><span class="o">=</span><span class="p">[([</span><span class="s1">&#39;implementor1&#39;</span><span class="p">],</span> <span class="mi">30</span><span class="p">),</span> <span class="p">([</span><span class="s1">&#39;implementor2&#39;</span><span class="p">],</span> <span class="mi">20</span><span class="p">)],</span>
+        <span class="n">documentation_points</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+        <span class="n">documenters</span><span class="o">=</span><span class="p">[([</span><span class="s1">&#39;documenter&#39;</span><span class="p">],</span> <span class="mi">30</span><span class="p">)],</span>
+        <span class="n">integration_points</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span>
+        <span class="n">integrators</span><span class="o">=</span><span class="p">[([</span><span class="s1">&#39;integrator&#39;</span><span class="p">],</span> <span class="mi">10</span><span class="p">)],</span>
+    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">test_stats</span><span class="p">(</span><span class="n">task</span><span class="p">):</span>
+    <span class="n">implementation_percent</span><span class="p">,</span> <span class="n">documentation_percent</span><span class="p">,</span> <span class="n">integration_percent</span><span class="p">,</span> <span class="n">total_percent</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">stats</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">implementation_percent</span> <span class="o">==</span> <span class="mi">30</span><span class="o">+</span><span class="mi">20</span>
+    <span class="k">assert</span> <span class="n">documentation_percent</span> <span class="o">==</span> <span class="mi">30</span>
+    <span class="k">assert</span> <span class="n">integration_percent</span> <span class="o">==</span> <span class="mi">10</span>
+
+    <span class="n">total_points</span> <span class="o">=</span> <span class="mi">70</span><span class="o">+</span><span class="mi">30</span><span class="o">+</span><span class="mi">90</span>
+    <span class="n">gathered_points</span> <span class="o">=</span> <span class="mi">70</span><span class="o">*</span><span class="p">(</span><span class="mi">30</span><span class="o">+</span><span class="mi">20</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span> <span class="o">+</span> <span class="mi">30</span><span class="o">*</span><span class="mi">30</span><span class="o">/</span><span class="mi">100</span> <span class="o">+</span> <span class="mi">90</span><span class="o">*</span><span class="mi">10</span><span class="o">/</span><span class="mi">100</span>
+
+    <span class="k">assert</span> <span class="n">total_percent</span> <span class="o">==</span> <span class="n">pytest</span><span class="o">.</span><span class="n">approx</span><span class="p">(</span><span class="n">gathered_points</span><span class="o">/</span><span class="n">total_points</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">test_another_task_aspect</span><span class="p">(</span><span class="n">task</span><span class="p">):</span>
+    <span class="c1"># ... test another task aspect ...</span>
+</pre></div>
+</div>
+</section>
+<section id="temporary-test-directory">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">Temporary Test Directory</a><a class="headerlink" href="#temporary-test-directory" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p>More built-in fixtures see <a class="reference external" href="https://docs.pytest.org/en/latest/reference/fixtures.html" title="(in pytest v8.2.0.dev25+gb777b05)"><span>Fixtures reference</span></a></p>
+</aside>
+<ul class="simple">
+<li><p>Sometimes it is necessary to create temporary data in the filesystem</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pytest</span></code> has a number of fixtures to cover this (and related) use
+cases</p></li>
+<li><p><em>Request</em> the fixture ⟶ <code class="docutils literal notranslate"><span class="pre">tmpdir</span></code></p></li>
+<li><p>Type is a path-like object (see <a class="reference external" href="https://docs.python.org/3/library/pathlib.html" title="(in Python v3.12)"><span>pathlib — Object-oriented filesystem paths</span></a> what
+can be done with those)</p></li>
+</ul>
+<p>Use it like so …</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_ini_file_parser</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">):</span>
+    <span class="c1"># create a file in tmpdir</span>
+    <span class="n">my_test_file</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">/</span> <span class="s1">&#39;my-test-file.ini&#39;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">my_test_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ini</span><span class="p">:</span>
+        <span class="n">ini</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="s1">&#39;[section DS18S20]&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;type = DS18S20&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;name = name&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;address = addr&#39;</span><span class="p">,</span>
+            <span class="p">]))</span>
+
+    <span class="c1"># use that file in the test case</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">my_test_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">ini</span><span class="p">:</span>
+        <span class="k">pass</span>    <span class="c1"># perform some testing with that file</span>
+</pre></div>
+</div>
+</section>
+<section id="marking-tests-as-expected-to-fail">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink">Marking Tests as Expected to Fail</a><a class="headerlink" href="#marking-tests-as-expected-to-fail" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>A feature is not yet ready</p></li>
+<li><p>Tests do exist though (<em>Test Driven Development</em>)</p></li>
+<li><p>Plan during TDD is that they will fail</p></li>
+<li><p><em>Cannot commit/push without annoying others</em></p></li>
+<li><p>⟶ <code class="docutils literal notranslate"><span class="pre">&#64;pytest.mark.xfail</span></code></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">xfail</span>
+<span class="k">def</span> <span class="nf">test_trivial_but_fails</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="mi">1</span><span class="o">+</span><span class="mi">1</span> <span class="o">==</span> <span class="mi">3</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>tests/test_simple.py
+<span class="go">============================= test session starts =============================</span>
+<span class="go">platform linux -- Python 3.9.7, pytest-6.2.5, py-1.11.0, pluggy-1.0.0</span>
+<span class="go">rootdir: /home/jfasch/work/opentraining</span>
+<span class="go">collected 3 items</span>
+
+<span class="go">tests/test_simple.py .x.                                                [100%]</span>
+
+<span class="go">======================== 2 passed, 1 xfailed in 0.01s =========================</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+<div class="section ablog__blog_comments">
+  
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2019-2024 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/python/swdev/pytest/intro.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
