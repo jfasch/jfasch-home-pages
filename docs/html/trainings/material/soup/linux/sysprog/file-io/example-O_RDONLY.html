@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>O_RDONLY: Reading a File &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css?v=cf071e93" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css?v=70eaaddc" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css?v=5c84f910" />
+    <script src="../../../../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=ffc8af2d"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/sysprog/file-io/example-O_RDONLY.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="O_WRONLY: Writing A File (Which Must Exist)" href="example-O_WRONLY.html" />
+    <link rel="prev" title="File I/O: Basics" href="basics.html" />
+
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+
+
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet"/>
+
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/group.html">C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx11/group.html">The New C++ (11-…)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-design-patterns/group.html">Design Patterns With C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-code/index.html">C++ Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-exercises/group.html">C++ Exercises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cmake/group.html">CMake: An Introduction</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../group.html">Linux</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../basics/group.html">Linux Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ssh/group.html">SSH: Secure Shell</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../toolchain/group.html">Toolchain, And Cross Development</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../group.html">Linux Systems Programming</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../intro-hw/group.html">Introductory Live Hacking, Hardware-Wise (<code class="docutils literal notranslate"><span class="pre">sysfs</span></code> GPIO)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../basics/group.html">Linux Systems Programming: Basics</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="group.html">File I/O</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="basics.html">File I/O: Basics</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">O_RDONLY</span></code>: Reading a File</a></li>
+<li class="toctree-l6"><a class="reference internal" href="example-O_WRONLY.html"><code class="docutils literal notranslate"><span class="pre">O_WRONLY</span></code>: Writing A File (Which Must Exist)</a></li>
+<li class="toctree-l6"><a class="reference internal" href="example-O_CREAT.html"><code class="docutils literal notranslate"><span class="pre">O_CREAT</span></code>: Creating A File</a></li>
+<li class="toctree-l6"><a class="reference internal" href="example-O_EXCL.html"><code class="docutils literal notranslate"><span class="pre">O_EXCL</span></code>: Creating A File, But Failing If It Already Exists</a></li>
+<li class="toctree-l6"><a class="reference internal" href="basics-exercise-copy.html">Exercise: Copy A File</a></li>
+<li class="toctree-l6"><a class="reference internal" href="basics-exercise-hole.html">Exercise: Create File With Hole</a></li>
+<li class="toctree-l6"><a class="reference internal" href="exercise-sensor-read.html">Exercise: Read Temperature From Onewire Sensor</a></li>
+<li class="toctree-l6"><a class="reference internal" href="duplicate.html">Duplicating (Whats Going On?)</a></li>
+<li class="toctree-l6"><a class="reference internal" href="misc.html">Miscellaneous</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../blocking-io/group.html">Blocking I/O: What Is That?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../process/group.html">Processes</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../posix-threads/group.html">POSIX Threads</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../scheduling/group.html">Scheduling</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../sysprog_events/topic.html">Sysprog: Events</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../sysprog_ipc/topic.html">Sysprog: POSIX IPC</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../sysprog_signals/topic.html">Sysprog: Signals</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../hardware/group.html">Linux Hardware Interfaces</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../drafts/group.html">Drafts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../clean-code/group.html">Is Software A Craft? Software Is A Craft! ⟶ <em>Clean Code</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../unittest/group.html">Unit Testing With <code class="docutils literal notranslate"><span class="pre">googletest</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+<section id="o-rdonly-reading-a-file">
+<h1><code class="docutils literal notranslate"><span class="pre">O_RDONLY</span></code>: Reading a File<a class="headerlink" href="#o-rdonly-reading-a-file" title="Link to this heading">¶</a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#me-and-etc-passwd" id="id3">Me and <code class="docutils literal notranslate"><span class="pre">/etc/passwd</span></code></a></p></li>
+<li><p><a class="reference internal" href="#code-reading-a-file" id="id4">Code: Reading A File</a></p></li>
+<li><p><a class="reference internal" href="#sunny-case-reading-etc-passwd" id="id5">Sunny Case: Reading <code class="docutils literal notranslate"><span class="pre">/etc/passwd</span></code></a></p></li>
+<li><p><a class="reference internal" href="#error-file-not-readable" id="id6">Error: File Not Readable</a></p></li>
+<li><p><a class="reference internal" href="#error-file-not-even-there" id="id7">Error: File Not Even There</a></p></li>
+</ul>
+</nav>
+<section id="me-and-etc-passwd">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Me and <code class="docutils literal notranslate"><span class="pre">/etc/passwd</span></code></a><a class="headerlink" href="#me-and-etc-passwd" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Topics</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="basics.html"><span class="doc">File I/O: Basics</span></a></p></li>
+</ul>
+</aside>
+<p>Who am I?</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>id
+<span class="gp">$ </span>id
+<span class="go">uid=1000(jfasch) gid=1000(jfasch) groups=1000(jfasch),10(wheel),18(dialout)</span>
+</pre></div>
+</div>
+<p>A-Ha: being user <code class="docutils literal notranslate"><span class="pre">jfasch</span></code> who belongs to groups <code class="docutils literal notranslate"><span class="pre">jfasch</span></code>,
+<code class="docutils literal notranslate"><span class="pre">wheel</span></code>, and <code class="docutils literal notranslate"><span class="pre">dialout</span></code>.</p>
+<p>And <code class="docutils literal notranslate"><span class="pre">/etc/passwd</span></code>?</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls<span class="w"> </span>-l<span class="w"> </span>/etc/passwd
+<span class="go">-rw-r--r--. 1 root root 2746 Mar  3 14:12 /etc/passwd</span>
+</pre></div>
+</div>
+<p>A-ha: Read-writable by user <code class="docutils literal notranslate"><span class="pre">root</span></code>, readable by members of group
+<code class="docutils literal notranslate"><span class="pre">root</span></code>, and by all others.</p>
+<p>So, I (being among the others for the purpose of <code class="docutils literal notranslate"><span class="pre">/etc/passwd</span></code>
+access), I’ll be able to read that file. Lets do that: read the entire
+file, and write it to <em>standard output</em>.</p>
+</section>
+<section id="code-reading-a-file">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Code: Reading A File</a><a class="headerlink" href="#code-reading-a-file" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Topics</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="basics.html"><span class="doc">File I/O: Basics</span></a></p></li>
+<li><p><a class="reference internal" href="../process/commandline.html"><span class="doc">Process: Arguments, Exit Status</span></a></p></li>
+<li><p><a class="reference internal" href="../basics/errorhandling.html"><span class="doc">Error Handling</span></a></p></li>
+</ul>
+</aside>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/open.2.html">man -s 2 open</a></p></li>
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/read.2.html">man -s 2 read</a></p></li>
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/write.2.html">man -s 2 write</a></p></li>
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/close.2.html">man -s 2 close</a></p></li>
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man3/perror.3.html">man -s 3 perror</a></p></li>
+</ul>
+</aside>
+<p>The following program</p>
+<ul class="simple">
+<li><p>opens the file (doing basic <a class="reference internal" href="../basics/errorhandling.html"><span class="doc">error handling</span></a> which is always a good idea)</p>
+<ul>
+<li><p>It is at the time of <code class="docutils literal notranslate"><span class="pre">open()</span></code> -ing a file where you <em>declare</em>
+that you intend to read from it! This is the time where the system
+checks your intentions against the file’s permissions.</p></li>
+</ul>
+</li>
+<li><p>reads its contents in a loop, again handling errors</p></li>
+<li><p>checks the end-of-file (EOF) condition - a read of 0 bytes says that
+there will come no more</p></li>
+<li><p>writes the bytes that it reads to <em>standard output</em>, using the
+predefined <code class="docutils literal notranslate"><span class="pre">STDOUT_FILENO</span></code> macro (which expands to file decriptor
+<code class="docutils literal notranslate"><span class="pre">1</span></code>)</p></li>
+<li><p>returns the exit status <code class="docutils literal notranslate"><span class="pre">0</span></code> if all is well, and arbitrarily chosen
+numbers for the different error situations that it may encounter</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/e789b8918f34816051e243079138eebf/example-O_RDONLY.c"><code class="xref download docutils literal notranslate"><span class="pre">example-O_RDONLY.c</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sys/types.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sys/stat.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;fcntl.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
+
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">buffer</span><span class="p">[</span><span class="mi">128</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">nread</span><span class="p">,</span><span class="w"> </span><span class="n">nwritten</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="n">O_RDONLY</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fd</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;open&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">nread</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">buffer</span><span class="p">));</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nread</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;read&quot;</span><span class="p">);</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="c1">// end of file (EOF) reached?</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nread</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">            </span><span class="k">break</span><span class="p">;</span>
+
+<span class="w">        </span><span class="n">nwritten</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">write</span><span class="p">(</span><span class="n">STDOUT_FILENO</span><span class="p">,</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">nread</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nwritten</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;write&quot;</span><span class="p">);</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Build it</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>gcc<span class="w"> </span>-o<span class="w"> </span>example-O_RDONLY<span class="w"> </span>example-O_RDONLY.c
+</pre></div>
+</div>
+</div>
+</section>
+<section id="sunny-case-reading-etc-passwd">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Sunny Case: Reading <code class="docutils literal notranslate"><span class="pre">/etc/passwd</span></code></a><a class="headerlink" href="#sunny-case-reading-etc-passwd" title="Link to this heading">¶</a></h2>
+<p>As we saw, <code class="docutils literal notranslate"><span class="pre">/etc/passwd</span></code> is readable for all others, so this should
+be ok:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./example-O_RDONLY<span class="w"> </span>/etc/passwd
+<span class="go">root:x:0:0:root:/root:/bin/bash</span>
+<span class="go">bin:x:1:1:bin:/bin:/sbin/nologin</span>
+<span class="go">...</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The program read the file in chunks of 128 bytes in a loop. What we
+see is that <code class="docutils literal notranslate"><span class="pre">read()</span></code> continues where the previous <code class="docutils literal notranslate"><span class="pre">read()</span></code> left
+off.</p>
+<p>See</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="duplicate.html"><span class="doc">Duplicating (Whats Going On?)</span></a> for an explanation of what’s going on in the
+system to make this happen</p></li>
+<li><p><a class="reference internal" href="misc.html"><span class="doc">Miscellaneous</span></a> for alternative ways of reading a file that do not
+exhibit this behaviour (which is intended in most cases)</p></li>
+</ul>
+</div>
+</section>
+<section id="error-file-not-readable">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Error: File Not Readable</a><a class="headerlink" href="#error-file-not-readable" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man5/shadow.5.html">man -s 5 shadow</a></p></li>
+</ul>
+</aside>
+<p>A file that is certainly not readable for anybody on any Linux system
+is <code class="docutils literal notranslate"><span class="pre">/etc/shadow</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls<span class="w"> </span>-l<span class="w"> </span>/etc/shadow
+<span class="go">----------. 1 root root 1352 Mar  3 14:12 /etc/shadow</span>
+</pre></div>
+</div>
+<p>Proper error handling around <code class="docutils literal notranslate"><span class="pre">open()</span></code> now will detect exactly that …</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./example-O_RDONLY<span class="w"> </span>/etc/shadow
+<span class="go">open: Permission denied</span>
+</pre></div>
+</div>
+</section>
+<section id="error-file-not-even-there">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Error: File Not Even There</a><a class="headerlink" href="#error-file-not-even-there" title="Link to this heading">¶</a></h2>
+<p>Likewise, <code class="docutils literal notranslate"><span class="pre">open()</span></code> obviously fails if the file does not exist:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./example-O_RDONLY<span class="w"> </span>something-thats-not-there
+<span class="go">open: No such file or directory</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+<div class="section ablog__blog_comments">
+  
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2019-2024 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/linux/sysprog/file-io/example-O_RDONLY.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

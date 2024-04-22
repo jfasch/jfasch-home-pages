@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Synchronization &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/alabaster.css?v=cf071e93" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/css/jf-alabaster.css?v=70eaaddc" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css?v=5c84f910" />
+    <script src="../../../../../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=ffc8af2d"></script>
+    <script src="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/sysprog/posix-threads/040-mutex/topic.html" />
+    <link rel="index" title="Index" href="../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../search.html" />
+    <link rel="next" title="Mutex: Solve Load/Modify/Store Conflict" href="../050-exercise-mutex/topic.html" />
+    <link rel="prev" title="Thread Creation, Race Condition" href="../030-exercise-pthcreate-race-condition/topic.html" />
+
+   
+  <link rel="stylesheet" href="../../../../../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+
+
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet"/>
+
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../../index.html">
+    <img class="logo" src="../../../../../../../_static/logo.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cxx03/group.html">C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cxx11/group.html">The New C++ (11-…)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cxx-design-patterns/group.html">Design Patterns With C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cxx-code/index.html">C++ Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cxx-exercises/group.html">C++ Exercises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cmake/group.html">CMake: An Introduction</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../../group.html">Linux</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../basics/group.html">Linux Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../ssh/group.html">SSH: Secure Shell</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../toolchain/group.html">Toolchain, And Cross Development</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../group.html">Linux Systems Programming</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../../intro-hw/group.html">Introductory Live Hacking, Hardware-Wise (<code class="docutils literal notranslate"><span class="pre">sysfs</span></code> GPIO)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../basics/group.html">Linux Systems Programming: Basics</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../file-io/group.html">File I/O</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../blocking-io/group.html">Blocking I/O: What Is That?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../process/group.html">Processes</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="../group.html">POSIX Threads</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="../010-introduction/topic.html">Basics</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../020-lifecycle/topic.html">Thread Life Cycle</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../030-exercise-pthcreate-race-condition/topic.html">Thread Creation, Race Condition</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">Synchronization</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../050-exercise-mutex/topic.html">Mutex: Solve Load/Modify/Store Conflict</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../060-condition-variable/topic.html">Communication: Condition Variable</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../070-exercise-condition-variable/topic.html">Condition Variable: Message Queue</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../080-miscellaneous/topic.html">Miscellaneous</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../090-last-warning/topic.html">Last Warning</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../locked-trylock.html">Trylock/islocked</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../../scheduling/group.html">Scheduling</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../sysprog_events/topic.html">Sysprog: Events</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../sysprog_ipc/topic.html">Sysprog: POSIX IPC</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../sysprog_signals/topic.html">Sysprog: Signals</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../hardware/group.html">Linux Hardware Interfaces</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../drafts/group.html">Drafts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../clean-code/group.html">Is Software A Craft? Software Is A Craft! ⟶ <em>Clean Code</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../unittest/group.html">Unit Testing With <code class="docutils literal notranslate"><span class="pre">googletest</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+<section id="synchronization">
+<h1>Synchronization<a class="headerlink" href="#synchronization" title="Link to this heading">¶</a></h1>
+<aside class="sidebar">
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#race-conditions-1" id="id7">Race Conditions (1)</a></p></li>
+<li><p><a class="reference internal" href="#race-conditions-2" id="id8">Race Conditions (2)</a></p></li>
+<li><p><a class="reference internal" href="#mutex-1" id="id9">Mutex (1)</a></p></li>
+<li><p><a class="reference internal" href="#mutex-2" id="id10">Mutex (2)</a></p></li>
+<li><p><a class="reference internal" href="#mutex-3" id="id11">Mutex (3)</a></p></li>
+<li><p><a class="reference internal" href="#mutex-types" id="id12">Mutex Types</a></p></li>
+<li><p><a class="reference internal" href="#atomic-instructions" id="id13">Atomic Instructions</a></p></li>
+</ul>
+</nav>
+<p><strong>See also</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../locked-trylock.html"><span class="doc">Trylock/islocked</span></a></p></li>
+</ul>
+</aside>
+<section id="race-conditions-1">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Race Conditions (1)</a><a class="headerlink" href="#race-conditions-1" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<ul class="simple">
+<li><p>Race condition (Python): <a class="reference download internal" download="" href="../../../../../../../_downloads/bf19d8552f85720973f66158099504fd/lost-increment.py"><code class="xref download docutils literal notranslate"><span class="pre">here</span></code></a></p></li>
+<li><p>No race condition (Python): <a class="reference download internal" download="" href="../../../../../../../_downloads/ee8da56cd90cb6fa45d1e4310aa264af/no-lost-increment.py"><code class="xref download docutils literal notranslate"><span class="pre">here</span></code></a></p></li>
+</ul>
+</aside>
+<table class="docutils align-left">
+<tbody>
+<tr class="row-odd"><td><p>Suppose <code class="docutils literal notranslate"><span class="pre">inc()</span></code> is executed by at least two threads in
+parallel:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Very bad code</span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">global</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">inc</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">global</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</td>
+<td><table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td colspan="2"><p><strong>CPU A</strong></p></td>
+<td colspan="2"><p><strong>CPU B</strong></p></td>
+<td><p><strong>Memory</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Instr</p></td>
+<td><p>Loc</p></td>
+<td><p>Instr</p></td>
+<td><p>Loc</p></td>
+<td><p>Glob</p></td>
+</tr>
+<tr class="row-odd"><td><p>load</p></td>
+<td><p>42</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>42</p></td>
+</tr>
+<tr class="row-even"><td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>42</p></td>
+<td><p>load</p></td>
+<td><p>42</p></td>
+<td><p>42</p></td>
+</tr>
+<tr class="row-odd"><td><p>inc</p></td>
+<td><p>43</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>42</p></td>
+</tr>
+<tr class="row-even"><td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>43</p></td>
+<td><p>inc</p></td>
+<td><p>43</p></td>
+<td><p>42</p></td>
+</tr>
+<tr class="row-odd"><td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>43</p></td>
+<td><p>store</p></td>
+<td><p>43</p></td>
+<td><p>43</p></td>
+</tr>
+<tr class="row-even"><td><p>store</p></td>
+<td><p>43</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>43</p></td>
+<td><p>43</p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p>The variable <code class="docutils literal notranslate"><span class="pre">global</span></code> has seen <strong>only one increment!!</strong></p></li>
+<li><p><em>Load/Modify/Store Conflict</em></p></li>
+<li><p>The most basic race condition</p></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="race-conditions-2">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Race Conditions (2)</a><a class="headerlink" href="#race-conditions-2" title="Link to this heading">¶</a></h2>
+<p><strong>Imagine more complex data structures (linked lists, trees)</strong>: if
+incrementing a dumb integer bears a race condition, then what can we
+expect in a multithreaded world?</p>
+<ul class="simple">
+<li><p>No single data structure of C++’s Standard Template Library is thread safe</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">std::string</span></code>’s copy constructor and assignment operator are
+thread safe (<em>GCC’s Standard C++ Library</em> ⟶ <em>not</em> by
+standard)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">std::string</span></code>’s other methods are <em>not</em> thread safe</p></li>
+<li><p><em>stdio</em> and <em>iostream</em> are thread safe (by standard since C++11)</p></li>
+</ul>
+</section>
+<section id="mutex-1">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Mutex (1)</a><a class="headerlink" href="#mutex-1" title="Link to this heading">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://man7.org/linux/man-pages/man3/pthread_mutex_init.3p.html">man 3 pthread_mutex_init</a></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">pthread_mutex_init</span><span class="p">(</span><span class="n">pthread_mutex_t</span><span class="w"> </span><span class="o">*</span><span class="n">mutex</span><span class="p">,</span>
+<span class="w">       </span><span class="k">const</span><span class="w"> </span><span class="n">pthread_mutexattr_t</span><span class="w"> </span><span class="o">*</span><span class="n">attr</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">pthread_mutex_destroy</span><span class="p">(</span><span class="n">pthread_mutex_t</span><span class="w"> </span><span class="o">*</span><span class="n">mutex</span><span class="p">);</span>
+<span class="n">pthread_mutex_t</span><span class="w"> </span><span class="n">mutex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PTHREAD_MUTEX_INITIALIZER</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><p>Dynamic initialization using
+<code class="docutils literal notranslate"><span class="pre">pthread_mutex_init()/``pthread_mutex_destroy()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">attr</span> <span class="pre">==</span> <span class="pre">NULL</span></code> ⟶ default mutex (⟶
+later)</p></li>
+<li><p>Static initialization using <code class="docutils literal notranslate"><span class="pre">PTHREAD_MUTEX_INITIALIZER</span></code></p></li>
+</ul>
+</section>
+<section id="mutex-2">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Mutex (2)</a><a class="headerlink" href="#mutex-2" title="Link to this heading">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://linux.die.net/man/3/pthread_mutex_lock">man 3 pthread_mutex_lock</a></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">pthread_mutex_lock</span><span class="p">(</span><span class="n">pthread_mutex_t</span><span class="w"> </span><span class="o">*</span><span class="n">mutex</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">pthread_mutex_trylock</span><span class="p">(</span><span class="n">pthread_mutex_t</span><span class="w"> </span><span class="o">*</span><span class="n">mutex</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">pthread_mutex_unlock</span><span class="p">(</span><span class="n">pthread_mutex_t</span><span class="w"> </span><span class="o">*</span><span class="n">mutex</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><p>Simple lock/unlock must be enough</p></li>
+<li><p><em>If you find yourself using “trylock”, then something’s wrong*</em></p></li>
+<li><p><em>Polling is never right!</em></p></li>
+</ul>
+</section>
+<section id="mutex-3">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Mutex (3)</a><a class="headerlink" href="#mutex-3" title="Link to this heading">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Better code</span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">static</span><span class="w"> </span><span class="n">pthread_mutex_t</span><span class="w"> </span><span class="n">global_mutex</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">PTHREAD_MUTEX_INITIALIZER</span><span class="p">;</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">global</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">inc</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="cm">/* error handling omitted */</span>
+<span class="w">    </span><span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">global_mutex</span><span class="p">);</span>
+<span class="w">    </span><span class="n">global</span><span class="o">++</span><span class="p">;</span>
+<span class="w">    </span><span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">global_mutex</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="mutex-types">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Mutex Types</a><a class="headerlink" href="#mutex-types" title="Link to this heading">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://linux.die.net/man/3/pthread_mutexattr_settype">man 3 pthread_mutexattr_settype</a></span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">pthread_mutexattr_settype</span><span class="p">(</span>
+<span class="w">    </span><span class="n">pthread_mutexattr_t</span><span class="w"> </span><span class="o">*</span><span class="n">attr</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">type</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">PTHREAD_MUTEX_NORMAL</span></code>: no checks, no nothing. Same thread locks
+mutex twice in a row before unlock ⟶ <em>Deadlock</em>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PTHREAD_MUTEX_ERRORCHECK</span></code>: Deadlock check; unlocking a mutex
+locked by another thread ⟶ <em>Error</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PTHREAD_MUTEX_RECURSIVE</span></code>: owner can lock same mutex twice</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PTHREAD_MUTEX_DEFAULT</span></code> ⟶ <code class="docutils literal notranslate"><span class="pre">PTHREAD_MUTEX_NORMAL</span></code></p></li>
+</ul>
+</section>
+<section id="atomic-instructions">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Atomic Instructions</a><a class="headerlink" href="#atomic-instructions" title="Link to this heading">¶</a></h2>
+<p>Simple integers don’t need a mutex</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">fetch_and_add()</span></code></span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">global</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">inc</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">__sync_fetch_and_add</span><span class="p">(</span><span class="o">&amp;</span><span class="n">global</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>More ⟶ <code class="docutils literal notranslate"><span class="pre">info</span> <span class="pre">gcc</span></code>, GCC manual</p>
+</section>
+</section>
+
+<div class="section ablog__blog_comments">
+  
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2019-2024 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../../_sources/trainings/material/soup/linux/sysprog/posix-threads/040-mutex/topic.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
