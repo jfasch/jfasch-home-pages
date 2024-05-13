@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=d1102ebc" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css?v=cf071e93" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=eafc0fe6" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css?v=70eaaddc" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css?v=5c84f910" />
@@ -179,18 +179,18 @@
 </ul>
 </aside>
 <ul>
-<li><p>Create a directory, say, <code class="docutils literal notranslate"><span class="pre">~/toolchains</span></code> (you might well choose a
+<li><p>Create a directory, say, <code class="docutils literal notranslate"><span class="pre">~/x-tools</span></code> (the <a class="reference internal" href="../../../../../../blog/2022/09/cross-raspi.html"><span class="doc">Crosstool-NG</span></a> default name, you might well choose a
 different name). We will use that directory as a well-known place to
 put our toolchains in. (Toolchains tend to be updated a lot, and
-keeping different versions together in one directory helps
-organizing our work.)</p></li>
+keeping different versions together in one directory helps organize
+our work.)</p></li>
 <li><p><a class="reference external" href="https://drive.google.com/file/d/1YAlNEQT9UY-z-nVWX-U55i0Zl1TNUfjB/view?usp=share_link">Download</a>
 the toolchain archive (a whopping 70MB)</p></li>
-<li><p>Unpack the archive into <code class="docutils literal notranslate"><span class="pre">~/toolchains</span></code>, as follows</p>
+<li><p>Unpack the archive into <code class="docutils literal notranslate"><span class="pre">~/x-tools</span></code>, as follows</p>
 <ul class="simple">
 <li><p>Change into toolchain install directory</p></li>
 </ul>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>~/toolchains
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>~/x-tools
 </pre></div>
 </div>
 <ul class="simple">
@@ -215,13 +215,13 @@ the toolchain archive (a whopping 70MB)</p></li>
 </div>
 <ul class="simple">
 <li><p>If you are fine, unpack it. This will create a directory
-<code class="docutils literal notranslate"><span class="pre">~/toolchains/armv8-rpi4-linux-gnueabihf</span></code> - our toolchain base
+<code class="docutils literal notranslate"><span class="pre">~/x-tools/armv8-rpi4-linux-gnueabihf</span></code> - our toolchain base
 directory.</p></li>
 </ul>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>tar<span class="w"> </span>-x<span class="w"> </span>-f<span class="w"> </span>~/Downloads/armv8-rpi4-linux-gnueabihf-gcc-10.2-glibc-2.31.tar.xz
 </pre></div>
 </div>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls<span class="w"> </span>-l<span class="w"> </span>~/toolchains/
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls<span class="w"> </span>-l<span class="w"> </span>~/x-tools/
 <span class="go">total 0</span>
 <span class="go">dr-xr-xr-x. 1 jfasch jfasch 128 Apr 17 12:01 armv8-rpi4-linux-gnueabihf</span>
 </pre></div>
@@ -242,11 +242,11 @@ directory.</p></li>
 </ul>
 </aside>
 <ul>
-<li><p><a class="reference download internal" download="" href="../../../../../../_downloads/a64cc868ff9fb4fd57e73eea91bf8799/armv8-rpi4-linux-gnueabihf.cmake"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">toolchain</span> <span class="pre">file</span></code></a> into <code class="docutils literal notranslate"><span class="pre">~/toolchains</span></code></p></li>
+<li><p><a class="reference download internal" download="" href="../../../../../../_downloads/a64cc868ff9fb4fd57e73eea91bf8799/armv8-rpi4-linux-gnueabihf.cmake"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">toolchain</span> <span class="pre">file</span></code></a> into <code class="docutils literal notranslate"><span class="pre">~/x-tools</span></code></p></li>
 <li><p>The <em>toolchain file</em> describes toolchain parameters for cross builds
 that you will perform using CMake, eventually. Modify the downloaded
 file to reflect your situation, by changing the following line:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>set(TOOLCHAIN_BASE_DIR /home/jfasch/toolchains/armv8-rpi4-linux-gnueabihf)
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>set(TOOLCHAIN_BASE_DIR /home/jfasch/x-tools/armv8-rpi4-linux-gnueabihf)
 </pre></div>
 </div>
 </li>
@@ -275,7 +275,7 @@ is <code class="docutils literal notranslate"><span class="pre">~/project-source
 <li><p>Create the cross build instructions</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">pwd</span>
 <span class="go">/home/jfasch/project-build-raspi</span>
-<span class="gp">$ </span>cmake<span class="w"> </span>-DCMAKE_TOOLCHAIN_FILE<span class="o">=</span><span class="nv">$HOME</span>/toolchains/armv8-rpi4-linux-gnueabihf.cmake<span class="w"> </span>~/project-source
+<span class="gp">$ </span>cmake<span class="w"> </span>-DCMAKE_TOOLCHAIN_FILE<span class="o">=</span><span class="nv">$HOME</span>/x-tools/armv8-rpi4-linux-gnueabihf.cmake<span class="w"> </span>~/project-source
 <span class="go">... roedel ...</span>
 </pre></div>
 </div>
