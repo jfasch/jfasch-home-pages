@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=d1102ebc" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css?v=cf071e93" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=eafc0fe6" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css?v=70eaaddc" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css?v=5c84f910" />
@@ -292,21 +292,29 @@ that takes ownership</p></li>
 <ul>
 <li><p>Anything that is not an lvalue is an rvalue</p>
 <ul>
-<li><p>Temporaries</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">&quot;blah&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;blech&quot;</span><span class="p">;</span><span class="w">  </span><span class="c1">// &lt;--- error</span>
-</pre></div>
-</div>
-</li>
 <li><p>Literal constants</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="mi">42</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">666</span><span class="p">;</span><span class="w">  </span><span class="c1">// &lt;--- error</span>
 </pre></div>
 </div>
 </li>
-<li><p>Function return values (that aren’t lvalue references)</p>
+<li><p>This is ok though (because … ?)</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">&quot;blah&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;blech&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Sadly, this is ok too (because … ?)</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">f</span><span class="p">();</span>
+<span class="n">f</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;blech&quot;</span><span class="p">;</span><span class="w">                  </span><span class="c1">// &lt;--- ok</span>
+</pre></div>
+</div>
+<p>Scott Meyers (Effective C++) says you shoud declare copy-returns
+as <code class="docutils literal notranslate"><span class="pre">const</span></code> to make it consistent 🐷</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">f</span><span class="p">();</span>
 <span class="n">f</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;blech&quot;</span><span class="p">;</span><span class="w">                  </span><span class="c1">// &lt;--- error</span>
 </pre></div>
 </div>
+</li>
+<li><p>This is intended</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">f</span><span class="p">();</span>
 <span class="n">f</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;blech&quot;</span><span class="p">;</span><span class="w">                  </span><span class="c1">// &lt;--- ok</span>
 </pre></div>
@@ -355,7 +363,7 @@ outlive the reference</p>
 <li><p>Rvalue references can only bind to rvalues</p></li>
 <li><p><em>And can be assigned to!</em></p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">rvr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span><span class="w">   </span><span class="c1">// &lt;--- bound to an rvalue (an int literal)</span>
-<span class="n">rvr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span><span class="w">         </span><span class="c1">// &lt;--- assigned to!</span>
+<span class="n">rvr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7</span><span class="p">;</span><span class="w">          </span><span class="c1">// &lt;--- assigned to!</span>
 </pre></div>
 </div>
 </li>
