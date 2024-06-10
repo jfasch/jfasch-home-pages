@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>CMake: if, And Conditions &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/alabaster.css?v=cf071e93" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/css/jf-alabaster.css?v=70eaaddc" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css?v=5c84f910" />
+    <script src="../../../../../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=ffc8af2d"></script>
+    <script src="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cmake/advanced/language/if-and-conditions/topic.html" />
+    <link rel="index" title="Index" href="../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../search.html" />
+    <link rel="next" title="CMake: Datatypes" href="../datatypes/topic.html" />
+    <link rel="prev" title="CMake: Variables" href="../variables/topic.html" />
+
+   
+  <link rel="stylesheet" href="../../../../../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+
+
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet"/>
+
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../../index.html">
+    <img class="logo" src="../../../../../../../_static/logo.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Linux und Open Source</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Schulungen</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../index.html">Kursangebot</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../index.html">Unterlagen &amp; Download</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../index.html">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../../python/group.html">Python Programming: From Absolute Beginner to Advanced Productivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cxx03/group.html">C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cxx11/group.html">The New C++ (11-…)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cxx-design-patterns/group.html">Design Patterns With C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cxx-code/index.html">C++ Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cxx-exercises/group.html">C++ Exercises</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../../group.html">CMake</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../intro/group.html">CMake: Introduction</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../group.html">CMake: Advanced Topics</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../../configure-file/topic.html">“Configured” Header Files</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../conditional-code-problem/topic.html">Optional Code: Problem Definition, <code class="docutils literal notranslate"><span class="pre">OPTION()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../conditional-code-approach-1/topic.html">Optional Code, Approach 1: Optional <code class="docutils literal notranslate"><span class="pre">blacklist</span></code>, C Macro  (Global Flags)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../conditional-code-approach-2/topic.html">Optional Code, Approach 2: Pushing Optionality Down In Module <em>Interface</em></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../targets-properties/topic.html">Targets, Properties, And More</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../external-dependencies/topic.html">External Dependencies</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../testing/topic.html">Running Tests</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="../group.html">CMake: The Language</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="../basics/topic.html">CMake: Language Basics</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../variables/topic.html">CMake: Variables</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">CMake: <code class="docutils literal notranslate"><span class="pre">if</span></code>, And Conditions</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../datatypes/topic.html">CMake: Datatypes</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../functions-and-macros.html">CMake: Functions And Macros</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../for.html">CMake: <code class="docutils literal notranslate"><span class="pre">for</span></code> Loops</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../foreach.html">CMake: <code class="docutils literal notranslate"><span class="pre">foreach</span></code> Loops</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../file-etc/topic.html">CMake: Filesystem Interaction, Pathname Manipulation</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../scripts/topic.html">CMake: Scripts</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../linux/group.html">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../clean-code/group.html">Is Software A Craft? Software Is A Craft! ⟶ <em>Clean Code</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../unittest/group.html">Unit Testing With <code class="docutils literal notranslate"><span class="pre">googletest</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../org.html">Organisatorisches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../codex.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../log/index.html">Bisher Gehaltene</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../about/myself/index.html">Über Mich</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../about/site/index.html">About This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+<section id="cmake-if-and-conditions">
+<h1>CMake: <code class="docutils literal notranslate"><span class="pre">if</span></code>, And Conditions<a class="headerlink" href="#cmake-if-and-conditions" title="Link to this heading">¶</a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#if-syntax" id="id15"><code class="docutils literal notranslate"><span class="pre">if</span></code> Syntax</a></p></li>
+<li><p><a class="reference internal" href="#predefined-conditions-string-comparison" id="id16">Predefined Conditions: String Comparison</a></p></li>
+<li><p><a class="reference internal" href="#pitfalls-variables-are-strings-and-cmake-does-not-care" id="id17">Pitfalls: Variables Are Strings, And CMake Does Not Care</a></p></li>
+<li><p><a class="reference internal" href="#predefined-conditions-file-system" id="id18">Predefined Conditions: File System</a></p></li>
+<li><p><a class="reference internal" href="#policies" id="id19">Policies?</a></p></li>
+<li><p><a class="reference internal" href="#miscellaneous-checks-some-rather-advanced" id="id20">Miscellaneous Checks (Some Rather Advanced)</a></p></li>
+<li><p><a class="reference internal" href="#condition-evaluation-where-the-mess-begins-what-s-boolean" id="id21">Condition Evaluation (Where The Mess Begins): What’s Boolean?</a></p></li>
+<li><p><a class="reference internal" href="#dereferencing-unquoted-variable-names" id="id22">Dereferencing Unquoted Variable Names</a></p></li>
+<li><p><a class="reference internal" href="#boolean-variables-weirdly-interpreted-strings" id="id23">“Boolean” Variables: Weirdly Interpreted Strings</a></p></li>
+<li><p><a class="reference internal" href="#pitfall-evaluation-until-there-is-no-more" id="id24">Pitfall: Evaluation Until There Is No More</a></p></li>
+<li><p><a class="reference internal" href="#pitfall-evaluation-of-unquoted-arguments" id="id25">Pitfall: Evaluation Of Unquoted Arguments</a></p></li>
+</ul>
+</nav>
+<section id="if-syntax">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">if</span></code> Syntax</a><a class="headerlink" href="#if-syntax" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://cmake.org/cmake/help/latest/command/if.html">if</a></p></li>
+</ul>
+</aside>
+<ul>
+<li><p>Much like in other languages</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/ca255a781e626581f4646daaeeb11975/if-good.cmake"><code class="xref download docutils literal notranslate"><span class="pre">if-good.cmake</span> <span class="pre">(download)</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">some_variable</span><span class="w"> </span><span class="s2">&quot;value1&quot;</span><span class="p">)</span>
+
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s2">&quot;${some_variable}&quot;</span><span class="w"> </span><span class="s">STREQUAL</span><span class="w"> </span><span class="s2">&quot;value1&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;case 1&quot;</span><span class="p">)</span>
+<span class="nb">elseif</span><span class="w"> </span><span class="p">(</span><span class="s2">&quot;${some_variable}&quot;</span><span class="w"> </span><span class="s">STREQUAL</span><span class="w"> </span><span class="s2">&quot;value2&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;case 2&quot;</span><span class="p">)</span>
+<span class="nb">else</span><span class="p">()</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cmake -P if-good.cmake
+case 1
+</pre></div>
+</div>
+</li>
+<li><p><strong>Much complexity in the evaluation of the condition</strong></p></li>
+<li><p>The following holds true for <code class="docutils literal notranslate"><span class="pre">if()</span></code>, <code class="docutils literal notranslate"><span class="pre">elseif()</span></code>, and <code class="docutils literal notranslate"><span class="pre">while()</span></code></p></li>
+</ul>
+</section>
+<section id="predefined-conditions-string-comparison">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">Predefined Conditions: String Comparison</a><a class="headerlink" href="#predefined-conditions-string-comparison" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://cmake.org/cmake/help/latest/command/if.html#comparisons">if (Comparisons)</a></p></li>
+</ul>
+</aside>
+<ul>
+<li><p>Lexicographic comparison, e.g. <code class="docutils literal notranslate"><span class="pre">STRLESS</span></code></p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/27d70c2f0fec8344eae5ac8635167242/if-strless.cmake"><code class="xref download docutils literal notranslate"><span class="pre">if-strless.cmake</span> <span class="pre">(download)</span></code></a></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">some_name</span><span class="w"> </span><span class="s2">&quot;Faschingbauer&quot;</span><span class="p">)</span>
+
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s2">&quot;${some_name}&quot;</span><span class="w"> </span><span class="s">STRLESS</span><span class="w"> </span><span class="s2">&quot;Zeilinger&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;yes&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cmake -P if-strless.cmake
+yes
+</pre></div>
+</div>
+</li>
+<li><p>Numerical comparison, e.g. <code class="docutils literal notranslate"><span class="pre">LESS</span></code></p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/6a5619ffc02ab2986d0342dca274ceeb/if-less.cmake"><code class="xref download docutils literal notranslate"><span class="pre">if-less.cmake</span> <span class="pre">(download)</span></code></a></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">some_number</span><span class="w"> </span><span class="s">7</span><span class="p">)</span><span class="w">                      </span><span class="c"># &lt;--- unquoted is ok for numbers :-)</span>
+
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s2">&quot;${some_number}&quot;</span><span class="w"> </span><span class="s">LESS</span><span class="w"> </span><span class="s">8</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;yes&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cmake -P if-less.cmake
+yes
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="pitfalls-variables-are-strings-and-cmake-does-not-care">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink">Pitfalls: Variables Are Strings, And CMake Does Not Care</a><a class="headerlink" href="#pitfalls-variables-are-strings-and-cmake-does-not-care" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Comparing apples and oranges: <em>no runtime error</em></p></li>
+<li><p>CMake just says “no”</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/0e408a2f1e357acbb020b7c0bcbdb176/if-less-mismatch.cmake"><code class="xref download docutils literal notranslate"><span class="pre">if-less-mismatch.cmake</span> <span class="pre">(download)</span></code></a></span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">some_number</span><span class="w"> </span><span class="s2">&quot;Faschingbauer&quot;</span><span class="p">)</span>
+
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s2">&quot;${some_number}&quot;</span><span class="w"> </span><span class="s">LESS</span><span class="w"> </span><span class="s">8</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;yes&quot;</span><span class="p">)</span>
+<span class="nb">else</span><span class="p">()</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;no&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s2">&quot;${some_number}&quot;</span><span class="w"> </span><span class="s">GREATER</span><span class="w"> </span><span class="s">8</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;yes&quot;</span><span class="p">)</span>
+<span class="nb">else</span><span class="p">()</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;no&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cmake -P if-less-mismatch.cmake
+no
+no
+</pre></div>
+</div>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>Be careful! Test!!</p>
+</div>
+</section>
+<section id="predefined-conditions-file-system">
+<h2><a class="toc-backref" href="#id18" role="doc-backlink">Predefined Conditions: File System</a><a class="headerlink" href="#predefined-conditions-file-system" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://cmake.org/cmake/help/latest/command/if.html#file-operations">if (File Operations)</a></p></li>
+<li><p><a class="reference external" href="https://cmake.org/cmake/help/latest/command/if.html#path-comparisons">if (Path Comparisons)</a></p></li>
+</ul>
+</aside>
+<ul>
+<li><p>File existence, etc.</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/464bc4959c9abf170897110744989275/if-file-exists-and-is-directory.cmake"><code class="xref download docutils literal notranslate"><span class="pre">if-file-exists-and-is-directory.cmake</span>
+<span class="pre">(download)</span></code></a></span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">filename</span><span class="w"> </span><span class="s2">&quot;/etc/passwd&quot;</span><span class="p">)</span>
+
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s">EXISTS</span><span class="w"> </span><span class="s2">&quot;${filename}&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;${filename} exists&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s">NOT</span><span class="w"> </span><span class="s">IS_DIRECTORY</span><span class="w"> </span><span class="s2">&quot;${filename}&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;${filename} is not a directory&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">endif</span><span class="p">()</span>
+<span class="nb">endif</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cmake -P if-file-exists-and-is-directory.cmake
+/etc/passwd exists
+/etc/passwd is not a directory
+</pre></div>
+</div>
+</li>
+<li><p>Path comparison</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/e44e048edc4a3fbe2a6ce181da779a84/if-path-comparison.cmake"><code class="xref download docutils literal notranslate"><span class="pre">if-path-comparison.cmake</span>
+<span class="pre">(download)</span></code></a></span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">filename</span><span class="w"> </span><span class="s2">&quot;/etc/passwd&quot;</span><span class="p">)</span>
+
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s">IS_ABSOLUTE</span><span class="w"> </span><span class="s2">&quot;${filename}&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;${filename} is an absolute path&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+
+<span class="nb">cmake_policy</span><span class="p">(</span><span class="s">SET</span><span class="w"> </span><span class="s">CMP0139</span><span class="w"> </span><span class="s">NEW</span><span class="p">)</span><span class="w">           </span><span class="c"># &lt;--- argh!</span>
+
+<span class="nb">set</span><span class="p">(</span><span class="s">alternative_filename</span><span class="w"> </span><span class="s2">&quot;/etc/blah/../passwd&quot;</span><span class="p">)</span>
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s2">&quot;${alternative_filename}&quot;</span><span class="w"> </span><span class="s">PATH_EQUAL</span><span class="w"> </span><span class="s2">&quot;${filename}&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;${alternative_filename} and ${filename} are the same path&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cmake -P if-path-comparison.cmake
+/etc/passwd is an absolute path
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="policies">
+<h2><a class="toc-backref" href="#id19" role="doc-backlink">Policies?</a><a class="headerlink" href="#policies" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://cmake.org/cmake/help/latest/command/cmake_policy.html">cmake_policy()</a></p></li>
+</ul>
+</aside>
+<p><em>Concrete problem</em>: in the above code snippet, CMake version 3.27.7
+(<code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">--version</span></code>) failed to recognise the <code class="docutils literal notranslate"><span class="pre">PATH_EQUAL</span></code> operator,
+with a message saying something about policy <code class="docutils literal notranslate"><span class="pre">CMP0139</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cmake --help-policy CMP0139
+CMP0139
+-------
+
+.. versionadded:: 3.24
+
+The ``if()`` command supports path comparisons using ``PATH_EQUAL``
+operator.
+
+The ``OLD`` behavior for this policy is to ignore the ``PATH_EQUAL`` operator.
+The ``NEW`` behavior is to interpret the ``PATH_EQUAL`` operator.
+
+This policy was introduced in CMake version 3.24.
+CMake version 3.27.7 warns when the policy is not set and uses
+``OLD`` behavior.  Use the ``cmake_policy()`` command to set
+it to ``OLD`` or ``NEW`` explicitly.
+
+.. note::
+  The ``OLD`` behavior of a policy is
+  ``deprecated by definition``
+  and may be removed in a future version of CMake.
+</pre></div>
+</div>
+<p><em>Solution</em>: set the damn policy</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">cmake_policy</span><span class="p">(</span><span class="s">SET</span><span class="w"> </span><span class="s">CMP0139</span><span class="w"> </span><span class="s">NEW</span><span class="p">)</span><span class="w">           </span><span class="c"># &lt;--- argh!</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Try not to set policies in any of the 100 <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code>
+files in your project</p></li>
+<li><p>Reserve the toplevel <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> for such administrative
+tasks</p></li>
+</ul>
+</div>
+</section>
+<section id="miscellaneous-checks-some-rather-advanced">
+<h2><a class="toc-backref" href="#id20" role="doc-backlink">Miscellaneous Checks (Some Rather Advanced)</a><a class="headerlink" href="#miscellaneous-checks-some-rather-advanced" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://cmake.org/cmake/help/latest/command/if.html#existence-checks">if (Existence Checks)</a></p></li>
+</ul>
+</aside>
+<aside class="sidebar">
+<p class="sidebar-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../conditional-code-approach-1/topic.html"><span class="doc">Optional Code, Approach 1: Optional blacklist, C Macro  (Global Flags)</span></a></p></li>
+<li><p><a class="reference internal" href="../../conditional-code-approach-2/topic.html"><span class="doc">Optional Code, Approach 2: Pushing Optionality Down In Module Interface</span></a></p></li>
+<li><p><a class="reference internal" href="../../conditional-code-problem/topic.html"><span class="doc">Optional Code: Problem Definition, OPTION()</span></a></p></li>
+</ul>
+</aside>
+<ul>
+<li><p>Is a variable defined? <em>Note: a variable may be defined but empty</em></p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/a778d59248a567ed946a95517efb02f2/if-defined.cmake"><code class="xref download docutils literal notranslate"><span class="pre">if-defined.cmake</span> <span class="pre">(download)</span></code></a></span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">some_variable</span><span class="w"> </span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s">DEFINED</span><span class="w"> </span><span class="s">some_variable</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;some_variable is a defined variable&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s">NOT</span><span class="w"> </span><span class="s">DEFINED</span><span class="w"> </span><span class="s">another_variable</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;another_variable is not a defined variable&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cmake -P if-defined.cmake
+some_variable is a defined variable
+another_variable is not a defined variable
+</pre></div>
+</div>
+</li>
+<li><p>Does a target exist?</p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/a24515b38b74f6ca372a7fc39430288f/if-target.cmake"><code class="xref download docutils literal notranslate"><span class="pre">if-target.cmake</span> <span class="pre">(download)</span></code></a></span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">libname</span><span class="w"> </span><span class="s2">&quot;a-library-that-is-optionally-built&quot;</span><span class="p">)</span>
+
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s">NOT</span><span class="w"> </span><span class="s">TARGET</span><span class="w"> </span><span class="s2">&quot;${libname}&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;${libname} is not a known target&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cmake -P if-target.cmake
+a-library-that-is-optionally-built is not a known target
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Targets are <em>architecturally relevant</em></p></li>
+<li><p>Properties are probably a better way to communicate
+optionality.</p></li>
+</ul>
+</div>
+</li>
+</ul>
+</section>
+<section id="condition-evaluation-where-the-mess-begins-what-s-boolean">
+<h2><a class="toc-backref" href="#id21" role="doc-backlink">Condition Evaluation (Where The Mess Begins): What’s Boolean?</a><a class="headerlink" href="#condition-evaluation-where-the-mess-begins-what-s-boolean" title="Link to this heading">¶</a></h2>
+<p>So far, we only used strings in the examples</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<ul class="simple">
+<li><p><em>Rule</em>: use strings explicitly as much as you can in your CMake code</p>
+<ul>
+<li><p>This keeps you mentally sane</p></li>
+<li><p>This will help colleagues understand your code</p></li>
+</ul>
+</li>
+<li><p><em>Rule</em>: set policy <code class="docutils literal notranslate"><span class="pre">CMP0012</span></code> to <code class="docutils literal notranslate"><span class="pre">NEW</span></code></p></li>
+</ul>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">if</span></code> (and <code class="docutils literal notranslate"><span class="pre">while</span></code>, for that matter) exists in CMake for a long
+time</p></li>
+<li><p>⟶ long before <code class="docutils literal notranslate"><span class="pre">${NAME}</span></code> has been considered the way
+to go for <em>variable references</em></p></li>
+<li><p>⟶ <em>confusion</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">if</span></code> understands “literals”/”constants” ⟶ there is
+no such definition in the language, it just happened</p></li>
+</ul>
+</section>
+<section id="dereferencing-unquoted-variable-names">
+<h2><a class="toc-backref" href="#id22" role="doc-backlink">Dereferencing Unquoted Variable Names</a><a class="headerlink" href="#dereferencing-unquoted-variable-names" title="Link to this heading">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/c99489be345fabff3a167ba42908a085/if-unquoted.cmake"><code class="xref download docutils literal notranslate"><span class="pre">if-unquoted.cmake</span> <span class="pre">(download)</span></code></a></span><a class="headerlink" href="#id9" title="Link to this code">¶</a></div>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">some_name</span><span class="w"> </span><span class="s2">&quot;Faschingbauer&quot;</span><span class="p">)</span>
+
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s">some_name</span><span class="w"> </span><span class="s">STRLESS</span><span class="w"> </span><span class="s2">&quot;Zeilinger&quot;</span><span class="p">)</span><span class="w">      </span><span class="c"># &lt;--- better: &quot;${some_name}&quot; or ${some_name}</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;yes&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cmake -P if-unquoted.cmake
+yes
+</pre></div>
+</div>
+</section>
+<section id="boolean-variables-weirdly-interpreted-strings">
+<span id="bool-literals"></span><h2><a class="toc-backref" href="#id23" role="doc-backlink">“Boolean” Variables: Weirdly Interpreted Strings</a><a class="headerlink" href="#boolean-variables-weirdly-interpreted-strings" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://cmake.org/cmake/help/latest/command/if.html#basic-expressions">if (Basic Expressions)</a></p></li>
+</ul>
+</aside>
+<ul>
+<li><p>First: there is no boolean type</p></li>
+<li><p>⟶ only strings that are interpreted <em>somehow</em></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">ON</span></code>, <code class="docutils literal notranslate"><span class="pre">YES</span></code>, <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>, <code class="docutils literal notranslate"><span class="pre">Y</span></code> (case-insensitively) are
+interpreted as boolean true</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">OFF</span></code>, <code class="docutils literal notranslate"><span class="pre">NO</span></code>, <code class="docutils literal notranslate"><span class="pre">FALSE</span></code>, <code class="docutils literal notranslate"><span class="pre">N</span></code>, <code class="docutils literal notranslate"><span class="pre">IGNORE</span></code>,
+<code class="docutils literal notranslate"><span class="pre">NOTFOUND</span></code>, the empty string, or ends in the suffix
+<code class="docutils literal notranslate"><span class="pre">-NOTFOUND</span></code> (case-insensitively) are interpreted as boolean
+false.</p></li>
+</ul>
+</li>
+<li><p>⟶ <em>please listen, and suffer</em></p></li>
+<li><p>A naive approach would be to pretend to not know all that …</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/28c97aacf6c486d922c2dc4914b0c6ea/if-bool-naive.cmake"><code class="xref download docutils literal notranslate"><span class="pre">if-bool-naive.cmake</span> <span class="pre">(download)</span></code></a></span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">boolean_variable</span><span class="w"> </span><span class="s2">&quot;TRUE&quot;</span><span class="p">)</span>
+
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s2">&quot;${boolean_variable}&quot;</span><span class="w"> </span><span class="s">STREQUAL</span><span class="w"> </span><span class="s2">&quot;TRUE&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;true&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cmake -P if-bool-naive.cmake
+true
+</pre></div>
+</div>
+</li>
+<li><p>But this is not how CMake wants it</p>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/16f06b8c0d8884b399fd8d046a1e5b6c/if-bool-cmake.cmake"><code class="xref download docutils literal notranslate"><span class="pre">if-bool-cmake.cmake</span> <span class="pre">(download)</span></code></a></span><a class="headerlink" href="#id11" title="Link to this code">¶</a></div>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">boolean_variable</span><span class="w"> </span><span class="s">1</span><span class="p">)</span>
+
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s">boolean_variable</span><span class="p">)</span><span class="w">                   </span><span class="c"># &lt;--- unquoted variables </span>
+<span class="w">                                        </span><span class="c"># &lt;--- preferred for bool</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;boolean_variable (${boolean_variable}) evaluated as boolean true&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+
+<span class="nb">set</span><span class="p">(</span><span class="s">boolean_variable</span><span class="w"> </span><span class="s">0</span><span class="p">)</span>
+
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s">NOT</span><span class="w"> </span><span class="s">boolean_variable</span><span class="p">)</span><span class="w">               </span><span class="c"># &lt;--- unquoted variables </span>
+<span class="w">                                        </span><span class="c"># &lt;--- preferred for bool</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;boolean_variable (${boolean_variable}) evaluated as boolean false&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cmake -P if-bool-cmake.cmake
+boolean_variable (1) evaluated as boolean true
+boolean_variable (0) evaluated as boolean false
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>All would be well if that was all. But we have no such luck.</p>
+</div>
+</section>
+<section id="pitfall-evaluation-until-there-is-no-more">
+<h2><a class="toc-backref" href="#id24" role="doc-backlink">Pitfall: Evaluation Until There Is No More</a><a class="headerlink" href="#pitfall-evaluation-until-there-is-no-more" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>When CMake evaluates (“interpolates”, “expands”) strings, it does so
+until there’s nothing left.</p></li>
+<li><p>… which can lead to surprising results</p></li>
+<li><p>The following evaluates to the plain string <code class="docutils literal notranslate"><span class="pre">&quot;boolean_variable&quot;</span></code>,
+which is turn is recognized by CMake as a variable reference</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/fa54b388cfac38c81acb008437c4cdb5/if-boolshit-expand-loop.cmake"><code class="xref download docutils literal notranslate"><span class="pre">if-boolshit-expand-loop.cmake</span> <span class="pre">(download)</span></code></a></span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">boolean_variable</span><span class="w"> </span><span class="s">0</span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">another_variable</span><span class="w"> </span><span class="s2">&quot;boolean_variable&quot;</span><span class="p">)</span><span class="w">  </span><span class="c"># &lt;--- name of boolean_variable</span>
+
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s2">&quot;${another_variable}&quot;</span><span class="p">)</span><span class="w">                </span><span class="c"># &lt;--- evaluates to unquoted boolean_variable</span>
+<span class="w">                                          </span><span class="c">#      which evaluates to 0</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;quoted: true&quot;</span><span class="p">)</span>
+<span class="nb">else</span><span class="p">()</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;quoted: false&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cmake -P if-boolshit-expand-loop.cmake
+CMake Warning (dev) at if-boolshit-expand-loop.cmake:4 (if):
+  Policy CMP0054 is not set: Only interpret if() arguments as variables or
+  keywords when unquoted.  Run &quot;cmake --help-policy CMP0054&quot; for policy
+  details.  Use the cmake_policy command to set the policy and suppress this
+  warning.
+
+  Quoted variables like &quot;boolean_variable&quot; will no longer be dereferenced
+  when the policy is set to NEW.  Since the policy is not set the OLD
+  behavior will be used.
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+quoted: false
+</pre></div>
+</div>
+</section>
+<section id="pitfall-evaluation-of-unquoted-arguments">
+<h2><a class="toc-backref" href="#id25" role="doc-backlink">Pitfall: Evaluation Of Unquoted Arguments</a><a class="headerlink" href="#pitfall-evaluation-of-unquoted-arguments" title="Link to this heading">¶</a></h2>
+<ul>
+<li><p>Undefined variables evaluate to boolean false. Just like before,
+quoting evaluates until there is no more</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;${foo}&quot;</span></code> evaluates to <code class="docutils literal notranslate"><span class="pre">&quot;bar&quot;</span></code></p></li>
+<li><p>… which is then taken by <code class="docutils literal notranslate"><span class="pre">if</span></code> as an unquoted reference to
+variable <code class="docutils literal notranslate"><span class="pre">bar</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bar</span></code> is not defined which evaluates to boolean false</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/92e16d9f8f50a43b3fd6d01d64b35c7c/if-boolshit-par-excellence-ok.cmake"><code class="xref download docutils literal notranslate"><span class="pre">if-boolshit-par-excellence-ok.cmake</span> <span class="pre">(download)</span></code></a></span><a class="headerlink" href="#id13" title="Link to this code">¶</a></div>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">foo</span><span class="w"> </span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s2">&quot;${foo}&quot;</span><span class="p">)</span><span class="w">                           </span><span class="c"># &lt;--- unquoted bar -&gt; undefined</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;true&quot;</span><span class="p">)</span>
+<span class="nb">else</span><span class="p">()</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;false&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cmake -P if-boolshit-par-excellence-ok.cmake
+false
+</pre></div>
+</div>
+</li>
+<li><p><strong>Biggest crap ever seen</strong>: unquoted variable references are special</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">foo</span></code> evaluates to <code class="docutils literal notranslate"><span class="pre">&quot;bar&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;bar&quot;</span></code> is not equal to one of the <em>false</em> literals (remember
+<a class="reference internal" href="#bool-literals"><span class="std std-ref">“Boolean” Variables: Weirdly Interpreted Strings</span></a>)</p></li>
+<li><p>⟶ hence it can only mean <strong>boolean true</strong></p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/ce5e04d8e16aa8dc524c8df3bfee70d8/if-boolshit-par-excellence.cmake"><code class="xref download docutils literal notranslate"><span class="pre">if-boolshit-par-excellence.cmake</span> <span class="pre">(download)</span></code></a></span><a class="headerlink" href="#id14" title="Link to this code">¶</a></div>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">foo</span><span class="w"> </span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s">foo</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;true&quot;</span><span class="p">)</span>
+<span class="nb">else</span><span class="p">()</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;false&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cmake -P if-boolshit-par-excellence.cmake
+true
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+</section>
+
+<div class="section ablog__blog_comments">
+  
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2019-2024 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../../_sources/trainings/material/soup/cmake/advanced/language/if-and-conditions/topic.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
