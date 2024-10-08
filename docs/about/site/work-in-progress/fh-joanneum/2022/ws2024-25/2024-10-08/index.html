@@ -152,6 +152,7 @@
 <ul>
 <li><p><a class="reference internal" href="#i2c" id="id4">I2C</a></p></li>
 <li><p><a class="reference internal" href="#pwm" id="id5">PWM</a></p></li>
+<li><p><a class="reference internal" href="#spi" id="id6">SPI</a></p></li>
 </ul>
 </li>
 </ul>
@@ -196,6 +197,28 @@
 <h3><a class="toc-backref" href="#id5" role="doc-backlink">PWM</a><a class="headerlink" href="#pwm" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="../../../../../../../trainings/material/soup/linux/hardware/pwm/topic.html"><span class="doc">PWM Userspace Interface (using PCA9685)</span></a></p></li>
+</ul>
+</section>
+<section id="spi">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">SPI</a><a class="headerlink" href="#spi" title="Link to this heading">¶</a></h3>
+<ul>
+<li><p><a class="reference external" href="https://github.com/jfasch/ws2812-spi">ws2812-spi on Github</a>. Look into <a class="reference external" href="https://github.com/jfasch/ws2812-spi/blob/main/ws2812/spi.cpp">ws2812/spi.cpp</a>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">spi_ioc_transfer</span><span class="w"> </span><span class="n">tr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">.</span><span class="n">tx_buf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="p">)</span><span class="n">xfer_bytes</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">xfer_size</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">speed_hz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">profile</span><span class="p">().</span><span class="n">frequency_hz</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ioctl</span><span class="p">(</span><span class="n">_fd</span><span class="p">,</span><span class="w"> </span><span class="n">SPI_IOC_MESSAGE</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">tr</span><span class="p">);</span>
+</pre></div>
+</div>
+</li>
+<li><p><a class="reference external" href="https://datasheets.raspberrypi.com/bcm2711/bcm2711-peripherals.pdf">https://datasheets.raspberrypi.com/bcm2711/bcm2711-peripherals.pdf</a></p>
+<p>Things to take into accout when you use SPI to clock out multi-byte
+waveforms. Take care of “2.3.1. SPI implementation details”, where
+they say that there is a garanteed gap between two bytes. During
+that time the MOSI signal is also low (alas it’s SPI).</p>
+</li>
 </ul>
 </section>
 </section>
