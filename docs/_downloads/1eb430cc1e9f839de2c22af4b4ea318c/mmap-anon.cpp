@@ -18,8 +18,9 @@ int main()
     }
 
     *(((char*)memory)+16) = 'a';                       // <-- access memory in first page of mapping
+                                                       //     will cause page to be allocated
 
-    munmap(memory, 16*1024*1024);                      // <-- technically not necessary: done anyway at exit
+    munmap(memory, 16*1024*1024);                      // <-- technically not necessary; done anyway at exit
 
     return 0;
 }
