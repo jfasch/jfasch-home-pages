@@ -169,55 +169,34 @@ What is new there:
 Write ``class SysFSPWMPin`` (Group :doc:`../project/servo-motor`)
 .................................................................
 
-* Write ``class SysFSPWMPin`` (respectively, complete the skeleton
-  `toolcase/base/sysfs-pwm-pin.h
-  <https://github.com/jfasch/FH-STECE2022/blob/main/toolcase/base/sysfs-pwm-pin.h>`__)
-* Requirements in `tests/sysfs-pwm-pin-tests.cpp
+* (SysFSPWMPin is done already, so lets focus on the servo)
+* How would a servo class look like? See "Software Interface" in
+  :doc:`../project/servo-motor` for an idea.
+
+  Write a test for it, much like `tests/sysfs-pwm-pin-tests.cpp
   <https://github.com/jfasch/FH-STECE2022/blob/main/tests/sysfs-pwm-pin-tests.cpp>`__
 
-  **Use test suite during development, until all green**
+  * The fixture for the servo tests looks the same as that of the pwm
+    pin tests (``struct sysfs_pwm_pin_suite``); simply copy it. We can
+    pull out common code later.
+  * A first test could look something like,
 
-  .. code-block:: console
+    .. code-block:: c++
 
-     [jfasch@jflaptop ~/My-Builds/FH-STECE2022-x86_64]
-     $ ./tests/fh-stece22-suite
-     Running main() from /home/jfasch/My-Projects/FH-STECE2022/googletest/googletest/src/gtest_main.cc
-     [==========] Running 5 tests from 2 test suites.
-     [----------] Global test environment set-up.
-     [----------] 4 tests from sysfs_file_suite
-     [ RUN      ] sysfs_file_suite.read_int64_with_linefeed
-     [       OK ] sysfs_file_suite.read_int64_with_linefeed (0 ms)
-     [ RUN      ] sysfs_file_suite.read_int64_without_linefeed
-     [       OK ] sysfs_file_suite.read_int64_without_linefeed (0 ms)
-     [ RUN      ] sysfs_file_suite.write_int64
-     [       OK ] sysfs_file_suite.write_int64 (0 ms)
-     [ RUN      ] sysfs_file_suite.write_int64_truncate
-     [       OK ] sysfs_file_suite.write_int64_truncate (0 ms)
-     [----------] 4 tests from sysfs_file_suite (0 ms total)
-     
-     [----------] 1 test from sysfs_pwm_pin_suite
-     [ RUN      ] sysfs_pwm_pin_suite.get_period
-     /home/jfasch/My-Projects/FH-STECE2022/tests/sysfs-pwm-pin-tests.cpp:41: Failure
-     Expected equality of these values:
-       pin.period()
-         Which is: -666
-       PERIOD_NS_INIT
-         Which is: 10000000
-     
-     [  FAILED  ] sysfs_pwm_pin_suite.get_period (0 ms)
-     [----------] 1 test from sysfs_pwm_pin_suite (0 ms total)
-     
-     [----------] Global test environment tear-down
-     [==========] 5 tests from 2 test suites ran. (0 ms total)
-     [  PASSED  ] 4 tests.
-     [  FAILED  ] 1 test, listed below:
-     [  FAILED  ] sysfs_pwm_pin_suite.get_period
-     
-      1 FAILED TEST
-    
-* Test program in `bin/pwm-test.cpp
-  <https://github.com/jfasch/FH-STECE2022/blob/main/bin/pwm-test.cpp>`__;
-  feel free to modify
+       SysFSPWMPin pin(dirname);
+       DerEineRCServoUeberPWM rc(pwm7);
+
+       rc.set(0.0); // middle position
+       ASSERT_EQ(pin.duty_cycle(), 500000); // or whatever you would expect
+       
+       rc.set(-45.7);
+       ASSERT_EQ(pin.duty_cycle(), 1500); // or whatever you would expect
+
+    It is not straightforward to implement a mapping from a range of
+    floating point values to one single duty_cycle value. It is easier
+    though if you know what you want and start from there, so lets
+    write the test first.
+       
 
 Halfbridge Horror (Group :doc:`../project/motor-control-btn9960lv`)
 ...................................................................
