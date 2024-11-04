@@ -171,7 +171,9 @@
 <tbody>
 <tr class="row-odd"><td><ul class="simple">
 <li><p>Mappings are <em>unpopulated</em>, initially</p></li>
-<li><p>No memory exists ⟶ no mapping exists in MMU</p></li>
+<li><p>Not backed by physical memory</p></li>
+<li><p>⟶ MMU knows nothing</p></li>
+<li><p>⟶ Error condition</p></li>
 <li><p>Memory will be allocated at first access</p></li>
 <li><p>⟶ <em>overcommit</em>: if all processes allocated
 memory for all of their mappings, the system would run out of
@@ -195,17 +197,13 @@ memory</p></li>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><ul class="simple">
-<li><p>On first access, MMU has no mapping (no TLB entry)</p></li>
+<li><p>On first access, MMU knows nothing (no TLB entry)</p></li>
 <li><p>⟶ “TLB miss”</p></li>
 <li><p>Page table has nothing too</p></li>
 <li><p>⟶ Process is <em>suspended</em></p></li>
-<li><p>Memory allocation starts</p>
-<ul>
+<li><p>Memory allocation starts</p></li>
 <li><p>Might require disk IO ⟶ could take a while</p></li>
-<li><p>⟶ No-go if one has <a class="reference internal" href="realtime.html"><span class="doc">realtime
-requirements</span></a></p></li>
-</ul>
-</li>
+<li><p>⟶ No-go if one has <a class="reference internal" href="realtime.html"><span class="doc">realtime requirements</span></a></p></li>
 </ul>
 </td>
 <td><figure class="align-center">
@@ -224,9 +222,8 @@ requirements</span></a></p></li>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><ul class="simple">
-<li><p>Finally, allocation has taken place (allocated memory is
-zero-filled, btw)</p></li>
-<li><p>Kernel page tables modified, TLB entry in place</p></li>
+<li><p>Finally, when allocation has taken place, page tables and TLB
+are updated</p></li>
 <li><p>⟶ Process is runnable again</p></li>
 <li><p>⟶ Subject to scheduling</p></li>
 </ul>
@@ -276,13 +273,16 @@ memory?)</p></li>
 </ul>
 </aside>
 <ul class="simple">
-<li><p>Lazy allocation is not generally wanted in realtime situations</p></li>
-<li><p>Allocations must be done up-front</p>
+<li><p><strong>Allocation may suspend a process in critical situations</strong></p></li>
+<li><p>⟶ Lazy allocation is not generally wanted in realtime
+situations</p></li>
+<li><p>Allocations must be done up-front</p></li>
+<li><p><em>Not all allocations are explicit</em></p>
 <ul>
-<li><p>Program itself (code and data) is loaded on-demand
-⟶ bad luck if a new code branch is taken at the
-wrong time</p></li>
+<li><p>Program itself is loaded on-demand ⟶ bad luck if a
+new code branch is taken at the wrong time</p></li>
 <li><p>Stack memory is dynamically allocated</p></li>
+<li><p>Global are lazy-loaded too</p></li>
 <li><p>…</p></li>
 </ul>
 </li>
