@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>POSIX Message Queues &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css?v=cf071e93" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css?v=70eaaddc" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css?v=5c84f910" />
+    <script src="../../../../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=ffc8af2d"></script>
+    <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/sysprog/ipc-mqueue/topic.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="Linux Hardware Interfaces" href="../../hardware/group.html" />
+    <link rel="prev" title="TODO: And Realtime?" href="../mmap/realtime.html" />
+
+   
+  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+
+
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet"/>
+
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../../index.html">
+    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Programming Linux</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Courses</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Courses Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">Slide Material</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../python/group.html">Python Programming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../c/group.html">The C Programming Language</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx-todo/index.html">C++: TODO List</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx/group.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx03/group.html">C++</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx11/group.html">The New C++ (11-…)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx-design-patterns/group.html">Design Patterns With C++</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx-code/index.html">C++ Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx-exercises/group.html">C++ Exercises</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cmake/group.html">CMake</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../group.html">Linux</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../basics/group.html">Linux Basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ssh/group.html">SSH: Secure Shell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../toolchain/group.html">Toolchain, And Cross Development</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../group.html">Linux Systems Programming</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../intro-hw/group.html">Introductory Live Hacking, Hardware-Wise (<code class="docutils literal notranslate"><span class="pre">sysfs</span></code> GPIO)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../basics/group.html">Linux Systems Programming: Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../file-io/group.html">File I/O</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../blocking-io/group.html">Blocking I/O: What Is That?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../process/group.html">Processes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../posix-threads/group.html">POSIX Threads</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../scheduling/group.html">Scheduling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sysprog_events/topic.html">Sysprog: Events</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sysprog_ipc/topic.html">Sysprog: POSIX IPC</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sysprog_signals/topic.html">Sysprog: Signals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../mmap/group.html"><code class="docutils literal notranslate"><span class="pre">mmap</span></code></a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">POSIX Message Queues</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../hardware/group.html">Linux Hardware Interfaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../drafts/group.html">Drafts</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../clean-code/group.html">Is Software A Craft? Software Is A Craft! ⟶ <em>Clean Code</em></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../unittest/group.html">Unit Testing With <code class="docutils literal notranslate"><span class="pre">googletest</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../kernel/group.html">Linux Kernel Driver Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../graph.html">Generated Topic Graph</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../booking.html">How To Book</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Log Of Past Courses</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Myself: Contact, Impressum, …</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">This Site</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+<section id="posix-message-queues">
+<h1>POSIX Message Queues<a class="headerlink" href="#posix-message-queues" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<figure class="align-default">
+<img alt="../../../../../../_images/mqueue.svg" src="../../../../../../_images/mqueue.svg" /></figure>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://man7.org/linux/man-pages/man7/mq_overview.7.html">man -s 7 mq_overview</a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p><strong>Message queue parameters</strong></p>
+<ul>
+<li><p>Maximum number of messages</p></li>
+<li><p>Maximum size of a single message</p></li>
+<li><p><em>Realtime guarantees</em> (memory is never swapped out)</p></li>
+</ul>
+</li>
+<li><p><strong>Message priorities</strong></p>
+<ul>
+<li><p>Messages are sent with a priority</p></li>
+<li><p>Higher prioritized messages overtake lower prioritized messages</p></li>
+<li><p>Linux: 0 through 32768-1 (POSIX: 0 through 31)</p></li>
+</ul>
+</li>
+<li><p><strong>Linux Specific</strong></p>
+<ul>
+<li><p>The POSIX API tries to differentiate itself from file IO</p></li>
+<li><p>Although very similar</p></li>
+<li><p>⟶ Message queue descriptors (<code class="docutils literal notranslate"><span class="pre">mqd_t</span></code>) <em>are</em> file
+descriptors</p></li>
+<li><p>⟶ Usable in event loops (<a class="reference external" href="https://man7.org/linux/man-pages/man2/select.2.html">man -s 2 select</a>, <a class="reference external" href="https://man7.org/linux/man-pages/man2/poll.2.html">man -s
+2 poll</a>,
+<a class="reference external" href="https://man7.org/linux/man-pages/man7/epoll.7.html">man -s 7 epoll</a>)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="setup-message-queue-creation">
+<h2>Setup: Message Queue Creation<a class="headerlink" href="#setup-message-queue-creation" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man3/mq_open.3.html">man -s 3 mq_open</a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man3/mq_open.3.html">mq_open</a>
+is used for creating <em>and</em> opening (much like <a class="reference external" href="https://man7.org/linux/man-pages/man2/open.2.html">man -s 2 open</a>)</p></li>
+<li><p>When <code class="docutils literal notranslate"><span class="pre">flags</span></code> contains <code class="docutils literal notranslate"><span class="pre">O_CREAT</span></code> …</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code> is required (permissions, see <a class="reference external" href="https://man7.org/linux/man-pages/man2/open.2.html">man -s 2 open</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">attr</span></code> is required</p></li>
+</ul>
+</li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/415a47e10cf70753076accc42363a6db/create.cpp"><code class="xref download docutils literal notranslate"><span class="pre">create.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;mqueue.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;fcntl.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">my_message</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">mq_attr</span><span class="w"> </span><span class="n">attr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="p">.</span><span class="n">mq_maxmsg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+<span class="w">        </span><span class="p">.</span><span class="n">mq_msgsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">my_message</span><span class="p">)</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="n">mqd_t</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mq_open</span><span class="p">(</span><span class="s">&quot;/my-queue&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">O_CREAT</span><span class="o">|</span><span class="n">O_EXCL</span><span class="p">,</span><span class="w"> </span><span class="mo">0666</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">q</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;mq_open&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="mqueue-file-system">
+<h2><code class="docutils literal notranslate"><span class="pre">mqueue</span></code> File System<a class="headerlink" href="#mqueue-file-system" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Message queues <em>are</em> visible as files, actually (just a little
+funny)</p></li>
+<li><p>⟶ <code class="docutils literal notranslate"><span class="pre">mqueue</span></code> filesystem</p></li>
+<li><p>Usually mounted on <code class="docutils literal notranslate"><span class="pre">/dev/mqueue</span></code></p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>mkdir<span class="w"> </span>/dev/mqueue
+<span class="gp"># </span>mount<span class="w"> </span>-t<span class="w"> </span>mqueue<span class="w"> </span>none<span class="w"> </span>/dev/mqueue
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>All message queues visible in <code class="docutils literal notranslate"><span class="pre">/dev/mqueue</span></code></p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls<span class="w"> </span>-l<span class="w"> </span>/dev/mqueue/
+<span class="go">...</span>
+<span class="go">-rw-r--r--. 1 jfasch jfasch 80 Nov 11 09:08 my-queue</span>
+<span class="go">...</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>File content: metadata ⟶ <em>great for debugging</em></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">QSIZE</span></code>: number of contained (unread) <em>bytes</em> (<em>not</em> messages)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NOTIFY,</span> <span class="pre">SIGNO,</span> <span class="pre">NOTIFY_PID</span></code>: historical baggage (nobody uses
+signals for notification anymore)</p></li>
+</ul>
+</li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cat<span class="w"> </span>/dev/mqueue/my-queue
+<span class="go">QSIZE:0          NOTIFY:0     SIGNO:0     NOTIFY_PID:0</span>
+</pre></div>
+</div>
+</section>
+<section id="teardown-message-queue-deletion">
+<h2>Teardown: Message Queue Deletion<a class="headerlink" href="#teardown-message-queue-deletion" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man3/mq_unlink.3.html">man -s 3 mq_unlink</a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Just like <a class="reference external" href="https://man7.org/linux/man-pages/man2/unlink.2.html">man -s 2 unlink</a></p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/fa2d071bf3fb2c7f50b6445020ce7f6f/unlink.cpp"><code class="xref download docutils literal notranslate"><span class="pre">unlink.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;mqueue.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mq_unlink</span><span class="p">(</span><span class="s">&quot;/my-queue&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;mq_unlink&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">rm</span></code> would work too (on Linux)</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>rm<span class="w"> </span>/dev/mqueue/my-queue
+</pre></div>
+</div>
+</section>
+<section id="usage-open-an-existing-message-queue-and-produce-into-it">
+<h2>Usage: Open An Existing Message Queue, And Produce Into It<a class="headerlink" href="#usage-open-an-existing-message-queue-and-produce-into-it" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man3/mq_open.3.html">man -s 3 mq_open</a></p></li>
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man3/mq_send.3.html">man -s 3 mq_send</a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Open for writing: <code class="docutils literal notranslate"><span class="pre">flags</span></code> contains <code class="docutils literal notranslate"><span class="pre">O_WRONLY</span></code></p></li>
+<li><p>Use <a class="reference external" href="https://man7.org/linux/man-pages/man3/mq_send.3.html">mq_send</a> to produce
+a message into queue ⟶ <code class="docutils literal notranslate"><span class="pre">priority</span></code></p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/582875a6c0b7b0c046d2985625b1afa3/produce.cpp"><code class="xref download docutils literal notranslate"><span class="pre">unlink.cpp</span></code></a></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;mqueue.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">my_message</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">mqd_t</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mq_open</span><span class="p">(</span><span class="s">&quot;/my-queue&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">O_WRONLY</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">q</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;mq_open&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">my_message</span><span class="w"> </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mq_send</span><span class="p">(</span><span class="n">q</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">msg</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">msg</span><span class="p">),</span><span class="w"> </span><span class="cm">/*prio*/</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;mq_send&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><p>⟶ Eight bytes in queue</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cat<span class="w"> </span>/dev/mqueue/my-queue
+<span class="go">QSIZE:8          NOTIFY:0     SIGNO:0     NOTIFY_PID:0</span>
+</pre></div>
+</div>
+</section>
+<section id="usage-open-an-existing-message-queue-and-consume-from-it">
+<h2>Usage: Open An Existing Message Queue, And Consume From It<a class="headerlink" href="#usage-open-an-existing-message-queue-and-consume-from-it" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man3/mq_open.3.html">man -s 3 mq_open</a></p></li>
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man3/mq_receive.3.html">man -s 3 mq_receive</a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Open for reading: <code class="docutils literal notranslate"><span class="pre">flags</span></code> contains <code class="docutils literal notranslate"><span class="pre">O_RDONLY</span></code></p></li>
+<li><p>Use <a class="reference external" href="https://man7.org/linux/man-pages/man3/mq_receive.3.html">mq_receive</a> to
+consume a message from queue ⟶ <code class="docutils literal notranslate"><span class="pre">priority</span></code></p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/4a06665f264f0238eba0b43bee08839f/consume.cpp"><code class="xref download docutils literal notranslate"><span class="pre">consume.cpp</span></code></a></span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;mqueue.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">my_message</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">mqd_t</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mq_open</span><span class="p">(</span><span class="s">&quot;/my-queue&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">O_RDONLY</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">q</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;mq_open&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">my_message</span><span class="w"> </span><span class="n">msg</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">prio</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">nread</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mq_receive</span><span class="p">(</span><span class="n">q</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">msg</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">msg</span><span class="p">),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">prio</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nread</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;mq_receive&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;prio=%u, x=%d, y=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">prio</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><p>⟶ Queue now empty</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cat<span class="w"> </span>/dev/mqueue/my-queue
+<span class="go">QSIZE:0          NOTIFY:0     SIGNO:0     NOTIFY_PID:0</span>
+</pre></div>
+</div>
+</section>
+<section id="do-not-use-mq-notify">
+<h2><strong>Do Not Use</strong>: <code class="docutils literal notranslate"><span class="pre">mq_notify()</span></code><a class="headerlink" href="#do-not-use-mq-notify" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man3/mq_notify.3.html">man -s 3 mq_notify</a></p></li>
+</ul>
+</aside>
+<p><strong>Obscure feature …</strong></p>
+<ul class="simple">
+<li><p>Only shown because of its obscurity</p></li>
+<li><p>Specification <em>predates</em> that of event loops</p></li>
+<li><p>Guess what … <strong>SIGNALS</strong></p></li>
+<li><p>Please read yourself and be disturbed!</p></li>
+</ul>
+</section>
+</section>
+
+<div class="section ablog__blog_comments">
+  
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2019-2024 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../../_sources/trainings/material/soup/linux/sysprog/ipc-mqueue/topic.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
