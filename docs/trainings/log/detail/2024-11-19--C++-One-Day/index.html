@@ -195,7 +195,15 @@
 <h1>C++: A One-Day Overview (2024-11-19 - 2024-11-21)<a class="headerlink" href="#c-a-one-day-overview-2024-11-19-2024-11-21" title="Link to this heading">¶</a></h1>
 <nav class="contents local" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#day-1" id="id1">Day 1</a></p></li>
+<li><p><a class="reference internal" href="#day-1-2024-11-19" id="id1">Day 1 (2024-11-19)</a></p>
+<ul>
+<li><p><a class="reference internal" href="#std-map-and-pitfalls" id="id2"><code class="docutils literal notranslate"><span class="pre">std::map</span></code>, And Pitfalls</a></p></li>
+<li><p><a class="reference internal" href="#brace-initialization" id="id3">Brace Initialization</a></p></li>
+<li><p><a class="reference internal" href="#smart-pointers-and-move-semantics" id="id4">Smart Pointers, And Move Semantics</a></p></li>
+<li><p><a class="reference internal" href="#pythonicity" id="id5">Pythonicity</a></p></li>
+<li><p><a class="reference internal" href="#lambda" id="id6">Lambda</a></p></li>
+</ul>
+</li>
 </ul>
 </nav>
 <div class="toctree-wrapper compound">
@@ -210,12 +218,120 @@
 <li><p><a class="reference internal" href="agenda.html"><span class="doc">Agenda: C++: A One-Day Overview (2024-11-19 - 2024-11-21)</span></a></p></li>
 </ul>
 </aside>
-<section id="day-1">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">Day 1</a><a class="headerlink" href="#day-1" title="Link to this heading">¶</a></h2>
+<section id="day-1-2024-11-19">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Day 1 (2024-11-19)</a><a class="headerlink" href="#day-1-2024-11-19" title="Link to this heading">¶</a></h2>
+<p>Livecoding <a class="reference external" href="https://github.com/jfasch/2024-11-19/blob/main/day-1/intro.cpp">day-1/intro.cpp</a>,
+according to <a class="reference external" href="https://github.com/jfasch/2024-11-19/blob/main/day-1/notes.rst">notes</a></p>
+<p>Notoriously did not reach the goal (there has no goal been set), but
+touched the following topics as the pointless todo-list was morphed to
+something even more pointless.</p>
+<section id="std-map-and-pitfalls">
+<h3><a class="toc-backref" href="#id2" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">std::map</span></code>, And Pitfalls</a><a class="headerlink" href="#std-map-and-pitfalls" title="Link to this heading">¶</a></h3>
+<aside class="sidebar">
+<p class="sidebar-title">See also</p>
 <ul class="simple">
-<li><p>Livecoding <a class="reference external" href="https://github.com/jfasch/2024-11-19/blob/main/day-1/intro.cpp">intro.cpp</a>,
-according to <a class="reference external" href="https://github.com/jfasch/2024-11-19/blob/main/day-1/notes.rst">notes</a></p></li>
+<li><p><a class="reference internal" href="../../../material/soup/cxx03/060-stl/050-associative-containers/map.html"><span class="doc">std::map</span></a></p></li>
+<li><p><a class="reference internal" href="../../../material/soup/cxx03/060-stl/050-associative-containers/map-insert.html"><span class="doc">Screenplay: Inserting Elements</span></a></p></li>
+<li><p><a class="reference internal" href="../../../material/soup/cxx03/060-stl/050-associative-containers/map.html#cxx-map-inserting"><span class="std std-ref">Inserting Elements</span></a></p></li>
 </ul>
+</aside>
+<p><code class="docutils literal notranslate"><span class="pre">std::map</span></code>, when filled using <code class="docutils literal notranslate"><span class="pre">tdl[&quot;something&quot;]</span> <span class="pre">=</span> <span class="pre">Item(&quot;...</span> <span class="pre">blah</span>
+<span class="pre">...&quot;)</span></code>, requires <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Item</span></code> to have a default constructor. This
+is not entirely obvious, to say the least.</p>
+<p><strong>Problem</strong>: <code class="docutils literal notranslate"><span class="pre">std::map::operator[]()</span></code> creates a node with a
+default-constructed value, which is then overwritten with
+<code class="docutils literal notranslate"><span class="pre">Item(&quot;...</span> <span class="pre">blah</span> <span class="pre">...&quot;)</span></code>.</p>
+<p><strong>Solution</strong>: use <code class="docutils literal notranslate"><span class="pre">std::map::insert()</span></code>, or even better in our case at
+least, use an initializer list and a <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">todo_list</span></code> object.</p>
+<p>Demo of the pitfall (<code class="docutils literal notranslate"><span class="pre">std::map::operator[]()</span></code>) in
+<a class="reference external" href="https://github.com/jfasch/2024-11-19/blob/main/day-1/map-pitfall-no1.cpp">day-1/map-pitfall-no1.cpp</a></p>
+</section>
+<section id="brace-initialization">
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">Brace Initialization</a><a class="headerlink" href="#brace-initialization" title="Link to this heading">¶</a></h3>
+<aside class="sidebar">
+<p class="sidebar-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../material/soup/cxx11/020-new-language-features/030-brace-initialization/group.html"><span class="doc">Brace Initialization (Uniform Initialization)</span></a></p></li>
+</ul>
+</aside>
+<p>Discussed the differences between <code class="docutils literal notranslate"><span class="pre">{}</span></code> and <code class="docutils literal notranslate"><span class="pre">()</span></code>. See
+<a class="reference external" href="https://github.com/jfasch/2024-11-19/blob/main/day-1/brace-init.cpp">day-1/brace-init.cpp</a></p>
+</section>
+<section id="smart-pointers-and-move-semantics">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">Smart Pointers, And Move Semantics</a><a class="headerlink" href="#smart-pointers-and-move-semantics" title="Link to this heading">¶</a></h3>
+<aside class="sidebar">
+<p class="sidebar-title">See also</p>
+<p><strong>Pointer Classes</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../material/soup/cxx11/030-smart-pointers/introduction.html"><span class="doc">Introduction</span></a></p></li>
+<li><p><a class="reference internal" href="../../../material/soup/cxx11/030-smart-pointers/uniqueptr.html"><span class="doc">std::unique_ptr</span></a></p></li>
+<li><p><a class="reference internal" href="../../../material/soup/cxx11/030-smart-pointers/sharedptr.html"><span class="doc">std::shared_ptr</span></a></p></li>
+<li><p>(Not covered) <a class="reference internal" href="../../../material/soup/cxx11/030-smart-pointers/weakptr.html"><span class="doc">std::weak_ptr</span></a></p></li>
+<li><p><a class="reference internal" href="../../../material/soup/cxx11/030-smart-pointers/040-closing-words/topic.html"><span class="doc">Smart Pointers: Closing Words</span></a></p></li>
+</ul>
+<p><strong>Move semantics, and Rvalue references</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../material/soup/cxx11/020-new-language-features/060-move/overview.html"><span class="doc">Lvalues, Rvalues, And Moving</span></a></p></li>
+<li><p><a class="reference internal" href="../../../material/soup/cxx11/020-new-language-features/060-move/livehack-string-move.html"><span class="doc">Implementing Move Semantics (class String, Live Hacked)</span></a></p></li>
+<li><p><a class="reference internal" href="../../../material/soup/cxx11/020-new-language-features/060-move/livehack-using-string-move.html"><span class="doc">Using Move Semantics In Own Code</span></a></p></li>
+<li><p><a class="reference internal" href="../../../material/soup/cxx11/020-new-language-features/060-move/afterword.html"><span class="doc">Afterword, Further Reading</span></a></p></li>
+</ul>
+</aside>
+<p>While using <code class="docutils literal notranslate"><span class="pre">std::shared_ptr&lt;&gt;</span></code> in <a class="reference external" href="https://github.com/jfasch/2024-11-19/blob/main/day-1/intro.cpp">day-1/intro.cpp</a>,
+we approached the topic in</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/jfasch/2024-11-19/blob/main/day-1/shared-ptr-memory-mgmt.cpp">day-1/shared-ptr-memory-mgmt.cpp</a></p></li>
+<li><p><a class="reference external" href="https://github.com/jfasch/2024-11-19/blob/main/day-1/unique-ptr-memory-mgmt.cpp">day-1/unique-ptr-memory-mgmt.cpp</a></p></li>
+</ul>
+<p>While we were at it, we discussed related topics like</p>
+<ul class="simple">
+<li><p>Return value optimization (RVO) and <a class="reference external" href="https://en.wikipedia.org/wiki/Copy_elision">Copy Elision</a>. Demo code in
+<a class="reference external" href="https://github.com/jfasch/2024-11-19/blob/main/day-1/rvo-or-not.cpp">day-1/rvo-or-not.cpp</a></p></li>
+<li><p>Moving and rvalue references in general
+(<a class="reference internal" href="../../../material/soup/cxx11/020-new-language-features/060-move/group.html"><span class="doc">Move Semantics, Rvalue References</span></a>)</p></li>
+<li><p>Dual implementation (move and copy) of, say,
+<code class="docutils literal notranslate"><span class="pre">std::vector::push_back()</span></code>. Demo code in <a class="reference external" href="https://github.com/jfasch/2024-11-19/blob/main/day-1/push-back-move.cpp">day-1/push-back-move.cpp</a></p></li>
+</ul>
+</section>
+<section id="pythonicity">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Pythonicity</a><a class="headerlink" href="#pythonicity" title="Link to this heading">¶</a></h3>
+<aside class="sidebar">
+<p class="sidebar-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../material/soup/cxx11/020-new-language-features/auto.html"><span class="doc">Duck Typing (Err, auto) Without A Duck</span></a></p></li>
+<li><p><a class="reference internal" href="../../../material/soup/cxx11/020-new-language-features/structured-binding.html"><span class="doc">Tuple Unpacking (Err, Structured Binding)</span></a></p></li>
+<li><p><a class="reference internal" href="../../../material/soup/cxx11/020-new-language-features/range-based-for.html"><span class="doc">Range Based for Loops: Introduction</span></a></p></li>
+<li><p><a class="reference internal" href="../../../material/soup/cxx11/020-new-language-features/range-based-for-map.html"><span class="doc">Case Study: Range Based for On std::map</span></a></p></li>
+</ul>
+</aside>
+<p>Nothing more to say; morphed <a class="reference external" href="https://github.com/jfasch/2024-11-19/blob/main/day-1/intro.cpp">day-1/intro.cpp</a>
+into something more readable.</p>
+</section>
+<section id="lambda">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Lambda</a><a class="headerlink" href="#lambda" title="Link to this heading">¶</a></h3>
+<aside class="sidebar">
+<p class="sidebar-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../material/soup/cxx11/020-new-language-features/lambda/lambda.html"><span class="doc">Lambda</span></a></p></li>
+<li><p><a class="reference internal" href="../../../material/soup/cxx11/020-new-language-features/lambda/lambda-is-functor.html"><span class="doc">Live Hacking: Handwritten Functors (Too Much Boilerplate)</span></a></p></li>
+<li><p><a class="reference internal" href="../../../material/soup/cxx11/020-new-language-features/lambda/lambda-is-functor-pitfall.html"><span class="doc">Live Hacking: Handwritten Functors, And Capturing By Reference (Pitfalls)</span></a></p></li>
+<li><p><a class="reference internal" href="../../../material/soup/cxx11/020-new-language-features/lambda/lambda-capture.html"><span class="doc">Lambda: More Capturing</span></a></p></li>
+<li><p><a class="reference internal" href="../../../material/soup/cxx03/060-stl/020-algorithm/sort.html"><span class="doc">sort&lt;&gt;</span></a></p></li>
+</ul>
+</aside>
+<p>Transformed <a class="reference external" href="https://github.com/jfasch/2024-11-19/blob/main/day-1/intro.cpp">day-1/intro.cpp</a>
+into something that is more to the point. Talk about interfaces, the
+cost of <code class="docutils literal notranslate"><span class="pre">virtual</span></code> (RTTI is not free), and readability in general.</p>
+<p>For what a lambda really is, see the old school functor demo
+(<a class="reference external" href="https://github.com/jfasch/2024-11-19/blob/main/day-1/functor.cpp">day-1/functor.cpp</a>).</p>
+<p>Use cases for lambda:</p>
+<ul class="simple">
+<li><p>The optional third parameter, <code class="docutils literal notranslate"><span class="pre">Compare</span></code>, to <code class="docutils literal notranslate"><span class="pre">std::sort</span></code>
+(see <a class="reference external" href="https://github.com/jfasch/2024-11-19/blob/main/day-1/sort-lambda.cpp">day-1/sort-lambda.cpp</a>)</p></li>
+<li><p>Creating threads, and more specifically, using <a class="reference external" href="https://en.cppreference.com/w/cpp/thread/async">std::async</a> (see
+<a class="reference external" href="https://github.com/jfasch/2024-11-19/blob/main/day-1/async.cpp">day-1/async.cpp</a>)</p></li>
+</ul>
+</section>
 </section>
 </section>
 
