@@ -2,20 +2,18 @@
 
 import socket, sys, threading
 
-sockets = []
-for name in sys.argv[1:]:
-    sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
-    sock.bind(name)
-    sockets.append(sock)
-
-def server(sock):
+def server(sock):    # thread start function
     while True:
-        print(sock.recv(1024))
+        data = sock.recv(1024)
+        print(data)
 
 threads = []
-for _ in sockets:
-    th = threading.thread(server, (sock,))
-    th.run()
+for sockname in sys.argv[1:]:
+    sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+    sock.bind(sockname)
+
+    th = threading.Thread(target=server, args=(sock,))
+    th.start()
     threads.append(th)
 
 for th in threads:

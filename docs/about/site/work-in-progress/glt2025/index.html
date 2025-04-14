@@ -224,11 +224,12 @@ I’ll try to explain, however hard that may be.</p>
 
 <span class="kn">import</span> <span class="nn">socket</span><span class="o">,</span> <span class="nn">sys</span>
 
+<span class="n">dest</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_UNIX</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
 
 <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
     <span class="n">msg</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s1">&#39;message (utf-8 please): &#39;</span><span class="p">)</span>
-    <span class="n">sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">),</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">),</span> <span class="n">dest</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -239,20 +240,18 @@ I’ll try to explain, however hard that may be.</p>
 
 <span class="kn">import</span> <span class="nn">socket</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">threading</span>
 
-<span class="n">sockets</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-    <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_UNIX</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
-    <span class="n">sock</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-    <span class="n">sockets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">server</span><span class="p">(</span><span class="n">sock</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">server</span><span class="p">(</span><span class="n">sock</span><span class="p">):</span>    <span class="c1"># thread start function</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">))</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
 <span class="n">threads</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">sockets</span><span class="p">:</span>
-    <span class="n">th</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">thread</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="p">(</span><span class="n">sock</span><span class="p">,))</span>
-    <span class="n">th</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">sockname</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+    <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_UNIX</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+    <span class="n">sock</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">sockname</span><span class="p">)</span>
+
+    <span class="n">th</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">server</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">sock</span><span class="p">,))</span>
+    <span class="n">th</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
     <span class="n">threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">th</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">th</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span>
