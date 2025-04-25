@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>systemd’s D-Bus Implementation, And Its Python asyncio Binding &#8212; Jörg Faschingbauer</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/alabaster.css?v=cf071e93" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/css/jf-alabaster.css?v=70eaaddc" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css?v=5c84f910" />
+    <script src="../../../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=ffc8af2d"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <link rel="canonical" href="https://www.faschingbauer.me/about/site/work-in-progress/glt2025/talk/index.html" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="Slides: systemd’s D-Bus Implementation, And Its Python asyncio Binding" href="slides.html" />
+    <link rel="prev" title="Abstract" href="../submission.html" />
+
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../blog/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+
+
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet"/>
+
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../../index.html">
+    <img class="logo" src="../../../../../_static/logo.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Programming Linux</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Courses</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../trainings/index.html">Courses Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../trainings/material/soup/index.html">Slide Material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../trainings/booking.html">How To Book</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../trainings/log/index.html">Log Of Past Courses</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../myself/index.html">Myself: Contact, Impressum, …</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">This Site</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../opentraining/index.html">OpenTraining</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Work in Progress</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../fh-joanneum/index.html">Embedded Computing (FH Joanneum Graz)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../refactoring-homepage.html">Refactoring The Homepage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../seo.html">SEO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../playground/index.html">Playground</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../git.html">Git Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../screencast.html">Creating Screencasts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../project-xxx/index.html">I2S Audio for a Kontron SMARC Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../packaging/index.html">Packaging this Site on PyPI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../2022-04-13/index.html">Seminar on “Clean Code” (2022-04-13)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../blink/index.html">Pointless Blinking</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">GLT 2025: systemd’s D-Bus Implementation, And Its Python <code class="docutils literal notranslate"><span class="pre">asyncio</span></code> Binding</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../submission.html">Abstract</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../submission.html#description">Description</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">systemd’s D-Bus Implementation, And Its Python <code class="docutils literal notranslate"><span class="pre">asyncio</span></code> Binding</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="slides.html">Slides: systemd’s D-Bus Implementation, And Its Python <code class="docutils literal notranslate"><span class="pre">asyncio</span></code> Binding</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../it-visions.html">IT-Visions TODO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../donau.html">Kajak Auf Der Donau</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../recipes/index.html">Recipes</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../blog/index.html">Posts</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+<section id="systemd-s-d-bus-implementation-and-its-python-asyncio-binding">
+<h1>systemd’s D-Bus Implementation, And Its Python <code class="docutils literal notranslate"><span class="pre">asyncio</span></code> Binding<a class="headerlink" href="#systemd-s-d-bus-implementation-and-its-python-asyncio-binding" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="slides.html">Slides: systemd’s D-Bus Implementation, And Its Python <code class="docutils literal notranslate"><span class="pre">asyncio</span></code> Binding</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="slides.html#tl-dr">TL;DR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slides.html#show">Show</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slides.html#a-big-picture">A Big Picture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slides.html#sample-client-sdbus-blocking">Sample Client (<code class="docutils literal notranslate"><span class="pre">sdbus</span></code>, Blocking)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slides.html#defining-interfaces-pythonically">Defining Interfaces, Pythonically</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slides.html#history-implementations-bindings-longrightarrow-sdbus">History/Implementations/Bindings ⟶ <code class="docutils literal notranslate"><span class="pre">sdbus</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="slides.html#concrete-use-case-jf-irrigation">Concrete Use Case: <code class="docutils literal notranslate"><span class="pre">jf-irrigation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="slides.html#irrigation-client-enter-asyncio">Irrigation Client: Enter <code class="docutils literal notranslate"><span class="pre">asyncio</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="slides.html#d-bus-signals">D-Bus Signals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slides.html#and-parallelism">And Parallelism?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slides.html#challenges-keep-in-mind-jjjj">Challenges; Keep In Mind jjjj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slides.html#more-asyncio">More <code class="docutils literal notranslate"><span class="pre">asyncio</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="old-stuff">
+<h2>Old Stuff<a class="headerlink" href="#old-stuff" title="Link to this heading">¶</a></h2>
+<section id="d-bus-show">
+<h3>D-Bus Show<a class="headerlink" href="#d-bus-show" title="Link to this heading">¶</a></h3>
+<ul>
+<li><p>Monitoring/Debugging</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>dbus-monitor<span class="w"> </span>--session
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="d-bus-spec-implementations">
+<h3>D-Bus Spec, Implementations<a class="headerlink" href="#d-bus-spec-implementations" title="Link to this heading">¶</a></h3>
+<ul>
+<li><p>What is D-Bus: Blah protocol and type system
+<a class="reference external" href="https://dbus.freedesktop.org/doc/dbus-specification.html">https://dbus.freedesktop.org/doc/dbus-specification.html</a></p>
+<p>jjj draw sketch jf-irrigation</p>
+</li>
+<li><p><em>Very</em> good D-Bus intro: <a class="reference external" href="https://0pointer.net/blog/the-new-sd-bus-api-of-systemd.html">Poettering: The new sd-bus API of systemd</a></p></li>
+<li><p>D-Bus reference implementation
+<a class="reference external" href="https://www.freedesktop.org/wiki/Software/dbus/">https://www.freedesktop.org/wiki/Software/dbus/</a></p>
+<ul class="simple">
+<li><p>Python binding <a class="reference external" href="https://dbus.freedesktop.org/doc/dbus-python/">https://dbus.freedesktop.org/doc/dbus-python/</a></p></li>
+<li><p>Really old and quirky, cannot remember</p></li>
+</ul>
+</li>
+<li><p>Glib’s D-Bus implementation</p>
+<ul class="simple">
+<li><p>Source: <a class="reference external" href="https://gitlab.gnome.org/GNOME/glib">https://gitlab.gnome.org/GNOME/glib</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gdbus</span></code> commandline tool,
+<a class="reference external" href="https://gnome.pages.gitlab.gnome.org/libsoup/gio/gdbus.html">https://gnome.pages.gitlab.gnome.org/libsoup/gio/gdbus.html</a></p></li>
+<li><p>Python binding <a class="reference external" href="https://github.com/LEW21/pydbus">https://github.com/LEW21/pydbus</a></p></li>
+<li><p>Interfaces defined in XML, pretty weird. Show
+<a class="reference external" href="https://github.com/jfasch/openheating/blob/master/openheating/dbus/node.py">https://github.com/jfasch/openheating/blob/master/openheating/dbus/node.py</a></p></li>
+</ul>
+</li>
+<li><p>SD-Bus jjj</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.freedesktop.org/software/systemd/man/latest/sd-bus.html">https://www.freedesktop.org/software/systemd/man/latest/sd-bus.html</a></p></li>
+<li><p>Python binding <a class="reference external" href="https://python-sdbus.readthedocs.io/en/latest/">https://python-sdbus.readthedocs.io/en/latest/</a></p></li>
+</ul>
+</li>
+<li><p>What else? bring this at the end</p>
+<ul class="simple">
+<li><p>Errors:
+<a class="reference external" href="https://python-sdbus.readthedocs.io/en/latest/exceptions.html#list-of-error-exception">https://python-sdbus.readthedocs.io/en/latest/exceptions.html#list-of-error-exception</a></p></li>
+<li><p><a class="reference external" href="https://dbus.freedesktop.org/doc/dbus-specification.html">https://dbus.freedesktop.org/doc/dbus-specification.html</a></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="client-implementation">
+<h3>Client Implementation<a class="headerlink" href="#client-implementation" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Bus name (service name): <code class="docutils literal notranslate"><span class="pre">me.faschingbauer.IrrigationService</span></code></p></li>
+<li><p>Object path: <code class="docutils literal notranslate"><span class="pre">/me/faschingbauer/IrrigationSystem</span></code></p></li>
+<li><p>Interface name: <code class="docutils literal notranslate"><span class="pre">me.faschingbauer.IrrigationSystem</span></code>, as parameter
+of <code class="docutils literal notranslate"><span class="pre">DBusIrrigationSystem</span></code> (see
+<a class="reference external" href="https://github.com/jfasch/jf-irrigation/blob/main/src/irrigation/dbus/interfaces.py">https://github.com/jfasch/jf-irrigation/blob/main/src/irrigation/dbus/interfaces.py</a>)</p></li>
+<li><p>Irrigation system</p>
+<ul>
+<li><p>Simple: blocking operations</p>
+<ul>
+<li><p>Structure/objects ⟶ sketch</p></li>
+</ul>
+</li>
+<li><p>Challenge: expose objects via D-Bus. Continue irrigation in the
+“background” while serving D-Bus operations. <em>No-go</em>: create a
+thread.</p></li>
+</ul>
+</li>
+<li><p>Read doc:
+<a class="reference external" href="https://python-sdbus.readthedocs.io/en/latest/examples.html">https://python-sdbus.readthedocs.io/en/latest/examples.html</a></p></li>
+</ul>
+</section>
+<section id="gotchas-weirdnesses">
+<h3>Gotchas, Weirdnesses<a class="headerlink" href="#gotchas-weirdnesses" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>D-Bus methods (and properties) are always BiCapitalized; if you name
+a method <code class="docutils literal notranslate"><span class="pre">some_method</span></code>, SDBus will translate it to <code class="docutils literal notranslate"><span class="pre">SomeMethod</span></code></p></li>
+<li><p>DBus socket is watched somehow magically. in <code class="docutils literal notranslate"><span class="pre">main()</span></code>, I’d expect
+I have to create a task for DBus traffic - but no. Must be done
+magically inside some of the routines that we use to export object
+and register names.</p></li>
+<li><p>complain about confusion: busname, path, and iface name</p></li>
+</ul>
+</section>
+</section>
+<section id="what-else">
+<h2>What Else?<a class="headerlink" href="#what-else" title="Link to this heading">¶</a></h2>
+<section id="irrigation-outlook">
+<h3>Irrigation Outlook<a class="headerlink" href="#irrigation-outlook" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Hardware, finally</p></li>
+<li><p>User interface with <a class="reference external" href="https://github.com/Textualize/textual">textual</a></p></li>
+<li><p>Add logging, error reporting, watchdog</p></li>
+</ul>
+</section>
+<section id="more-information">
+<h3>More Information<a class="headerlink" href="#more-information" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>jjj collect links here, annotated and grouped</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+<div class="section ablog__blog_comments">
+  
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2019-2025 (GPLv3), Jörg Faschingbauer.
+      
+      |
+      <a href="../../../../../_sources/about/site/work-in-progress/glt2025/talk/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
