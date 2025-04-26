@@ -58,16 +58,16 @@ Sample Client (``sdbus``, Blocking)
 
 .. sidebar:: Speaker notes
 
-   * :download:`code/spotify-client.py`
-   * :download:`code/mpris.py`
+   * :download:`snippets/spotify-client.py`
+   * :download:`snippets/mpris.py`
    * :download:`snippets/snippet-spotify-quit`
 
 * Simple main program |longrightarrow| *blocking*
 
-  .. literalinclude:: code/spotify-client.py
+  .. literalinclude:: snippets/spotify-client.py
      :language: python
      :caption: :download:`spotify-client.py (download)
-	       <code/spotify-client.py>`
+	       <snippets/spotify-client.py>`
 
 * Show ``strace`` output on it. Explain ``ppoll()`` usage (dispatching
   only one event) on non-blocking file descriptor |longrightarrow|
@@ -228,29 +228,31 @@ Introduce ``asyncio.TaskGroup``
      :caption: ``snippets/irrigation-client-70`` (:download:`download
                <snippets/irrigation-client-70>`)
 
-Challenges; Keep In Mind jjjj
------------------------------
+Keep In Mind ...
+----------------
 
 * D-Bus calls (method calls, signals, and property access) are
   *expensive*
 
-  * |longrightarrow| jjj picture from earlier
-  * ``low``, ``high``, sensor value, and switch state should better be
-    exposed as D-Bus *struct* with those members
-  * jjj hack that
+  * tons of context switches until a call is back |longrightarrow|
+    picture from earlier
+  * ``low``, ``high``, sensor value, and switch state of
+    ``DBusIrrigator`` should better be exposed as D-Bus *struct* type
+    property with those members
+  * (maybe hack that)
 
-  See ``DBusIrrigator`` jjj link vs. ``Irrigator`` (which even exposes
-  Python objects) jjj link
+* *Local* irrigation system knows nothing about ``async``.
 
-* Local system knows nothing about ``async``. Events
-  - like "switch state changed" - are usually modeled as *callbacks*.
+  * It might implement a switch change as callback
+  * ... a small local-to-dbus trampoline sends the signal away
+  * Not trivial: non-async functions cannot call async
+    directly. Possibilities:
 
-  * No direct translation to D-Bus signals, at least not in async
-    sd-bus: cannot asynchronously emit something onto D-Bus when
-    caller is not async.
-  * Solution: stay away from callbacks (better for software sanity
-    anyway), but rather return data to be carried by signal. jjj show
-    implementation of ``SwitchStateChanged`` signal.
+    * Local callback enqueues towards a "signal emitter task" (which
+      is entirely async, obviously)
+    * Avoid callbacks in local system (show
+      ``DBusIrrigationSystem.SwitchStateChanged``, and
+      ``bin/irrigationd.py``)
 
 * All in all
 
@@ -258,9 +260,9 @@ Challenges; Keep In Mind jjjj
     possible
   * But no closer
 
-* what else?
+* What else?
 
-  * show ``dbus-monitor``
+  * Show ``dbus-monitor``
 
 More ``asyncio``
 ----------------
@@ -272,3 +274,5 @@ More ``asyncio``
 * ``asyncio-requests`` (`PyPi
   <https://pypi.org/project/asyncio-requests/>`__, `source
   <https://github.com/gofynd/asyncio-requests>`__)
+* ``textual`` (`PyPI <https://pypi.org/project/textual/>`__, `source
+  <https://github.com/Textualize/textual>`__)
