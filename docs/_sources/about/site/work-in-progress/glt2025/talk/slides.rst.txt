@@ -21,7 +21,7 @@ Show
 
 .. sidebar::
 
-   * `MPRIS D-Bus Interface Specification <https://specifications.freedesktop.org/mpris-spec/latest/>`__.
+   * `MPRIS D-Bus Interface Specification <https://specifications.freedesktop.org/mpris-spec/>`__.
    * `man -s 7 busctl <https://man7.org/linux/man-pages/man1/busctl.1.html>`__
 
 * How does Spotify react on ``Next/Prev`` buttons? |longrightarrow|
@@ -47,9 +47,11 @@ A Big Picture
    * `D-Bus Specification
      <https://dbus.freedesktop.org/doc/dbus-specification.html>`__
 
-* jjj Picture bus, service (connection name), object (path),
-  interfaces
-* jjj two buses -> ``system and (user or session)``
+.. image:: spotify.jpg
+   :scale: 50%
+
+.. image:: bus.jpg
+   :scale: 50%
 
 Sample Client (``sdbus``, Blocking)
 -----------------------------------
@@ -120,12 +122,13 @@ Concrete Use Case: ``jf-irrigation``
 
    * https://github.com/jfasch/jf-irrigation
 
-* jjj picture
+.. image:: irrigation.jpg
+   :scale: 50%
+
 * Local objects
 
   * Entire irrigation system, containing irrigators
-  * Irrigators: sensor/switch pairs, giving water when moisture falls
-    below threashold
+  * Irrigators: sensor/switch pairs, giving water when moisture low
   * Show `bin/irrigation-local.py
     <https://github.com/jfasch/jf-irrigation/blob/main/bin/irrigation-local.py>`__
   * Show `config
@@ -145,40 +148,49 @@ Irrigation Client: Enter ``asyncio``
   |longrightarrow| *async*
 * Need to duplicate definition to create *blocking* client
   |longrightarrow| **No!** *async is better anyway*
-* First step: create proxy
 
-  .. literalinclude:: snippets/irrigation-client-01
-     :language: python
-     :caption: ``snippets/irrigation-client-01`` (:download:`download
-               <snippets/irrigation-client-01>`)
+First Step: Create Proxy
+------------------------
 
-* Naive try: use async definition to block
+.. literalinclude:: snippets/irrigation-client-01
+   :language: python
+   :caption: ``snippets/irrigation-client-01`` (:download:`download
+             <snippets/irrigation-client-01>`)
 
-  .. literalinclude:: snippets/irrigation-client-10
-     :language: python
-     :caption: ``snippets/irrigation-client-10`` (:download:`download
-               <snippets/irrigation-client-10>`)
+Naive try: Use Async Definition To Block
+----------------------------------------
 
-* Fix: async machinery
+.. literalinclude:: snippets/irrigation-client-10
+   :language: python
+   :caption: ``snippets/irrigation-client-10`` (:download:`download
+             <snippets/irrigation-client-10>`)
 
-  .. literalinclude:: snippets/irrigation-client-20
-     :language: python
-     :caption: ``snippets/irrigation-client-20`` (:download:`download
-               <snippets/irrigation-client-20>`)
+Fix: Async Machinery
+--------------------
 
-* Create irrigator proxies
+* Blah event loop blah
+* |longrightarrow| ``strace`` output below
 
-  .. literalinclude:: snippets/irrigation-client-30
-     :language: python
-     :caption: ``snippets/irrigation-client-30`` (:download:`download
-               <snippets/irrigation-client-30>`)
+.. literalinclude:: snippets/irrigation-client-20
+   :language: python
+   :caption: ``snippets/irrigation-client-20`` (:download:`download
+             <snippets/irrigation-client-20>`)
 
-* Print statistics
+Create Irrigator Proxies
+------------------------
 
-  .. literalinclude:: snippets/irrigation-client-40
-     :language: python
-     :caption: ``snippets/irrigation-client-40`` (:download:`download
-               <snippets/irrigation-client-40>`)
+.. literalinclude:: snippets/irrigation-client-30
+   :language: python
+   :caption: ``snippets/irrigation-client-30`` (:download:`download
+             <snippets/irrigation-client-30>`)
+
+Print Statistics
+----------------
+
+.. literalinclude:: snippets/irrigation-client-40
+   :language: python
+   :caption: ``snippets/irrigation-client-40`` (:download:`download
+             <snippets/irrigation-client-40>`)
 
 D-Bus Signals
 -------------
@@ -208,7 +220,8 @@ And Parallelism?
      :caption: ``snippets/irrigation-client-60`` (:download:`download
                <snippets/irrigation-client-60>`)
 
-* Introduce ``asyncio.TaskGroup``
+Introduce ``asyncio.TaskGroup``
+-------------------------------
 
   .. literalinclude:: snippets/irrigation-client-70
      :language: python
