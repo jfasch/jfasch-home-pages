@@ -15,6 +15,7 @@ set(CMAKE_CXX_STANDARD 23)
 if (${CMAKE_COMPILER_IS_GNUCC})
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -ggdb -Wall -Werror")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ggdb -Wall -Werror")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++23")
 endif()
 
 add_subdirectory(googletest)
