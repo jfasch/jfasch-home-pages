@@ -268,16 +268,17 @@
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="w"> </span><span class="n">started_promise</span><span class="p">;</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">started_future</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">started_promise</span><span class="p">.</span><span class="n">get_future</span><span class="p">();</span>
+
 <span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
 <span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">threadfunc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">started_promise</span><span class="p">](){</span>
-<span class="w">        </span><span class="n">started_promise</span><span class="p">.</span><span class="n">set_value</span><span class="p">();</span>
+<span class="w">        </span><span class="n">started_promise</span><span class="p">.</span><span class="n">set_value</span><span class="p">();</span><span class="w">                   </span><span class="c1">// &lt;-- kick waiter loose</span>
 <span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nb">true</span><span class="p">)</span>
 <span class="w">            </span><span class="k">auto</span><span class="w"> </span><span class="n">local_p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">;</span>
 <span class="w">    </span><span class="p">};</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">t</span><span class="p">(</span><span class="n">threadfunc</span><span class="p">);</span>
 
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">started_future</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">started_promise</span><span class="p">.</span><span class="n">get_future</span><span class="p">();</span>
-<span class="w">    </span><span class="n">started_future</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w">                              </span><span class="c1">// &lt;-- wait until started</span>
+<span class="w">    </span><span class="n">started_future</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w">                              </span><span class="c1">// &lt;-- wait until kicked</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">use_count</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 
 <span class="w">    </span><span class="n">t</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
