@@ -1,6 +1,9 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../../../../../../">
+
+<html lang="en" data-content_root="../../../../../../" data-theme="light">
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,35 +11,60 @@
 <meta content="linux, onewire, w1, DS18B20, DS2482, raspberry pi, raspi, userspace, hwmon, sysfs" name="keywords" />
 
     <title>Linux and OneWire (using DS18B20 Temperature Sensor as Slave) &#8212; Jörg Faschingbauer</title>
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=5ecbeea2" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/basic.css?v=dec953ac" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css?v=fad2b003" />
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/thebelab.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css?v=70eaaddc" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/custom.css?v=128c0548" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
     <script src="../../../../../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../../_static/thebelab-helper.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
     <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'trainings/material/soup/linux/hardware/w1/topic';</script>
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/hardware/w1/topic.html" />
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../search.html" />
     <link rel="next" title="Linux and I2C (using LM73 Temperature Sensor as Slave)" href="../i2c/topic.html" />
     <link rel="prev" title="Hardware, Kernel" href="../can/40-harware.html" /> 
-   
-  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
-  
-
-  
-  
- 
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" /> 
 <link
   rel="alternate"
   type="application/atom+xml"
@@ -46,60 +74,228 @@
  
 <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
  
-  </head><body>
-  <div class="document">
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
     
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
-        <div class="sphinxsidebarwrapper">
-<p class="logo">
-  <a href="../../../../../../index.html">
-    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo" />
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
     
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../../../../../_static/logo.png" class="logo__image only-light" alt="Jörg Faschingbauer - Home"/>
+    <img src="../../../../../../_static/logo.png" class="logo__image only-dark pst-js-only" alt="Jörg Faschingbauer - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../../index.html">
+    Training Courses
   </a>
-</p>
+</li>
 
 
-
-<p class="blurb">Programming Linux</p>
-
-
-
-
-
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../about/index.html">
+    About
+  </a>
+</li>
 
 
-<search id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../blog/index.html">
+    Blog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Courses</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Courses Overview</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">Slide Material</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Linux</a><ul class="current">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../../index.html">
+    Training Courses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../blog/index.html">
+    Blog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../repertoire/index.html">Course Descriptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../info.html">Pricing, Organizational</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Log Of Past Courses</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../index.html">Complete Slide Material</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../../index.html">Linux</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../../basics/index.html">Linux Basics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../ssh/index.html">SSH: Secure Shell</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../toolchain/index.html">Toolchain, And Cross Development</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../sysprog/index.html">Linux Systems Programming</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../index.html">Linux Hardware Interfaces</a><ul class="current">
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="../index.html">Linux Hardware Interfaces</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../can/index.html">CAN Bus With Linux And Python</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Linux and OneWire (using DS18B20 Temperature Sensor as Slave)</a></li>
+<li class="toctree-l4 current active"><a class="current reference internal" href="#">Linux and OneWire (using DS18B20 Temperature Sensor as Slave)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../i2c/topic.html">Linux and I2C (using LM73 Temperature Sensor as Slave)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../pwm/topic.html">PWM Userspace Interface (using PCA9685)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../brushless-motor/topic.html">Controlling a Brushless Motor With Raspberry Pi</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libgpiod/index.html"><code class="docutils literal notranslate"><span class="pre">libgpiod</span></code></a></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l3"><a class="reference internal" href="../../kernel/index.html">Linux Kernel Driver Development</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../drafts/index.html">Drafts</a></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../python/index.html">Python Programming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../c/index.html">The C Programming Language</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../cxx03/index.html">C++ &lt; 11</a></li>
@@ -113,30 +309,77 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../clean-code/index.html">Is Software A Craft? Software Is A Craft! ⟶ <em>Clean Code</em></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../unittest/index.html">Unit Testing With <code class="docutils literal notranslate"><span class="pre">googletest</span></code></a></li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../booking.html">How To Book</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Log Of Past Courses</a></li>
+</details></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">About</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Myself: Contact, Impressum, …</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">This Site</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
-</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
 
 
-        </div>
       </div>
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
 
-          <div class="body" role="main">
-             <section id="linux-and-onewire-using-ds18b20-temperature-sensor-as-slave">
-<h1>Linux and OneWire (using DS18B20 Temperature Sensor as Slave)<a class="headerlink" href="#linux-and-onewire-using-ds18b20-temperature-sensor-as-slave" title="Link to this heading">¶</a></h1>
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../../index.html" class="nav-link">Training Courses</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../../index.html" class="nav-link">Complete Slide Material</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Linux</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Linux Hardware Interfaces</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Linux and OneWire (using DS18B20 Temperature Sensor as Slave)</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                   <section id="linux-and-onewire-using-ds18b20-temperature-sensor-as-slave">
+<h1>Linux and OneWire (using DS18B20 Temperature Sensor as Slave)<a class="headerlink" href="#linux-and-onewire-using-ds18b20-temperature-sensor-as-slave" title="Link to this heading">#</a></h1>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#overview" id="id12">Overview</a></p></li>
@@ -186,7 +429,7 @@
 </ul>
 </nav>
 <section id="overview">
-<h2><a class="toc-backref" href="#id12" role="doc-backlink">Overview</a><a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Overview</a><a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
 <p>This article shows how you use Linux to communicate with <a class="reference external" href="https://en.wikipedia.org/wiki/1-Wire">OneWire</a> devices. Cornerstones are:</p>
 <ul class="simple">
 <li><p>Master, Alternative 1: <code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code> - bus master in software (unstable at
@@ -206,7 +449,7 @@ mandatory, obviously. Power is optional; if omitted, the device is
 said to be operated in <em>parasitic mode</em>.</p>
 </section>
 <section id="master-device-alterative-1-w1-gpio-onewire-master-in-software">
-<h2><a class="toc-backref" href="#id13" role="doc-backlink">Master Device, Alterative 1: <code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code> - OneWire Master in Software</a><a class="headerlink" href="#master-device-alterative-1-w1-gpio-onewire-master-in-software" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Master Device, Alterative 1: <code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code> - OneWire Master in Software</a><a class="headerlink" href="#master-device-alterative-1-w1-gpio-onewire-master-in-software" title="Link to this heading">#</a></h2>
 <p>Lacking a hardware OneWire master (the Raspi does not have one
 built-in), we use a software implementation of the OneWire protocol -
 the <code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code> kernel driver. You configure one GPIO to act as the
@@ -223,13 +466,13 @@ and out of the CPU.</p>
 the GPIO accordingly.</p>
 </div>
 <section id="wiring-attach-onewire-device-to-gpio-pin">
-<span id="bitbang-device"></span><h3><a class="toc-backref" href="#id14" role="doc-backlink">Wiring: Attach OneWire Device to GPIO Pin</a><a class="headerlink" href="#wiring-attach-onewire-device-to-gpio-pin" title="Link to this heading">¶</a></h3>
+<span id="bitbang-device"></span><h3><a class="toc-backref" href="#id14" role="doc-backlink">Wiring: Attach OneWire Device to GPIO Pin</a><a class="headerlink" href="#wiring-attach-onewire-device-to-gpio-pin" title="Link to this heading">#</a></h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Though not exactly necessary 😉, it makes sense to halt and
 power off the Pi before connecting the sensor.</p>
 </div>
-<table class="docutils align-left">
+<div class="pst-scrollable-table-container"><table class="table table-left">
 <thead>
 <tr class="row-odd"><th class="head"><p>Professional Diagram</p></th>
 <th class="head"><p>Decadent Pi Addon</p></th>
@@ -247,6 +490,7 @@ power off the Pi before connecting the sensor.</p>
 </tr>
 </tbody>
 </table>
+</div>
 <p>When done, reboot and see the device appear in <code class="docutils literal notranslate"><span class="pre">sysfs</span></code>.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls<span class="w"> </span>-l<span class="w"> </span>/sys/bus/w1/devices/
 <span class="go">total 0</span>
@@ -274,7 +518,7 @@ encountered - <em>one</em> device appearing as <em>two bogus</em> devices,</p>
 </section>
 </section>
 <section id="master-device-alterative-2-ds2482-i2c-onewire-master-in-hardware">
-<h2><a class="toc-backref" href="#id15" role="doc-backlink">Master Device, Alterative 2: DS2482 - I2C OneWire Master in Hardware</a><a class="headerlink" href="#master-device-alterative-2-ds2482-i2c-onewire-master-in-hardware" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Master Device, Alterative 2: DS2482 - I2C OneWire Master in Hardware</a><a class="headerlink" href="#master-device-alterative-2-ds2482-i2c-onewire-master-in-hardware" title="Link to this heading">#</a></h2>
 <aside class="sidebar">
 <p class="sidebar-title">DS2482-800: 8-Channel 1-Wire Master</p>
 <ul class="simple">
@@ -283,7 +527,7 @@ encountered - <em>one</em> device appearing as <em>two bogus</em> devices,</p>
 </ul>
 </aside>
 <section id="id1">
-<h3><a class="toc-backref" href="#id16" role="doc-backlink">Overview</a><a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">Overview</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>The <a class="reference external" href="https://www.maximintegrated.com/en/products/interface/controllers-expanders/DS2482-800.html">DS2482</a>
 is an I2C device - <em>an I2C slave device</em> - that acts as a OneWire
@@ -297,11 +541,11 @@ it.</p></li>
 </ul>
 </section>
 <section id="wiring-attach-ds2482-800-via-i2c">
-<span id="configure-i2c-address"></span><h3><a class="toc-backref" href="#id17" role="doc-backlink">Wiring: Attach DS2482-800 via I2C</a><a class="headerlink" href="#wiring-attach-ds2482-800-via-i2c" title="Link to this heading">¶</a></h3>
+<span id="configure-i2c-address"></span><h3><a class="toc-backref" href="#id17" role="doc-backlink">Wiring: Attach DS2482-800 via I2C</a><a class="headerlink" href="#wiring-attach-ds2482-800-via-i2c" title="Link to this heading">#</a></h3>
 <p>The DS2482-800 is an I2C device just like any other I2C device, so we
 attach it just like any other. Here’s the pinout, together with the
 Raspberry header for convenience:</p>
-<table class="docutils align-left">
+<div class="pst-scrollable-table-container"><table class="table table-left">
 <thead>
 <tr class="row-odd"><th class="head"><p>DS2482-800 pinout</p></th>
 <th class="head"><p>Raspberry 40-pin header pinout</p></th>
@@ -315,8 +559,9 @@ Raspberry header for convenience:</p>
 </tr>
 </tbody>
 </table>
+</div>
 <p>Connect pins as follows:</p>
-<table class="docutils align-left">
+<div class="pst-scrollable-table-container"><table class="table table-left">
 <thead>
 <tr class="row-odd"><th class="head"><p>DS2482-800</p></th>
 <th class="head"><p>Raspberry</p></th>
@@ -346,31 +591,32 @@ Raspberry header for convenience:</p>
 </tr>
 </tbody>
 </table>
+</div>
 <p>You may vary the assignment of the <code class="docutils literal notranslate"><span class="pre">AD*</span></code> address selection
 pins. Here, we choose to wire them to ground (0) - according to the
 diagram below this gives address <code class="docutils literal notranslate"><span class="pre">0x18</span></code>, or <code class="docutils literal notranslate"><span class="pre">0b0011000</span></code>.</p>
 <img alt="../../../../../../_images/DS2482-800-address.png" src="../../../../../../_images/DS2482-800-address.png" />
 </section>
 <section id="configure-software">
-<h3><a class="toc-backref" href="#id18" role="doc-backlink">Configure Software</a><a class="headerlink" href="#configure-software" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">Configure Software</a><a class="headerlink" href="#configure-software" title="Link to this heading">#</a></h3>
 <p>Next, we configure software. Please read <a class="reference internal" href="../i2c/topic.html"><span class="doc">Linux and I2C (using LM73 Temperature Sensor as Slave)</span></a> for
 details; here we just reproduce shortly what is explained there.</p>
 <section id="enable-i2c-and-check-bootloader-config-boot-config-txt">
-<span id="w1-i2c-raspi-bootloader"></span><h4><a class="toc-backref" href="#id19" role="doc-backlink">Enable I2C, and Check (Bootloader config, <code class="docutils literal notranslate"><span class="pre">/boot/config.txt)</span></code></a><a class="headerlink" href="#enable-i2c-and-check-bootloader-config-boot-config-txt" title="Link to this heading">¶</a></h4>
+<span id="w1-i2c-raspi-bootloader"></span><h4><a class="toc-backref" href="#id19" role="doc-backlink">Enable I2C, and Check (Bootloader config, <code class="docutils literal notranslate"><span class="pre">/boot/config.txt)</span></code></a><a class="headerlink" href="#enable-i2c-and-check-bootloader-config-boot-config-txt" title="Link to this heading">#</a></h4>
 <p>In <code class="docutils literal notranslate"><span class="pre">/boot/config.txt</span></code>, add the following line.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>dtparam=i2c_arm=on
 </pre></div>
 </div>
 <p>Reboot and verify that all is well.</p>
 <div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">I2C platform driver loaded?</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">I2C platform driver loaded?</span><a class="headerlink" href="#id5" title="Link to this code">#</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>lsmod<span class="w"> </span><span class="p">|</span>grep<span class="w"> </span>i2c
 <span class="go">i2c_bcm2835            16384  0</span>
 </pre></div>
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">I2C bus #1 visible in <code class="docutils literal notranslate"><span class="pre">sysfs</span></code></span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">I2C bus #1 visible in <code class="docutils literal notranslate"><span class="pre">sysfs</span></code></span><a class="headerlink" href="#id6" title="Link to this code">#</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls<span class="w"> </span>-l<span class="w"> </span>/sys/bus/i2c/devices/i2c-1
 <span class="go">lrwxrwxrwx 1 root root 0 Oct  4 12:43 /sys/bus/i2c/devices/i2c-1 -&gt; ../../../devices/platform/soc/fe804000.i2c/i2c-1</span>
 </pre></div>
@@ -378,7 +624,7 @@ details; here we just reproduce shortly what is explained there.</p>
 </div>
 </section>
 <section id="verify-that-our-device-is-there-i2cdetect">
-<span id="w1-i2c-raspi-i2cdetect"></span><h4><a class="toc-backref" href="#id20" role="doc-backlink">Verify That Our Device Is There (<code class="docutils literal notranslate"><span class="pre">i2cdetect)</span></code></a><a class="headerlink" href="#verify-that-our-device-is-there-i2cdetect" title="Link to this heading">¶</a></h4>
+<span id="w1-i2c-raspi-i2cdetect"></span><h4><a class="toc-backref" href="#id20" role="doc-backlink">Verify That Our Device Is There (<code class="docutils literal notranslate"><span class="pre">i2cdetect)</span></code></a><a class="headerlink" href="#verify-that-our-device-is-there-i2cdetect" title="Link to this heading">#</a></h4>
 <aside class="sidebar">
 <p><strong>Documentation</strong></p>
 <ul class="simple">
@@ -391,7 +637,7 @@ from userspace; it needs <code class="docutils literal notranslate"><span class=
 <code class="docutils literal notranslate"><span class="pre">i2c-dev</span></code> driver which provides <code class="docutils literal notranslate"><span class="pre">/dev/i2c-N</span></code> for each bus #N that
 is found on the system.</p>
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">i2c-dev</span></code> exposes bus to userspace</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">i2c-dev</span></code> exposes bus to userspace</span><a class="headerlink" href="#id7" title="Link to this code">#</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>modprobe<span class="w"> </span>i2c-dev
 <span class="gp">$ </span>ls<span class="w"> </span>-l<span class="w"> </span>/dev/i2c-1
 <span class="go">crw-rw---- 1 root i2c 89, 1 Sep 29 14:27 /dev/i2c-1</span>
@@ -402,14 +648,14 @@ is found on the system.</p>
 this case, add the following line either to <code class="docutils literal notranslate"><span class="pre">/etc/modules</span></code> directly,
 or to a new config file, say, <code class="docutils literal notranslate"><span class="pre">/etc/modules-load.d/i2c.conf</span></code> :</p>
 <div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Add to <code class="docutils literal notranslate"><span class="pre">/etc/modules</span></code></span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Add to <code class="docutils literal notranslate"><span class="pre">/etc/modules</span></code></span><a class="headerlink" href="#id8" title="Link to this code">#</a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>i2c-dev
 </pre></div>
 </div>
 </div>
 <p>The device should now be there at the <a class="reference internal" href="#configure-i2c-address"><span class="std std-ref">configured address</span></a> (<code class="docutils literal notranslate"><span class="pre">0x18</span></code> in our case),</p>
 <div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">i2c-detect</span></code> scans bus</span><a class="headerlink" href="#id9" title="Link to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">i2c-detect</span></code> scans bus</span><a class="headerlink" href="#id9" title="Link to this code">#</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>i2cdetect<span class="w"> </span>-y<span class="w"> </span><span class="m">1</span>
 <span class="go">     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f</span>
 <span class="go">00:          -- -- -- -- -- -- -- -- -- -- -- -- --</span>
@@ -425,7 +671,7 @@ or to a new config file, say, <code class="docutils literal notranslate"><span c
 </div>
 </section>
 <section id="announce-hotplug-ds2482-to-linux">
-<h4><a class="toc-backref" href="#id21" role="doc-backlink">Announce (“Hotplug”) DS2482 to Linux</a><a class="headerlink" href="#announce-hotplug-ds2482-to-linux" title="Link to this heading">¶</a></h4>
+<h4><a class="toc-backref" href="#id21" role="doc-backlink">Announce (“Hotplug”) DS2482 to Linux</a><a class="headerlink" href="#announce-hotplug-ds2482-to-linux" title="Link to this heading">#</a></h4>
 <p>Finally, tell Linux about the new device at address <code class="docutils literal notranslate"><span class="pre">0x18</span></code>. This
 will load the responsible driver - it is that driver that is
 responsible to communicate with the OneWire devices on the new buses
@@ -439,7 +685,7 @@ responsible to communicate with the OneWire devices on the new buses
 following file into <code class="docutils literal notranslate"><span class="pre">/usr/local/lib/systemd/system/</span></code> (create that
 directory if it does not exist),</p>
 <div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/1079b40b40dc146db96b877a06a872ed/ds2482.service"><code class="xref download docutils literal notranslate"><span class="pre">ds2482.service</span></code></a></span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/1079b40b40dc146db96b877a06a872ed/ds2482.service"><code class="xref download docutils literal notranslate"><span class="pre">ds2482.service</span></code></a></span><a class="headerlink" href="#id10" title="Link to this code">#</a></div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Unit</span><span class="p">]</span>
 <span class="n">Description</span><span class="o">=</span><span class="n">DS2482</span><span class="o">-</span><span class="mi">800</span><span class="o">@</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mh">0x18</span><span class="p">)</span>
 
@@ -472,11 +718,11 @@ directory if it does not exist),</p>
 </section>
 </section>
 <section id="wiring-attach-onewire-device-to-ds2482-800">
-<h3><a class="toc-backref" href="#id22" role="doc-backlink">Wiring: Attach OneWire Device to DS2482-800</a><a class="headerlink" href="#wiring-attach-onewire-device-to-ds2482-800" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id22" role="doc-backlink">Wiring: Attach OneWire Device to DS2482-800</a><a class="headerlink" href="#wiring-attach-onewire-device-to-ds2482-800" title="Link to this heading">#</a></h3>
 <p>Finally, in analogy to <a class="reference internal" href="#bitbang-device"><span class="std std-ref">wiring a device to the bitbanging master</span></a>, we now wire our OneWire device to DS2482. Connect
 the device’s data line to any of DS2482-800’s <code class="docutils literal notranslate"><span class="pre">IO*</span></code> pins, and supply
 power and ground.</p>
-<table class="docutils align-left">
+<div class="pst-scrollable-table-container"><table class="table table-left">
 <thead>
 <tr class="row-odd"><th class="head"><p>OneWire device</p></th>
 <th class="head"><p>DS2482-800</p></th>
@@ -498,6 +744,7 @@ power and ground.</p>
 </tr>
 </tbody>
 </table>
+</div>
 <p>Reboot, and see the device appear in <code class="docutils literal notranslate"><span class="pre">sysfs</span></code>.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls<span class="w"> </span>-l<span class="w"> </span>/sys/bus/w1/devices/
 <span class="go">total 0</span>
@@ -515,10 +762,10 @@ power and ground.</p>
 </section>
 </section>
 <section id="over-engineering-beauty">
-<h2><a class="toc-backref" href="#id23" role="doc-backlink">Over-Engineering? Beauty?</a><a class="headerlink" href="#over-engineering-beauty" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id23" role="doc-backlink">Over-Engineering? Beauty?</a><a class="headerlink" href="#over-engineering-beauty" title="Link to this heading">#</a></h2>
 <p>What happened so far sounds complicated, and it is.</p>
 <section id="hardware-bringup">
-<h3><a class="toc-backref" href="#id24" role="doc-backlink">Hardware Bringup</a><a class="headerlink" href="#hardware-bringup" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id24" role="doc-backlink">Hardware Bringup</a><a class="headerlink" href="#hardware-bringup" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>All the wiring</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code> configuration in <code class="docutils literal notranslate"><span class="pre">/boot/config.txt</span></code></p></li>
@@ -551,7 +798,7 @@ enforces. Hardware bringup is the responsibility of the <em>kernel</em> (and
 the bootloader, for that matter).</p>
 </section>
 <section id="device-usage">
-<h3><a class="toc-backref" href="#id25" role="doc-backlink">Device Usage</a><a class="headerlink" href="#device-usage" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id25" role="doc-backlink">Device Usage</a><a class="headerlink" href="#device-usage" title="Link to this heading">#</a></h3>
 <p>Once the hardware is configured to this point (the kernel has booted,
 drivers are loaded), the devices can be used <em>without any knowledge of
 the underlying hardware</em>.</p>
@@ -567,8 +814,8 @@ any other such device.</p>
 </section>
 </section>
 <section id="slave-device-ds18b20-temperature-sensor">
-<h2>Slave Device: <a class="reference external" href="https://www.maximintegrated.com/en/products/DS18B20">DS18B20</a> Temperature Sensor<a class="headerlink" href="#slave-device-ds18b20-temperature-sensor" title="Link to this heading">¶</a></h2>
-<table class="docutils align-left">
+<h2>Slave Device: <a class="reference external" href="https://www.maximintegrated.com/en/products/DS18B20">DS18B20</a> Temperature Sensor<a class="headerlink" href="#slave-device-ds18b20-temperature-sensor" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table table-left">
 <tbody>
 <tr class="row-odd"><td><p>The <a class="reference external" href="https://www.maximintegrated.com/en/products/DS18B20">DS18B20</a>
 OneWire temperature sensor is a popular device. You can find
@@ -581,12 +828,13 @@ affordable, and really easy to deploy.</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <section id="using-the-device">
-<h3><a class="toc-backref" href="#id27" role="doc-backlink">Using the Device</a><a class="headerlink" href="#using-the-device" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id27" role="doc-backlink">Using the Device</a><a class="headerlink" href="#using-the-device" title="Link to this heading">#</a></h3>
 <p>In most if not all cases, Linux presents hardware as a set of regular
 files in <code class="docutils literal notranslate"><span class="pre">sysfs</span></code>. Read on for how.</p>
 <section id="as-a-generic-onewire-device">
-<h4><a class="toc-backref" href="#id28" role="doc-backlink">As a Generic OneWire Device</a><a class="headerlink" href="#as-a-generic-onewire-device" title="Link to this heading">¶</a></h4>
+<h4><a class="toc-backref" href="#id28" role="doc-backlink">As a Generic OneWire Device</a><a class="headerlink" href="#as-a-generic-onewire-device" title="Link to this heading">#</a></h4>
 <p>OneWire masters automatically enumerate their buses, by definition -
 so our device should show up automatically in a dedicated directory
 <code class="docutils literal notranslate"><span class="pre">/sys/bus/w1/devices/&lt;manufacturer&gt;-&lt;device-address&gt;</span></code>. (If all is
@@ -620,7 +868,7 @@ temperature in milli-celsius (22750).</p>
 </div>
 </section>
 <section id="as-a-hardware-monitoring-hwmon-device">
-<h4><a class="toc-backref" href="#id29" role="doc-backlink">As a Hardware Monitoring (<code class="docutils literal notranslate"><span class="pre">hwmon</span></code>) Device</a><a class="headerlink" href="#as-a-hardware-monitoring-hwmon-device" title="Link to this heading">¶</a></h4>
+<h4><a class="toc-backref" href="#id29" role="doc-backlink">As a Hardware Monitoring (<code class="docutils literal notranslate"><span class="pre">hwmon</span></code>) Device</a><a class="headerlink" href="#as-a-hardware-monitoring-hwmon-device" title="Link to this heading">#</a></h4>
 <p>A different aspect to our sensor, DS18B20, is that it is a temperature
 sensor - independent of which hardware it is. There is an entire
 framework inside the kernel, <code class="docutils literal notranslate"><span class="pre">hwmon</span></code>, to cover such devices - no
@@ -662,11 +910,11 @@ use that to find the correct <code class="docutils literal notranslate"><span cl
 </div>
 </section>
 <section id="lm-sensors">
-<h4><a class="toc-backref" href="#id30" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">lm-sensors</span></code></a><a class="headerlink" href="#lm-sensors" title="Link to this heading">¶</a></h4>
+<h4><a class="toc-backref" href="#id30" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">lm-sensors</span></code></a><a class="headerlink" href="#lm-sensors" title="Link to this heading">#</a></h4>
 <p>It is the <code class="docutils literal notranslate"><span class="pre">hwmon</span></code> hardware-independent sensor interface that the
 userspace <code class="docutils literal notranslate"><span class="pre">lm-sensors</span></code> framework builds upon. (<a class="reference external" href="https://github.com/lm-sensors/lm-sensors">Github</a>, <a class="reference external" href="https://en.wikipedia.org/wiki/Lm_sensors">Wikipedia</a>.)</p>
 <div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Installation (on the Raspi)</span><a class="headerlink" href="#id11" title="Link to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Installation (on the Raspi)</span><a class="headerlink" href="#id11" title="Link to this code">#</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>apt<span class="w"> </span>install<span class="w"> </span>lm-sensors
 </pre></div>
 </div>
@@ -689,9 +937,9 @@ userspace <code class="docutils literal notranslate"><span class="pre">lm-sensor
 </section>
 </section>
 <section id="onewire-caveats">
-<h2><a class="toc-backref" href="#id31" role="doc-backlink">OneWire Caveats</a><a class="headerlink" href="#onewire-caveats" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id31" role="doc-backlink">OneWire Caveats</a><a class="headerlink" href="#onewire-caveats" title="Link to this heading">#</a></h2>
 <section id="bus-topology">
-<h3><a class="toc-backref" href="#id32" role="doc-backlink">Bus Topology</a><a class="headerlink" href="#bus-topology" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id32" role="doc-backlink">Bus Topology</a><a class="headerlink" href="#bus-topology" title="Link to this heading">#</a></h3>
 <p>For stability, a OneWire setup should not exhibit a star
 topology. Rather, it is best to have one long main line, with only
 very short branches off of it where the sensors are attached.</p>
@@ -701,7 +949,7 @@ they define the terms <em>radious</em> and <em>weight</em>; it is definitely wor
 reading.</p>
 </section>
 <section id="error-symptoms">
-<span id="id3"></span><h3><a class="toc-backref" href="#id33" role="doc-backlink">Error Symptoms</a><a class="headerlink" href="#error-symptoms" title="Link to this heading">¶</a></h3>
+<span id="id3"></span><h3><a class="toc-backref" href="#id33" role="doc-backlink">Error Symptoms</a><a class="headerlink" href="#error-symptoms" title="Link to this heading">#</a></h3>
 <ul>
 <li><p><strong>Devices disappear</strong>, and are replaced by ones that are named like
 <code class="docutils literal notranslate"><span class="pre">00-0c4000000000</span></code>. Here, <code class="docutils literal notranslate"><span class="pre">00</span></code> is the family which is completely
@@ -744,7 +992,7 @@ another tryout.</p>
 </section>
 </section>
 <section id="links">
-<h2><a class="toc-backref" href="#id34" role="doc-backlink">Links</a><a class="headerlink" href="#links" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id34" role="doc-backlink">Links</a><a class="headerlink" href="#links" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://en.wikipedia.org/wiki/1-Wire">OneWire (WikiPedia)</a></p></li>
 <li><p><a class="reference external" href="https://www.maximintegrated.com/en/app-notes/index.mvp/id/148">Guidelines for Reliable Long Line 1-Wire Networks</a></p></li>
@@ -777,22 +1025,136 @@ external DS2482 add-on.</p>
    
 </div>
 
-          </div>
-          
-        </div>
-      </div>
-    <div class="clearer"></div>
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
   </div>
-    <div class="footer">
-      &#169;2019-2025 (GPLv3), Jörg Faschingbauer.
-      
-      |
-      <a href="../../../../../../_sources/trainings/material/soup/linux/hardware/w1/topic.rst.txt"
-          rel="nofollow">Page source</a>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#master-device-alterative-1-w1-gpio-onewire-master-in-software">Master Device, Alterative 1: <code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code> - OneWire Master in Software</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wiring-attach-onewire-device-to-gpio-pin">Wiring: Attach OneWire Device to GPIO Pin</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#master-device-alterative-2-ds2482-i2c-onewire-master-in-hardware">Master Device, Alterative 2: DS2482 - I2C OneWire Master in Hardware</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Overview</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wiring-attach-ds2482-800-via-i2c">Wiring: Attach DS2482-800 via I2C</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configure-software">Configure Software</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#enable-i2c-and-check-bootloader-config-boot-config-txt">Enable I2C, and Check (Bootloader config, <code class="docutils literal notranslate"><span class="pre">/boot/config.txt)</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#verify-that-our-device-is-there-i2cdetect">Verify That Our Device Is There (<code class="docutils literal notranslate"><span class="pre">i2cdetect)</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#announce-hotplug-ds2482-to-linux">Announce (“Hotplug”) DS2482 to Linux</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wiring-attach-onewire-device-to-ds2482-800">Wiring: Attach OneWire Device to DS2482-800</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#over-engineering-beauty">Over-Engineering? Beauty?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware-bringup">Hardware Bringup</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#device-usage">Device Usage</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#slave-device-ds18b20-temperature-sensor">Slave Device: DS18B20 Temperature Sensor</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-device">Using the Device</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#as-a-generic-onewire-device">As a Generic OneWire Device</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#as-a-hardware-monitoring-hwmon-device">As a Hardware Monitoring (<code class="docutils literal notranslate"><span class="pre">hwmon</span></code>) Device</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#lm-sensors"><code class="docutils literal notranslate"><span class="pre">lm-sensors</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#onewire-caveats">OneWire Caveats</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bus-topology">Bus Topology</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-symptoms">Error Symptoms</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#links">Links</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
     </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
-    
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
 
+  <p class="copyright">
     
+      © Copyright 2019-2025 (GPLv3), Jörg Faschingbauer.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../../../../../_sources/trainings/material/soup/linux/hardware/w1/topic.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+      
+    </div>
+  
+</div>
+
+  </footer>
   </body>
 </html>

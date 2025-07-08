@@ -1,6 +1,9 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../../../../../../">
+
+<html lang="en" data-content_root="../../../../../../" data-theme="light">
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,35 +11,60 @@
 <meta content="linux, inter intergrated circuit, i2c, sensors, lm-sensors, lm73, raspberry pi, raspi, userspace, hwmon, sysfs" name="keywords" />
 
     <title>Linux and I2C (using LM73 Temperature Sensor as Slave) &#8212; Jörg Faschingbauer</title>
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=5ecbeea2" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/basic.css?v=dec953ac" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css?v=fad2b003" />
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/thebelab.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/jf-alabaster.css?v=70eaaddc" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/custom.css?v=128c0548" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
     <script src="../../../../../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../../_static/thebelab-helper.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
     <script src="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'trainings/material/soup/linux/hardware/i2c/topic';</script>
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/hardware/i2c/topic.html" />
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../search.html" />
     <link rel="next" title="PWM Userspace Interface (using PCA9685)" href="../pwm/topic.html" />
     <link rel="prev" title="Linux and OneWire (using DS18B20 Temperature Sensor as Slave)" href="../w1/topic.html" /> 
-   
-  <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" />
-  
-
-  
-  
- 
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" /> 
 <link
   rel="alternate"
   type="application/atom+xml"
@@ -46,60 +74,228 @@
  
 <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
  
-  </head><body>
-  <div class="document">
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
     
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
-        <div class="sphinxsidebarwrapper">
-<p class="logo">
-  <a href="../../../../../../index.html">
-    <img class="logo" src="../../../../../../_static/logo.png" alt="Logo" />
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
     
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../../../../../_static/logo.png" class="logo__image only-light" alt="Jörg Faschingbauer - Home"/>
+    <img src="../../../../../../_static/logo.png" class="logo__image only-dark pst-js-only" alt="Jörg Faschingbauer - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../../index.html">
+    Training Courses
   </a>
-</p>
+</li>
 
 
-
-<p class="blurb">Programming Linux</p>
-
-
-
-
-
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../about/index.html">
+    About
+  </a>
+</li>
 
 
-<search id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../blog/index.html">
+    Blog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Courses</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Courses Overview</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">Slide Material</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Linux</a><ul class="current">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../../index.html">
+    Training Courses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../blog/index.html">
+    Blog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../repertoire/index.html">Course Descriptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../info.html">Pricing, Organizational</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Log Of Past Courses</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../index.html">Complete Slide Material</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../../index.html">Linux</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../../basics/index.html">Linux Basics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../ssh/index.html">SSH: Secure Shell</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../toolchain/index.html">Toolchain, And Cross Development</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../sysprog/index.html">Linux Systems Programming</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../index.html">Linux Hardware Interfaces</a><ul class="current">
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="../index.html">Linux Hardware Interfaces</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../can/index.html">CAN Bus With Linux And Python</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../w1/topic.html">Linux and OneWire (using DS18B20 Temperature Sensor as Slave)</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Linux and I2C (using LM73 Temperature Sensor as Slave)</a></li>
+<li class="toctree-l4 current active"><a class="current reference internal" href="#">Linux and I2C (using LM73 Temperature Sensor as Slave)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../pwm/topic.html">PWM Userspace Interface (using PCA9685)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../brushless-motor/topic.html">Controlling a Brushless Motor With Raspberry Pi</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libgpiod/index.html"><code class="docutils literal notranslate"><span class="pre">libgpiod</span></code></a></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l3"><a class="reference internal" href="../../kernel/index.html">Linux Kernel Driver Development</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../drafts/index.html">Drafts</a></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../python/index.html">Python Programming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../c/index.html">The C Programming Language</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../cxx03/index.html">C++ &lt; 11</a></li>
@@ -113,30 +309,77 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../clean-code/index.html">Is Software A Craft? Software Is A Craft! ⟶ <em>Clean Code</em></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../unittest/index.html">Unit Testing With <code class="docutils literal notranslate"><span class="pre">googletest</span></code></a></li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../booking.html">How To Book</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../log/index.html">Log Of Past Courses</a></li>
+</details></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">About</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/myself/index.html">Myself: Contact, Impressum, …</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../about/site/index.html">This Site</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Blog</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../blog/index.html">Posts</a></li>
-</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
 
 
-        </div>
       </div>
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
 
-          <div class="body" role="main">
-             <section id="linux-and-i2c-using-lm73-temperature-sensor-as-slave">
-<h1>Linux and I2C (using LM73 Temperature Sensor as Slave)<a class="headerlink" href="#linux-and-i2c-using-lm73-temperature-sensor-as-slave" title="Link to this heading">¶</a></h1>
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../../index.html" class="nav-link">Training Courses</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../../index.html" class="nav-link">Complete Slide Material</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Linux</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Linux Hardware Interfaces</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Linux and I2C (using LM73 Temperature Sensor as Slave)</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                   <section id="linux-and-i2c-using-lm73-temperature-sensor-as-slave">
+<h1>Linux and I2C (using LM73 Temperature Sensor as Slave)<a class="headerlink" href="#linux-and-i2c-using-lm73-temperature-sensor-as-slave" title="Link to this heading">#</a></h1>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#overview" id="id13">Overview</a></p></li>
@@ -165,7 +408,7 @@
 </ul>
 </nav>
 <section id="overview">
-<h2><a class="toc-backref" href="#id13" role="doc-backlink">Overview</a><a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Overview</a><a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
 <p>This article shows how you use Linux to communicate with <a class="reference external" href="https://en.wikipedia.org/wiki/I%C2%B2C">I2C</a> devices.</p>
 <ul class="simple">
 <li><p>We use the <a class="reference external" href="https://www.raspberrypi.org/">Rasperry Pi</a> because
@@ -177,14 +420,14 @@ placeholder for <em>just about any I2C device</em></p></li>
 </ul>
 </section>
 <section id="configuring-i2c-master">
-<h2><a class="toc-backref" href="#id14" role="doc-backlink">Configuring I2C Master</a><a class="headerlink" href="#configuring-i2c-master" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">Configuring I2C Master</a><a class="headerlink" href="#configuring-i2c-master" title="Link to this heading">#</a></h2>
 <p>The Raspberry has two I2C host controllers (“masters”) built-in. One
 of those, <code class="docutils literal notranslate"><span class="pre">i2c-0</span></code>, is dedicated to display and touch handling and is
 of no relevance here.</p>
 <p>The other, <code class="docutils literal notranslate"><span class="pre">i2c-1</span></code>, is for maker’s use. This is what this section is
 about.</p>
 <section id="enable-i2c-load-bcm2835-i2c-master-driver">
-<h3><a class="toc-backref" href="#id15" role="doc-backlink">Enable I2C, Load BCM2835 I2C Master Driver</a><a class="headerlink" href="#enable-i2c-load-bcm2835-i2c-master-driver" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">Enable I2C, Load BCM2835 I2C Master Driver</a><a class="headerlink" href="#enable-i2c-load-bcm2835-i2c-master-driver" title="Link to this heading">#</a></h3>
 <aside class="sidebar">
 <p class="sidebar-title">Raspberry Pi 40-pin header pinout</p>
 <img alt="../../../../../../_images/raspi-pinout.png" src="../../../../../../_images/raspi-pinout.png" />
@@ -207,7 +450,7 @@ enabled. See the pinout diagram.</p></li>
 </ul>
 <p><strong>Reboot</strong>, and check:</p>
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">I2C platform driver</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">I2C platform driver</span><a class="headerlink" href="#id7" title="Link to this code">#</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>lsmod<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>i2c
 <span class="go">i2c_bcm2835            16384  0</span>
 </pre></div>
@@ -215,7 +458,7 @@ enabled. See the pinout diagram.</p></li>
 </div>
 <p>We can see a userspace representation of the I2C master in <code class="docutils literal notranslate"><span class="pre">sysfs</span></code>,</p>
 <div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">I2C bus #1 visible in <code class="docutils literal notranslate"><span class="pre">sysfs</span></code></span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">I2C bus #1 visible in <code class="docutils literal notranslate"><span class="pre">sysfs</span></code></span><a class="headerlink" href="#id8" title="Link to this code">#</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls<span class="w"> </span>-l<span class="w"> </span>/sys/bus/i2c/devices/i2c-1
 <span class="go">lrwxrwxrwx 1 root root 0 Oct  4 12:43 /sys/bus/i2c/devices/i2c-1 -&gt; ../../../devices/platform/soc/fe804000.i2c/i2c-1</span>
 </pre></div>
@@ -232,7 +475,7 @@ for decadent documentation of <code class="docutils literal notranslate"><span c
 </div>
 </section>
 <section id="make-i2c-master-visible-in-userspace-dev-i2c-1">
-<h3><a class="toc-backref" href="#id16" role="doc-backlink">Make I2C Master Visible In Userspace (<code class="docutils literal notranslate"><span class="pre">/dev/i2c-1</span></code>)</a><a class="headerlink" href="#make-i2c-master-visible-in-userspace-dev-i2c-1" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">Make I2C Master Visible In Userspace (<code class="docutils literal notranslate"><span class="pre">/dev/i2c-1</span></code>)</a><a class="headerlink" href="#make-i2c-master-visible-in-userspace-dev-i2c-1" title="Link to this heading">#</a></h3>
 <p>One of the next steps will be to connect an I2C device to our bus, and
 to check if it is actually recognized as such. There is a tool for
 that check, <code class="docutils literal notranslate"><span class="pre">i2cdetect</span></code> (<a class="reference internal" href="#hardware-i2c-i2cdetect"><span class="std std-ref">see below</span></a>),
@@ -251,7 +494,7 @@ represents the I2C bus #1.</p>
 <p>We do not want to load <code class="docutils literal notranslate"><span class="pre">i2c-dev</span></code> manually everytime the Raspberry
 has booted, so we write the module name in <code class="docutils literal notranslate"><span class="pre">/etc/modules</span></code>,</p>
 <div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">/etc/modules</span></code></span><a class="headerlink" href="#id9" title="Link to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">/etc/modules</span></code></span><a class="headerlink" href="#id9" title="Link to this code">#</a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>i2c-dev
 </pre></div>
 </div>
@@ -267,9 +510,9 @@ using the <code class="docutils literal notranslate"><span class="pre">i2cdetect
 </section>
 </section>
 <section id="connect-a-slave-device-lm73-temperature-sensor">
-<h2><a class="toc-backref" href="#id17" role="doc-backlink">Connect A Slave Device (LM73 Temperature Sensor)</a><a class="headerlink" href="#connect-a-slave-device-lm73-temperature-sensor" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id17" role="doc-backlink">Connect A Slave Device (LM73 Temperature Sensor)</a><a class="headerlink" href="#connect-a-slave-device-lm73-temperature-sensor" title="Link to this heading">#</a></h2>
 <section id="lm73-hardware">
-<h3><a class="toc-backref" href="#id18" role="doc-backlink">LM73 Hardware</a><a class="headerlink" href="#lm73-hardware" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">LM73 Hardware</a><a class="headerlink" href="#lm73-hardware" title="Link to this heading">#</a></h3>
 <aside class="sidebar">
 <p class="sidebar-title">Datasheet etc.</p>
 <ul class="simple">
@@ -284,9 +527,9 @@ practical since the Pi’s I2C operating voltage is 3.3V; we use the
 <img alt="../../../../../../_images/breakout.jpg" src="../../../../../../_images/breakout.jpg" />
 <p>The breakout board <a class="footnote-reference brackets" href="#lm73-breakout-why" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a> has a 10-pin IDC header with
 the following pin assignments:</p>
-<table class="docutils align-left">
+<div class="pst-scrollable-table-container"><table class="table table-left">
 <tbody>
-<tr class="row-odd"><td><table class="docutils align-left">
+<tr class="row-odd"><td><div class="pst-scrollable-table-container"><table class="table table-left">
 <thead>
 <tr class="row-odd"><th class="head"><p>IDC</p></th>
 <th class="head"><p>LM73</p></th>
@@ -307,6 +550,7 @@ the following pin assignments:</p>
 </tr>
 </tbody>
 </table>
+</div>
 </td>
 <td><img alt="../../../../../../_images/2x5-IDC-Pin-Numbering.png" src="../../../../../../_images/2x5-IDC-Pin-Numbering.png" />
 </td>
@@ -315,11 +559,12 @@ the following pin assignments:</p>
 </tr>
 </tbody>
 </table>
+</div>
 </section>
 <section id="optional-address-selection">
-<h3><a class="toc-backref" href="#id19" role="doc-backlink">Optional: Address Selection</a><a class="headerlink" href="#optional-address-selection" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id19" role="doc-backlink">Optional: Address Selection</a><a class="headerlink" href="#optional-address-selection" title="Link to this heading">#</a></h3>
 <p>The LM73 lets you choose between three different addresses, via pin 1.</p>
-<table class="docutils align-left">
+<div class="pst-scrollable-table-container"><table class="table table-left">
 <tbody>
 <tr class="row-odd"><td><p>Left unconnected (floating)</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0x48</span></code></p></td>
@@ -332,14 +577,15 @@ the following pin assignments:</p>
 </tr>
 </tbody>
 </table>
+</div>
 <p>The breakout board takes this into account: a 3 pin header lets you
 connect pins with a jumper.</p>
 </section>
 <section id="wiring-lm73-to-the-raspberry-pi">
-<h3><a class="toc-backref" href="#id20" role="doc-backlink">Wiring LM73 To The Raspberry Pi</a><a class="headerlink" href="#wiring-lm73-to-the-raspberry-pi" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id20" role="doc-backlink">Wiring LM73 To The Raspberry Pi</a><a class="headerlink" href="#wiring-lm73-to-the-raspberry-pi" title="Link to this heading">#</a></h3>
 <p>Given the above IDC header pinout, we can now connect to the Raspberry
 Pi as follows:</p>
-<table class="docutils align-left">
+<div class="pst-scrollable-table-container"><table class="table table-left">
 <thead>
 <tr class="row-odd"><th class="head"><p>Raspberry Pi Header</p></th>
 <th class="head"><p>IDC/LM73</p></th>
@@ -360,10 +606,11 @@ Pi as follows:</p>
 </tr>
 </tbody>
 </table>
+</div>
 </section>
 </section>
 <section id="i2c-tools-i2cdetect-diagnostics-detecting-devices">
-<span id="hardware-i2c-i2cdetect"></span><h2><a class="toc-backref" href="#id21" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">i2c-tools</span></code>/<code class="docutils literal notranslate"><span class="pre">i2cdetect</span></code>: Diagnostics, Detecting Devices</a><a class="headerlink" href="#i2c-tools-i2cdetect-diagnostics-detecting-devices" title="Link to this heading">¶</a></h2>
+<span id="hardware-i2c-i2cdetect"></span><h2><a class="toc-backref" href="#id21" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">i2c-tools</span></code>/<code class="docutils literal notranslate"><span class="pre">i2cdetect</span></code>: Diagnostics, Detecting Devices</a><a class="headerlink" href="#i2c-tools-i2cdetect-diagnostics-detecting-devices" title="Link to this heading">#</a></h2>
 <p>Now we use the <code class="docutils literal notranslate"><span class="pre">i2cdetect</span></code> program from the <code class="docutils literal notranslate"><span class="pre">i2c-tools</span></code> <a class="reference external" href="https://i2c.wiki.kernel.org/index.php/I2C_Tools">package</a> to check if
 everything’s connected correctly. I omitted the address jumper, so
 LM73 pin 1 is left floating - the chip should appear on address
@@ -391,7 +638,7 @@ bus for devices. Lets probe I2C bus #1 (i.e. <code class="docutils literal notra
 default LM73 address when you leave the address pins unconnected.</p>
 </section>
 <section id="implementing-a-lm73-client-in-userspace">
-<span id="lm73-userspace-i2c"></span><h2><a class="toc-backref" href="#id22" role="doc-backlink">Implementing A LM73 Client In Userspace</a><a class="headerlink" href="#implementing-a-lm73-client-in-userspace" title="Link to this heading">¶</a></h2>
+<span id="lm73-userspace-i2c"></span><h2><a class="toc-backref" href="#id22" role="doc-backlink">Implementing A LM73 Client In Userspace</a><a class="headerlink" href="#implementing-a-lm73-client-in-userspace" title="Link to this heading">#</a></h2>
 <aside class="sidebar">
 <p class="sidebar-title">Documentation</p>
 <ul class="simple">
@@ -403,7 +650,7 @@ default LM73 address when you leave the address pins unconnected.</p>
 userspace. On the <em>bus</em> device <code class="docutils literal notranslate"><span class="pre">/dev/i2c-1</span></code>, you kind of <em>connect</em>
 to the device’s address (<code class="docutils literal notranslate"><span class="pre">0x48</span></code>), and send bytes back and forth.</p>
 <div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/d35a163815f8cbf651e544f2e54d6e3e/LM73.py"><code class="xref download docutils literal notranslate"><span class="pre">LM73.py</span></code></a></span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/d35a163815f8cbf651e544f2e54d6e3e/LM73.py"><code class="xref download docutils literal notranslate"><span class="pre">LM73.py</span></code></a></span><a class="headerlink" href="#id10" title="Link to this code">#</a></div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span><span class="o">,</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">fcntl</span><span class="o">,</span><span class="w"> </span><span class="nn">struct</span>
@@ -423,7 +670,7 @@ to the device’s address (<code class="docutils literal notranslate"><span clas
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/af0911ae62cac7a17795dd4c8cb93372/LM73.cpp"><code class="xref download docutils literal notranslate"><span class="pre">LM73.cpp</span></code></a></span><a class="headerlink" href="#id11" title="Link to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/af0911ae62cac7a17795dd4c8cb93372/LM73.cpp"><code class="xref download docutils literal notranslate"><span class="pre">LM73.cpp</span></code></a></span><a class="headerlink" href="#id11" title="Link to this code">#</a></div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include &lt;stdio.h&gt;</span>
 <span class="c1">#include &lt;stdlib.h&gt;</span>
 <span class="c1">#include &lt;stdint.h&gt;</span>
@@ -482,7 +729,7 @@ I2C devices. See <a class="reference external" href="https://www.kernel.org/doc/
 detailed information - we are scratching only the surface here.</p>
 </section>
 <section id="using-the-lm73-kernel-driver-if-available">
-<h2><a class="toc-backref" href="#id23" role="doc-backlink">Using The LM73 Kernel Driver (If Available)</a><a class="headerlink" href="#using-the-lm73-kernel-driver-if-available" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id23" role="doc-backlink">Using The LM73 Kernel Driver (If Available)</a><a class="headerlink" href="#using-the-lm73-kernel-driver-if-available" title="Link to this heading">#</a></h2>
 <p>Many devices are supported by Linux out of the box, and <a class="reference external" href="https://github.com/torvalds/linux/blob/master/drivers/hwmon/lm73.c">LM73 is no
 exception</a>. The
 Linux kernel comes with <a class="reference external" href="https://github.com/torvalds/linux/blob/master/drivers/hwmon/lm73.c">a driver for LM73</a>
@@ -490,7 +737,7 @@ Linux kernel comes with <a class="reference external" href="https://github.com/t
 Raspberry Pi OS does not package that driver, so you have to build
 your own kernel for this.</p>
 <section id="building-the-kernel-enabling-lm73">
-<h3><a class="toc-backref" href="#id24" role="doc-backlink">Building the Kernel, Enabling LM73</a><a class="headerlink" href="#building-the-kernel-enabling-lm73" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id24" role="doc-backlink">Building the Kernel, Enabling LM73</a><a class="headerlink" href="#building-the-kernel-enabling-lm73" title="Link to this heading">#</a></h3>
 <p>This is relatively easy; follow the <a class="reference external" href="https://www.raspberrypi.org/documentation/computers/linux_kernel.html#building">kernel build documentation</a>. In
 short:</p>
 <p>Install prerequisites (as root),</p>
@@ -532,7 +779,7 @@ Semiconductor LM73</em>: build as module (”<code class="docutils literal notra
 </div>
 </section>
 <section id="loading-the-driver">
-<h3><a class="toc-backref" href="#id25" role="doc-backlink">Loading the Driver</a><a class="headerlink" href="#loading-the-driver" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id25" role="doc-backlink">Loading the Driver</a><a class="headerlink" href="#loading-the-driver" title="Link to this heading">#</a></h3>
 <p>I2C is a simple protocol. PCI, at the other end of the protocol
 complexity scale, supports automatic device identification via
 <em>vendor</em> and <em>device</em> IDs, so device drivers can be automatically
@@ -543,7 +790,7 @@ kernel - triggering a kind of a “fake hotplug”. Knowing that the
 driver name is <code class="docutils literal notranslate"><span class="pre">lm73</span></code>, and the chip is on address <code class="docutils literal notranslate"><span class="pre">0x48</span></code>, as
 <em>root</em> <a class="footnote-reference brackets" href="#why-root-for-hotplug" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> do the following,</p>
 <div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Announce LM73 on address <code class="docutils literal notranslate"><span class="pre">0x48</span></code></span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Announce LM73 on address <code class="docutils literal notranslate"><span class="pre">0x48</span></code></span><a class="headerlink" href="#id12" title="Link to this code">#</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span><span class="nb">echo</span><span class="w"> </span>lm73<span class="w"> </span>0x48<span class="w"> </span>&gt;<span class="w"> </span>/sys/bus/i2c/devices/i2c-1/new_device
 </pre></div>
 </div>
@@ -568,7 +815,7 @@ as a directory in <code class="docutils literal notranslate"><span class="pre">s
 </div>
 </section>
 <section id="hardware-monitoring-hwmon-devices">
-<h3><a class="toc-backref" href="#id26" role="doc-backlink">Hardware Monitoring (<code class="docutils literal notranslate"><span class="pre">hwmon</span></code>) Devices</a><a class="headerlink" href="#hardware-monitoring-hwmon-devices" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id26" role="doc-backlink">Hardware Monitoring (<code class="docutils literal notranslate"><span class="pre">hwmon</span></code>) Devices</a><a class="headerlink" href="#hardware-monitoring-hwmon-devices" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">/sys/bus/i2c/devices/1-0048/</span></code> represents the device as a generic
 I2C device. A different aspect of LM73 is that it is a temperature
 sensor. There is an entire framework inside the kernel, <code class="docutils literal notranslate"><span class="pre">hwmon</span></code>, to
@@ -684,22 +931,119 @@ package is already preinstalled</p>
    
 </div>
 
-          </div>
-          
-        </div>
-      </div>
-    <div class="clearer"></div>
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
   </div>
-    <div class="footer">
-      &#169;2019-2025 (GPLv3), Jörg Faschingbauer.
-      
-      |
-      <a href="../../../../../../_sources/trainings/material/soup/linux/hardware/i2c/topic.rst.txt"
-          rel="nofollow">Page source</a>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-i2c-master">Configuring I2C Master</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#enable-i2c-load-bcm2835-i2c-master-driver">Enable I2C, Load BCM2835 I2C Master Driver</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#make-i2c-master-visible-in-userspace-dev-i2c-1">Make I2C Master Visible In Userspace (<code class="docutils literal notranslate"><span class="pre">/dev/i2c-1</span></code>)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connect-a-slave-device-lm73-temperature-sensor">Connect A Slave Device (LM73 Temperature Sensor)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lm73-hardware">LM73 Hardware</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-address-selection">Optional: Address Selection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wiring-lm73-to-the-raspberry-pi">Wiring LM73 To The Raspberry Pi</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#i2c-tools-i2cdetect-diagnostics-detecting-devices"><code class="docutils literal notranslate"><span class="pre">i2c-tools</span></code>/<code class="docutils literal notranslate"><span class="pre">i2cdetect</span></code>: Diagnostics, Detecting Devices</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-a-lm73-client-in-userspace">Implementing A LM73 Client In Userspace</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-lm73-kernel-driver-if-available">Using The LM73 Kernel Driver (If Available)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#building-the-kernel-enabling-lm73">Building the Kernel, Enabling LM73</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-the-driver">Loading the Driver</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware-monitoring-hwmon-devices">Hardware Monitoring (<code class="docutils literal notranslate"><span class="pre">hwmon</span></code>) Devices</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
     </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
-    
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
 
+  <p class="copyright">
     
+      © Copyright 2019-2025 (GPLv3), Jörg Faschingbauer.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../../../../../_sources/trainings/material/soup/linux/hardware/i2c/topic.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+      
+    </div>
+  
+</div>
+
+  </footer>
   </body>
 </html>
