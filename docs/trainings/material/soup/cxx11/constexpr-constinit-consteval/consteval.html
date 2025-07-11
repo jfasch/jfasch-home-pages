@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>consteval &#8212; Jörg Faschingbauer</title>
+    <title>consteval: Run C++ Code At Compile Time Only &#8212; Jörg Faschingbauer</title>
   
   
   
@@ -58,8 +58,8 @@
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx11/constexpr-constinit-consteval/consteval.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
-    <link rel="next" title="constinit" href="constinit.html" />
-    <link rel="prev" title="constexpr" href="constexpr.html" /> 
+    <link rel="next" title="constinit And The Static Initialization Order Fiasco" href="constinit.html" />
+    <link rel="prev" title="constexpr: Run C++ Code At Compile Time" href="constexpr.html" /> 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" /> 
@@ -294,12 +294,12 @@
 <li class="toctree-l3"><a class="reference internal" href="../range-for/index.html">Range Based <code class="docutils literal notranslate"><span class="pre">for</span></code> Loops</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../miscellaneous2/topic.html">Miscellaneous</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../lambda/index.html">Lambda</a></li>
-<li class="toctree-l3 current active has-children"><a class="reference internal" href="index.html"><code class="docutils literal notranslate"><span class="pre">const</span></code>, <code class="docutils literal notranslate"><span class="pre">constexpr</span></code>, <code class="docutils literal notranslate"><span class="pre">constinit</span></code>, <code class="docutils literal notranslate"><span class="pre">consteval</span></code></a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="const.html"><code class="docutils literal notranslate"><span class="pre">const</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="constexpr.html"><code class="docutils literal notranslate"><span class="pre">constexpr</span></code></a></li>
-<li class="toctree-l4 current active"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">consteval</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="constinit.html"><code class="docutils literal notranslate"><span class="pre">constinit</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="if.html"><code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">constexpr</span></code></a></li>
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="index.html">The <code class="docutils literal notranslate"><span class="pre">constexpr</span></code> Engine</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="const.html"><code class="docutils literal notranslate"><span class="pre">const</span></code>, And What Compilers Can Do With It</a></li>
+<li class="toctree-l4"><a class="reference internal" href="constexpr.html"><code class="docutils literal notranslate"><span class="pre">constexpr</span></code>: Run C++ Code At Compile Time</a></li>
+<li class="toctree-l4 current active"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">consteval</span></code>: Run C++ Code At Compile Time <em>Only</em></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constinit.html"><code class="docutils literal notranslate"><span class="pre">constinit</span></code> And The <em>Static Initialization Order Fiasco</em></a></li>
+<li class="toctree-l4"><a class="reference internal" href="if.html"><code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">constexpr</span></code>: Metaprogramming Made Easy</a></li>
 </ul>
 </details></li>
 <li class="toctree-l3"><a class="reference internal" href="../bind-function/index.html"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>, <code class="docutils literal notranslate"><span class="pre">std::function</span></code></a></li>
@@ -385,9 +385,9 @@
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">C++ &gt;= 11</a></li>
     
     
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link"><code class="docutils literal notranslate"><span class="pre">const</span></code>, <code class="docutils literal notranslate"><span class="pre">constexpr</span></code>, <code class="docutils literal notranslate"><span class="pre">constinit</span></code>, <code class="docutils literal notranslate"><span class="pre">consteval</span></code></a></li>
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">The <code class="docutils literal notranslate"><span class="pre">constexpr</span></code> Engine</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><code class="docutils literal notranslate"><span class="pre">consteval</span></code></span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><code class="docutils literal notranslate"><span class="pre">consteval</span></code>: Run C++ Code At Compile Time <em>Only</em></span></li>
   </ul>
 </nav>
 </div>
@@ -403,18 +403,10 @@
                 
 <div id="searchbox"></div>
                 <article class="bd-article">
-                   <section id="consteval">
-<h1><code class="docutils literal notranslate"><span class="pre">consteval</span></code><a class="headerlink" href="#consteval" title="Link to this heading">#</a></h1>
-<nav class="contents local" id="contents">
-<ul class="simple">
-<li><p><a class="reference internal" href="#why" id="id4">Why?</a></p></li>
-<li><p><a class="reference internal" href="#usage-at-compiletime-only" id="id5">Usage: At Compiletime <em>Only</em></a></p></li>
-<li><p><a class="reference internal" href="#no-forcing-needed-longrightarrow-can-assign-to-mutable-variables" id="id6">No Forcing Needed ⟶ Can Assign To Mutable Variables</a></p></li>
-<li><p><a class="reference internal" href="#and-constexpr" id="id7">And <code class="docutils literal notranslate"><span class="pre">constexpr</span></code>?</a></p></li>
-</ul>
-</nav>
+                   <section id="consteval-run-c-code-at-compile-time-only">
+<h1><code class="docutils literal notranslate"><span class="pre">consteval</span></code>: Run C++ Code At Compile Time <em>Only</em><a class="headerlink" href="#consteval-run-c-code-at-compile-time-only" title="Link to this heading">#</a></h1>
 <section id="why">
-<h2><a class="toc-backref" href="#id4" role="doc-backlink">Why?</a><a class="headerlink" href="#why" title="Link to this heading">#</a></h2>
+<h2>Why?<a class="headerlink" href="#why" title="Link to this heading">#</a></h2>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">constexpr</span></code> has a “maybe” attached to it</p></li>
 <li><p>Evaluation in <code class="docutils literal notranslate"><span class="pre">constexpr</span></code> context must be forced (see <a class="reference internal" href="constexpr.html#cxx11-constexpr-force-necessary"><span class="std std-ref">for
@@ -423,15 +415,19 @@ example here</span></a>)</p>
 </pre></div>
 </div>
 </li>
-<li><p>Something stronger is needed: a function that <em>always</em> evaluates at
-compiletime (⟶ no forcing needed)</p></li>
+<li><p>Moreover: <code class="docutils literal notranslate"><span class="pre">i</span></code> is a constant</p></li>
+<li><p>Something different is needed: a function that</p>
+<ul class="simple">
+<li><p><em>Always</em> evaluates at compiletime (⟶ no forcing needed)</p></li>
+<li><p>Value can be assigned to non-<code class="docutils literal notranslate"><span class="pre">const</span></code> variable</p></li>
+</ul>
+</li>
 <li><p>⟶ <code class="docutils literal notranslate"><span class="pre">consteval</span></code></p></li>
 <li><p><em>Only available at compiletime</em></p></li>
-<li><p>Same as <code class="docutils literal notranslate"><span class="pre">constexpr</span></code> otherwise</p></li>
 </ul>
 </section>
 <section id="usage-at-compiletime-only">
-<h2><a class="toc-backref" href="#id5" role="doc-backlink">Usage: At Compiletime <em>Only</em></a><a class="headerlink" href="#usage-at-compiletime-only" title="Link to this heading">#</a></h2>
+<h2>Usage: At Compiletime <em>Only</em><a class="headerlink" href="#usage-at-compiletime-only" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Can <em>only</em> be used in <code class="docutils literal notranslate"><span class="pre">constexpr</span></code> context</p></li>
 <li><p>⟶ parameters <em>must be</em> known at compiletime</p></li>
@@ -479,7 +475,7 @@ compiletime (⟶ no forcing needed)</p></li>
 </div>
 </section>
 <section id="no-forcing-needed-longrightarrow-can-assign-to-mutable-variables">
-<h2><a class="toc-backref" href="#id6" role="doc-backlink">No Forcing Needed ⟶ Can Assign To Mutable Variables</a><a class="headerlink" href="#no-forcing-needed-longrightarrow-can-assign-to-mutable-variables" title="Link to this heading">#</a></h2>
+<h2>No Forcing Needed ⟶ Can Assign To Mutable Variables<a class="headerlink" href="#no-forcing-needed-longrightarrow-can-assign-to-mutable-variables" title="Link to this heading">#</a></h2>
 <aside class="sidebar">
 <p class="sidebar-title">See also</p>
 <ul class="simple">
@@ -493,7 +489,7 @@ compiletime (⟶ no forcing needed)</p></li>
 </ul>
 </section>
 <section id="and-constexpr">
-<h2><a class="toc-backref" href="#id7" role="doc-backlink">And <code class="docutils literal notranslate"><span class="pre">constexpr</span></code>?</a><a class="headerlink" href="#and-constexpr" title="Link to this heading">#</a></h2>
+<h2>And <code class="docutils literal notranslate"><span class="pre">constexpr</span></code>?<a class="headerlink" href="#and-constexpr" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">consteval</span></code> function can use <code class="docutils literal notranslate"><span class="pre">constexpr</span></code> functions</p></li>
 <li><p>Reason: <code class="docutils literal notranslate"><span class="pre">consteval</span></code> runs at compiletime <em>only</em>, so it uses the

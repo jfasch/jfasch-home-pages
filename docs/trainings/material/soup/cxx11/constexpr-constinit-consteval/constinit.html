@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>constinit &#8212; Jörg Faschingbauer</title>
+    <title>constinit And The Static Initialization Order Fiasco &#8212; Jörg Faschingbauer</title>
   
   
   
@@ -58,8 +58,8 @@
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx11/constexpr-constinit-consteval/constinit.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
-    <link rel="next" title="if constexpr" href="if.html" />
-    <link rel="prev" title="consteval" href="consteval.html" /> 
+    <link rel="next" title="if constexpr: Metaprogramming Made Easy" href="if.html" />
+    <link rel="prev" title="consteval: Run C++ Code At Compile Time Only" href="consteval.html" /> 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" /> 
@@ -294,12 +294,12 @@
 <li class="toctree-l3"><a class="reference internal" href="../range-for/index.html">Range Based <code class="docutils literal notranslate"><span class="pre">for</span></code> Loops</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../miscellaneous2/topic.html">Miscellaneous</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../lambda/index.html">Lambda</a></li>
-<li class="toctree-l3 current active has-children"><a class="reference internal" href="index.html"><code class="docutils literal notranslate"><span class="pre">const</span></code>, <code class="docutils literal notranslate"><span class="pre">constexpr</span></code>, <code class="docutils literal notranslate"><span class="pre">constinit</span></code>, <code class="docutils literal notranslate"><span class="pre">consteval</span></code></a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="const.html"><code class="docutils literal notranslate"><span class="pre">const</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="constexpr.html"><code class="docutils literal notranslate"><span class="pre">constexpr</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="consteval.html"><code class="docutils literal notranslate"><span class="pre">consteval</span></code></a></li>
-<li class="toctree-l4 current active"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">constinit</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="if.html"><code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">constexpr</span></code></a></li>
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="index.html">The <code class="docutils literal notranslate"><span class="pre">constexpr</span></code> Engine</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="const.html"><code class="docutils literal notranslate"><span class="pre">const</span></code>, And What Compilers Can Do With It</a></li>
+<li class="toctree-l4"><a class="reference internal" href="constexpr.html"><code class="docutils literal notranslate"><span class="pre">constexpr</span></code>: Run C++ Code At Compile Time</a></li>
+<li class="toctree-l4"><a class="reference internal" href="consteval.html"><code class="docutils literal notranslate"><span class="pre">consteval</span></code>: Run C++ Code At Compile Time <em>Only</em></a></li>
+<li class="toctree-l4 current active"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">constinit</span></code> And The <em>Static Initialization Order Fiasco</em></a></li>
+<li class="toctree-l4"><a class="reference internal" href="if.html"><code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">constexpr</span></code>: Metaprogramming Made Easy</a></li>
 </ul>
 </details></li>
 <li class="toctree-l3"><a class="reference internal" href="../bind-function/index.html"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>, <code class="docutils literal notranslate"><span class="pre">std::function</span></code></a></li>
@@ -385,9 +385,9 @@
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">C++ &gt;= 11</a></li>
     
     
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link"><code class="docutils literal notranslate"><span class="pre">const</span></code>, <code class="docutils literal notranslate"><span class="pre">constexpr</span></code>, <code class="docutils literal notranslate"><span class="pre">constinit</span></code>, <code class="docutils literal notranslate"><span class="pre">consteval</span></code></a></li>
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">The <code class="docutils literal notranslate"><span class="pre">constexpr</span></code> Engine</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><code class="docutils literal notranslate"><span class="pre">constinit</span></code></span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><code class="docutils literal notranslate"><span class="pre">constinit</span></code> And The <em>Static Initialization Order Fiasco</em></span></li>
   </ul>
 </nav>
 </div>
@@ -403,20 +403,17 @@
                 
 <div id="searchbox"></div>
                 <article class="bd-article">
-                   <section id="constinit">
-<h1><code class="docutils literal notranslate"><span class="pre">constinit</span></code><a class="headerlink" href="#constinit" title="Link to this heading">#</a></h1>
-<nav class="contents local" id="contents">
+                   <section id="constinit-and-the-static-initialization-order-fiasco">
+<h1><code class="docutils literal notranslate"><span class="pre">constinit</span></code> And The <em>Static Initialization Order Fiasco</em><a class="headerlink" href="#constinit-and-the-static-initialization-order-fiasco" title="Link to this heading">#</a></h1>
+<section id="problem-the-static-initialization-order-fiasco">
+<h2>Problem: The <em>Static Initialization Order Fiasco</em><a class="headerlink" href="#problem-the-static-initialization-order-fiasco" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#definition-initialization-of-globals" id="id10">Definition: Initialization Of Globals</a></p></li>
-<li><p><a class="reference internal" href="#problem-the-static-initialization-order-fiasco" id="id11">Problem: The <em>Static Initialization Order Fiasco</em></a></p></li>
-<li><p><a class="reference internal" href="#solution-constinit" id="id12">Solution: <code class="docutils literal notranslate"><span class="pre">constinit</span></code></a></p></li>
-<li><p><a class="reference internal" href="#the-problem" id="id13">The Problem</a></p></li>
-<li><p><a class="reference internal" href="#possible-solutions" id="id14">Possible Solutions?</a></p></li>
-<li><p><a class="reference internal" href="#id1" id="id15">Solution: <code class="docutils literal notranslate"><span class="pre">constinit</span></code></a></p></li>
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/language/siof">Static Initialization Order Fiasco</a></p></li>
 </ul>
-</nav>
-<section id="definition-initialization-of-globals">
-<h2><a class="toc-backref" href="#id10" role="doc-backlink">Definition: Initialization Of Globals</a><a class="headerlink" href="#definition-initialization-of-globals" title="Link to this heading">#</a></h2>
+</aside>
+<p><strong>Definition: Initialization Of Globals</strong></p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">static</span></code> locals</p>
 <ul>
@@ -430,246 +427,215 @@ time</em></p></li>
 <li><p><strong>Initialization order of compilation units is undefined</strong></p></li>
 </ul>
 </li>
-<li><p>Since 1970-01-01: integrals are initialized at compile time</p></li>
+<li><p>Since 1970-01-01 (<a class="reference external" href="https://en.wikipedia.org/wiki/Epoch_(computing)">the epoch</a>): integrals are
+initialized at compile time ⟶ this problem has been
+brought about by C++</p></li>
 </ul>
 </section>
-<section id="problem-the-static-initialization-order-fiasco">
-<h2><a class="toc-backref" href="#id11" role="doc-backlink">Problem: The <em>Static Initialization Order Fiasco</em></a><a class="headerlink" href="#problem-the-static-initialization-order-fiasco" title="Link to this heading">#</a></h2>
+<section id="siof-example-mutex-as-a-global-variable-demo-failure">
+<h2>SIOF Example: Mutex As A Global Variable (Demo Failure)<a class="headerlink" href="#siof-example-mutex-as-a-global-variable-demo-failure" title="Link to this heading">#</a></h2>
 <aside class="sidebar">
-<p class="sidebar-title">Documentation</p>
+<p class="sidebar-title">Trainer’s note</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/language/siof">Static Initialization Order Fiasco</a></p></li>
+<li><p>Prepare two files, <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> and <code class="docutils literal notranslate"><span class="pre">other.cpp</span></code></p></li>
+<li><p>Morph those throughout this session</p></li>
 </ul>
 </aside>
+<ul class="simple">
+<li><p>This is a contrived example, but C++ Marketing stresses the
+<em>constant initialized mutex</em> feature a lot - so here it is</p></li>
+<li><p>Compilation unit #1 contains a global <code class="docutils literal notranslate"><span class="pre">std::mutex</span></code> (and <code class="docutils literal notranslate"><span class="pre">main()</span></code>
+btw, which just pauses the process)</p></li>
+<li><p>Compilation unit #2 contains a global <code class="docutils literal notranslate"><span class="pre">std::thread</span></code> object <em>which
+references the mutex</em></p></li>
+<li><p>Both <code class="docutils literal notranslate"><span class="pre">the_mutex</span></code> and <code class="docutils literal notranslate"><span class="pre">the_thread</span></code> are initialized at runtime
+before main in <em>undefined order</em></p></li>
+<li><p>This is <em>undefined behavior</em> - the thread <em>could</em> run before the
+mutex is initialized</p></li>
+<li><p>To check, we link the program twice to reverse the order of
+initialization (see <a class="reference download internal" download="" href="../../../../../_downloads/aa35747d4fecb48d6123756580e0c3ef/CMakeLists.txt"><code class="xref download docutils literal notranslate"><span class="pre">code/siof-mutex/CMakeLists.txt</span></code></a>)</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/aa35747d4fecb48d6123756580e0c3ef/CMakeLists.txt"><code class="xref download docutils literal notranslate"><span class="pre">code/siof-mutex/CMakeLists.txt</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">add_executable</span><span class="p">(</span><span class="n">c</span><span class="o">++</span><span class="mi">11</span><span class="o">-</span><span class="k">constinit</span><span class="o">-</span><span class="n">mutex</span><span class="o">-</span><span class="n">runtime</span><span class="o">-</span><span class="n">init</span><span class="w"> </span><span class="n">main</span><span class="p">.</span><span class="n">cpp</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">cpp</span><span class="p">)</span>
+<span class="n">add_executable</span><span class="p">(</span><span class="n">c</span><span class="o">++</span><span class="mi">11</span><span class="o">-</span><span class="k">constinit</span><span class="o">-</span><span class="n">mutex</span><span class="o">-</span><span class="n">runtime</span><span class="o">-</span><span class="n">init</span><span class="o">-</span><span class="n">reversed</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">cpp</span><span class="w"> </span><span class="n">main</span><span class="p">.</span><span class="n">cpp</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/4175dc0ace92b0c4c93a8bcea6b8ded5/point.h"><code class="xref download docutils literal notranslate"><span class="pre">code/siof/point.h</span></code></a></span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#pragma once</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">point</span>
-<span class="p">{</span>
-<span class="k">public</span><span class="o">:</span>
-<span class="w">    </span><span class="n">point</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">_x</span><span class="p">{</span><span class="n">x</span><span class="p">},</span><span class="w"> </span><span class="n">_y</span><span class="p">{</span><span class="n">y</span><span class="p">}</span><span class="w"> </span><span class="p">{}</span>
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_x</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_y</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="k">private</span><span class="o">:</span>
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">_x</span><span class="p">,</span><span class="w"> </span><span class="n">_y</span><span class="p">;</span>
-<span class="p">};</span>
-</pre></div>
-</div>
-</div>
-<div class="pst-scrollable-table-container"><table class="table table-left">
-<tbody>
-<tr class="row-odd"><td><div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/eeb690adf69a31ef37f0c64dfcb691ce/global-point-standalone.h"><code class="xref download docutils literal notranslate"><span class="pre">code/siof/global-point-standalone.h</span></code></a></span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#pragma once</span>
-
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;point.h&quot;</span>
-
-<span class="k">extern</span><span class="w"> </span><span class="n">point</span><span class="w"> </span><span class="n">global_point_standalone</span><span class="p">;</span>
-</pre></div>
-</div>
-</div>
-</td>
-<td><div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/2a50683123f69d5b67f9fd29472f0660/global-point-standalone.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/siof/global-point-standalone.cpp</span></code></a></span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;global-point-standalone.h&quot;</span>
-
-<span class="n">point</span><span class="w"> </span><span class="n">global_point_standalone</span><span class="p">{</span><span class="mi">42</span><span class="p">,</span><span class="mi">666</span><span class="p">};</span>
-</pre></div>
-</div>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="pst-scrollable-table-container"><table class="table table-left">
-<tbody>
-<tr class="row-odd"><td><div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/536bac8970a2906f0958051486389c33/global-point-depends.h"><code class="xref download docutils literal notranslate"><span class="pre">code/siof/global-point-depends.h</span></code></a></span><a class="headerlink" href="#id5" title="Link to this code">#</a></div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#pragma once</span>
-
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;point.h&quot;</span>
-
-<span class="k">extern</span><span class="w"> </span><span class="n">point</span><span class="w"> </span><span class="n">global_point_depends</span><span class="p">;</span>
-</pre></div>
-</div>
-</div>
-</td>
-<td><div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/5f24e98527c65e57996c450b5b1eac2f/global-point-depends.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/siof/global-point-depends.cpp</span></code></a></span><a class="headerlink" href="#id6" title="Link to this code">#</a></div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;global-point-depends.h&quot;</span>
-
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;global-point-standalone.h&quot;</span>
-
-<span class="n">point</span><span class="w"> </span><span class="n">global_point_depends</span><span class="p">{</span><span class="n">global_point_standalone</span><span class="p">};</span>
-</pre></div>
-</div>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/edb351619f569798f7b7f6f318f0add4/main.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/siof/main.cpp</span></code></a></span><a class="headerlink" href="#id7" title="Link to this code">#</a></div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;global-point-standalone.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;global-point-depends.h&quot;</span>
-
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/03d7a12a00f3876f8c3e797c8e7976aa/main.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/siof-mutex/main.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;mutex&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thread&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
 
-<span class="n">std</span><span class="o">::</span><span class="n">ostream</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">ostream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">o</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">point</span><span class="o">&amp;</span><span class="w"> </span><span class="n">p</span><span class="p">)</span>
-<span class="p">{</span>
-<span class="w">    </span><span class="n">o</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;(&#39;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;,&#39;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;)&#39;</span><span class="p">;</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">o</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="k">extern</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="w"> </span><span class="n">the_mutex</span><span class="p">;</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="n">main</span><span class="p">()</span>
+<span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="nf">the_thread</span><span class="p">([](){</span>
+<span class="w">    </span><span class="n">the_mutex</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;inside critical section&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="n">the_mutex</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
+<span class="p">});</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;global_point_standalone: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">global_point_standalone</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;global_point_depends: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">global_point_depends</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="n">the_thread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </div>
-<ul class="simple">
-<li><p>Compile</p></li>
-</ul>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>g++<span class="w"> </span>-c<span class="w"> </span>-o<span class="w"> </span>global-point-depends.o<span class="w"> </span>global-point-depends.cpp
-<span class="gp">$ </span>g++<span class="w"> </span>-c<span class="w"> </span>-o<span class="w"> </span>global-point-standalone.o<span class="w"> </span>global-point-standalone.cpp
-<span class="gp">$ </span>g++<span class="w"> </span>-c<span class="w"> </span>-o<span class="w"> </span>main.o<span class="w"> </span>main.cpp
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/85c58bf2ed7c7a54f3a1434df52afa6a/other.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/siof-mutex/other.cpp</span></code></a></span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;mutex&gt;</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="w"> </span><span class="n">the_mutex</span><span class="p">;</span>
 </pre></div>
 </div>
+</div>
+</section>
+<section id="siof-example-global-std-string-instances-with-interdependencies-demo-failure">
+<h2>SIOF Example: Global <code class="docutils literal notranslate"><span class="pre">std::string</span></code> Instances With Interdependencies (Demo Failure)<a class="headerlink" href="#siof-example-global-std-string-instances-with-interdependencies-demo-failure" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p>Link order wrong: “standalone” <em>after</em> “depends”</p></li>
+<li><p>Similar situation: <code class="docutils literal notranslate"><span class="pre">std::string</span> <span class="pre">my_string</span></code> (defined in
+<code class="docutils literal notranslate"><span class="pre">main.cpp</span></code>) depends on <code class="docutils literal notranslate"><span class="pre">other_string</span></code> (defined in <code class="docutils literal notranslate"><span class="pre">other.cpp</span></code>)</p></li>
+<li><p>Demo failure: <code class="docutils literal notranslate"><span class="pre">std::string</span></code> constructor already appears to do
+magic to paper over bad language definition</p></li>
+<li><p>⟶ both programs show correct behavior - even though
+ill-formed</p></li>
 </ul>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>g++<span class="w"> </span>main.o<span class="w"> </span>global-point-depends.o<span class="w"> </span>global-point-standalone.o
-<span class="gp">$ </span>./a.out
-<span class="go">global_point_standalone: (42,666)</span>
-<span class="go">global_point_depends: (0,0)</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./siof-string/c++11-constinit-string-runtime-init
+<span class="go">hello world</span>
+<span class="gp">$ </span>./siof-string/c++11-constinit-string-runtime-init-reversed
+<span class="go">hello world</span>
 </pre></div>
 </div>
-<ul class="simple">
-<li><p>Link order wrong: “standalone” <em>before</em> “depends”</p></li>
-</ul>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>g++<span class="w"> </span>main.o<span class="w"> </span>global-point-standalone.o<span class="w"> </span>global-point-depends.o
-<span class="gp">$ </span>./a.out
-<span class="go">global_point_standalone: (42,666)</span>
-<span class="go">global_point_depends: (42,666)</span>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/7ee7eb5aa4cb49ab74f496ce33038c14/CMakeLists.txt"><code class="xref download docutils literal notranslate"><span class="pre">code/siof-string/CMakeLists.txt</span></code></a></span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">add_executable</span><span class="p">(</span><span class="n">c</span><span class="o">++</span><span class="mi">11</span><span class="o">-</span><span class="k">constinit</span><span class="o">-</span><span class="n">string</span><span class="o">-</span><span class="n">runtime</span><span class="o">-</span><span class="n">init</span><span class="w"> </span><span class="n">main</span><span class="p">.</span><span class="n">cpp</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">cpp</span><span class="p">)</span>
+<span class="n">add_executable</span><span class="p">(</span><span class="n">c</span><span class="o">++</span><span class="mi">11</span><span class="o">-</span><span class="k">constinit</span><span class="o">-</span><span class="n">string</span><span class="o">-</span><span class="n">runtime</span><span class="o">-</span><span class="n">init</span><span class="o">-</span><span class="n">reversed</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">cpp</span><span class="w"> </span><span class="n">main</span><span class="p">.</span><span class="n">cpp</span><span class="p">)</span>
 </pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/087d95ebc75b2c2f6691d95177de8387/main.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/siof-string/main.cpp</span></code></a></span><a class="headerlink" href="#id5" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="k">extern</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">other_string</span><span class="p">;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">my_string</span><span class="p">{</span><span class="s">&quot;hello &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">other_string</span><span class="p">};</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">my_string</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/bd99ce8fe3c6973ff0d15cb2aeca273a/other.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/siof-string/other.cpp</span></code></a></span><a class="headerlink" href="#id6" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">other_string</span><span class="p">{</span><span class="s">&quot;world&quot;</span><span class="p">};</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="siof-example-global-foo-instances-with-interdependencies">
+<h2>SIOF Example: Global <code class="docutils literal notranslate"><span class="pre">Foo</span></code> Instances With Interdependencies<a class="headerlink" href="#siof-example-global-foo-instances-with-interdependencies" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Becoming even more contrived - <em>although somewhat realistic</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Foo</span></code> instances depending on each other, just like <code class="docutils literal notranslate"><span class="pre">std::string</span></code> above</p></li>
+<li><p>⟶ Demo success</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./siof-foo/c++11-constinit-foo-runtime-init
+<span class="go">42</span>
+<span class="gp">$ </span>./siof-foo/c++11-constinit-foo-runtime-init-reversed
+<span class="go">708</span>
+</pre></div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/560e9f2980b411e14dd46cd815a1e49c/CMakeLists.txt"><code class="xref download docutils literal notranslate"><span class="pre">code/siof-foo/CMakeLists.txt</span></code></a></span><a class="headerlink" href="#id7" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">add_executable</span><span class="p">(</span><span class="n">c</span><span class="o">++</span><span class="mi">11</span><span class="o">-</span><span class="k">constinit</span><span class="o">-</span><span class="n">foo</span><span class="o">-</span><span class="n">runtime</span><span class="o">-</span><span class="n">init</span><span class="w"> </span><span class="n">main</span><span class="p">.</span><span class="n">cpp</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">cpp</span><span class="p">)</span>
+<span class="n">add_executable</span><span class="p">(</span><span class="n">c</span><span class="o">++</span><span class="mi">11</span><span class="o">-</span><span class="k">constinit</span><span class="o">-</span><span class="n">foo</span><span class="o">-</span><span class="n">runtime</span><span class="o">-</span><span class="n">init</span><span class="o">-</span><span class="n">reversed</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">cpp</span><span class="w"> </span><span class="n">main</span><span class="p">.</span><span class="n">cpp</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/ed763a211286665ac0d87ed006f24108/main.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/siof-foo/main.cpp</span></code></a></span><a class="headerlink" href="#id8" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;foo.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="k">extern</span><span class="w"> </span><span class="n">Foo</span><span class="w"> </span><span class="n">other_foo</span><span class="p">;</span>
+<span class="n">Foo</span><span class="w"> </span><span class="n">my_foo</span><span class="p">{</span><span class="mi">42</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">other_foo</span><span class="p">.</span><span class="n">number</span><span class="p">};</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">my_foo</span><span class="p">.</span><span class="n">number</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/975f5bd5942ab21c494ec55d0b8bdfdc/other.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/siof-foo/other.cpp</span></code></a></span><a class="headerlink" href="#id9" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;foo.h&quot;</span>
+
+<span class="n">Foo</span><span class="w"> </span><span class="n">other_foo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">666</span><span class="p">;</span>
+</pre></div>
+</div>
 </div>
 </section>
 <section id="solution-constinit">
-<h2><a class="toc-backref" href="#id12" role="doc-backlink">Solution: <code class="docutils literal notranslate"><span class="pre">constinit</span></code></a><a class="headerlink" href="#solution-constinit" title="Link to this heading">#</a></h2>
-</section>
-<section id="the-problem">
-<h2><a class="toc-backref" href="#id13" role="doc-backlink">The Problem</a><a class="headerlink" href="#the-problem" title="Link to this heading">#</a></h2>
+<h2>Solution: <code class="docutils literal notranslate"><span class="pre">constinit</span></code><a class="headerlink" href="#solution-constinit" title="Link to this heading">#</a></h2>
 <aside class="sidebar">
-<p class="sidebar-title">Documentation</p>
+<p class="sidebar-title">Trainer’s note</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/thread/mutex/mutex">std::mutex::mutex()</a></p></li>
+<li><p>Start with making <code class="docutils literal notranslate"><span class="pre">other_foo</span></code> const-initialized/<code class="docutils literal notranslate"><span class="pre">constinit</span></code></p></li>
+<li><p>See how <code class="docutils literal notranslate"><span class="pre">Foo::Foo()</span></code> has to be <code class="docutils literal notranslate"><span class="pre">constexpr</span></code></p></li>
 </ul>
 </aside>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">std::mutex</span></code> is initialized at runtime</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">unsigned</span></code> is initialized at compiletime (integral)</p></li>
-<li><p>⟶ <em>this is asymmetric</em></p></li>
-<li><p><em>Want ``std::mutex`` to be initialized at compiletime!</em></p></li>
-<li><p>This should be possible because it has a <code class="docutils literal notranslate"><span class="pre">constexpr</span></code> default
-constructor</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">other_foo</span></code> needs to be available <em>before</em> someone depends on it</p></li>
+<li><p>⟶ <code class="docutils literal notranslate"><span class="pre">constinit</span></code></p></li>
+<li><p>Note that the depender cannot be <code class="docutils literal notranslate"><span class="pre">constinit</span></code></p></li>
+<li><p>Note: <code class="docutils literal notranslate"><span class="pre">my_foo</span></code> cannot be <code class="docutils literal notranslate"><span class="pre">constinit</span></code> ⟶ <code class="docutils literal notranslate"><span class="pre">extern</span></code>
+has no idea</p></li>
 </ul>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/952bba1d707043bd4a8465db5df3d0b1/constinit-problem.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/constinit-problem.cpp</span></code></a></span><a class="headerlink" href="#id8" title="Link to this code">#</a></div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thread&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;mutex&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;chrono&gt;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./siof-foo-solution/c++11-constinit-foo-constinit
+<span class="go">708</span>
+<span class="gp">$ </span>./siof-foo-solution/c++11-constinit-foo-constinit-reversed
+<span class="go">708</span>
+</pre></div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/07b480dfb8bee4e0e1a22722d369ea7b/CMakeLists.txt"><code class="xref download docutils literal notranslate"><span class="pre">code/siof-foo-solution/CMakeLists.txt</span></code></a></span><a class="headerlink" href="#id10" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">add_executable</span><span class="p">(</span><span class="n">c</span><span class="o">++</span><span class="mi">11</span><span class="o">-</span><span class="k">constinit</span><span class="o">-</span><span class="n">foo</span><span class="o">-</span><span class="k">constinit</span><span class="w"> </span><span class="n">main</span><span class="p">.</span><span class="n">cpp</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">cpp</span><span class="p">)</span>
+<span class="n">add_executable</span><span class="p">(</span><span class="n">c</span><span class="o">++</span><span class="mi">11</span><span class="o">-</span><span class="k">constinit</span><span class="o">-</span><span class="n">foo</span><span class="o">-</span><span class="k">constinit</span><span class="o">-</span><span class="n">reversed</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">cpp</span><span class="w"> </span><span class="n">main</span><span class="p">.</span><span class="n">cpp</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/d7e95fd2bb40bfa86c3e8000357529c8/main.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/siof-foo-solution/main.cpp</span></code></a></span><a class="headerlink" href="#id11" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;foo.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
 
-<span class="kt">unsigned</span><span class="w"> </span><span class="n">sequence</span><span class="p">;</span>
-<span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="w"> </span><span class="n">sequence_lock</span><span class="p">;</span><span class="w">                              </span><span class="c1">// &lt;-- initialized at runtim</span>
+<span class="k">extern</span><span class="w"> </span><span class="n">Foo</span><span class="w"> </span><span class="n">other_foo</span><span class="p">;</span>
+<span class="n">Foo</span><span class="w"> </span><span class="n">my_foo</span><span class="p">{</span><span class="mi">42</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">other_foo</span><span class="p">.</span><span class="n">number</span><span class="p">};</span>
 
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">use_sequence</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">std</span><span class="o">::</span><span class="nn">chrono_literals</span><span class="p">;</span>
-<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">sequence_lock</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
-<span class="w">            </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">++</span><span class="n">sequence</span><span class="p">;</span>
-<span class="w">            </span><span class="n">sequence_lock</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
-<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">;</span>
-<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">sleep_for</span><span class="p">(</span><span class="mi">500</span><span class="n">ms</span><span class="p">);</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">};</span>
-
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">t1</span><span class="p">(</span><span class="n">use_sequence</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;thread 1&quot;</span><span class="p">);</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">t2</span><span class="p">(</span><span class="n">use_sequence</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;thread 2&quot;</span><span class="p">);</span>
-
-<span class="w">    </span><span class="n">t1</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
-<span class="w">    </span><span class="n">t2</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
-
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">my_foo</span><span class="p">.</span><span class="n">number</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </div>
-</section>
-<section id="possible-solutions">
-<h2><a class="toc-backref" href="#id14" role="doc-backlink">Possible Solutions?</a><a class="headerlink" href="#possible-solutions" title="Link to this heading">#</a></h2>
-<ul class="simple">
-<li><p>Make <code class="docutils literal notranslate"><span class="pre">sequence_lock</span></code> a <code class="docutils literal notranslate"><span class="pre">constexpr</span></code> object</p>
-<ul>
-<li><p><strong>No:</strong> <code class="docutils literal notranslate"><span class="pre">lock()</span></code> and <code class="docutils literal notranslate"><span class="pre">unlock()</span></code> are not <code class="docutils literal notranslate"><span class="pre">const</span></code></p></li>
-</ul>
-</li>
-<li><p>Live with runtime initialization</p>
-<ul>
-<li><p><strong>No:</strong> I am programming a tiny embedded microcontroller and
-cannot afford any additional startup time</p></li>
-<li><p><strong>No:</strong> I have had enough of C++’s <a class="reference external" href="https://en.cppreference.com/w/cpp/language/siof">Static Initialization Order
-Fiasco</a></p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">constinit</span></code></p>
-<ul>
-<li><p><strong>Yay</strong></p></li>
-</ul>
-</li>
-</ul>
-</section>
-<section id="id1">
-<h2><a class="toc-backref" href="#id15" role="doc-backlink">Solution: <code class="docutils literal notranslate"><span class="pre">constinit</span></code></a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/67769a2f580686f38f0098be2f476ce2/constinit-solution.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/constinit-solution.cpp</span></code></a></span><a class="headerlink" href="#id9" title="Link to this code">#</a></div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thread&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;mutex&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;chrono&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../_downloads/826233da6d8198eaf8a356688b566f35/other.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/siof-foo-solution/other.cpp</span></code></a></span><a class="headerlink" href="#id12" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;foo.h&quot;</span>
 
-<span class="k">constinit</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">sequence</span><span class="p">;</span><span class="w">                           </span><span class="c1">// &lt;-- compiletime anyway, even without constinit</span>
-<span class="k">constinit</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="w"> </span><span class="n">sequence_lock</span><span class="p">;</span><span class="w">                    </span><span class="c1">// &lt;-- compiletime</span>
-
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
-<span class="p">{</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">use_sequence</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">std</span><span class="o">::</span><span class="nn">chrono_literals</span><span class="p">;</span>
-<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">sequence_lock</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
-<span class="w">            </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">++</span><span class="n">sequence</span><span class="p">;</span>
-<span class="w">            </span><span class="n">sequence_lock</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
-<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">;</span>
-<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">sleep_for</span><span class="p">(</span><span class="mi">500</span><span class="n">ms</span><span class="p">);</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">};</span>
-
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">t1</span><span class="p">(</span><span class="n">use_sequence</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;thread 1&quot;</span><span class="p">);</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">t2</span><span class="p">(</span><span class="n">use_sequence</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;thread 2&quot;</span><span class="p">);</span>
-
-<span class="w">    </span><span class="n">t1</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
-<span class="w">    </span><span class="n">t2</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
-
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="k">constinit</span><span class="w"> </span><span class="n">Foo</span><span class="w"> </span><span class="n">other_foo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">666</span><span class="p">;</span>
 </pre></div>
 </div>
 </div>
@@ -702,12 +668,11 @@ Fiasco</a></p></li>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#definition-initialization-of-globals">Definition: Initialization Of Globals</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-the-static-initialization-order-fiasco">Problem: The <em>Static Initialization Order Fiasco</em></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#siof-example-mutex-as-a-global-variable-demo-failure">SIOF Example: Mutex As A Global Variable (Demo Failure)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#siof-example-global-std-string-instances-with-interdependencies-demo-failure">SIOF Example: Global <code class="docutils literal notranslate"><span class="pre">std::string</span></code> Instances With Interdependencies (Demo Failure)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#siof-example-global-foo-instances-with-interdependencies">SIOF Example: Global <code class="docutils literal notranslate"><span class="pre">Foo</span></code> Instances With Interdependencies</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solution-constinit">Solution: <code class="docutils literal notranslate"><span class="pre">constinit</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem">The Problem</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#possible-solutions">Possible Solutions?</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Solution: <code class="docutils literal notranslate"><span class="pre">constinit</span></code></a></li>
 </ul>
   </nav></div>
 
