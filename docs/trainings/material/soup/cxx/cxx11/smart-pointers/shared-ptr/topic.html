@@ -1,0 +1,860 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>std::shared_ptr &#8212; Jörg Faschingbauer</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/css/custom.css?v=128c0548" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'trainings/material/soup/cxx/cxx11/smart-pointers/shared-ptr/topic';</script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx/cxx11/smart-pointers/shared-ptr/topic.html" />
+    <link rel="index" title="Index" href="../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../search.html" />
+    <link rel="next" title="std::weak_ptr" href="../weak-ptr/topic.html" />
+    <link rel="prev" title="std::unique_ptr" href="../unique-ptr/topic.html" /> 
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" /> 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../../blog/index/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+  
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../../../../../../_static/logo.png" class="logo__image only-light" alt="Jörg Faschingbauer - Home"/>
+    <img src="../../../../../../../_static/logo.png" class="logo__image only-dark pst-js-only" alt="Jörg Faschingbauer - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../../../index.html">
+    Training Courses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../blog/postlist.html">
+    Blog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../../../index.html">
+    Training Courses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../blog/postlist.html">
+    Blog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../repertoire/index.html">Course Descriptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../info.html">Pricing, Organizational</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../log/index.html">Log Of Past Courses</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../../index.html">Complete Slide Material</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../../linux/index.html">Linux: Introduction, Userland/Kernel Programming, Hardware/Embedded</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../python/index.html">Python Programming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../c/index.html">C Programming</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../../../index.html">C++ Programming</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/index.html">C++ &lt; 11</a></li>
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="../../index.html">C++ &gt;= 11</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../introduction/index.html">Introduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../rule-of-5/topic.html">The Rule Of Three/Five/Zero</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../delegating-ctor/topic.html">Delegating Constructor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../strongly-typed-enums/topic.html">Strongly Typed <code class="docutils literal notranslate"><span class="pre">enum</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../oo/index.html">New OO Features: <code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">delete</span></code>, <code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">default</span></code>, <code class="docutils literal notranslate"><span class="pre">override</span></code>, <code class="docutils literal notranslate"><span class="pre">final</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../attributes/topic.html">Attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../brace-initialization/index.html">Brace Initialization (Uniform Initialization)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../control-flow-locals/topic.html">Local Variables In Control Flow Statements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../auto/topic.html">Duck Typing (Err, <code class="docutils literal notranslate"><span class="pre">auto</span></code>) Without A Duck</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../structured-binding/topic.html">Tuple Unpacking (Err, Structured Binding)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../range-for/index.html">Range Based <code class="docutils literal notranslate"><span class="pre">for</span></code> Loops</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../miscellaneous2/topic.html">Miscellaneous</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../lambda/index.html">Lambda</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../constexpr-constinit-consteval/index.html">The <code class="docutils literal notranslate"><span class="pre">constexpr</span></code> Engine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../bind-function/index.html"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>, <code class="docutils literal notranslate"><span class="pre">std::function</span></code></a></li>
+<li class="toctree-l4 current active"><a class="reference internal" href="../index.html">Smart Pointers: <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code>, <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> (And <code class="docutils literal notranslate"><span class="pre">std::weak_ptr</span></code>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../move/index.html">Move Semantics, Rvalue References</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../perfect-forwarding/topic.html">Perfect Forwarding</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../multithreading/index.html">Multithreading, C++ Memory Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../array/topic.html">std::array</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../any-variant-optional/index.html">std::any, std::variant, std::optional</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../chrono/topic.html"><code class="docutils literal notranslate"><span class="pre">std::chrono</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../filesystem/topic.html"><code class="docutils literal notranslate"><span class="pre">std::filesystem</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../format/topic.html">Formatting Library (<code class="docutils literal notranslate"><span class="pre">std::format()</span></code>, <code class="docutils literal notranslate"><span class="pre">std::print()</span></code>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../span/topic.html"><code class="docutils literal notranslate"><span class="pre">std::span</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../deducing-this/topic.html">Explicit Object Member Functions (A.k.a Deducing <code class="docutils literal notranslate"><span class="pre">this</span></code>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../spaceship/topic.html">The Spaceship Operator <code class="docutils literal notranslate"><span class="pre">&lt;=&gt;</span></code> (And Comparison In General)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../concepts/index.html">Concepts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ranges/index.html">Ranges And Views</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coroutines/index.html">Coroutines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/topic.html">Modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../drafts/index.html">Drafts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../exercises/index.html">Exercises</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../scenarios/concrete-to-polymorphic/topic.html">From Concrete To Polymorphic (<code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Sensor</span></code>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../scenarios/polymorphism-in-c/topic.html">Polymorphic “Classes” In Good Ol’ C</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-design-patterns/index.html">Design Patterns With C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-livehacking/index.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-code/index.html">C++ Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-exercises/index.html">C++ Exercises</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../misc/index.html">Build Tools, Unit Testing, Design, And More</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../../../index.html" class="nav-link">Training Courses</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../../../index.html" class="nav-link">Complete Slide Material</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../../index.html" class="nav-link">C++ Programming</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">C++ &gt;= 11</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Smart Pointers: <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code>, <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> (And <code class="docutils literal notranslate"><span class="pre">std::weak_ptr</span></code>)</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code></span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                   <section id="std-shared-ptr">
+<h1><code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code><a class="headerlink" href="#std-shared-ptr" title="Link to this heading">#</a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#the-spirit-of-std-shared-ptr" id="id10">The Spirit Of <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code></a></p></li>
+<li><p><a class="reference internal" href="#notes-about-thread-safety" id="id11">Notes About Thread Safety</a></p></li>
+<li><p><a class="reference internal" href="#creating-std-shared-ptr-instances" id="id12">Creating <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> Instances</a></p></li>
+<li><p><a class="reference internal" href="#copying-std-shared-ptr-instances" id="id13">Copying <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> Instances</a></p></li>
+<li><p><a class="reference internal" href="#object-lifetime-garbage-collection" id="id14">Object Lifetime (“Garbage Collection”)</a></p></li>
+<li><p><a class="reference internal" href="#raw-pointer-access-get" id="id15">Raw Pointer Access: <code class="docutils literal notranslate"><span class="pre">.get()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#unreferencing-objects-reset" id="id16">Unreferencing Objects: <code class="docutils literal notranslate"><span class="pre">.reset()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#custom-deleter" id="id17">Custom Deleter</a></p></li>
+<li><p><a class="reference internal" href="#cyclic-references" id="id18">Cyclic References</a></p></li>
+</ul>
+</nav>
+<section id="the-spirit-of-std-shared-ptr">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">The Spirit Of <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code></a><a class="headerlink" href="#the-spirit-of-std-shared-ptr" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<p><strong>Documentation</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/memory/shared_ptr">std::shared_ptr</a></p></li>
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/memory/shared_ptr/make_shared">std::make_shared</a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p><em>Shared</em> ownership: multiple pointer objects reference one object
+that is shared</p></li>
+<li><p>Pointer copy creates one more reference</p>
+<ul>
+<li><p>⟶ Increases <em>reference count</em></p></li>
+</ul>
+</li>
+<li><p>Last remaining reference is responsible for deallocation</p></li>
+</ul>
+</section>
+<section id="notes-about-thread-safety">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Notes About Thread Safety</a><a class="headerlink" href="#notes-about-thread-safety" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../multithreading/atomic-shared-ptr/topic.html"><span class="doc">Atomic Shared Pointer (std::atomic&lt;std::shared_ptr&lt;&gt;)</span></a></p></li>
+<li><p><a class="reference internal" href="../../multithreading/memory-model/topic.html"><span class="doc">The C++ Memory Model</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p><strong>Reference count is thread-safe</strong></p></li>
+<li><p>⟶ Creating new references (i.e. copying pointer
+objects) is a little more expensive than a simple integer increment</p></li>
+<li><p><strong>Pointer object itself is not thread-safe</strong></p></li>
+<li><p>⟶ Concurrent writes lead to <em>undefined behavior</em></p></li>
+<li><p>See
+<a class="reference internal" href="../../multithreading/atomic-shared-ptr/topic.html"><span class="doc">Atomic Shared Pointer (std::atomic&lt;std::shared_ptr&lt;&gt;)</span></a>
+for a “workaround”</p></li>
+</ul>
+</section>
+<section id="creating-std-shared-ptr-instances">
+<span id="cxx11-shared-ptr-create"></span><h2><a class="toc-backref" href="#id12" role="doc-backlink">Creating <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> Instances</a><a class="headerlink" href="#creating-std-shared-ptr-instances" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../unique-ptr/topic.html#cxx11-unique-ptr-create"><span class="std std-ref">Creating std::unique_ptr Instances</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Raw pointer at the basis</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">std::shared_ptr&lt;&gt;</span></code> wrapped around</p></li>
+<li><p>⟶ “Control block” created: <em>reference count</em></p></li>
+<li><p>Reference count initialized to <em>one</em></p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/82135c0992b049d60e466443cd07cdd6/basic_creation.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/basic_creation.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;big-data.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">shared_ptr_suite</span><span class="p">,</span><span class="w"> </span><span class="n">basic_creation</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">BigData</span><span class="o">*</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BigData</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">BigData</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pdata</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">pdata</span><span class="p">.</span><span class="n">use_count</span><span class="p">(),</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w">                   </span><span class="c1">// &lt;-- pdata is the only reference</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<a class="reference internal image-reference" href="../../../../../../../_images/sharedptr.svg"><img alt="../../../../../../../_images/sharedptr.svg" src="../../../../../../../_images/sharedptr.svg" style="width: 396.5px; height: 226.5px;" />
+</a>
+<ul class="simple">
+<li><p>More condensed usage (just like <code class="docutils literal notranslate"><span class="pre">std::unique_ptr&lt;&gt;</span></code>)</p></li>
+<li><p>Convenience function: allocates object of type T, and forward
+arguments to constructor</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/799ac17bac3a4efbebcdd4266e7860da/more_condensed_creation.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/more_condensed_creation.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;big-data.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">shared_ptr_suite</span><span class="p">,</span><span class="w"> </span><span class="n">more_condensed_creation</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">pdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">BigData</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="copying-std-shared-ptr-instances">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Copying <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> Instances</a><a class="headerlink" href="#copying-std-shared-ptr-instances" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Copying</strong> is what shared pointers are there for</p></li>
+<li><p>Each pointer copy adds one reference to the object</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/9ee8770c637fdf13fdc2cdf664270e01/copy.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/copy.cpp</span></code></a></span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;big-data.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">shared_ptr_suite</span><span class="p">,</span><span class="w"> </span><span class="n">copy</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">pdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">BigData</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">copy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdata</span><span class="p">;</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">pdata</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span><span class="w"> </span><span class="n">copy</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w">                </span><span class="c1">// &lt;-- both point to same object</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">pdata</span><span class="p">.</span><span class="n">use_count</span><span class="p">(),</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w">                   </span><span class="c1">// &lt;-- pointed-to object has one more reference</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<a class="reference internal image-reference" href="../../../../../../../_images/sharedptr-copy.svg"><img alt="../../../../../../../_images/sharedptr-copy.svg" src="../../../../../../../_images/sharedptr-copy.svg" style="width: 415.5px; height: 283.0px;" />
+</a>
+</section>
+<section id="object-lifetime-garbage-collection">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">Object Lifetime (“Garbage Collection”)</a><a class="headerlink" href="#object-lifetime-garbage-collection" title="Link to this heading">#</a></h2>
+<p><strong>How long does the pointed-to object live?</strong></p>
+<ul class="simple">
+<li><p>Reference count is used to track shared ownership</p></li>
+<li><p>When reference count drops to zero, the object is <em>not referenced
+anymore</em></p></li>
+<li><p>⟶ deallocated</p></li>
+</ul>
+<p><strong>Examining the reference count</strong></p>
+<ul class="simple">
+<li><p>The zero-transition of the reference count <em>is the only event in the
+object lifecycle that can be counted on</em></p></li>
+<li><p><strong>Everything else is dangerous when the object is shared across
+threads</strong></p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/2f115384ae339fec7fce31cadc4cc550/refcount_if.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/refcount_if.cpp</span></code></a></span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;big-data.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">shared_ptr_suite</span><span class="p">,</span><span class="w"> </span><span class="n">refcount_if</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">pdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">BigData</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">copy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdata</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">pdata</span><span class="p">.</span><span class="n">use_count</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">                        </span><span class="c1">// &lt;-- there be dragons!</span>
+<span class="w">        </span><span class="cm">/*do something*/</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="raw-pointer-access-get">
+<span id="cxx11-shared-ptr-raw-access-get"></span><h2><a class="toc-backref" href="#id15" role="doc-backlink">Raw Pointer Access: <code class="docutils literal notranslate"><span class="pre">.get()</span></code></a><a class="headerlink" href="#raw-pointer-access-get" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../unique-ptr/topic.html#cxx11-unique-ptr-raw-access-get"><span class="std std-ref">Raw Pointer Access: .get()</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Not the plan</p></li>
+<li><p>Sometimes needed though</p></li>
+<li><p>⟶ Careful!</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/c4ea4c4147c15c9085bb4dcfbe443a25/raw_pointer_get.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/raw_pointer_get.cpp</span></code></a></span><a class="headerlink" href="#id5" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;big-data.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">shared_ptr_suite</span><span class="p">,</span><span class="w"> </span><span class="n">raw_pointer_get</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">pdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">BigData</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">BigData</span><span class="o">*</span><span class="w"> </span><span class="n">raw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdata</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">raw</span><span class="o">-&gt;</span><span class="n">at</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">);</span><span class="w">                       </span><span class="c1">// &lt;-- operator-&gt;()</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">((</span><span class="o">*</span><span class="n">raw</span><span class="p">).</span><span class="n">at</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">);</span><span class="w">                     </span><span class="c1">// &lt;-- operator*()</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span><span class="w"> </span><span class="n">pdata</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w">                       </span><span class="c1">// &lt;-- .get() leaves pdata untouched</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="unreferencing-objects-reset">
+<span id="cxx11-shared-ptr-reset"></span><h2><a class="toc-backref" href="#id16" role="doc-backlink">Unreferencing Objects: <code class="docutils literal notranslate"><span class="pre">.reset()</span></code></a><a class="headerlink" href="#unreferencing-objects-reset" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../unique-ptr/topic.html#cxx11-unique-ptr-reset"><span class="std std-ref">Deallocation Before Pointer Destruction: .reset()</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Nulling out pointer object</p></li>
+<li><p>Drop reference on object (decrease reference count)</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/d29f98b619c5a5a130de3bc0f1ab79ef/reset.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/reset.cpp</span></code></a></span><a class="headerlink" href="#id6" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;big-data.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">shared_ptr_suite</span><span class="p">,</span><span class="w"> </span><span class="n">reset</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">pdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">BigData</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">copy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdata</span><span class="p">;</span><span class="w">                                 </span><span class="c1">// &lt;-- create second reference</span>
+
+<span class="w">    </span><span class="n">pdata</span><span class="p">.</span><span class="n">reset</span><span class="p">();</span><span class="w">                                     </span><span class="c1">// &lt;-- drop one reference on original</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">pdata</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">copy</span><span class="p">.</span><span class="n">use_count</span><span class="p">(),</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">copy</span><span class="p">.</span><span class="n">reset</span><span class="p">();</span><span class="w">                                      </span><span class="c1">// &lt;-- drop last reference (deallocated object)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><p>Variant: exchanging pointer-to object with different (or even same)
+object</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/280f57301d0c4718094dc701501fd59f/reset_exchange.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/reset_exchange.cpp</span></code></a></span><a class="headerlink" href="#id7" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;big-data.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">shared_ptr_suite</span><span class="p">,</span><span class="w"> </span><span class="n">reset_exchange</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">pdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">BigData</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">copy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdata</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">BigData</span><span class="o">*</span><span class="w"> </span><span class="n">newdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BigData</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;b&#39;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">pdata</span><span class="p">.</span><span class="n">reset</span><span class="p">(</span><span class="n">newdata</span><span class="p">);</span><span class="w">                              </span><span class="c1">// &lt;-- unref original, ref new</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">pdata</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span><span class="w"> </span><span class="n">newdata</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">copy</span><span class="p">.</span><span class="n">use_count</span><span class="p">(),</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="custom-deleter">
+<span id="cxx11-shared-ptr-custom-deleter"></span><h2><a class="toc-backref" href="#id17" role="doc-backlink">Custom Deleter</a><a class="headerlink" href="#custom-deleter" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../unique-ptr/topic.html#cxx11-unique-ptr-custom-deleter"><span class="std std-ref">Custom Deleter</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Deleter <em>not</em> part of the type - as opposed to <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code></p></li>
+<li><p>⟶ would prevent sharing, obviously</p></li>
+<li><p>Delete stored in control block</p></li>
+<li><p>⟶ Each shared object can have its own deleter</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.get_deleter()</span></code></p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/161b165898557c24f65271aa47fed401/custom_deleter.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/custom_deleter.cpp</span></code></a></span><a class="headerlink" href="#id8" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;big-data.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">shared_ptr_suite</span><span class="p">,</span><span class="w"> </span><span class="n">deleter</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">deleted1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">deleter1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="n">deleted1</span><span class="p">](</span><span class="n">BigData</span><span class="o">*</span><span class="w"> </span><span class="n">obj</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">deleted1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">        </span><span class="k">delete</span><span class="w"> </span><span class="n">obj</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">BigData</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pdata</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">BigData</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">),</span><span class="w"> </span><span class="n">deleter1</span><span class="p">);</span><span class="w"> </span><span class="c1">// &lt;-- ctor parameter</span>
+
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">deleted2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">deleter2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="n">deleted2</span><span class="p">](</span><span class="n">BigData</span><span class="o">*</span><span class="w"> </span><span class="n">obj</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">deleted2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">        </span><span class="k">delete</span><span class="w"> </span><span class="n">obj</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="n">BigData</span><span class="o">*</span><span class="w"> </span><span class="n">newdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BigData</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;b&#39;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">pdata</span><span class="p">.</span><span class="n">reset</span><span class="p">(</span><span class="n">newdata</span><span class="p">,</span><span class="w"> </span><span class="n">deleter2</span><span class="p">);</span><span class="w">                    </span><span class="c1">// &lt;-- unref (and delete) original, ref new</span>
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">deleted1</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">pdata</span><span class="p">.</span><span class="n">reset</span><span class="p">();</span><span class="w">                                     </span><span class="c1">// &lt;-- unref (and delete) new data</span>
+<span class="w">    </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">deleted2</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="cyclic-references">
+<h2><a class="toc-backref" href="#id18" role="doc-backlink">Cyclic References</a><a class="headerlink" href="#cyclic-references" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../weak-ptr/topic.html"><span class="doc">std::weak_ptr</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Cyclic references are <em>not</em> detected</p></li>
+<li><p>⟶ <em>Memory leak</em></p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/82483133dd35cb495d57649515c98849/cyclic.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/cyclic.cpp</span></code></a></span><a class="headerlink" href="#id9" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NonSense</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">set_reference</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">NonSense</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ref</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">_ref</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ref</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span><span class="w"> </span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">NonSense</span><span class="o">&gt;</span><span class="w"> </span><span class="n">_ref</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">NonSense</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cycle</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">NonSense</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cycle</span><span class="o">-&gt;</span><span class="n">set_reference</span><span class="p">(</span><span class="n">cycle</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>valgrind<span class="w"> </span>./c++11-shared-ptr-cyclic
+<span class="go">...</span>
+<span class="go">==888857== HEAP SUMMARY:</span>
+<span class="go">==888857==     in use at exit: 40 bytes in 2 blocks</span>
+<span class="go">==888857==   total heap usage: 3 allocs, 1 frees, 73,768 bytes allocated</span>
+<span class="go">==888857==</span>
+<span class="go">==888857== LEAK SUMMARY:</span>
+<span class="go">==888857==    definitely lost: 16 bytes in 1 blocks</span>
+<span class="go">==888857==    indirectly lost: 24 bytes in 1 blocks</span>
+<span class="go">==888857==      possibly lost: 0 bytes in 0 blocks</span>
+<span class="go">==888857==    still reachable: 0 bytes in 0 blocks</span>
+<span class="go">==888857==         suppressed: 0 bytes in 0 blocks</span>
+<span class="go">...</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+<div class="section ablog__blog_comments">
+   
+</div>
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-spirit-of-std-shared-ptr">The Spirit Of <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notes-about-thread-safety">Notes About Thread Safety</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-std-shared-ptr-instances">Creating <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> Instances</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#copying-std-shared-ptr-instances">Copying <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> Instances</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#object-lifetime-garbage-collection">Object Lifetime (“Garbage Collection”)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#raw-pointer-access-get">Raw Pointer Access: <code class="docutils literal notranslate"><span class="pre">.get()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unreferencing-objects-reset">Unreferencing Objects: <code class="docutils literal notranslate"><span class="pre">.reset()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-deleter">Custom Deleter</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cyclic-references">Cyclic References</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2019-2025 (GPLv3), Jörg Faschingbauer.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../../../../../../_sources/trainings/material/soup/cxx/cxx11/smart-pointers/shared-ptr/topic.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

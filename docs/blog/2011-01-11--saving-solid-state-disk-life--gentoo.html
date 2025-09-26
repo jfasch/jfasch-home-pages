@@ -1,0 +1,833 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Saving Solid State Disk Life (Gentoo) &#8212; Jörg Faschingbauer</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=128c0548" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'blog/2011-01-11--saving-solid-state-disk-life--gentoo';</script>
+    <link rel="canonical" href="https://www.faschingbauer.me/blog/2011-01-11--saving-solid-state-disk-life--gentoo.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" /> 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="index/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+  
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Jörg Faschingbauer - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="Jörg Faschingbauer - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../trainings/index.html">
+    Training Courses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="postlist.html">
+    Blog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../trainings/index.html">
+    Training Courses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="postlist.html">
+    Blog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<div class="ablog-sidebar-item ablog__postcard">
+   
+  <h2>
+     
+    <i class="fa fa-calendar"></i>
+    
+    <span>11 January 2011</span>
+    
+  </h2>
+  <ul>
+    <div class="ablog-sidebar-item ablog__postcard2">
+   
+  <li id="ablog-sidebar-item author ablog__author">
+    <span>
+      
+      <i class="fa-fw fa fa-user"></i>
+      
+    </span>
+     
+    <a href="index/author/jorg-faschingbauer.html">Jörg Faschingbauer</a>
+      
+  </li>
+     
+  <li id="ablog-sidebar-item category ablog__category">
+    <span>
+      
+      <i class="fa-fw fa fa-folder-open"></i>
+      
+    </span>
+     
+    <a href="index/category/linux.html">linux</a>
+      
+  </li>
+    
+</div>
+  </ul>
+</div>
+</div>
+        <div class="sidebar-primary-item">
+<div class="ablog-sidebar-item ablog__recentposts">
+  <h3>
+    <a href="index.html">Recent Posts</a>
+  </h3>
+  <ul>
+     
+    <li>
+      <a href="2025-07-29--Whats-wrong-with-chroot.html">
+        29 July - Yocto On An Unsupported Distribution (What’s Wrong With chroot?)
+      </a>
+    </li>
+    
+    <li>
+      <a href="2022-09-23--cross-raspi.html">
+        23 September - Building A Cross Toolchain For The Raspberry Pi, Using crosstool-ng
+      </a>
+    </li>
+    
+    <li>
+      <a href="2021-09-12--xps13-shim-mok-brick.html">
+        12 September - How to Brick a €1399 Dell XPS 13
+      </a>
+    </li>
+    
+    <li>
+      <a href="2021-08-26--grintovec.html">
+        26 August - Grintovec (via Planšarsko Jezero, Češka Koča)
+      </a>
+    </li>
+    
+    <li>
+      <a href="2020-09-07--traunstein.html">
+        07 September - Traunstein via Zierlersteig
+      </a>
+    </li>
+    
+  </ul>
+</div>
+</div>
+        <div class="sidebar-primary-item">
+<div class="ablog-sidebar-item ablog__categories">
+  <h3>
+    <a href="index/category.html">Categories</a>
+  </h3>
+  <ul>
+     
+    <li>
+      <a href="index/category/embedded.html">embedded (4)</a>
+    </li>
+      
+    <li>
+      <a href="index/category/kernel.html">kernel (1)</a>
+    </li>
+      
+    <li>
+      <a href="index/category/linux.html">linux (8)</a>
+    </li>
+      
+    <li>
+      <a href="index/category/microsoft.html">microsoft (1)</a>
+    </li>
+      
+    <li>
+      <a href="index/category/outdoor.html">outdoor (2)</a>
+    </li>
+      
+    <li>
+      <a href="index/category/raspberry.html">raspberry (1)</a>
+    </li>
+      
+    <li>
+      <a href="index/category/sphinx.html">sphinx (2)</a>
+    </li>
+      
+    <li>
+      <a href="index/category/training.html">training (1)</a>
+    </li>
+     
+  </ul>
+</div>
+</div>
+        <div class="sidebar-primary-item">
+<div class="ablog-sidebar-item ablog__authors">
+  <h3>
+    <a href="index/author.html">Authors</a>
+  </h3>
+  <ul>
+     
+    <li>
+      <a href="index/author/jorg-faschingbauer.html">Jörg Faschingbauer (14)</a>
+    </li>
+     
+  </ul>
+</div>
+</div>
+        <div class="sidebar-primary-item">
+<div class="ablog-sidebar-item ablog__archives">
+  <h3>
+    <a href="index/archive.html">Archives</a>
+  </h3>
+  <ul>
+     
+    <li>
+      <a href="index/2025.html">2025 (1)</a>
+    </li>
+      
+    <li>
+      <a href="index/2022.html">2022 (1)</a>
+    </li>
+      
+    <li>
+      <a href="index/2021.html">2021 (2)</a>
+    </li>
+      
+    <li>
+      <a href="index/2020.html">2020 (6)</a>
+    </li>
+      
+    <li>
+      <a href="index/2012.html">2012 (1)</a>
+    </li>
+      
+    <li>
+      <a href="index/2011.html">2011 (2)</a>
+    </li>
+      
+    <li>
+      <a href="index/2010.html">2010 (1)</a>
+    </li>
+     
+  </ul>
+</div>
+</div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Saving Solid State Disk Life (Gentoo)</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                   <section id="saving-solid-state-disk-life-gentoo">
+<h1>Saving Solid State Disk Life (Gentoo)<a class="headerlink" href="#saving-solid-state-disk-life-gentoo" title="Link to this heading">#</a></h1>
+<aside class="sidebar">
+<p class="sidebar-title">Contents</p>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#rant" id="id1">Rant</a></p></li>
+<li><p><a class="reference internal" href="#no-swap" id="id2">No Swap</a></p></li>
+<li><p><a class="reference internal" href="#tmpfs-instances-here-and-there" id="id3"><code class="docutils literal notranslate"><span class="pre">tmpfs</span></code> instances here and there</a></p></li>
+<li><p><a class="reference internal" href="#syslog-var-log-messages" id="id4">Syslog, <code class="docutils literal notranslate"><span class="pre">/var/log/messages</span></code></a></p></li>
+<li><p><a class="reference internal" href="#kernel-i-o-scheduler" id="id5">Kernel I/O Scheduler</a></p></li>
+<li><p><a class="reference internal" href="#use-ram-for-the-kernel-build" id="id6">Use RAM for the Kernel Build</a></p></li>
+<li><p><a class="reference internal" href="#things-that-are-left" id="id7">Things that are left</a></p></li>
+</ul>
+</nav>
+</aside>
+<section id="rant">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Rant</a><a class="headerlink" href="#rant" title="Link to this heading">#</a></h2>
+<p>Today’s mechanical disks are optimized for writing one Excel sheet a
+day it seems. Holding the browser cache significantly decreases
+lifetime of a disk. Developing source code and compiling entire trees
+multiple times a day, plus updating a Gentoo install once a week is a
+recipe to kill a disk.</p>
+<p>So I killed three (<em>three</em>) mechanical disks last year.</p>
+<p>I pretty much depend on these disks as I don’t like moving back and
+forth between the number one and the spare laptop three times in a
+row. (I’m self employed, and the volume of such undertakings is
+<em>indirectly</em> proportional to the flow of money into my pocket.)</p>
+<p>Which is why I decided to purchase a solid state disk. My choice was a
+Corsair Force Series 120. It has pretty good reviews on the Internet,
+especially for having received a firmware overhaul that reserves less
+space for the wear leveling management, thus leaving more of the space
+to the user.</p>
+<p>I should have known better. Fresh firmware is not cool; it has never
+been. During the Gentoo install (no, I compile to RAM now, and <em>not</em>
+to disk) there is a point where I reboot to switch away from the
+Ubuntu LiveCD boot, into the fresh Gentoo system. That was the time
+where the SSD has vanished - it was gone! No mention of it, nowhere.</p>
+<p>Support request on the Corsair website, sent disk to their returns
+department in the Netherlands. After a few days received an email
+saying it would last unusually long as they had to cope with an
+unusual volume of returns. Looks like I am not alone. I bet they
+themselves write those SSD reviews you find on the Internet.</p>
+<p>Anyway - after two more weeks of aggressive spare laptop harddisk
+treatment I am now the proud owner of a 120G SSD with even fresher
+firmware, and have set it up to a point where I can work with it. I
+describe below what I did to extend its life, and what’s still to be
+done. If you have recipes that target the same, please let me know.</p>
+</section>
+<section id="no-swap">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">No Swap</a><a class="headerlink" href="#no-swap" title="Link to this heading">#</a></h2>
+<p>I have plenty of RAM (4G), and I run Linux, so there shouldn’t be any
+need to swap. Unfortunately hibernating does not work without swap
+(the kernel uses swap to write the state into). I configured one
+partition for the purpose of hibernating, which I don’t configure in
+<code class="docutils literal notranslate"><span class="pre">/etc/fstab</span></code>.</p>
+<p>I usually suspend to RAM when at home, and when I move to the living
+room or board a train to Germany then I hibernate like so,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>sync<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>swapon<span class="w"> </span>/dev/sda1<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span>disk<span class="w"> </span>&gt;<span class="w"> </span>/sys/power/state<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>swapoff<span class="w"> </span>/dev/sda1
+</pre></div>
+</div>
+</section>
+<section id="tmpfs-instances-here-and-there">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">tmpfs</span></code> instances here and there</a><a class="headerlink" href="#tmpfs-instances-here-and-there" title="Link to this heading">#</a></h2>
+<p>The overall rule is, “You can read from a SSD as often as you want,
+but don’t write to it.”. With this in mind, I immediately identify two
+places where I write continuously, and which can be mitigated easily.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">/tmp</span></code> is used by programs to hold small amounts of temporary data
+which is perfect for a <code class="docutils literal notranslate"><span class="pre">tmpfs</span></code> instance.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/var/tmp/portage</span></code> is used by portage (Gentoo’s package installer)
+to compile the packages before installation. I have plenty of RAM
+(4G), so why not use that for compilation. See below for an
+openoffice rant.</p></li>
+</ul>
+<p>All that needs to be done is add two entries to <code class="docutils literal notranslate"><span class="pre">/etc/fstab</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">portage-tmpfs /var/tmp/portage tmpfs rw 0 0</span>
+<span class="go">tmp-tmpfs     /tmp             tmpfs rw 0 0</span>
+</pre></div>
+</div>
+<p>You might want to set <code class="docutils literal notranslate"><span class="pre">TMPDIR=/tmp</span></code> explicitly, to have GCC write
+its temporary files there instead of in its current working
+directory. Create a dedicated file in <code class="docutils literal notranslate"><span class="pre">/etc/env.d</span></code>, and call
+<code class="docutils literal notranslate"><span class="pre">env-update</span></code>.</p>
+<p>I could limit the space on these by writing <code class="docutils literal notranslate"><span class="pre">rw,size=500m</span></code> for
+example. Anyway, <code class="docutils literal notranslate"><span class="pre">tmpfs</span></code> limits its size to be half the memory as a
+default, so in my case this is 2G in each instance.</p>
+<p>I hit the limit on the <code class="docutils literal notranslate"><span class="pre">/var/tmp/portage</span></code> instance really soon, when
+I tried to install openoffice. That piece of crap requires 6G of disk
+space for compilation! Ok, I take it I have to make an exception which
+reads like so,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span><span class="c1"># (plug my USB throwaway 1TB disk)</span>
+<span class="gp"># </span>mount<span class="w"> </span>/dev/sdc1<span class="w"> </span>/mnt/disk
+<span class="gp"># </span>mkdir<span class="w"> </span>/mnt/disk/tmp-portage
+<span class="gp"># </span>mount<span class="w"> </span>--bind<span class="w"> </span>/mnt/disk/tmp-portage<span class="w"> </span>/var/tmp/portage
+<span class="gp"># </span>emerge<span class="w"> </span>openoffice
+<span class="gp"># </span><span class="c1"># (wait a day or two)</span>
+<span class="gp"># </span>rm<span class="w"> </span>-rf<span class="w"> </span>/mnt/disk/tmp-portage
+<span class="gp"># </span>umount<span class="w"> </span>/var/tmp/portage
+<span class="gp"># </span>umount<span class="w"> </span>/mnt/disk
+</pre></div>
+</div>
+</section>
+<section id="syslog-var-log-messages">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Syslog, <code class="docutils literal notranslate"><span class="pre">/var/log/messages</span></code></a><a class="headerlink" href="#syslog-var-log-messages" title="Link to this heading">#</a></h2>
+<p>I like to watch <code class="docutils literal notranslate"><span class="pre">/var/log/messages</span></code>, and in fact I have <code class="docutils literal notranslate"><span class="pre">tail</span> <span class="pre">-f</span>
+<span class="pre">/var/log/messages</span></code> runnung in a dedicated terminal. I usually have no
+interest in keeping the logfile; the last time the kernel crashed was
+when I had put an offending debug message into <code class="docutils literal notranslate"><span class="pre">i2c-dev.c</span></code> to trap a
+userspace error I had made. And that was on the Beagleboard.</p>
+<p>So, <code class="docutils literal notranslate"><span class="pre">/var/log/messages</span></code> is another candidate for <code class="docutils literal notranslate"><span class="pre">tmpfs</span></code>. Complications:</p>
+<ul class="simple">
+<li><p>Restrict the file in size, which is best done by <code class="docutils literal notranslate"><span class="pre">logrotate</span></code>.</p></li>
+<li><p>Cannot use <code class="docutils literal notranslate"><span class="pre">/var/log</span></code> as mountpoint for the <code class="docutils literal notranslate"><span class="pre">tmpfs</span></code>, as there’s
+more in that directory.</p></li>
+</ul>
+<section id="mountpoint-for-messages">
+<h3>Mountpoint for messages<a class="headerlink" href="#mountpoint-for-messages" title="Link to this heading">#</a></h3>
+<p>I create a dedicated directory as a mountpoint, moving the
+<code class="docutils literal notranslate"><span class="pre">messages</span></code> one level deeper,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>rm<span class="w"> </span>/var/log/messages
+<span class="gp"># </span>mkdir<span class="w"> </span>/var/log/messages
+</pre></div>
+</div>
+<p>Mount a <code class="docutils literal notranslate"><span class="pre">tmpfs</span></code> there, using <code class="docutils literal notranslate"><span class="pre">/etc/fstab</span></code>,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">messages-tmp  /var/log/messages tmpfs rw 0 0</span>
+</pre></div>
+</div>
+<p>At this point you use <code class="docutils literal notranslate"><span class="pre">mount</span> <span class="pre">-a</span></code> to immediately create the
+mount. Next, tell <code class="docutils literal notranslate"><span class="pre">syslog-ng</span></code> about it. In
+<code class="docutils literal notranslate"><span class="pre">/etc/syslog-ng/syslog-ng.conf</span></code> write,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>...
+<span class="go">destination messages { file(&quot;/var/log/messages/messages&quot;); };</span>
+<span class="gp"># </span>...
+</pre></div>
+</div>
+</section>
+<section id="logrotate">
+<h3>Logrotate<a class="headerlink" href="#logrotate" title="Link to this heading">#</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>emerge<span class="w"> </span>app-admin/logrotate
+</pre></div>
+</div>
+<p>Make sure <code class="docutils literal notranslate"><span class="pre">cron</span></code> is running (<code class="docutils literal notranslate"><span class="pre">rc-status|grep</span> <span class="pre">cron</span></code>, he runs <code class="docutils literal notranslate"><span class="pre">logrotate</span></code>). <code class="docutils literal notranslate"><span class="pre">syslog-ng</span></code> already comes with a <code class="docutils literal notranslate"><span class="pre">logrotate</span></code> configuration file, <code class="docutils literal notranslate"><span class="pre">/etc/logrotate.d/syslog-ng</span></code>. Tune this to our needs (rotate the file when its size exceeds 20M, keeping one compressed copy).</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">/var/log/messages/messages {</span>
+<span class="go">     compress</span>
+<span class="go">     compresscmd /bin/bzip2</span>
+<span class="go">     compressoptions -9</span>
+<span class="go">     compressext .bz2</span>
+<span class="go">     size 20M</span>
+<span class="go">     rotate 1</span>
+<span class="go">     missingok</span>
+<span class="go">     sharedscripts</span>
+<span class="go">     postrotate</span>
+<span class="go">         /etc/init.d/syslog-ng reload &gt; /dev/null 2&gt;&amp;1 || true</span>
+<span class="go">     endscript</span>
+<span class="go">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="kernel-i-o-scheduler">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Kernel I/O Scheduler</a><a class="headerlink" href="#kernel-i-o-scheduler" title="Link to this heading">#</a></h2>
+<p>The kernel uses an algorithm called an I/O scheduler to optimize disk access. It does this by collecting read and write requests at adjacent disk locations. This is not necessary with SSDs as there are no disks and no heads. I switch off the scheduler for <code class="docutils literal notranslate"><span class="pre">sda</span></code> (which is the SSD), and keep the default scheduler (<code class="docutils literal notranslate"><span class="pre">cfq</span></code>) for USB disks I use to plug on occasion (for example if there’s an openoffice update).&lt;/p&gt;&lt;p&gt;In <code class="docutils literal notranslate"><span class="pre">/etc/conf.d/local.start</span></code> I write,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span><span class="nb">echo</span><span class="w"> </span>noop<span class="w"> </span>&gt;<span class="w"> </span>/sys/block/sda/queue/scheduler
+</pre></div>
+</div>
+</section>
+<section id="use-ram-for-the-kernel-build">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Use RAM for the Kernel Build</a><a class="headerlink" href="#use-ram-for-the-kernel-build" title="Link to this heading">#</a></h2>
+<p>I am a big believer in out-of-source builds. The kernel build system
+is also capable of it, and I use to build the kernel in <code class="docutils literal notranslate"><span class="pre">/tmp</span></code> like
+so.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>mkdir<span class="w"> </span>/tmp/kernel-build
+<span class="gp"># </span>cp<span class="w"> </span>/boot/linux-2.6.36-gentoo-r5/.config<span class="w"> </span>/tmp/kernel-build
+<span class="gp"># </span>make<span class="w"> </span>-C<span class="w"> </span>/usr/src/linux<span class="w"> </span><span class="nv">O</span><span class="o">=</span>/tmp/kernel-build<span class="w"> </span>oldconfig
+<span class="gp"># </span>make<span class="w"> </span>-C<span class="w"> </span>/usr/src/linux<span class="w"> </span><span class="nv">O</span><span class="o">=</span>/tmp/kernel-build<span class="w"> </span>menuconfig
+<span class="gp"># </span>make<span class="w"> </span>-C<span class="w"> </span>/usr/src/linux<span class="w"> </span><span class="nv">O</span><span class="o">=</span>/tmp/kernel-build<span class="w"> </span>all
+<span class="gp"># </span>...
+</pre></div>
+</div>
+<p>Don’t forget to save away the <code class="docutils literal notranslate"><span class="pre">.config</span></code> file, as it will be gone
+after a reboot. I use to store it along with the kernel image in
+<code class="docutils literal notranslate"><span class="pre">/boot/linux-2.6.36-gentoo-r5</span></code>.</p>
+</section>
+<section id="things-that-are-left">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Things that are left</a><a class="headerlink" href="#things-that-are-left" title="Link to this heading">#</a></h2>
+<p>There are a couple of things that still need work.</p>
+<ul class="simple">
+<li><p>Xorg appears to have a hardcoded log location; I didn’t find a
+config option to have it write its <code class="docutils literal notranslate"><span class="pre">Xorg.0.log</span></code> in a directory
+other than <code class="docutils literal notranslate"><span class="pre">/var/log</span></code>.</p></li>
+<li><p>There appears to be bug in portage; it does not respect the
+<code class="docutils literal notranslate"><span class="pre">EMERGE_LOG_DIR</span></code> variable. Otherwise, I could redirect the files
+<code class="docutils literal notranslate"><span class="pre">emerge.log</span></code> and <code class="docutils literal notranslate"><span class="pre">emerge-fetch.log</span></code> out of <code class="docutils literal notranslate"><span class="pre">/var/log</span></code>, just
+like I do with <code class="docutils literal notranslate"><span class="pre">/var/log/messages</span></code>.</p></li>
+<li><p>The fact remains that I build my own projects on disk. I have to
+solve that somehow; I am thinking of using <code class="docutils literal notranslate"><span class="pre">aufs</span></code> or
+<code class="docutils literal notranslate"><span class="pre">unionfs-fuse</span></code> to partly persist those. Some scripting around it
+maybe, to persist those parts of the build which are currently in
+ram. But this is another story, maybe I’ll write about it when I
+know what I want.</p></li>
+</ul>
+</section>
+</section>
+
+<div class="section ablog__blog_comments">
+     
+<div class="section ablog__prev-next">
+  <span class="ablog__prev">
+     
+    <a href="2011-01-07--porting-to-linux-there-s-always-a-better-way.html">
+      
+      <i class="fa fa-arrow-circle-left"></i>
+      
+      <span>Porting to Linux (There’s Always A Better Way)</span>
+    </a>
+    
+  </span>
+  <span class="ablog__spacer">&nbsp;</span>
+  <span class="ablog__next">
+     
+    <a href="2012-04-03--Why-ps-sucks.html">
+      <span>“Why ps Sucks” or “Counting Memory Consumption”</span>
+      
+      <i class="fa fa-arrow-circle-right"></i>
+      
+    </a>
+    
+  </span>
+</div>
+  
+</div>
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rant">Rant</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#no-swap">No Swap</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tmpfs-instances-here-and-there"><code class="docutils literal notranslate"><span class="pre">tmpfs</span></code> instances here and there</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#syslog-var-log-messages">Syslog, <code class="docutils literal notranslate"><span class="pre">/var/log/messages</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mountpoint-for-messages">Mountpoint for messages</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#logrotate">Logrotate</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kernel-i-o-scheduler">Kernel I/O Scheduler</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-ram-for-the-kernel-build">Use RAM for the Kernel Build</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#things-that-are-left">Things that are left</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2019-2025 (GPLv3), Jörg Faschingbauer.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/blog/2011-01-11--saving-solid-state-disk-life--gentoo.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

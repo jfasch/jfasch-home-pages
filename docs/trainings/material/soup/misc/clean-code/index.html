@@ -1,0 +1,585 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Is Software A Craft? Software Is A Craft! ⟶ Clean Code &#8212; Jörg Faschingbauer</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css?v=128c0548" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'trainings/material/soup/misc/clean-code/index';</script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/misc/clean-code/index.html" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="A Typical Project (Livehacking Screenplay: My Own Bookkeeping Effort)" href="intro-python/livehacking.html" />
+    <link rel="prev" title="Optional Code, Approach 2: Pushing Optionality Down In Module Interface" href="../cmake/advanced/conditional-code-approach-2/topic.html" /> 
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" /> 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../blog/index/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+  
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../../../../_static/logo.png" class="logo__image only-light" alt="Jörg Faschingbauer - Home"/>
+    <img src="../../../../../_static/logo.png" class="logo__image only-dark pst-js-only" alt="Jörg Faschingbauer - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../index.html">
+    Training Courses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../blog/postlist.html">
+    Blog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../index.html">
+    Training Courses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../blog/postlist.html">
+    Blog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../repertoire/index.html">Course Descriptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../info.html">Pricing, Organizational</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../log/index.html">Log Of Past Courses</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../index.html">Complete Slide Material</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../linux/index.html">Linux: Introduction, Userland/Kernel Programming, Hardware/Embedded</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../python/index.html">Python Programming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../c/index.html">C Programming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cxx/index.html">C++ Programming</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../index.html">Build Tools, Unit Testing, Design, And More</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../cmake/index.html">CMake</a></li>
+<li class="toctree-l3 current active has-children"><a class="current reference internal" href="#">Is Software A Craft? Software Is A Craft! ⟶ <em>Clean Code</em></a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="intro-python/livehacking.html">A Typical Project (Livehacking Screenplay: My Own Bookkeeping Effort)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="craft-sw.html">What’s There? What Have We Accomplished?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="book-messages.html">Messages From The Book</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../unittest/index.html">Unit Testing With <code class="docutils literal notranslate"><span class="pre">googletest</span></code></a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../index.html" class="nav-link">Training Courses</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Complete Slide Material</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Build Tools, Unit Testing, Design, And More</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Is Software A Craft? Software Is A Craft! ⟶ <em>Clean Code</em></span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                   <section id="is-software-a-craft-software-is-a-craft-longrightarrow-clean-code">
+<h1>Is Software A Craft? Software Is A Craft! ⟶ <em>Clean Code</em><a class="headerlink" href="#is-software-a-craft-software-is-a-craft-longrightarrow-clean-code" title="Link to this heading">#</a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#course-material" id="id1">Course Material</a></p></li>
+<li><p><a class="reference internal" href="#todo" id="id2">Todo</a></p></li>
+<li><p><a class="reference internal" href="#uncle-bob" id="id3">Uncle Bob</a></p></li>
+</ul>
+</nav>
+<div class="pst-scrollable-table-container"><table class="table table-left">
+<tbody>
+<tr class="row-odd"><td><a class="reference internal image-reference" href="../../../../../_images/clean-code.jpg"><img alt="../../../../../_images/clean-code.jpg" src="../../../../../_images/clean-code.jpg" style="height: 300px;" />
+</a>
+</td>
+<td><a class="reference internal image-reference" href="../../../../../_images/tdd.jpg"><img alt="../../../../../_images/tdd.jpg" src="../../../../../_images/tdd.jpg" style="height: 300px;" />
+</a>
+</td>
+<td><a class="reference internal image-reference" href="../../../../../_images/design_patterns.webp"><img alt="../../../../../_images/design_patterns.webp" src="../../../../../_images/design_patterns.webp" style="height: 300px;" />
+</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="course-material">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Course Material</a><a class="headerlink" href="#course-material" title="Link to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="intro-python/livehacking.html">A Typical Project (Livehacking Screenplay: My Own Bookkeeping Effort)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro-python/livehacking.html#spaghetti-version">Spaghetti Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-python/livehacking.html#a-little-better-functions-and-commandline-parameters">A Little Better: Functions (And Commandline Parameters)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-python/livehacking.html#feature-request-concatenate-input-data-from-multiple-csv-files">Feature Request: Concatenate Input Data From Multiple CSV Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-python/livehacking.html#feature-request-concatenate-input-data-from-yyyy-mm-csv-files">Feature Request: Concatenate Input Data From <code class="docutils literal notranslate"><span class="pre">YYYY-MM.csv</span></code> Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-python/livehacking.html#where-are-we-questions">Where Are We? Questions!</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-python/livehacking.html#testability-input-cleaning">Testability: Input Cleaning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-python/livehacking.html#testability-reading-input-one-or-multiple-files-explicitly">Testability: Reading Input (One Or Multiple Files, Explicitly)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-python/livehacking.html#test-sanity-common-code">Test Sanity: Common Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-python/livehacking.html#testability-reading-input-from-directory">Testability: Reading Input From Directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-python/livehacking.html#testability-categorization">Testability: Categorization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-python/livehacking.html#safety-net-in-place-longrightarrow-refactoring-categorization">Safety Net In Place ⟶ Refactoring Categorization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-python/livehacking.html#refactoring-input-reading-longrightarrow-overengineering">Refactoring Input Reading (⟶ Overengineering)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="craft-sw.html">What’s There? What Have We Accomplished?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="craft-sw.html#rules-why-rules">Rules? Why Rules?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="craft-sw.html#object-oriented-programming">Object Oriented Programming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="craft-sw.html#coding-style">Coding Style</a></li>
+<li class="toctree-l2"><a class="reference internal" href="craft-sw.html#design-principles-solid">Design Principles: SOLID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="craft-sw.html#another-one-yagni">Another One: YAGNI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="craft-sw.html#architecture">Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="craft-sw.html#project-management-traditional">Project Management: Traditional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="craft-sw.html#project-management-software">Project Management: Software</a></li>
+<li class="toctree-l2"><a class="reference internal" href="craft-sw.html#so-what">So What?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="book-messages.html">Messages From The Book</a></li>
+</ul>
+</div>
+</section>
+<section id="todo">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Todo</a><a class="headerlink" href="#todo" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="intro-python/livehacking.html"><span class="doc">A Typical Project (Livehacking Screenplay: My Own Bookkeeping Effort)</span></a> absorb from 2023-03-13</p></li>
+<li><p><a class="reference internal" href="book-messages.html"><span class="doc">Messages From The Book</span></a> absorb from fraunhofer, based on bookkeeping</p></li>
+<li><p>Move Uncle Bob Videos (below) to where they belong</p></li>
+</ul>
+</section>
+<section id="uncle-bob">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Uncle Bob</a><a class="headerlink" href="#uncle-bob" title="Link to this heading">#</a></h2>
+<p>Condensed version of the following talk series by Bob Martin which
+takes two days to watch:</p>
+<ul>
+<li><p><a class="reference external" href="https://youtu.be/7EmboKQH8lM">Clean Code - Uncle Bob / Lesson 1</a></p>
+<iframe width="560" height="315"
+        src="https://www.youtube.com/embed/7EmboKQH8lM"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+</iframe></li>
+<li><p><a class="reference external" href="https://youtu.be/2a_ytyt9sf8">Clean Code - Uncle Bob / Lesson 2</a></p>
+<iframe width="560" height="315"
+        src="https://www.youtube.com/embed/2a_ytyt9sf8"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+</iframe></li>
+<li><p><a class="reference external" href="https://youtu.be/Qjywrq2gM8o">Clean Code - Uncle Bob / Lesson 3</a></p>
+<iframe width="560" height="315"
+        src="https://www.youtube.com/embed/Qjywrq2gM8o"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+</iframe></li>
+<li><p><a class="reference external" href="https://youtu.be/58jGpV2Cg50">Clean Code - Uncle Bob / Lesson 4</a></p>
+<iframe width="560" height="315"
+        src="https://www.youtube.com/embed/58jGpV2Cg50"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+</iframe></li>
+<li><p><a class="reference external" href="https://youtu.be/sn0aFEMVTpA">Clean Code - Uncle Bob / Lesson 5</a></p>
+<iframe width="560" height="315"
+        src="https://www.youtube.com/embed/sn0aFEMVTpA"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+</iframe></li>
+<li><p><a class="reference external" href="https://youtu.be/oar-T2KovwE">Solid Principles by Uncle Bob Martin</a></p>
+<iframe width="560" height="315"
+        src="https://www.youtube.com/embed/oar-T2KovwE"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+</iframe></li>
+</ul>
+</section>
+</section>
+
+<div class="section ablog__blog_comments">
+   
+</div>
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#course-material">Course Material</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#todo">Todo</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#uncle-bob">Uncle Bob</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2019-2025 (GPLv3), Jörg Faschingbauer.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../../../../_sources/trainings/material/soup/misc/clean-code/index.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

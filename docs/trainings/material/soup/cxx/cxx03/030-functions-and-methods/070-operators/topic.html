@@ -1,0 +1,936 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Operator Overloading &#8212; Jörg Faschingbauer</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/css/custom.css?v=128c0548" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'trainings/material/soup/cxx/cxx03/030-functions-and-methods/070-operators/topic';</script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx/cxx03/030-functions-and-methods/070-operators/topic.html" />
+    <link rel="index" title="Index" href="../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../search.html" />
+    <link rel="next" title="Exercise (FH): class point" href="../exercises-fh/class-point.html" />
+    <link rel="prev" title="static Member Variables" href="../065-static-member-variables/topic.html" /> 
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" /> 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../../blog/index/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+  
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../../../../../../_static/logo.png" class="logo__image only-light" alt="Jörg Faschingbauer - Home"/>
+    <img src="../../../../../../../_static/logo.png" class="logo__image only-dark pst-js-only" alt="Jörg Faschingbauer - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../../../index.html">
+    Training Courses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../blog/postlist.html">
+    Blog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../../../index.html">
+    Training Courses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../blog/postlist.html">
+    Blog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../repertoire/index.html">Course Descriptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../info.html">Pricing, Organizational</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../log/index.html">Log Of Past Courses</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../../index.html">Complete Slide Material</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../../linux/index.html">Linux: Introduction, Userland/Kernel Programming, Hardware/Embedded</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../python/index.html">Python Programming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../c/index.html">C Programming</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../../../index.html">C++ Programming</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="../../index.html">C++ &lt; 11</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../001-introduction/topic.html">Introduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../020-data-encapsulation/index.html">Data Encapsulation</a></li>
+<li class="toctree-l4 current active"><a class="reference internal" href="../index.html">Functions and Methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../040-exceptions/index.html">Exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../050-templates/index.html">C++ Template Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../060-stl/index.html">Standard Template Library</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../070-dynamic-memory/index.html">Dynamic Memory Allocation, Resource Management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../inheritance-oo-design/index.html">Inheritance And Object Oriented Design</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../900-standard-library-miscellanea/index.html">The Standard Library: Miscellaneous Topics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../exercises-userdb/index.html">Exercises: User Database</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../exercises-misc/index.html">Exercises: Miscellaneous</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx11/index.html">C++ &gt;= 11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-design-patterns/index.html">Design Patterns With C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-livehacking/index.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-code/index.html">C++ Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-exercises/index.html">C++ Exercises</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../misc/index.html">Build Tools, Unit Testing, Design, And More</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../../../index.html" class="nav-link">Training Courses</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../../../index.html" class="nav-link">Complete Slide Material</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../../index.html" class="nav-link">C++ Programming</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">C++ &lt; 11</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Functions and Methods</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Operator Overloading</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                   <section id="operator-overloading">
+<h1>Operator Overloading<a class="headerlink" href="#operator-overloading" title="Link to this heading">#</a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#motivation" id="id8">Motivation</a></p></li>
+<li><p><a class="reference internal" href="#implementing-in-equality" id="id9">Implementing (In)Equality</a></p></li>
+<li><p><a class="reference internal" href="#implementing-in-equality-global-function" id="id10">Implementing (In)Equality: Global Function</a></p></li>
+<li><p><a class="reference internal" href="#implementing-in-equality-object-method" id="id11">Implementing (In)Equality: Object Method</a></p></li>
+<li><p><a class="reference internal" href="#implementing-arithmetic-vector-addition" id="id12">Implementing Arithmetic: <code class="docutils literal notranslate"><span class="pre">+</span></code> (Vector Addition)</a></p></li>
+<li><p><a class="reference internal" href="#implementing-arithmetic-vector-addition-global-function" id="id13">Implementing Arithmetic: <code class="docutils literal notranslate"><span class="pre">+</span></code> (Vector Addition): Global Function</a></p></li>
+<li><p><a class="reference internal" href="#implementing-arithmetic-vector-addition-object-method" id="id14">Implementing Arithmetic: <code class="docutils literal notranslate"><span class="pre">+</span></code> (Vector Addition): Object Method</a></p></li>
+<li><p><a class="reference internal" href="#implementing-arithmetic-moving-a-point" id="id15">Implementing Arithmetic: <code class="docutils literal notranslate"><span class="pre">+=</span></code> (Moving A Point)</a></p></li>
+<li><p><a class="reference internal" href="#implementing-ostream-shift-std-cout" id="id16">Implementing <code class="docutils literal notranslate"><span class="pre">ostream</span></code> Shift: <code class="docutils literal notranslate"><span class="pre">std::cout</span> <span class="pre">&lt;&lt;</span> <span class="pre">...</span></code></a></p></li>
+</ul>
+</nav>
+<section id="motivation">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Motivation</a><a class="headerlink" href="#motivation" title="Link to this heading">#</a></h2>
+<p>Returning back to the venerable <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">point</span></code>,</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">point</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">point</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">_x</span><span class="p">{</span><span class="n">x</span><span class="p">},</span><span class="w"> </span><span class="n">_y</span><span class="p">{</span><span class="n">y</span><span class="p">}</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_x</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_y</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">move</span><span class="p">(</span><span class="n">point</span><span class="w"> </span><span class="n">vec</span><span class="p">);</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">_x</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">_y</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p><strong>Equality of two points?</strong> I don’t want to have another function (or
+<a class="reference internal" href="../060-static/topic.html"><span class="doc">static method</span></a>) like,</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">points_equal</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="w"> </span><span class="n">p2</span><span class="p">))</span>
+<span class="w">    </span><span class="p">...</span>
+</pre></div>
+</div>
+<p><strong>Enter operators</strong></p>
+<p>I want to write something like</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">p1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">p2</span><span class="p">)</span>
+<span class="w">    </span><span class="p">...</span>
+</pre></div>
+</div>
+<p><strong>What else?</strong></p>
+<ul>
+<li><p><em>Arithmetic operators</em>: 2D space os full of arithmetic, so why not
+write for example …</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">point</span><span class="w"> </span><span class="n">vec</span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">}</span>
+<span class="n">p</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">vec</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+<li><p><em>Stream operators</em>: this is rather clumsy,</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;(&#39;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;,&#39;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;)&#39;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>I want to shift a point out,</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="implementing-in-equality">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Implementing (In)Equality</a><a class="headerlink" href="#implementing-in-equality" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Operators are ordinary functions</p></li>
+<li><p>Only named a bit oddly: <code class="docutils literal notranslate"><span class="pre">operator==()</span></code></p></li>
+<li><p>Most operators can be defined in two way</p>
+<ul>
+<li><p>As global function (equality would then take two <code class="docutils literal notranslate"><span class="pre">point</span></code>
+parameters)</p></li>
+<li><p>As object method: “hey left point, are you equal to this other
+point?”</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="implementing-in-equality-global-function">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Implementing (In)Equality: Global Function</a><a class="headerlink" href="#implementing-in-equality-global-function" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<p><strong>See also</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../010-overloading/topic.html"><span class="doc">Overloading</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Global function: a third party authority (global function, not
+belonging to a class) examines two points for equality</p>
+<ul>
+<li><p>Makes use of <a class="reference internal" href="../010-overloading/topic.html"><span class="doc">overloading</span></a>: there
+might be other <code class="docutils literal notranslate"><span class="pre">==</span></code> operators defined for different types</p></li>
+<li><p><em>No access to private members of operands</em> (could use the
+<code class="docutils literal notranslate"><span class="pre">friend</span></code> keyword though)</p></li>
+</ul>
+</li>
+<li><p>Makes sense to define equality <em>and</em> inequality together</p></li>
+<li><p>⟶ one can be implemented in terms of the other</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/d934c53e13c5a11c495c5d7896a3bdca/eq-global.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/eq-global.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">point</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">point</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">_x</span><span class="p">{</span><span class="n">x</span><span class="p">},</span><span class="w"> </span><span class="n">_y</span><span class="p">{</span><span class="n">y</span><span class="p">}</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_x</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_y</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">_x</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">_y</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kr">inline</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">==</span><span class="p">(</span><span class="n">point</span><span class="w"> </span><span class="n">lhs</span><span class="p">,</span><span class="w"> </span><span class="n">point</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="c1">// &lt;--- global function (not inside class definition) (&quot;static inline&quot; is another story)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span>
+<span class="w">        </span><span class="n">lhs</span><span class="p">.</span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w">                       </span><span class="c1">// &lt;--- using public access methods</span>
+<span class="w">        </span><span class="n">lhs</span><span class="p">.</span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">y</span><span class="p">();</span><span class="w">                         </span><span class="c1">// &lt;--- using public access methods</span>
+<span class="p">}</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kr">inline</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">!=</span><span class="p">(</span><span class="n">point</span><span class="w"> </span><span class="n">lhs</span><span class="p">,</span><span class="w"> </span><span class="n">point</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="c1">// &lt;--- global function (not inside class definition) (&quot;static inline&quot; is another story)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">!</span><span class="k">operator</span><span class="o">==</span><span class="p">(</span><span class="n">lhs</span><span class="p">,</span><span class="w"> </span><span class="n">rhs</span><span class="p">);</span><span class="w">                   </span><span class="c1">// &lt;--- defined in terms of &quot;==&quot;</span>
+<span class="p">}</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">operators_suite</span><span class="p">,</span><span class="w"> </span><span class="n">equals_global</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">p1</span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">};</span>
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">p2</span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">};</span>
+
+<span class="w">    </span><span class="n">ASSERT_NE</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="w"> </span><span class="n">p2</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="w"> </span><span class="n">p1</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// operators are ordinary functions:</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="k">operator</span><span class="o">==</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="w"> </span><span class="n">p2</span><span class="p">),</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="k">operator</span><span class="o">!=</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="w"> </span><span class="n">p2</span><span class="p">),</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="implementing-in-equality-object-method">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Implementing (In)Equality: Object Method</a><a class="headerlink" href="#implementing-in-equality-object-method" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>As a matter of taste: why not ask a point object if it is equal to
+another point object</p></li>
+<li><p>Preferred by most: does not have the difficulties from above</p></li>
+<li><p>Usage no different between both ways</p></li>
+<li><p>Equality check does not normally modify objects ⟶
+<code class="docutils literal notranslate"><span class="pre">const</span></code></p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/b4ad2f90614a81d70e31969939e47c47/eq-object.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/eq-object.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">point</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">point</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">_x</span><span class="p">{</span><span class="n">x</span><span class="p">},</span><span class="w"> </span><span class="n">_y</span><span class="p">{</span><span class="n">y</span><span class="p">}</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_x</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_y</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">==</span><span class="p">(</span><span class="n">point</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w">     </span><span class="c1">// &lt;--- object method (const!)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span>
+<span class="w">            </span><span class="n">_x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">_x</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w">              </span><span class="c1">// &lt;--- direct member access possible</span>
+<span class="w">            </span><span class="n">_y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">_y</span><span class="p">;</span><span class="w">                </span><span class="c1">// &lt;--- direct member access possible</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">!=</span><span class="p">(</span><span class="n">point</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w">     </span><span class="c1">// &lt;--- object method (const!)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="o">!</span><span class="k">operator</span><span class="o">==</span><span class="p">(</span><span class="n">rhs</span><span class="p">);</span><span class="w">         </span><span class="c1">// &lt;--- again, defined in terms of &quot;==&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">_x</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">_y</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">operators_suite</span><span class="p">,</span><span class="w"> </span><span class="n">equals_object</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">p1</span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">};</span>
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">p2</span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">};</span>
+
+<span class="w">    </span><span class="n">ASSERT_NE</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="w"> </span><span class="n">p2</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="w"> </span><span class="n">p1</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// operators are ordinary methods:</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">p1</span><span class="p">.</span><span class="k">operator</span><span class="o">==</span><span class="p">(</span><span class="n">p2</span><span class="p">),</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">p1</span><span class="p">.</span><span class="k">operator</span><span class="o">!=</span><span class="p">(</span><span class="n">p2</span><span class="p">),</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="implementing-arithmetic-vector-addition">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Implementing Arithmetic: <code class="docutils literal notranslate"><span class="pre">+</span></code> (Vector Addition)</a><a class="headerlink" href="#implementing-arithmetic-vector-addition" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>As with <code class="docutils literal notranslate"><span class="pre">operator==()</span></code>, there are two ways</p>
+<ul>
+<li><p>Global function <code class="docutils literal notranslate"><span class="pre">operator+(point</span> <span class="pre">lhs,</span> <span class="pre">point</span> <span class="pre">rsh)</span></code></p></li>
+<li><p><em>Preferred</em>: object method <code class="docutils literal notranslate"><span class="pre">operator+(point</span> <span class="pre">rhs)</span> <span class="pre">const</span></code></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="implementing-arithmetic-vector-addition-global-function">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Implementing Arithmetic: <code class="docutils literal notranslate"><span class="pre">+</span></code> (Vector Addition): Global Function</a><a class="headerlink" href="#implementing-arithmetic-vector-addition-global-function" title="Link to this heading">#</a></h2>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/c936977ef5eec2b438fcc3da9379b507/add-global.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/add-global.cpp</span></code></a></span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">point</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">point</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">_x</span><span class="p">{</span><span class="n">x</span><span class="p">},</span><span class="w"> </span><span class="n">_y</span><span class="p">{</span><span class="n">y</span><span class="p">}</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_x</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_y</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">_x</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">_y</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="n">point</span><span class="w"> </span><span class="k">operator</span><span class="o">+</span><span class="p">(</span><span class="n">point</span><span class="w"> </span><span class="n">lhs</span><span class="p">,</span><span class="w"> </span><span class="n">point</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="c1">// &lt;--- global function (not inside class definition) (&quot;static inline&quot; is another story)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lhs</span><span class="p">.</span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">x</span><span class="p">();</span><span class="w">        </span><span class="c1">// &lt;--- using public access methods</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lhs</span><span class="p">.</span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">y</span><span class="p">();</span><span class="w">        </span><span class="c1">// &lt;--- using public access methods</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">point</span><span class="p">{</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">};</span>
+<span class="p">}</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">operators_suite</span><span class="p">,</span><span class="w"> </span><span class="n">vector_addition_global</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">p1</span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">};</span>
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">p2</span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">};</span>
+
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">p2</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">sum</span><span class="p">.</span><span class="n">x</span><span class="p">(),</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">sum</span><span class="p">.</span><span class="n">y</span><span class="p">(),</span><span class="w"> </span><span class="mi">7</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="implementing-arithmetic-vector-addition-object-method">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">Implementing Arithmetic: <code class="docutils literal notranslate"><span class="pre">+</span></code> (Vector Addition): Object Method</a><a class="headerlink" href="#implementing-arithmetic-vector-addition-object-method" title="Link to this heading">#</a></h2>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/4e7cb60a5e1ee7aa7b10e08d7d3b15c2/add-object.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/add-object.cpp</span></code></a></span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">point</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">point</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">_x</span><span class="p">{</span><span class="n">x</span><span class="p">},</span><span class="w"> </span><span class="n">_y</span><span class="p">{</span><span class="n">y</span><span class="p">}</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_x</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_y</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="k">operator</span><span class="o">+</span><span class="p">(</span><span class="n">point</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w">     </span><span class="c1">// &lt;--- object method (const!)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">_x</span><span class="p">;</span><span class="w">             </span><span class="c1">// &lt;--- direct member access possible</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">_y</span><span class="p">;</span><span class="w">             </span><span class="c1">// &lt;--- direct member access possible</span>
+<span class="w">    </span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">point</span><span class="p">{</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">};</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">_x</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">_y</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">operators_suite</span><span class="p">,</span><span class="w"> </span><span class="n">vector_addition_object</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">p1</span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">};</span>
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">p2</span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">};</span>
+
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">p2</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">sum</span><span class="p">.</span><span class="n">x</span><span class="p">(),</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">sum</span><span class="p">.</span><span class="n">y</span><span class="p">(),</span><span class="w"> </span><span class="mi">7</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="implementing-arithmetic-moving-a-point">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Implementing Arithmetic: <code class="docutils literal notranslate"><span class="pre">+=</span></code> (Moving A Point)</a><a class="headerlink" href="#implementing-arithmetic-moving-a-point" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<p><strong>See also</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../040-this/topic.html"><span class="doc">this</span></a></p></li>
+</ul>
+</aside>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">+=</span></code> can only be an object method (it is there to modify an
+object, alas)</p></li>
+<li><p>Things are little confusing otherwise</p></li>
+<li><p>⟶ Beginning in C, <code class="docutils literal notranslate"><span class="pre">+=</span></code> has a value</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/4e7cb60a5e1ee7aa7b10e08d7d3b15c2/add-object.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/add-object.cpp</span></code></a></span><a class="headerlink" href="#id5" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">point</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">point</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">_x</span><span class="p">{</span><span class="n">x</span><span class="p">},</span><span class="w"> </span><span class="n">_y</span><span class="p">{</span><span class="n">y</span><span class="p">}</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_x</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_y</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="k">operator</span><span class="o">+</span><span class="p">(</span><span class="n">point</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w">     </span><span class="c1">// &lt;--- object method (const!)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">_x</span><span class="p">;</span><span class="w">             </span><span class="c1">// &lt;--- direct member access possible</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">_y</span><span class="p">;</span><span class="w">             </span><span class="c1">// &lt;--- direct member access possible</span>
+<span class="w">    </span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">point</span><span class="p">{</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">};</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">_x</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">_y</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">operators_suite</span><span class="p">,</span><span class="w"> </span><span class="n">vector_addition_object</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">p1</span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">};</span>
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">p2</span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">};</span>
+
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">p2</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">sum</span><span class="p">.</span><span class="n">x</span><span class="p">(),</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">sum</span><span class="p">.</span><span class="n">y</span><span class="p">(),</span><span class="w"> </span><span class="mi">7</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</li>
+<li><p>When overloading <code class="docutils literal notranslate"><span class="pre">operator+=()</span></code>, usually (a reference to) the
+modified object is the value</p>
+<ul class="simple">
+<li><p>Could be a copy just as well ⟶ possibly expensive</p></li>
+</ul>
+</li>
+<li><p>⟶ <code class="docutils literal notranslate"><span class="pre">*this</span></code> 🤔</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/b5d7ff317a3312f52c6bec9f8852ea82/plus-equal.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/plus-equal.cpp</span></code></a></span><a class="headerlink" href="#id6" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gtest/gtest.h&gt;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">point</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">point</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">_x</span><span class="p">{</span><span class="n">x</span><span class="p">},</span><span class="w"> </span><span class="n">_y</span><span class="p">{</span><span class="n">y</span><span class="p">}</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_x</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_y</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">point</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">+=</span><span class="p">(</span><span class="n">point</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w">          </span><span class="c1">// &lt;--- object method (non-const, obviously)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">_x</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">_x</span><span class="p">;</span>
+<span class="w">        </span><span class="n">_y</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">_y</span><span class="p">;</span>
+<span class="w">    </span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">_x</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">_y</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">operators_suite</span><span class="p">,</span><span class="w"> </span><span class="n">point_plus_equal</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">p</span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">};</span>
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">vec</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">};</span>
+
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">vec</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">x</span><span class="p">(),</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">y</span><span class="p">(),</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">x</span><span class="p">(),</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">x</span><span class="p">());</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">y</span><span class="p">(),</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">y</span><span class="p">());</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="implementing-ostream-shift-std-cout">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">Implementing <code class="docutils literal notranslate"><span class="pre">ostream</span></code> Shift: <code class="docutils literal notranslate"><span class="pre">std::cout</span> <span class="pre">&lt;&lt;</span> <span class="pre">...</span></code></a><a class="headerlink" href="#implementing-ostream-shift-std-cout" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<p><strong>See also</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../010-overloading/topic.html"><span class="doc">Overloading</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Make use of <a class="reference internal" href="../010-overloading/topic.html"><span class="doc">overloading</span></a> again</p></li>
+<li><p>Overload (global) <code class="docutils literal notranslate"><span class="pre">std::ostream&amp;</span> <span class="pre">operator&lt;&lt;(std::ostream&amp;,</span> <span class="pre">point)</span></code></p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/11a15e5a93c421e31b67012a322bd452/c%2B%2B03-ostream-shift-operator.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/c++03-ostream-shift-operator.cpp</span></code></a></span><a class="headerlink" href="#id7" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">point</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">point</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">_x</span><span class="p">{</span><span class="n">x</span><span class="p">},</span><span class="w"> </span><span class="n">_y</span><span class="p">{</span><span class="n">y</span><span class="p">}</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_x</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_y</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">_x</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">_y</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">ostream</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">ostream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">point</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="c1">// &lt;--- &quot;static inline&quot; is another story</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">s</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;(&#39;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;,&#39;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;)&#39;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">s</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+<span class="kt">int</span><span class="w"> </span><span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">p1</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">};</span>
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">p2</span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">};</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;p1: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">p1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;, p2: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">p2</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./c++03-ostream-shift-operator
+<span class="go">p1: (1,2), p2: (3,4)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+<div class="section ablog__blog_comments">
+   
+</div>
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation">Motivation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-in-equality">Implementing (In)Equality</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-in-equality-global-function">Implementing (In)Equality: Global Function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-in-equality-object-method">Implementing (In)Equality: Object Method</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-arithmetic-vector-addition">Implementing Arithmetic: <code class="docutils literal notranslate"><span class="pre">+</span></code> (Vector Addition)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-arithmetic-vector-addition-global-function">Implementing Arithmetic: <code class="docutils literal notranslate"><span class="pre">+</span></code> (Vector Addition): Global Function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-arithmetic-vector-addition-object-method">Implementing Arithmetic: <code class="docutils literal notranslate"><span class="pre">+</span></code> (Vector Addition): Object Method</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-arithmetic-moving-a-point">Implementing Arithmetic: <code class="docutils literal notranslate"><span class="pre">+=</span></code> (Moving A Point)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-ostream-shift-std-cout">Implementing <code class="docutils literal notranslate"><span class="pre">ostream</span></code> Shift: <code class="docutils literal notranslate"><span class="pre">std::cout</span> <span class="pre">&lt;&lt;</span> <span class="pre">...</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2019-2025 (GPLv3), Jörg Faschingbauer.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../../../../../../_sources/trainings/material/soup/cxx/cxx03/030-functions-and-methods/070-operators/topic.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1078 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>The C++ Memory Model &#8212; Jörg Faschingbauer</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/css/custom.css?v=128c0548" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'trainings/material/soup/cxx/cxx11/multithreading/memory-model/topic';</script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/cxx/cxx11/multithreading/memory-model/topic.html" />
+    <link rel="index" title="Index" href="../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../search.html" />
+    <link rel="next" title="std::mutex And Friends" href="../040-locking-atomics/mutex.html" />
+    <link rel="prev" title="Threads in C++" href="../020-thread/topic.html" /> 
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" /> 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../../../blog/index/atom.xml"
+  title="Jörg Faschingbauer"
+/>
+  
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../../../../../../_static/logo.png" class="logo__image only-light" alt="Jörg Faschingbauer - Home"/>
+    <img src="../../../../../../../_static/logo.png" class="logo__image only-dark pst-js-only" alt="Jörg Faschingbauer - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../../../index.html">
+    Training Courses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../blog/postlist.html">
+    Blog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../../../index.html">
+    Training Courses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../blog/postlist.html">
+    Blog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../repertoire/index.html">Course Descriptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../info.html">Pricing, Organizational</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../log/index.html">Log Of Past Courses</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../../index.html">Complete Slide Material</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../../linux/index.html">Linux: Introduction, Userland/Kernel Programming, Hardware/Embedded</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../python/index.html">Python Programming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../c/index.html">C Programming</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../../../index.html">C++ Programming</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx03/index.html">C++ &lt; 11</a></li>
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="../../index.html">C++ &gt;= 11</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../introduction/index.html">Introduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../rule-of-5/topic.html">The Rule Of Three/Five/Zero</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../delegating-ctor/topic.html">Delegating Constructor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../strongly-typed-enums/topic.html">Strongly Typed <code class="docutils literal notranslate"><span class="pre">enum</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../oo/index.html">New OO Features: <code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">delete</span></code>, <code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">default</span></code>, <code class="docutils literal notranslate"><span class="pre">override</span></code>, <code class="docutils literal notranslate"><span class="pre">final</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../attributes/topic.html">Attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../brace-initialization/index.html">Brace Initialization (Uniform Initialization)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../control-flow-locals/topic.html">Local Variables In Control Flow Statements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../auto/topic.html">Duck Typing (Err, <code class="docutils literal notranslate"><span class="pre">auto</span></code>) Without A Duck</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../structured-binding/topic.html">Tuple Unpacking (Err, Structured Binding)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../range-for/index.html">Range Based <code class="docutils literal notranslate"><span class="pre">for</span></code> Loops</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../miscellaneous2/topic.html">Miscellaneous</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../lambda/index.html">Lambda</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../constexpr-constinit-consteval/index.html">The <code class="docutils literal notranslate"><span class="pre">constexpr</span></code> Engine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../bind-function/index.html"><code class="docutils literal notranslate"><span class="pre">std::bind</span></code>, <code class="docutils literal notranslate"><span class="pre">std::function</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../smart-pointers/index.html">Smart Pointers: <code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code>, <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> (And <code class="docutils literal notranslate"><span class="pre">std::weak_ptr</span></code>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../move/index.html">Move Semantics, Rvalue References</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../perfect-forwarding/topic.html">Perfect Forwarding</a></li>
+<li class="toctree-l4 current active"><a class="reference internal" href="../index.html">Multithreading, C++ Memory Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../array/topic.html">std::array</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../any-variant-optional/index.html">std::any, std::variant, std::optional</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../chrono/topic.html"><code class="docutils literal notranslate"><span class="pre">std::chrono</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../filesystem/topic.html"><code class="docutils literal notranslate"><span class="pre">std::filesystem</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../format/topic.html">Formatting Library (<code class="docutils literal notranslate"><span class="pre">std::format()</span></code>, <code class="docutils literal notranslate"><span class="pre">std::print()</span></code>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../span/topic.html"><code class="docutils literal notranslate"><span class="pre">std::span</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../deducing-this/topic.html">Explicit Object Member Functions (A.k.a Deducing <code class="docutils literal notranslate"><span class="pre">this</span></code>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../spaceship/topic.html">The Spaceship Operator <code class="docutils literal notranslate"><span class="pre">&lt;=&gt;</span></code> (And Comparison In General)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../concepts/index.html">Concepts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ranges/index.html">Ranges And Views</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coroutines/index.html">Coroutines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/topic.html">Modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../drafts/index.html">Drafts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../exercises/index.html">Exercises</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../scenarios/concrete-to-polymorphic/topic.html">From Concrete To Polymorphic (<code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Sensor</span></code>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../scenarios/polymorphism-in-c/topic.html">Polymorphic “Classes” In Good Ol’ C</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-design-patterns/index.html">Design Patterns With C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-livehacking/index.html">C++: Miscellaneous Live-Hacking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-code/index.html">C++ Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cxx-exercises/index.html">C++ Exercises</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../misc/index.html">Build Tools, Unit Testing, Design, And More</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../../../index.html" class="nav-link">Training Courses</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../../../index.html" class="nav-link">Complete Slide Material</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../../index.html" class="nav-link">C++ Programming</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">C++ &gt;= 11</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Multithreading, C++ Memory Model</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">The C++ Memory Model</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                   <section id="the-c-memory-model">
+<h1>The C++ Memory Model<a class="headerlink" href="#the-c-memory-model" title="Link to this heading">#</a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#data-race-load-modify-store" id="id6">Data Race: Load Modify Store</a></p></li>
+<li><p><a class="reference internal" href="#data-race-load-modify-store-explained" id="id7">Data Race: Load Modify Store (Explained)</a></p></li>
+<li><p><a class="reference internal" href="#optimizations" id="id8">Optimizations</a></p></li>
+<li><p><a class="reference internal" href="#cpu-optimization-write-reordering" id="id9">CPU Optimization: Write Reordering</a></p></li>
+<li><p><a class="reference internal" href="#another-race-std-list-is-not-threadsafe" id="id10">Another Race: <code class="docutils literal notranslate"><span class="pre">std::list</span></code> Is Not Threadsafe</a></p></li>
+<li><p><a class="reference internal" href="#protecting-std-list-with-a-mutex" id="id11">Protecting <code class="docutils literal notranslate"><span class="pre">std::list</span></code> With A Mutex</a></p></li>
+<li><p><a class="reference internal" href="#what-s-a-mutex" id="id12">What’s A Mutex?</a></p></li>
+<li><p><a class="reference internal" href="#memory-order" id="id13">Memory Order</a></p></li>
+<li><p><a class="reference internal" href="#release-and-acquire-ordering" id="id14">Release And Acquire Ordering</a></p></li>
+<li><p><a class="reference internal" href="#release-and-acquire-ordering-a-naive-spinlock" id="id15">Release And Acquire Ordering: A Naive Spinlock</a></p></li>
+<li><p><a class="reference internal" href="#sequential-consistency-resolving-load-modify-store-conflict" id="id16">Sequential Consistency: Resolving Load-Modify-Store-Conflict</a></p></li>
+<li><p><a class="reference internal" href="#and-other-memory-orders" id="id17">And Other Memory Orders?</a></p></li>
+<li><p><a class="reference internal" href="#links" id="id18">Links</a></p></li>
+</ul>
+</nav>
+<section id="data-race-load-modify-store">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Data Race: Load Modify Store</a><a class="headerlink" href="#data-race-load-modify-store" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Trainer’s note</p>
+<ul>
+<li><p>Start with this program, as <code class="docutils literal notranslate"><span class="pre">load-modify-store.cpp</span></code></p></li>
+<li><p>Compile manually with <code class="docutils literal notranslate"><span class="pre">-O0</span></code>, because <code class="docutils literal notranslate"><span class="pre">-O3</span></code> optimizes data
+races away at this limited level</p>
+<p>$ g++ -O0 load-modify-store.cpp</p>
+<p>(Or tune build system accordingly)</p>
+</li>
+<li><p>More:
+<a class="reference external" href="https://gcc.gnu.org/onlinedocs/gcc-13.3.0/gcc/Optimize-Options.html">https://gcc.gnu.org/onlinedocs/gcc-13.3.0/gcc/Optimize-Options.html</a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>A data race is what the memory model is there to help understand and
+prevent</p></li>
+<li><p>Here: <em>Load-Modify-Store-Conflict</em></p></li>
+<li><p>⟶ Integer access is not atomic</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/2dddf4543a3e41e04e02b112185cfee6/load-modify-store.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/load-modify-store.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thread&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;array&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cassert&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">numtimes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000UL</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">threadfunc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="n">counter</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">numtimes</span><span class="p">;</span>
+<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">--</span><span class="p">)</span>
+<span class="w">            </span><span class="n">counter</span><span class="o">++</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="w"> </span><span class="n">threads</span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="n">threadfunc</span><span class="p">),</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="n">threadfunc</span><span class="p">),</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">t</span><span class="o">:</span><span class="w"> </span><span class="n">threads</span><span class="p">)</span>
+<span class="w">        </span><span class="n">t</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;expected &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">threads</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">*</span><span class="n">numtimes</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;, real &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w">  </span><span class="n">counter</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>g++<span class="w"> </span>-O0<span class="w"> </span>load-modify-store.cpp
+<span class="gp">$ </span>./a.out
+<span class="go">expected 2000000000, real 1066359623</span>
+</pre></div>
+</div>
+</section>
+<section id="data-race-load-modify-store-explained">
+<span id="cxx11-memory-model-load-modify-store"></span><h2><a class="toc-backref" href="#id7" role="doc-backlink">Data Race: Load Modify Store (Explained)</a><a class="headerlink" href="#data-race-load-modify-store-explained" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Innocent <code class="docutils literal notranslate"><span class="pre">counter++</span></code> is</p>
+<ul>
+<li><p>Load from memory</p></li>
+<li><p>Increment in CPU register</p></li>
+<li><p>Write back to memory</p></li>
+</ul>
+</li>
+</ul>
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td colspan="2"><p><strong>CPU A</strong></p></td>
+<td colspan="2"><p><strong>CPU B</strong></p></td>
+<td><p><strong>Memory</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Instr</p></td>
+<td><p>Loc</p></td>
+<td><p>Instr</p></td>
+<td><p>Loc</p></td>
+<td><p>Glob</p></td>
+</tr>
+<tr class="row-odd"><td><p>load</p></td>
+<td><p>42</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>42</p></td>
+</tr>
+<tr class="row-even"><td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>42</p></td>
+<td><p>load</p></td>
+<td><p>42</p></td>
+<td><p>42</p></td>
+</tr>
+<tr class="row-odd"><td><p>inc</p></td>
+<td><p>43</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>42</p></td>
+</tr>
+<tr class="row-even"><td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>43</p></td>
+<td><p>inc</p></td>
+<td><p>43</p></td>
+<td><p>42</p></td>
+</tr>
+<tr class="row-odd"><td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>43</p></td>
+<td><p>store</p></td>
+<td><p>43</p></td>
+<td><p>43</p></td>
+</tr>
+<tr class="row-even"><td><p>store</p></td>
+<td><p>43</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>43</p></td>
+<td><p>43</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="optimizations">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Optimizations</a><a class="headerlink" href="#optimizations" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../../c/100-performance/020-computebound/topic.html"><span class="doc">Optimizations: Compute Bound Code</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Your program does not run how you wrote it</p></li>
+<li><p>Compiler optimizations (see <a class="reference internal" href="../../../../c/100-performance/020-computebound/topic.html"><span class="doc">here</span></a>
+for an overview)</p></li>
+<li><p>CPU optimizations: e.g. read and write reordering</p></li>
+<li><p>⟶ the order in which writes becomes visible to other
+threads/CPUs is <em>not</em> what you think</p></li>
+<li><p>(Similar for reads)</p></li>
+<li><p>⟶ no <em>sequential order</em> guaranteed</p></li>
+</ul>
+</section>
+<section id="cpu-optimization-write-reordering">
+<span id="cxx11-memory-model-write-reordering"></span><h2><a class="toc-backref" href="#id9" role="doc-backlink">CPU Optimization: Write Reordering</a><a class="headerlink" href="#cpu-optimization-write-reordering" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>The following code has “undefined behavior”</p></li>
+<li><p>A threads that accesses the object through <code class="docutils literal notranslate"><span class="pre">global_widget</span></code> <strong>might
+see the pointer in memory before the memory itself</strong></p></li>
+<li><p>This is done <strong>by the CPU</strong></p></li>
+<li><p>⟶</p></li>
+</ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Widget</span><span class="o">*</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Widget</span><span class="p">(...);</span><span class="w">                           </span><span class="c1">// &lt;-- write: memory allocation, Widget initialization</span>
+<span class="n">global_widget</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">w</span><span class="p">;</span><span class="w">                                     </span><span class="c1">// &lt;-- write: global_widget</span>
+</pre></div>
+</div>
+</section>
+<section id="another-race-std-list-is-not-threadsafe">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Another Race: <code class="docutils literal notranslate"><span class="pre">std::list</span></code> Is Not Threadsafe</a><a class="headerlink" href="#another-race-std-list-is-not-threadsafe" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/container/list">std::list</a></p></li>
+</ul>
+</aside>
+<aside class="sidebar">
+<p class="sidebar-title">Trainer’s note</p>
+<ul class="simple">
+<li><p>Start with this program, as <code class="docutils literal notranslate"><span class="pre">list.cpp</span></code></p></li>
+</ul>
+</aside>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/7feaf6e3a83f219c048f97e8dd149e7a/list-mt-unsafe.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/list-mt-unsafe.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;list&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;array&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thread&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">numtimes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000UL</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ints</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">threadfunc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="n">ints</span><span class="p">](){</span>
+<span class="w">        </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">numtimes</span><span class="p">;</span>
+<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">--</span><span class="p">)</span>
+<span class="w">            </span><span class="n">ints</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="mi">666</span><span class="p">);</span><span class="w">                       </span><span class="c1">// &lt;-- non-atomic two-pointer update</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="w"> </span><span class="n">threads</span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="n">threadfunc</span><span class="p">),</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="n">threadfunc</span><span class="p">),</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">t</span><span class="o">:</span><span class="w"> </span><span class="n">threads</span><span class="p">)</span>
+<span class="w">        </span><span class="n">t</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;#elements: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ints</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>g++<span class="w"> </span>-O0<span class="w"> </span>list.cpp
+<span class="gp">$ </span>./a.out
+<span class="gp">#</span>elements:<span class="w"> </span><span class="m">1476027</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Somehow pointers have been updated concurrently and
+incorrectly</p></li>
+<li><p>⟶ A typical case for a mutex</p></li>
+</ul>
+</section>
+<section id="protecting-std-list-with-a-mutex">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Protecting <code class="docutils literal notranslate"><span class="pre">std::list</span></code> With A Mutex</a><a class="headerlink" href="#protecting-std-list-with-a-mutex" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../040-locking-atomics/mutex.html"><span class="doc">std::mutex And Friends</span></a></p></li>
+<li><p><a class="reference internal" href="../040-locking-atomics/scoped-locking.html"><span class="doc">Scoped Locking</span></a></p></li>
+</ul>
+</aside>
+<aside class="sidebar">
+<p class="sidebar-title">Trainer’s note</p>
+<ul class="simple">
+<li><p>Program <code class="docutils literal notranslate"><span class="pre">list.cpp</span></code></p></li>
+</ul>
+</aside>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/5c1e062e7013ce9a7b651eb0db9ce10a/list-mt-mutex.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/list-mt-mutex.cpp</span></code></a></span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;list&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;array&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thread&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;mutex&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">numtimes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000UL</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ints</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="w"> </span><span class="n">ints_lock</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">threadfunc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="n">ints</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ints_lock</span><span class="p">](){</span>
+<span class="w">        </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">numtimes</span><span class="p">;</span>
+<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">--</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="w">            </span><span class="n">ints_lock</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span><span class="w">                          </span><span class="c1">// &lt;-- acquire</span>
+<span class="w">            </span><span class="n">ints</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="mi">666</span><span class="p">);</span>
+<span class="w">            </span><span class="n">ints_lock</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span><span class="w">                        </span><span class="c1">// &lt;-- release</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="w"> </span><span class="n">threads</span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="n">threadfunc</span><span class="p">),</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="n">threadfunc</span><span class="p">),</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">t</span><span class="o">:</span><span class="w"> </span><span class="n">threads</span><span class="p">)</span>
+<span class="w">        </span><span class="n">t</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;#elements: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ints</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>g++<span class="w"> </span>-O0<span class="w"> </span>list.cpp
+<span class="gp">$ </span>./a.out
+<span class="gp">#</span>elements:<span class="w"> </span><span class="m">2000000</span>
+</pre></div>
+</div>
+</section>
+<section id="what-s-a-mutex">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">What’s A Mutex?</a><a class="headerlink" href="#what-s-a-mutex" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>A boolean flag, with states “open” and “closed”</p></li>
+<li><p>Operations “acquire” and “release”</p></li>
+<li><p><em>Acquire</em></p>
+<ul>
+<li><p>Flag is “open”</p>
+<ul>
+<li><p>Set it “closed”</p></li>
+</ul>
+</li>
+<li><p>Flag is “closed”</p>
+<ul>
+<li><p>Enqueue yourself onto list of waiters</p></li>
+<li><p>Enter wait state <em>at the same time</em> (⟶ Lost
+Wakeup Problem)</p></li>
+<li><p>Retry on wakeup</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><em>Release</em></p>
+<ul>
+<li><p>Reset flag to “open”</p></li>
+<li><p>Wake any waiters</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>What if there is something wrong with the flag?</strong></p>
+<p>For example:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#cxx11-memory-model-load-modify-store"><span class="std std-ref">Data Race: Load Modify Store (Explained)</span></a></p></li>
+<li><p><a class="reference internal" href="#cxx11-memory-model-write-reordering"><span class="std std-ref">CPU Optimization: Write Reordering</span></a></p></li>
+</ul>
+</section>
+<section id="memory-order">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Memory Order</a><a class="headerlink" href="#memory-order" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/atomic/memory_order">std::memory_order</a></p></li>
+</ul>
+</aside>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">memory_order</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">relaxed</span><span class="p">,</span>
+<span class="w">    </span><span class="n">consume</span><span class="p">,</span>
+<span class="w">    </span><span class="n">acquire</span><span class="p">,</span><span class="w">                                        </span><span class="c1">// &lt;-- cf lock</span>
+<span class="w">    </span><span class="n">release</span><span class="p">,</span><span class="w">                                        </span><span class="c1">// &lt;-- cf unlock</span>
+<span class="w">    </span><span class="n">acq_rel</span><span class="p">,</span>
+<span class="w">    </span><span class="n">seq_cst</span><span class="w">                                         </span><span class="c1">// &lt;-- atomic ++</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="release-and-acquire-ordering">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">Release And Acquire Ordering</a><a class="headerlink" href="#release-and-acquire-ordering" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Trainer’s note</p>
+<ul class="simple">
+<li><p>Draw sketch</p></li>
+</ul>
+</aside>
+<p><strong>Mutex</strong>: memory/flag requirements</p>
+<ul>
+<li><p><em>Release order</em>: when flag is released (set to “open”), the
+reader/locker must see all writes that happened before “open”</p>
+<p>⟶ CPU must not reorder writes across flag write</p>
+</li>
+<li><p><em>Acquire order</em>: the opposite side must cooperate and tag their flag
+read operations accordingly</p>
+<p>⟶ CPU must not reorder reads across flag read</p>
+</li>
+</ul>
+</section>
+<section id="release-and-acquire-ordering-a-naive-spinlock">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Release And Acquire Ordering: A Naive Spinlock</a><a class="headerlink" href="#release-and-acquire-ordering-a-naive-spinlock" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/atomic/atomic_flag">std::atomic_flag</a></p></li>
+<li><p><a class="reference external" href="https://en.cppreference.com/w/cpp/atomic/atomic">std::atomic</a></p></li>
+</ul>
+</aside>
+<aside class="sidebar">
+<p class="sidebar-title">Trainer’s note</p>
+<ul class="simple">
+<li><p>Program <code class="docutils literal notranslate"><span class="pre">list.cpp</span></code></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Spinlock: does not block the locker if locked, but rather spins
+actively until free</p>
+<ul>
+<li><p>⟶ less context switches</p></li>
+<li><p>Good for short critical sections</p></li>
+<li><p><strong>Not good if both contenders are scheduled on the same CPU</strong>
+⟶ do not use this, it is way too naive.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">std::atomic_flag</span></code> is guaranteed to be lock-free</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">std::atomic&lt;&gt;</span></code> specializations are not</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/63437a66f1d1c82635ebe9410e72f4f9/list-mt-spinlock.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/list-mt-spinlock.cpp</span></code></a></span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;list&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;array&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thread&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;mutex&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">spinlock</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">lock</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="kt">bool</span><span class="w"> </span><span class="n">oldstate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_flag</span><span class="p">.</span><span class="n">test_and_set</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">memory_order</span><span class="o">::</span><span class="n">acquire</span><span class="p">);</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">oldstate</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">false</span><span class="p">)</span><span class="w">                     </span><span class="c1">// &lt;-- flag changed to true -&gt; **locked**</span>
+<span class="w">                </span><span class="k">break</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">unlock</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">_flag</span><span class="p">.</span><span class="n">clear</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">memory_order</span><span class="o">::</span><span class="n">release</span><span class="p">);</span><span class="w">       </span><span class="c1">// &lt;-- send &quot;open&quot; to reader</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="k">private</span><span class="o">:</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">atomic_flag</span><span class="w"> </span><span class="n">_flag</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">numtimes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000UL</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ints</span><span class="p">;</span>
+<span class="w">    </span><span class="n">spinlock</span><span class="w"> </span><span class="n">ints_lock</span><span class="p">;</span><span class="w">                                </span><span class="c1">// &lt;-- mutex replacement</span>
+
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">threadfunc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="n">ints</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ints_lock</span><span class="p">](){</span>
+<span class="w">        </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">numtimes</span><span class="p">;</span>
+<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">--</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="w">            </span><span class="n">ints_lock</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span><span class="w">                          </span><span class="c1">// &lt;-- acquire</span>
+<span class="w">            </span><span class="n">ints</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="mi">666</span><span class="p">);</span>
+<span class="w">            </span><span class="n">ints_lock</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span><span class="w">                        </span><span class="c1">// &lt;-- release</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="w"> </span><span class="n">threads</span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="n">threadfunc</span><span class="p">),</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="n">threadfunc</span><span class="p">),</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">t</span><span class="o">:</span><span class="w"> </span><span class="n">threads</span><span class="p">)</span>
+<span class="w">        </span><span class="n">t</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;#elements: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ints</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="sequential-consistency-resolving-load-modify-store-conflict">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">Sequential Consistency: Resolving Load-Modify-Store-Conflict</a><a class="headerlink" href="#sequential-consistency-resolving-load-modify-store-conflict" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Trainer’s note</p>
+<ul class="simple">
+<li><p>Program <code class="docutils literal notranslate"><span class="pre">load-modify-store.cpp</span></code></p></li>
+</ul>
+</aside>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/a023588719ed27d8f7aa1d1222e9ec3d/load-modify-store-seq-cst.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/load-modify-store-seq-cst.cpp</span></code></a></span><a class="headerlink" href="#id5" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;atomic&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thread&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;array&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cassert&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">numtimes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000UL</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="o">&gt;</span><span class="w"> </span><span class="n">counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">threadfunc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="n">counter</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">numtimes</span><span class="p">;</span>
+<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">--</span><span class="p">)</span>
+<span class="w">            </span><span class="n">counter</span><span class="o">++</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="w"> </span><span class="n">threads</span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="n">threadfunc</span><span class="p">),</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="n">threadfunc</span><span class="p">),</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">t</span><span class="o">:</span><span class="w"> </span><span class="n">threads</span><span class="p">)</span>
+<span class="w">        </span><span class="n">t</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;expected &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">threads</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">*</span><span class="n">numtimes</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;, real &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w">  </span><span class="n">counter</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="and-other-memory-orders">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink">And Other Memory Orders?</a><a class="headerlink" href="#and-other-memory-orders" title="Link to this heading">#</a></h2>
+<ul>
+<li><p>Read-Copy-Update (<a class="reference external" href="https://lwn.net/Articles/262464/">What is RCU, Fundamentally?</a>)</p></li>
+<li><p><a class="reference external" href="https://youtu.be/cWkUqK71DZ0?si=H0Qovi9DpFdf7uqh">A Relaxed Guide to memory_order_relaxed - Paul E. McKenney &amp; Hans
+Boehm - CppCon 2020</a></p>
+<iframe width="560" height="315"
+        src="https://www.youtube.com/embed/cWkUqK71DZ0?si=_c07ry8dzPWeLlFF"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen>
+</iframe></li>
+</ul>
+</section>
+<section id="links">
+<h2><a class="toc-backref" href="#id18" role="doc-backlink">Links</a><a class="headerlink" href="#links" title="Link to this heading">#</a></h2>
+<ul>
+<li><p><a class="reference external" href="https://youtu.be/tjcU2xDmuFQ?si=uKahmiSRZdS87Xzh">C++ Memory Model: from C++11 to C++23 - Alex Dathskovsky</a></p>
+<iframe width="560" height="315"
+        src="https://www.youtube.com/embed/tjcU2xDmuFQ?si=uKahmiSRZdS87Xzh"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen>
+</iframe></li>
+<li><p><a class="reference external" href="https://youtu.be/e0DsVqZLMzU?si=mj9ETF1-CyarbGcN">The memory model in C++ - Rainer Grimm - Meeting C++ 2016</a></p>
+<iframe width="560" height="315"
+        src="https://www.youtube.com/embed/e0DsVqZLMzU?si=xG0GcV-pACRlJ7EQ"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen>
+</iframe></li>
+<li><p><a class="reference external" href="https://youtu.be/OyNG4qiWnmU?si=1xLDFrgdHW9Ak0vZ">Arvid Norberg: The C++ memory model: an intuition</a></p>
+<iframe width="560" height="315"
+        src="https://www.youtube.com/embed/OyNG4qiWnmU?si=mmZdH5XCN3lc1WJZ"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen>
+</iframe></li>
+</ul>
+</section>
+</section>
+
+<div class="section ablog__blog_comments">
+   
+</div>
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-race-load-modify-store">Data Race: Load Modify Store</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-race-load-modify-store-explained">Data Race: Load Modify Store (Explained)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optimizations">Optimizations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cpu-optimization-write-reordering">CPU Optimization: Write Reordering</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#another-race-std-list-is-not-threadsafe">Another Race: <code class="docutils literal notranslate"><span class="pre">std::list</span></code> Is Not Threadsafe</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#protecting-std-list-with-a-mutex">Protecting <code class="docutils literal notranslate"><span class="pre">std::list</span></code> With A Mutex</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-a-mutex">What’s A Mutex?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#memory-order">Memory Order</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#release-and-acquire-ordering">Release And Acquire Ordering</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#release-and-acquire-ordering-a-naive-spinlock">Release And Acquire Ordering: A Naive Spinlock</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sequential-consistency-resolving-load-modify-store-conflict">Sequential Consistency: Resolving Load-Modify-Store-Conflict</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#and-other-memory-orders">And Other Memory Orders?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#links">Links</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2019-2025 (GPLv3), Jörg Faschingbauer.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../../../../../../_sources/trainings/material/soup/cxx/cxx11/multithreading/memory-model/topic.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
