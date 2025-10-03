@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Synchronous Signal Handling &#8212; Jörg Faschingbauer</title>
+    <title>Event Loop Support: signalfd() &#8212; Jörg Faschingbauer</title>
   
   
   
@@ -54,12 +54,12 @@
     <script src="../../../../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script src="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
     <script src="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'trainings/material/soup/linux/sysprog/signals/sync/index';</script>
-    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/sysprog/signals/sync/index.html" />
+    <script>DOCUMENTATION_OPTIONS.pagename = 'trainings/material/soup/linux/sysprog/signals/signalfd/index';</script>
+    <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/sysprog/signals/signalfd/index.html" />
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
-    <link rel="next" title="Event Loop Support: signalfd()" href="../signalfd/index.html" />
-    <link rel="prev" title="Use Case: Self-Pipe Trick" href="../async-self-pipe/index.html" /> 
+    <link rel="next" title="POSIX Threads" href="../../posix-threads/index.html" />
+    <link rel="prev" title="Synchronous Signal Handling" href="../sync/index.html" /> 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" /> 
@@ -360,7 +360,7 @@
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Signals</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Synchronous Signal Handling</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Event Loop Support: <code class="docutils literal notranslate"><span class="pre">signalfd()</span></code></span></li>
   </ul>
 </nav>
 </div>
@@ -376,41 +376,60 @@
                 
 <div id="searchbox"></div>
                 <article class="bd-article">
-                   <section id="synchronous-signal-handling">
-<h1>Synchronous Signal Handling<a class="headerlink" href="#synchronous-signal-handling" title="Link to this heading">#</a></h1>
+                   <section id="event-loop-support-signalfd">
+<h1>Event Loop Support: <code class="docutils literal notranslate"><span class="pre">signalfd()</span></code><a class="headerlink" href="#event-loop-support-signalfd" title="Link to this heading">#</a></h1>
 <aside class="topic">
 <p class="topic-title">Documentation</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man3/sigwait.3.html">man -s 3 sigwait</a></p></li>
-<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/sigtimedwait.2.html">man -s 2 sigwaitinfo</a></p></li>
-<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/sigtimedwait.2.html">man -s 2 sigtimedwait</a></p></li>
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/signalfd.2.html">man -s 2 signalfd</a></p></li>
 </ul>
 </aside>
-<section id="waiting-blocking-for-signals">
-<span id="sysprog-signals-block"></span><h2>Waiting (Blocking) For Signals<a class="headerlink" href="#waiting-blocking-for-signals" title="Link to this heading">#</a></h2>
+<section id="basic-operation">
+<h2>Basic Operation<a class="headerlink" href="#basic-operation" title="Link to this heading">#</a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span>include<span class="w"> </span>&lt;sys/signalfd.h&gt;
+
+<span class="go">int signalfd(int fd, const sigset_t *mask, int flags);</span>
+</pre></div>
+</div>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">sigwait()</span></code> (and friends) <em>synchronously wait</em> for a signal</p></li>
-<li><p>⟶ No async delivery, no async-signal-safety concerns</p></li>
-<li><p>⟶ All fine</p></li>
-<li><p>Use case: in a multithreaded program, it is probably best to
-dedicate one thread to signal handling, using <code class="docutils literal notranslate"><span class="pre">sigwait()</span></code> or
-similar.</p></li>
+<li><p>Signals received as <em>events</em>, via file descriptor</p>
+<ul>
+<li><p>⟶ Perfect fit for event loop programming</p></li>
+</ul>
+</li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">fd</span> <span class="pre">==</span> <span class="pre">-1</span></code>, a new file descriptor is created</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">fd</span> <span class="pre">&gt;=</span> <span class="pre">0</span></code> (another signal FD), its mask is replaced with the
+supplied <code class="docutils literal notranslate"><span class="pre">mask</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flags</span></code>: <code class="docutils literal notranslate"><span class="pre">SFD_NONBLOCK</span></code>, <code class="docutils literal notranslate"><span class="pre">SFD_CLOEXEC</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">read()</span></code> on the <code class="docutils literal notranslate"><span class="pre">fd</span></code> into an array of <code class="docutils literal notranslate"><span class="pre">signalfd_siginfo</span></code>
+structures</p></li>
+<li><p>Best to choose array size according to number of handled signals
+⟶ read all possible pending signals in one swoop</p>
+<ul>
+<li><p>Different for realtime signals: these are queued</p></li>
+</ul>
+</li>
 </ul>
 </section>
-<section id="example-self-pipe-trick-revisited">
-<h2>Example: Self-Pipe Trick, Revisited<a class="headerlink" href="#example-self-pipe-trick-revisited" title="Link to this heading">#</a></h2>
+<section id="example-a-better-sigwaitinfo">
+<h2>Example: A Better <code class="docutils literal notranslate"><span class="pre">sigwaitinfo()</span></code><a class="headerlink" href="#example-a-better-sigwaitinfo" title="Link to this heading">#</a></h2>
 <aside class="topic">
 <p class="topic-title">Trainer’s note</p>
-<ul class="simple">
-<li><p>Copy program from <a class="reference internal" href="../async-self-pipe/index.html"><span class="doc">Use Case: Self-Pipe Trick</span></a>, replace
-handler and stuff with <code class="docutils literal notranslate"><span class="pre">sigwait()</span></code></p></li>
-<li><p>Don’t block signals initially, seeing <code class="docutils literal notranslate"><span class="pre">SIGTERM</span></code>’s default
-disposition (terminate). Only then block it.</p></li>
-</ul>
+<p>Copy program from <a class="reference internal" href="../sync/index.html"><span class="doc">Synchronous Signal Handling</span></a>, and replace <code class="docutils literal notranslate"><span class="pre">sigwait()</span></code>
+with <code class="docutils literal notranslate"><span class="pre">signalfd()</span></code></p>
 </aside>
+<ul class="simple">
+<li><p>Show normal operation</p></li>
+<li><p>Suspend process</p></li>
+<li><p>Demonstrate how <code class="docutils literal notranslate"><span class="pre">SIGUSR1</span></code> and <code class="docutils literal notranslate"><span class="pre">SIGUSR2</span></code> are received together
+with one call to <code class="docutils literal notranslate"><span class="pre">read()</span></code></p></li>
+<li><p>Two instances of say <code class="docutils literal notranslate"><span class="pre">SIGUSR1</span></code> overwrite each other (standard
+signals vs. realtime signals)</p></li>
+</ul>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/d1be4ad4d8250e36e019e7c0b732287d/sigwait.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/sigwait.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/9ce0ea4ebc27c9d881d23916cca54db6/signalfd.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/signalfd.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sys/signalfd.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;signal.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;print&gt;</span>
 
@@ -425,34 +444,38 @@ disposition (terminate). Only then block it.</p></li>
 <span class="w">    </span><span class="n">sigaddset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">interest</span><span class="p">,</span><span class="w"> </span><span class="n">SIGUSR1</span><span class="p">);</span>
 <span class="w">    </span><span class="n">sigaddset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">interest</span><span class="p">,</span><span class="w"> </span><span class="n">SIGUSR2</span><span class="p">);</span>
 
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">rv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_BLOCK</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">interest</span><span class="p">,</span><span class="w">         </span><span class="c1">// &lt;-- inhibit async delivery</span>
-<span class="w">                         </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">rv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_BLOCK</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">interest</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rv</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;sigprocmask&quot;</span><span class="p">);</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 <span class="w">    </span><span class="p">}</span>
 
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">signalfd</span><span class="p">(</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">interest</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w">               </span><span class="c1">// &lt;-- new fd, no flags</span>
+
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">quit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 <span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">quit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">signal</span><span class="p">;</span>
-<span class="w">        </span><span class="n">rv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sigwait</span><span class="p">(</span><span class="o">&amp;</span><span class="n">interest</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">signal</span><span class="p">);</span><span class="w">              </span><span class="c1">// &lt;-- read directly from kernel</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rv</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;sigwait&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">signalfd_siginfo</span><span class="w"> </span><span class="n">signals</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span><span class="w">                   </span><span class="c1">// &lt;-- we handle 4 different signals</span>
+<span class="w">        </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">nread</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w">                       </span><span class="c1">// &lt;-- read max 4 signals</span>
+<span class="w">                             </span><span class="n">signals</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">signals</span><span class="p">));</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nread</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;read&quot;</span><span class="p">);</span>
 <span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 <span class="w">        </span><span class="p">}</span>
 
-<span class="w">        </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">signal</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">                              </span><span class="c1">// &lt;-- same logic as in self-pipe</span>
-<span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="no">SIGTERM</span><span class="p">:</span>
-<span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="no">SIGINT</span><span class="p">:</span>
-<span class="w">                </span><span class="n">std</span><span class="o">::</span><span class="n">println</span><span class="p">(</span><span class="s">&quot;terminating&quot;</span><span class="p">);</span>
-<span class="w">                </span><span class="n">quit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
-<span class="w">                </span><span class="k">break</span><span class="p">;</span>
-<span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="no">SIGUSR1</span><span class="p">:</span>
-<span class="w">                </span><span class="n">std</span><span class="o">::</span><span class="n">println</span><span class="p">(</span><span class="s">&quot;doing this&quot;</span><span class="p">);</span>
-<span class="w">                </span><span class="k">break</span><span class="p">;</span>
-<span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="no">SIGUSR2</span><span class="p">:</span>
-<span class="w">                </span><span class="n">std</span><span class="o">::</span><span class="n">println</span><span class="p">(</span><span class="s">&quot;doing that&quot;</span><span class="p">);</span>
-<span class="w">                </span><span class="k">break</span><span class="p">;</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="k">sizeof</span><span class="p">(</span><span class="n">signals</span><span class="p">)</span><span class="o">/</span><span class="k">sizeof</span><span class="p">(</span><span class="n">signalfd_siginfo</span><span class="p">);</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">signals</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">ssi_signo</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">            </span><span class="c1">// &lt;-- disregard other structure members</span>
+<span class="w">                </span><span class="k">case</span><span class="w"> </span><span class="no">SIGTERM</span><span class="p">:</span>
+<span class="w">                </span><span class="k">case</span><span class="w"> </span><span class="no">SIGINT</span><span class="p">:</span>
+<span class="w">                    </span><span class="n">std</span><span class="o">::</span><span class="n">println</span><span class="p">(</span><span class="s">&quot;terminating&quot;</span><span class="p">);</span>
+<span class="w">                    </span><span class="n">quit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">                    </span><span class="k">break</span><span class="p">;</span>
+<span class="w">                </span><span class="k">case</span><span class="w"> </span><span class="no">SIGUSR1</span><span class="p">:</span>
+<span class="w">                    </span><span class="n">std</span><span class="o">::</span><span class="n">println</span><span class="p">(</span><span class="s">&quot;doing this&quot;</span><span class="p">);</span>
+<span class="w">                    </span><span class="k">break</span><span class="p">;</span>
+<span class="w">                </span><span class="k">case</span><span class="w"> </span><span class="no">SIGUSR2</span><span class="p">:</span>
+<span class="w">                    </span><span class="n">std</span><span class="o">::</span><span class="n">println</span><span class="p">(</span><span class="s">&quot;doing that&quot;</span><span class="p">);</span>
+<span class="w">                    </span><span class="k">break</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
@@ -489,8 +512,8 @@ disposition (terminate). Only then block it.</p></li>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#waiting-blocking-for-signals">Waiting (Blocking) For Signals</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-self-pipe-trick-revisited">Example: Self-Pipe Trick, Revisited</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-operation">Basic Operation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-a-better-sigwaitinfo">Example: A Better <code class="docutils literal notranslate"><span class="pre">sigwaitinfo()</span></code></a></li>
 </ul>
   </nav></div>
 
@@ -552,7 +575,7 @@ disposition (terminate). Only then block it.</p></li>
         <div class="footer-item">
 
   <div class="tocsection sourcelink">
-    <a href="../../../../../../../_sources/trainings/material/soup/linux/sysprog/signals/sync/index.rst.txt">
+    <a href="../../../../../../../_sources/trainings/material/soup/linux/sysprog/signals/signalfd/index.rst.txt">
       <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
   </div>

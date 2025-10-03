@@ -611,8 +611,8 @@ accordingly (“Inside jail”, “Outside jail”).</p>
 <li><p><a class="reference internal" href="#devtmpfs-and-dev-shm" id="id30"><code class="docutils literal notranslate"><span class="pre">devtmpfs</span></code> (And <code class="docutils literal notranslate"><span class="pre">/dev/shm</span></code>)</a></p></li>
 <li><p><a class="reference internal" href="#bind-mounts" id="id31">Bind Mounts</a></p>
 <ul>
-<li><p><a class="reference internal" href="#home-directory-and-network-while-we-at-bind-mounting" id="id32">Home Directory (And Network, While We At Bind Mounting)</a></p></li>
-<li><p><a class="reference internal" href="#etc-resolv-conf" id="id33"><code class="docutils literal notranslate"><span class="pre">/etc/resolv.conf</span></code></a></p></li>
+<li><p><a class="reference internal" href="#home-directory" id="id32">Home Directory</a></p></li>
+<li><p><a class="reference internal" href="#network-etc-resolv-conf" id="id33">Network/<code class="docutils literal notranslate"><span class="pre">/etc/resolv.conf</span></code></a></p></li>
 </ul>
 </li>
 <li><p><a class="reference internal" href="#working-as-non-root-inside-a-jail-and-uid-non-isolation" id="id34">Working As Non <code class="docutils literal notranslate"><span class="pre">root</span></code> Inside A Jail (And UID Non-Isolation)</a></p>
@@ -743,8 +743,8 @@ we are at it.</p>
 root of the jail upwards in the hierarchy. This is not possible -
 which is the entire point of <code class="docutils literal notranslate"><span class="pre">chroot</span></code>. Instead, <em>bind mounts</em> are
 used to make <em>outside content</em> visible <em>inside</em>.</p>
-<section id="home-directory-and-network-while-we-at-bind-mounting">
-<span id="blog-chroot-bind-home"></span><h4><a class="toc-backref" href="#id32" role="doc-backlink">Home Directory (And Network, While We At Bind Mounting)</a><a class="headerlink" href="#home-directory-and-network-while-we-at-bind-mounting" title="Link to this heading">#</a></h4>
+<section id="home-directory">
+<span id="blog-chroot-bind-home"></span><h4><a class="toc-backref" href="#id32" role="doc-backlink">Home Directory</a><a class="headerlink" href="#home-directory" title="Link to this heading">#</a></h4>
 <p>To make my home directory visible inside the jail, we create a
 mountpoint <code class="docutils literal notranslate"><span class="pre">/home/jfasch</span></code> <em>inside</em>, and mount the <em>outside</em>
 <code class="docutils literal notranslate"><span class="pre">/home/jfasch</span></code> onto it.</p>
@@ -757,8 +757,8 @@ mountpoint <code class="docutils literal notranslate"><span class="pre">/home/jf
 </div>
 </div>
 </section>
-<section id="etc-resolv-conf">
-<h4><a class="toc-backref" href="#id33" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">/etc/resolv.conf</span></code></a><a class="headerlink" href="#etc-resolv-conf" title="Link to this heading">#</a></h4>
+<section id="network-etc-resolv-conf">
+<h4><a class="toc-backref" href="#id33" role="doc-backlink">Network/<code class="docutils literal notranslate"><span class="pre">/etc/resolv.conf</span></code></a><a class="headerlink" href="#network-etc-resolv-conf" title="Link to this heading">#</a></h4>
 <p>No isolation is cool - I can use the host network inside the jail
 (simply because the concept “host” does not exist).</p>
 <div class="literal-block-wrapper docutils container" id="id15">
@@ -988,13 +988,13 @@ error.</p>
 <span class="gp"># </span>mount<span class="w"> </span>-t<span class="w"> </span>tmpfs<span class="w"> </span>shm<span class="w"> </span><span class="nv">$JAILDIR</span>/dev/shm
 </pre></div>
 </div>
-<p>Mount my home directory (see <a class="reference internal" href="#blog-chroot-bind-home"><span class="std std-ref">Home Directory (And Network, While We At Bind Mounting)</span></a>):</p>
+<p>Mount my home directory (see <a class="reference internal" href="#blog-chroot-bind-home"><span class="std std-ref">Home Directory</span></a>):</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>mkdir<span class="w"> </span><span class="nv">$JAILDIR</span>/home/jfasch
 <span class="gp"># </span>chown<span class="w"> </span>jfasch:jfasch<span class="w"> </span><span class="nv">$JAILDIR</span>/home/jfasch
 <span class="gp"># </span>mount<span class="w"> </span>--bind<span class="w"> </span>/home/jfasch<span class="w"> </span><span class="nv">$JAILDIR</span>/home/jfasch
 </pre></div>
 </div>
-<p>Mount resolver config (see <a class="reference internal" href="#blog-chroot-bind-home"><span class="std std-ref">Home Directory (And Network, While We At Bind Mounting)</span></a>):</p>
+<p>Mount resolver config (see <a class="reference internal" href="#blog-chroot-bind-home"><span class="std std-ref">Home Directory</span></a>):</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>touch<span class="w"> </span><span class="nv">$JAILDIR</span>/etc/resolv.conf
 <span class="gp"># </span>mount<span class="w"> </span>--bind<span class="w"> </span>/etc/resolv.conf<span class="w"> </span><span class="nv">$JAILDIR</span>/etc/resolv.conf
 </pre></div>
@@ -1118,8 +1118,8 @@ supported distibutions</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#proc"><code class="docutils literal notranslate"><span class="pre">proc</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#devtmpfs-and-dev-shm"><code class="docutils literal notranslate"><span class="pre">devtmpfs</span></code> (And <code class="docutils literal notranslate"><span class="pre">/dev/shm</span></code>)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bind-mounts">Bind Mounts</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#home-directory-and-network-while-we-at-bind-mounting">Home Directory (And Network, While We At Bind Mounting)</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#etc-resolv-conf"><code class="docutils literal notranslate"><span class="pre">/etc/resolv.conf</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#home-directory">Home Directory</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#network-etc-resolv-conf">Network/<code class="docutils literal notranslate"><span class="pre">/etc/resolv.conf</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#working-as-non-root-inside-a-jail-and-uid-non-isolation">Working As Non <code class="docutils literal notranslate"><span class="pre">root</span></code> Inside A Jail (And UID Non-Isolation)</a><ul class="nav section-nav flex-column">
