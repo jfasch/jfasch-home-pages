@@ -9,7 +9,6 @@
 
 int main()
 {
-    static const std::regex re_line("^(\\d+)\\s+(\\w+)\\s+(\\w+)\\s*$");
     Database db;
 
     int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -73,13 +72,11 @@ int main()
             lines.push_back(std::string(line, nread));
         }
 
-        for (const auto& line: lines) {
-            std::smatch match;
-            if (std::regex_search(line, match, re_line))
-                db.insert(std::stoi(match[1].str()), match[2].str(), match[3].str());
+        for (const auto& line: lines)
+            if (Record r = split_line(line))
+                db.insert(r);
             else
                 std::println(stderr, "invalid line: \"{}\"", line);
-        }
     }
 
     db.commit();

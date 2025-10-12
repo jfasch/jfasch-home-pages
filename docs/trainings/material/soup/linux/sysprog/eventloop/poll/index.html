@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
@@ -59,7 +59,7 @@
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
     <link rel="next" title="A Naive C++ Eventloop (Based Upon poll())" href="../poll-cpp/index.html" />
-    <link rel="prev" title="The Problem" href="../intro/index.html" /> 
+    <link rel="prev" title="The Problem" href="../problem/index.html" /> 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />   
@@ -374,7 +374,7 @@
 <h1>I/O Multiplexing<a class="headerlink" href="#i-o-multiplexing" title="Link to this heading">#</a></h1>
 <aside class="topic">
 <p class="topic-title">Trainer’s note</p>
-<p>Continue with the code that we left <a class="reference internal" href="../intro/index.html#sysprog-eventloop-intro-problem"><span class="std std-ref">in the introduction</span></a></p>
+<p>Continue with the code that we left <a class="reference internal" href="../problem/index.html#sysprog-eventloop-intro-problem"><span class="std std-ref">in the introduction</span></a></p>
 </aside>
 <section id="the-paradigm">
 <h2>The Paradigm<a class="headerlink" href="#the-paradigm" title="Link to this heading">#</a></h2>
@@ -460,8 +460,8 @@ consumed.</p></td>
 </div>
 </section>
 <section id="solution-read-from-two-input-sources">
-<h2>Solution: Read From Two Input Sources<a class="headerlink" href="#solution-read-from-two-input-sources" title="Link to this heading">#</a></h2>
-<p>Continuing from <a class="reference internal" href="../intro/index.html#sysprog-eventloop-intro-problem"><span class="std std-ref">where we left</span></a> …</p>
+<span id="sysprog-eventloop-poll-solution"></span><h2>Solution: Read From Two Input Sources<a class="headerlink" href="#solution-read-from-two-input-sources" title="Link to this heading">#</a></h2>
+<p>Continuing from <a class="reference internal" href="../problem/index.html#sysprog-eventloop-intro-problem"><span class="std std-ref">where we left</span></a> …</p>
 <ul class="simple">
 <li><p>Two input sources</p>
 <ul>
@@ -485,7 +485,6 @@ consumed.</p></td>
 
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
-<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">regex</span><span class="w"> </span><span class="n">re_line</span><span class="p">(</span><span class="s">&quot;^(</span><span class="se">\\</span><span class="s">d+)</span><span class="se">\\</span><span class="s">s+(</span><span class="se">\\</span><span class="s">w+)</span><span class="se">\\</span><span class="s">s+(</span><span class="se">\\</span><span class="s">w+)</span><span class="se">\\</span><span class="s">s*$&quot;</span><span class="p">);</span>
 <span class="w">    </span><span class="n">Database</span><span class="w"> </span><span class="n">db</span><span class="p">;</span>
 
 <span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">sock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span><span class="w"> </span><span class="n">SOCK_DGRAM</span><span class="p">,</span><span class="w"> </span><span class="n">IPPROTO_UDP</span><span class="p">);</span>
@@ -549,13 +548,11 @@ consumed.</p></td>
 <span class="w">            </span><span class="n">lines</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="w"> </span><span class="n">nread</span><span class="p">));</span>
 <span class="w">        </span><span class="p">}</span>
 
-<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">line</span><span class="o">:</span><span class="w"> </span><span class="n">lines</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">smatch</span><span class="w"> </span><span class="n">match</span><span class="p">;</span>
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">regex_search</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="w"> </span><span class="n">match</span><span class="p">,</span><span class="w"> </span><span class="n">re_line</span><span class="p">))</span>
-<span class="w">                </span><span class="n">db</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">stoi</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">str</span><span class="p">()),</span><span class="w"> </span><span class="n">match</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">str</span><span class="p">(),</span><span class="w"> </span><span class="n">match</span><span class="p">[</span><span class="mi">3</span><span class="p">].</span><span class="n">str</span><span class="p">());</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">line</span><span class="o">:</span><span class="w"> </span><span class="n">lines</span><span class="p">)</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Record</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">split_line</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+<span class="w">                </span><span class="n">db</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">r</span><span class="p">);</span>
 <span class="w">            </span><span class="k">else</span>
 <span class="w">                </span><span class="n">std</span><span class="o">::</span><span class="n">println</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;invalid line: </span><span class="se">\&quot;</span><span class="s">{}</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">line</span><span class="p">);</span>
-<span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 
 <span class="w">    </span><span class="n">db</span><span class="p">.</span><span class="n">commit</span><span class="p">();</span>
