@@ -270,7 +270,7 @@
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="../../../index.html">Linux: Introduction, Userland/Kernel Programming, Hardware/Embedded</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../../../basics/index.html">Linux Basics</a></li>
 <li class="toctree-l3 current active has-children"><a class="reference internal" href="../../index.html">Linux Systems Programming</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../../syscalls-and-errors/index.html">System Calls, And Error Handling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../syscalls/index.html">System Calls</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../file-io/index.html">Files And File Descriptors</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../process/index.html">Processes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../signals/index.html">Signals</a></li>
@@ -374,6 +374,17 @@
 <h1>A Naive C++ Eventloop (Based Upon <code class="docutils literal notranslate"><span class="pre">poll()</span></code>)<a class="headerlink" href="#a-naive-c-eventloop-based-upon-poll" title="Link to this heading">#</a></h1>
 <section id="eventloop">
 <h2>Eventloop<a class="headerlink" href="#eventloop" title="Link to this heading">#</a></h2>
+<aside class="topic">
+<p class="topic-title">Remark: this is not modern C++</p>
+<p>In nowadays C++, such a simple callback like “there’s input to be
+done on file descriptor <code class="docutils literal notranslate"><span class="pre">fd</span></code>” would not require an interface (see
+<a class="reference internal" href="../../../../cxx/cxx03/inheritance-oo-design/index.html"><span class="doc">Inheritance And Object Oriented Design</span></a>
+for more), but only a lambda (<a class="reference internal" href="../../../../cxx/cxx11/lambda/index.html"><span class="doc">here</span></a>) or some other
+functional (<a class="reference internal" href="../../../../cxx/cxx11/bind-function/020-function/topic.html"><span class="doc">here</span></a>)
+object.</p>
+<p>I’ll use C++ conservatively though, in a way that is comprehensible
+to those who are not so fluent in that language.</p>
+</aside>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/3914ac49ee4aeaab3870f75b31f3e1cf/eventloop.h"><code class="xref download docutils literal notranslate"><span class="pre">code/eventloop.h</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#pragma once</span>
@@ -420,7 +431,7 @@
 <span class="kt">void</span><span class="w"> </span><span class="nf">Eventloop::register_input</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="n">InputHandler</span><span class="o">*</span><span class="w"> </span><span class="n">h</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="p">[</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">inserted</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_inputs</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="n">h</span><span class="p">));</span>
-<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">inserted</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">inserted</span><span class="p">);</span><span class="w">                                  </span><span class="c1">// &lt;-- don&#39;t watch an fd twice</span>
 <span class="p">}</span>
 
 <span class="kt">void</span><span class="w"> </span><span class="nf">Eventloop::run</span><span class="p">()</span>
@@ -436,7 +447,7 @@
 
 <span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">nready</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">poll</span><span class="p">(</span><span class="o">&amp;</span><span class="n">watches</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">watches</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span><span class="w"> </span><span class="mi">-1</span><span class="p">);</span>
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nready</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="k">auto</span><span class="w"> </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;poll error ({}, {})&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">errno</span><span class="p">,</span><span class="w"> </span><span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;poll error ({}, {})&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">errno</span><span class="p">,</span><span class="w"> </span><span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
 <span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="n">msg</span><span class="p">);</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nready</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
