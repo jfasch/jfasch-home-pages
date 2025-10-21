@@ -1,42 +1,48 @@
 #include "database.h"
+#include "eventloop.h"
 
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <poll.h>
 #include <assert.h>
 #include <regex>
 
-class ReceiveLineAndInsertRecord : public InputHandler
+class UDPToDatabaseRecord : public InputHandler
 {
 public:
-    ReceiveLineAndInsertRecord(int fd, Database& db) : _fd(fd), _db(db) {}
+    UDPToDatabaseRecord(const std::string& addr, short port, Database& db) : _db(db)
+    {
+        _socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+        if (_socket == -1)
+            throw std::runtime_error(std::format("cannot allocate socket: {} ({})", strerror(errno), errno))
+
+        struct sockaddr_in addr = {
+            .sin_family = AF_INET,
+            .sin_port = htons(1234),
+        };
+        if (inet_pton(AF_INET, addr.c_str(), &addr.sin_addr) != 1)
+            throw std::runtime_error(std::format("{} is not a valid address: {} ({})", addr, strerror(errno), errno));
+
+        if (bind(sock, (struct sockaddr *)&addr, sizeof(addr)) == -1)
+            throw std::runtime_error(std::format("{} is not a valid address: {} ({})", addr, strerror(errno), errno));
+    }
     
     EventAction ready(int fd)
     {
         
     }
+
+private:
+    int _socket;
+    Database& _db;
 };
 
 int main()
 {
     Database db;
 
-    int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    if (sock == -1) {
-        perror("socket");
-        return 1;
-    }
-    struct sockaddr_in addr = {
-        .sin_family = AF_INET,
-        .sin_port = htons(1234),
-        .sin_addr = INADDR_ANY,
-    };
-    int error = bind(sock, (struct sockaddr *)&addr, sizeof(addr));
-    if (error == -1) {
-        perror("bind");
-        return 1;
-    }
 
     bool quit = false;
     while (!quit) {
