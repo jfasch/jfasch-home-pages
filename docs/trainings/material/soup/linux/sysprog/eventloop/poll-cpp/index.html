@@ -58,7 +58,7 @@
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/sysprog/eventloop/poll-cpp/index.html" />
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
-    <link rel="next" title="signalfd Integration" href="../signalfd/index.html" />
+    <link rel="next" title="class Eventloop" href="eventloop-code.html" />
     <link rel="prev" title="I/O Multiplexing" href="../poll/index.html" /> 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -277,7 +277,13 @@
 <li class="toctree-l4 current active has-children"><a class="reference internal" href="../index.html">Event Loops</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="../problem/index.html">The Problem</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../poll/index.html">I/O Multiplexing</a></li>
-<li class="toctree-l5 current active"><a class="current reference internal" href="#">A Naive C++ Eventloop (Based Upon <code class="docutils literal notranslate"><span class="pre">poll()</span></code>)</a></li>
+<li class="toctree-l5 current active has-children"><a class="current reference internal" href="#">A Naive C++ Eventloop (Based Upon <code class="docutils literal notranslate"><span class="pre">poll()</span></code>)</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l6"><a class="reference internal" href="eventloop-code.html"><code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Eventloop</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="udp-db-code.html"><code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">UDPToDatabase</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="stdin-db-code.html"><code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">StdinToDatabase</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="database-code.html"><code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Database</span></code> (And Associated)</a></li>
+</ul>
+</details></li>
 <li class="toctree-l5"><a class="reference internal" href="../signalfd/index.html"><code class="docutils literal notranslate"><span class="pre">signalfd</span></code> Integration</a></li>
 </ul>
 </details></li>
@@ -378,107 +384,126 @@
                 <article class="bd-article">
                    <section id="a-naive-c-eventloop-based-upon-poll">
 <h1>A Naive C++ Eventloop (Based Upon <code class="docutils literal notranslate"><span class="pre">poll()</span></code>)<a class="headerlink" href="#a-naive-c-eventloop-based-upon-poll" title="Link to this heading">#</a></h1>
-<section id="eventloop">
-<h2>Eventloop<a class="headerlink" href="#eventloop" title="Link to this heading">#</a></h2>
 <aside class="topic">
-<p class="topic-title">Remark: this is not modern C++</p>
-<p>In nowadays C++, such a simple callback like “there’s input to be
-done on file descriptor <code class="docutils literal notranslate"><span class="pre">fd</span></code>” would not require an interface (see
-<a class="reference internal" href="../../../../cxx/cxx03/inheritance-oo-design/index.html"><span class="doc">Inheritance And Object Oriented Design</span></a>
-for more), but only a lambda (<a class="reference internal" href="../../../../cxx/cxx11/lambda/index.html"><span class="doc">here</span></a>) or some other
-functional (<a class="reference internal" href="../../../../cxx/cxx11/bind-function/020-function/topic.html"><span class="doc">here</span></a>)
-object.</p>
-<p>I’ll use C++ conservatively though, in a way that is comprehensible
-to those who are not so fluent in that language.</p>
+<p class="topic-title">Remark: this is not a C++ course</p>
+<p>To fight code complexity, we are now switching to C++. We’ll use
+conservative old-style C++ though, in a way that should still be
+comprehensible to those who are not so fluent in that language.</p>
+<p>Modern C++ would probably offer functional constructs (<a class="reference internal" href="../../../../cxx/cxx11/bind-function/020-function/topic.html"><span class="doc">here</span></a>)
+for the loop registration, and lambdas (<a class="reference internal" href="../../../../cxx/cxx11/lambda/index.html"><span class="doc">here</span></a>) to implement
+the satellite callbacks.</p>
 </aside>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/3914ac49ee4aeaab3870f75b31f3e1cf/eventloop.h"><code class="xref download docutils literal notranslate"><span class="pre">code/eventloop.h</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#pragma once</span>
-
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
-
-<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">EventAction</span><span class="w"> </span>
-<span class="p">{</span>
-<span class="w">    </span><span class="n">Continue</span><span class="p">,</span>
-<span class="w">    </span><span class="n">Quit</span><span class="p">,</span>
-<span class="p">};</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">InputHandler</span>
-<span class="p">{</span>
-<span class="k">public</span><span class="o">:</span>
-<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">InputHandler</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
-<span class="w">    </span><span class="p">[[</span><span class="n">nodiscard</span><span class="p">]]</span><span class="w"> </span><span class="k">virtual</span><span class="w"> </span><span class="n">EventAction</span><span class="w"> </span><span class="n">ready</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="p">};</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">Eventloop</span>
-<span class="p">{</span>
-<span class="k">public</span><span class="o">:</span>
-<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">register_input</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="n">InputHandler</span><span class="o">*</span><span class="p">);</span>
-<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">run</span><span class="p">();</span>
-
-<span class="k">private</span><span class="o">:</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">InputHandler</span><span class="o">*&gt;</span><span class="w"> </span><span class="n">_inputs</span><span class="p">;</span><span class="w">    </span>
-<span class="p">};</span>
-</pre></div>
-</div>
-</div>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/6b18aa271a2cead11a7c6db08ba9c314/eventloop.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/eventloop.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;eventloop.h&quot;</span>
-
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;format&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cassert&gt;</span>
-
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;poll.h&gt;</span>
-
-
-<span class="kt">void</span><span class="w"> </span><span class="nf">Eventloop::register_input</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="n">InputHandler</span><span class="o">*</span><span class="w"> </span><span class="n">h</span><span class="p">)</span>
-<span class="p">{</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="p">[</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">inserted</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_inputs</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="n">h</span><span class="p">));</span>
-<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">inserted</span><span class="p">);</span><span class="w">                                  </span><span class="c1">// &lt;-- don&#39;t watch an fd twice</span>
-<span class="p">}</span>
-
-<span class="kt">void</span><span class="w"> </span><span class="nf">Eventloop::run</span><span class="p">()</span>
-<span class="p">{</span>
-<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">quit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
-<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">quit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="k">struct</span><span class="w"> </span><span class="nc">pollfd</span><span class="o">&gt;</span><span class="w"> </span><span class="n">watches</span><span class="p">(</span><span class="n">_inputs</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
-<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="n">_inputs</span><span class="p">)</span>
-<span class="w">            </span><span class="n">watches</span><span class="p">.</span><span class="n">push_back</span><span class="p">({</span>
-<span class="w">                    </span><span class="p">.</span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fd</span><span class="p">,</span>
-<span class="w">                    </span><span class="p">.</span><span class="n">events</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">POLLIN</span><span class="p">,</span>
-<span class="w">                </span><span class="p">});</span>
-
-<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">nready</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">poll</span><span class="p">(</span><span class="o">&amp;</span><span class="n">watches</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">watches</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span><span class="w"> </span><span class="mi">-1</span><span class="p">);</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nready</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;poll error ({}, {})&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">errno</span><span class="p">,</span><span class="w"> </span><span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
-<span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="n">msg</span><span class="p">);</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nready</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
-<span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;poll returns 0 though no timeout requested&quot;</span><span class="p">);</span>
-
-<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">watch</span><span class="o">:</span><span class="w"> </span><span class="n">watches</span><span class="p">)</span>
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">watch</span><span class="p">.</span><span class="n">revents</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">POLLIN</span><span class="p">)</span>
-<span class="w">                </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">_inputs</span><span class="p">[</span><span class="n">watch</span><span class="p">.</span><span class="n">fd</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">ready</span><span class="p">(</span><span class="n">watch</span><span class="p">.</span><span class="n">fd</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                    </span><span class="k">case</span><span class="w"> </span><span class="no">EventAction</span><span class="o">::</span><span class="no">Quit</span><span class="p">:</span><span class="w"> </span>
-<span class="w">                        </span><span class="n">quit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
-<span class="w">                        </span><span class="k">break</span><span class="p">;</span>
-<span class="w">                    </span><span class="k">case</span><span class="w"> </span><span class="no">EventAction</span><span class="o">::</span><span class="no">Continue</span><span class="p">:</span>
-<span class="w">                        </span><span class="k">break</span><span class="p">;</span>
-<span class="w">                </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div>
+<aside class="topic">
+<p class="topic-title">Other event loop implementations</p>
+<p>The event loop implementation that is being worked out in this
+section has educational value only - <em>is not meant to be used
+productively</em>. Once the concept of event loops, and the impact of
+using such a thing is understood, you can choose among a number of
+implementations out there. Here I list only some, all of which are
+“object oriented” in one way or the other although they might be
+implemented in C.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sd-event</span></code> - the <code class="docutils literal notranslate"><span class="pre">libsystemd</span></code> event loop: <a class="reference external" href="https://0pointer.net/blog/introducing-sd-event.html">freedesktop.org
+documentation</a>,
+<a class="reference external" href="https://0pointer.net/blog/introducing-sd-event.html">Lennart Poettering: “The Event Loop API of libsystemd”</a></p></li>
+<li><p><a class="reference external" href="https://docs.gtk.org/glib/main-loop.html">Gtk/GLib event loop</a></p></li>
+<li><p><a class="reference external" href="https://doc.qt.io/qt-6/qeventloop.html">Qt event loop</a></p></li>
+<li><p><a class="reference external" href="https://libevent.org/">libevent</a></p></li>
+<li><p><a class="reference external" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio.html">Boost.Asio</a></p></li>
+</ul>
+</aside>
+<section id="readability-and-oo">
+<h2>Readability, And OO<a class="headerlink" href="#readability-and-oo" title="Link to this heading">#</a></h2>
+<aside class="topic">
+<p class="topic-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../signals/signalfd/index.html"><span class="doc">Event Loop Support: signalfd()</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>In <a class="reference internal" href="../poll/index.html#sysprog-eventloop-poll-solution"><span class="std std-ref">Solution: Read From Two Input Sources</span></a>, we react on two different
+file descriptors in two different ways</p></li>
+<li><p><em>Two</em> is one representation of <em>many</em></p></li>
+<li><p>⟶ Complication ahead; for example …</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">signalfd()</span></code>: handle <code class="docutils literal notranslate"><span class="pre">SIGTERM</span></code> and <code class="docutils literal notranslate"><span class="pre">SIGINT</span></code> to terminate
+gracefully</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">signalfd()</span></code>: use <code class="docutils literal notranslate"><span class="pre">SIGUSR1</span></code> to commit database</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">signalfd()</span></code>: use <code class="docutils literal notranslate"><span class="pre">SIGUSR2</span></code> to rollback database</p></li>
+<li><p>Timers using <code class="docutils literal notranslate"><span class="pre">timerfd_create()</span></code></p></li>
+<li><p>More network I/O</p></li>
+<li><p>…</p></li>
+</ul>
+</li>
+</ul>
 </section>
-<section id="solution">
-<h2>Solution<a class="headerlink" href="#solution" title="Link to this heading">#</a></h2>
-<p>See <a class="reference internal" href="../poll/index.html#sysprog-eventloop-poll-solution"><span class="std std-ref">underengineered C solution</span></a></p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/52afb197692fe946a5278d0e0ef54dd6/db-two-sources-eventloop.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/db-two-sources-eventloop.cpp</span></code></a></span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
+<section id="eventloop-and-associated-types">
+<h2>Eventloop, And Associated Types<a class="headerlink" href="#eventloop-and-associated-types" title="Link to this heading">#</a></h2>
+<p class="plantuml">
+<img src="../../../../../../../_images/plantuml-f0a0f1e07f905030aa4ca3783c45330a41158fd9.svg" alt="&#64;startuml
+
+interface InputHandler {
+  + EventAction ready()
+}
+
+class Eventloop {
+  + register_input(fd, handler)
+  + run()
+}
+
+Eventloop -right-&gt; InputHandler
+
+InputHandler &lt;|.. UDPToDatabase
+InputHandler &lt;|.. StdinToDatabase
+
+&#64;enduml"/></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Eventloop</span></code>: central “loop” object</p>
+<ul>
+<li><p>Replacement for <code class="docutils literal notranslate"><span class="pre">while</span></code> loop in
+<a class="reference internal" href="../poll/index.html#sysprog-eventloop-poll-solution"><span class="std std-ref">Solution: Read From Two Input Sources</span></a></p></li>
+<li><p>Uses <code class="docutils literal notranslate"><span class="pre">poll()</span></code> to watch registered file descriptors</p></li>
+<li><p>Calls back assiciated <code class="docutils literal notranslate"><span class="pre">InputHandler</span></code> objects when it detects
+input (<code class="docutils literal notranslate"><span class="pre">POLLIN</span></code>) readiness (see
+<a class="reference internal" href="../poll/index.html#sysprog-eventloop-poll-events"><span class="std std-ref">Possible Events</span></a>)</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">InputHandler</span></code>: handle input detected on a file descriptor</p>
+<ul>
+<li><p>Polymorphic type: abstract base class, an <em>interface</em></p></li>
+<li><p>Usually reads from its file descriptor, and does something with
+the data</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="re-designing-the-database-application">
+<h2>Re-Designing The Database Application<a class="headerlink" href="#re-designing-the-database-application" title="Link to this heading">#</a></h2>
+<aside class="topic">
+<p class="topic-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../poll/index.html#sysprog-eventloop-poll-solution"><span class="std std-ref">Solution: Read From Two Input Sources</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>With the building blocks outlined above, redesign our <a class="reference internal" href="../poll/index.html#sysprog-eventloop-poll-solution"><span class="std std-ref">database
+application</span></a></p></li>
+<li><p>⟶ Abstraction is cool</p></li>
+<li><p>⟶ Do not need to know <em>everything</em></p></li>
+</ul>
+<a class="reference internal image-reference" href="../../../../../../../_images/eventloop-satellites.svg"><img alt="../../../../../../../_images/eventloop-satellites.svg" src="../../../../../../../_images/eventloop-satellites.svg" style="width: 450.40000000000003px; height: 469.20000000000005px;" />
+</a>
+</section>
+<section id="re-writing-the-database-application">
+<h2>Re-Writing The Database Application<a class="headerlink" href="#re-writing-the-database-application" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Externalize building blocks from the diagram into separate files
+(see <a class="reference internal" href="#sysprog-eventloop-poll-building-blocks"><span class="std std-ref">Building Blocks In Detail</span></a>)</p></li>
+<li><p>Functionality is equivalent to the spaghetti implementation</p></li>
+<li><p>See <a class="reference internal" href="../poll/index.html#sysprog-poll-db-testing"><span class="std std-ref">here</span></a> for the test protocol</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/6272be16c412a1478160085fcc2990ba/main.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/main.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;database.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;eventloop.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;udp-db.h&quot;</span>
@@ -486,21 +511,68 @@ to those who are not so fluent in that language.</p>
 
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
+<span class="w">    </span><span class="n">Eventloop</span><span class="w"> </span><span class="n">loop</span><span class="p">;</span><span class="w">                                    </span><span class="c1">// &lt;-- main loop</span>
 <span class="w">    </span><span class="n">Database</span><span class="w"> </span><span class="n">db</span><span class="p">;</span>
-<span class="w">    </span><span class="n">UDPToDatabase</span><span class="w"> </span><span class="n">udp</span><span class="p">(</span><span class="s">&quot;0.0.0.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1234</span><span class="p">,</span><span class="w"> </span><span class="n">db</span><span class="p">);</span>
-<span class="w">    </span><span class="n">StdinToDatabase</span><span class="w"> </span><span class="n">stdin</span><span class="p">(</span><span class="n">db</span><span class="p">);</span>
 
-<span class="w">    </span><span class="n">Eventloop</span><span class="w"> </span><span class="n">loop</span><span class="p">;</span>
-<span class="w">    </span><span class="n">udp</span><span class="p">.</span><span class="n">hookup</span><span class="p">(</span><span class="n">loop</span><span class="p">);</span>
-<span class="w">    </span><span class="n">stdin</span><span class="p">.</span><span class="n">hookup</span><span class="p">(</span><span class="n">loop</span><span class="p">);</span>
+<span class="w">    </span><span class="n">UDPToDatabase</span><span class="w"> </span><span class="n">udp</span><span class="p">(</span><span class="s">&quot;0.0.0.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1234</span><span class="p">,</span><span class="w"> </span><span class="n">db</span><span class="p">);</span><span class="w">            </span><span class="c1">// &lt;-- satellite</span>
+<span class="w">    </span><span class="n">StdinToDatabase</span><span class="w"> </span><span class="n">stdin</span><span class="p">(</span><span class="n">db</span><span class="p">);</span><span class="w">                         </span><span class="c1">// &lt;-- satellite</span>
 
-<span class="w">    </span><span class="n">loop</span><span class="p">.</span><span class="n">run</span><span class="p">();</span>
+<span class="w">    </span><span class="n">udp</span><span class="p">.</span><span class="n">hookup</span><span class="p">(</span><span class="n">loop</span><span class="p">);</span><span class="w">                                  </span><span class="c1">// &lt;-- register with loop</span>
+<span class="w">    </span><span class="n">stdin</span><span class="p">.</span><span class="n">hookup</span><span class="p">(</span><span class="n">loop</span><span class="p">);</span><span class="w">                                </span><span class="c1">// &lt;-- register with loop</span>
+
+<span class="w">    </span><span class="n">loop</span><span class="p">.</span><span class="n">run</span><span class="p">();</span><span class="w">                                        </span><span class="c1">// &lt;-- run until quit</span>
 
 <span class="w">    </span><span class="n">db</span><span class="p">.</span><span class="n">commit</span><span class="p">();</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="p">};</span>
 </pre></div>
 </div>
+</div>
+</section>
+<section id="building-blocks-in-detail">
+<span id="sysprog-eventloop-poll-building-blocks"></span><h2>Building Blocks In Detail<a class="headerlink" href="#building-blocks-in-detail" title="Link to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<div class="pst-scrollable-table-container"><table class="table table-left">
+<tbody>
+<tr class="row-odd"><td><p>Types</p></td>
+<td><p>Download</p></td>
+<td><p>Inline</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Eventloop</span></code> and <code class="docutils literal notranslate"><span class="pre">InputHandler</span></code></p></td>
+<td><ul class="simple">
+<li><p><a class="reference download internal" download="" href="../../../../../../../_downloads/3914ac49ee4aeaab3870f75b31f3e1cf/eventloop.h"><code class="xref download docutils literal notranslate"><span class="pre">eventloop.h</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../../../../../../../_downloads/6b18aa271a2cead11a7c6db08ba9c314/eventloop.cpp"><code class="xref download docutils literal notranslate"><span class="pre">eventloop.cpp</span></code></a></p></li>
+</ul>
+</td>
+<td><p><a class="reference internal" href="eventloop-code.html"><span class="doc">class Eventloop</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">UDPToDatabase</span></code></p></td>
+<td><ul class="simple">
+<li><p><a class="reference download internal" download="" href="../../../../../../../_downloads/07ad75d4d2bff45aa29de874d9fedbd6/udp-db.h"><code class="xref download docutils literal notranslate"><span class="pre">udp-db.h</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../../../../../../../_downloads/76806d2e22d828763cb08c22dbebcc8d/udp-db.cpp"><code class="xref download docutils literal notranslate"><span class="pre">udp-db.cpp</span></code></a></p></li>
+</ul>
+</td>
+<td><p><a class="reference internal" href="udp-db-code.html"><span class="doc">class UDPToDatabase</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">StdinToDatabase</span></code></p></td>
+<td><ul class="simple">
+<li><p><a class="reference download internal" download="" href="../../../../../../../_downloads/9ebe793f33fa953a16b8400f0e0fcc96/stdin-db.h"><code class="xref download docutils literal notranslate"><span class="pre">stdin-db.h</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../../../../../../../_downloads/1dbd0fdad7b9d9159d9efebd90e296a4/stdin-db.cpp"><code class="xref download docutils literal notranslate"><span class="pre">stdin-db.cpp</span></code></a></p></li>
+</ul>
+</td>
+<td><p><a class="reference internal" href="stdin-db-code.html"><span class="doc">class StdinToDatabase</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Database</span></code> (unmodified)</p></td>
+<td><ul class="simple">
+<li><p><a class="reference download internal" download="" href="../../../../../../../_downloads/af82a9886338d7538082a0f761d81ff7/database.h"><code class="xref download docutils literal notranslate"><span class="pre">database.h</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../../../../../../../_downloads/2eb4b4721e0c26ec36d1f07e9c1ae4a3/database.cpp"><code class="xref download docutils literal notranslate"><span class="pre">database.cpp</span></code></a></p></li>
+</ul>
+</td>
+<td><p><a class="reference internal" href="database-code.html"><span class="doc">class Database (And Associated)</span></a></p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </section>
 </section>
@@ -531,8 +603,11 @@ to those who are not so fluent in that language.</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#eventloop">Eventloop</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solution">Solution</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#readability-and-oo">Readability, And OO</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#eventloop-and-associated-types">Eventloop, And Associated Types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#re-designing-the-database-application">Re-Designing The Database Application</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#re-writing-the-database-application">Re-Writing The Database Application</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-blocks-in-detail">Building Blocks In Detail</a></li>
 </ul>
   </nav></div>
 

@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
@@ -407,10 +407,23 @@ same file and overwrite each other’s contents</p></li>
 </li>
 </ul>
 </section>
-<section id="creating-a-file-if-it-does-not-exist">
-<h2>Creating A File If It Does Not Exist<a class="headerlink" href="#creating-a-file-if-it-does-not-exist" title="Link to this heading">#</a></h2>
+<section id="creating-a-file-if-it-does-not-exist-o-creat">
+<h2>Creating A File If It Does Not Exist (<code class="docutils literal notranslate"><span class="pre">O_CREAT</span></code>)<a class="headerlink" href="#creating-a-file-if-it-does-not-exist-o-creat" title="Link to this heading">#</a></h2>
+<aside class="topic">
+<p class="topic-title">See also</p>
 <ul class="simple">
-<li><p>Note: <code class="docutils literal notranslate"><span class="pre">mode</span></code> is <code class="docutils literal notranslate"><span class="pre">0600</span></code></p></li>
+<li><p><a class="reference internal" href="../../../basics/permissions/umask.html"><span class="doc">Default Permissions: umask</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Note: <code class="docutils literal notranslate"><span class="pre">mode</span></code> is <code class="docutils literal notranslate"><span class="pre">0666</span></code></p>
+<ul>
+<li><p>This is the preferred <code class="docutils literal notranslate"><span class="pre">mode</span></code> that the program should specify</p></li>
+<li><p>The user’s
+<a class="reference internal" href="../../../basics/permissions/umask.html"><span class="doc">Default Permissions: umask</span></a>
+specifies the bits that are subtracted from it</p></li>
+</ul>
+</li>
 <li><p>Use this on <code class="docutils literal notranslate"><span class="pre">/tmp/somefile</span></code> from previous section
 (<a class="reference internal" href="../file-output/index.html"><span class="doc">Output To Files (write())</span></a>)</p></li>
 <li><p>⟶ File opened for overwrite (we did not say
@@ -428,7 +441,7 @@ same file and overwrite each other’s contents</p></li>
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">open</span><span class="p">(</span><span class="s">&quot;/tmp/somefile&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">O_WRONLY</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">O_CREAT</span><span class="p">,</span><span class="w"> </span>
-<span class="w">                  </span><span class="mo">0600</span><span class="p">);</span><span class="w">                               </span><span class="c1">// &lt;-- note &quot;mode&quot;!</span>
+<span class="w">                  </span><span class="mo">0666</span><span class="p">);</span><span class="w">                               </span><span class="c1">// &lt;-- note &quot;mode&quot;!</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fd</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;open&quot;</span><span class="p">);</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
@@ -441,10 +454,13 @@ same file and overwrite each other’s contents</p></li>
 </div>
 </div>
 </section>
-<section id="creating-a-file-failing-if-it-already-exists">
-<h2>Creating A File, Failing If It Already Exists<a class="headerlink" href="#creating-a-file-failing-if-it-already-exists" title="Link to this heading">#</a></h2>
+<section id="creating-a-file-failing-if-it-already-exists-o-excl">
+<h2>Creating A File, Failing If It Already Exists (<code class="docutils literal notranslate"><span class="pre">O_EXCL</span></code>)<a class="headerlink" href="#creating-a-file-failing-if-it-already-exists-o-excl" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">O_CREAT</span> <span class="pre">|</span> <span class="pre">O_EXCL</span></code>: “exclusive” creation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">O_CREAT</span></code> creates a file if it does not exist</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">O_EXCL</span></code> fails if the file already exists</p></li>
+<li><p>⟶ No data can be accidentally overwritten</p></li>
 <li><p>Prevents race condition if two processes …</p>
 <ul>
 <li><p>see that a file does not exist</p></li>
@@ -517,8 +533,8 @@ uninitialized memory</p></li>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#o-creat-and-o-excl"><code class="docutils literal notranslate"><span class="pre">O_CREAT</span></code> And <code class="docutils literal notranslate"><span class="pre">O_EXCL</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-file-if-it-does-not-exist">Creating A File If It Does Not Exist</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-file-failing-if-it-already-exists">Creating A File, Failing If It Already Exists</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-file-if-it-does-not-exist-o-creat">Creating A File If It Does Not Exist (<code class="docutils literal notranslate"><span class="pre">O_CREAT</span></code>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-file-failing-if-it-already-exists-o-excl">Creating A File, Failing If It Already Exists (<code class="docutils literal notranslate"><span class="pre">O_EXCL</span></code>)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attention-mode-a-k-a-permissions">Attention: <code class="docutils literal notranslate"><span class="pre">mode</span></code> (A.k.a. <em>Permissions</em>)</a></li>
 </ul>
   </nav></div>

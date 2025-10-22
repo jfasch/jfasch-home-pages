@@ -425,7 +425,7 @@ can be read from a socket <em>without blocking</em></p></li>
 </ul>
 </section>
 <section id="possible-events">
-<h2>Possible Events<a class="headerlink" href="#possible-events" title="Link to this heading">#</a></h2>
+<span id="sysprog-eventloop-poll-events"></span><h2>Possible Events<a class="headerlink" href="#possible-events" title="Link to this heading">#</a></h2>
 <p>From <a class="reference external" href="https://man7.org/linux/man-pages/man2/poll.2.html">man -s 2 poll</a> (reformatted
 and condensed):</p>
 <div class="pst-scrollable-table-container"><table class="table table-left">
@@ -478,8 +478,10 @@ consumed.</p></td>
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">poll()</span></code> to wait for both (no <code class="docutils literal notranslate"><span class="pre">timeout</span></code> ⟶ -1)</p></li>
 <li><p>Multiplex on return</p></li>
 </ul>
+<a class="reference internal image-reference" href="../../../../../../../_images/flowchart.svg"><img alt="../../../../../../../_images/flowchart.svg" src="../../../../../../../_images/flowchart.svg" style="width: 658.4000000000001px; height: 548.0px;" />
+</a>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/73312e241b3d4a9fdc1d0c4634b7cac9/db-poll-solution.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/db-poll-solution.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/062c6ab40d9cee242ccdd793f70a45dd/main.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/main.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;database.h&quot;</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
@@ -569,6 +571,39 @@ consumed.</p></td>
 </div>
 </div>
 </section>
+<section id="testing">
+<span id="sysprog-poll-db-testing"></span><h2>Testing<a class="headerlink" href="#testing" title="Link to this heading">#</a></h2>
+<ul>
+<li><p>In one terminal, start the program ⟶ sits and waits
+in <code class="docutils literal notranslate"><span class="pre">poll()</span></code></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./sysprog-eventloop-db-poll-solution
+<span class="go">&lt;sits and waits&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Feed it a record on standard input and watch it entered into the
+database</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">42 Joerg Faschingbauer</span>
+<span class="go">insert id=42, firstname=Joerg, lastname=Faschingbauer</span>
+</pre></div>
+</div>
+</li>
+<li><p>In another terminal, send a UDP packet containing another record
+⟶ inserted too</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nc<span class="w"> </span>-4<span class="w"> </span>--udp<span class="w"> </span>localhost<span class="w"> </span><span class="m">1234</span>
+<span class="go">666 Bad Guy</span>
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Crtl-d</span></code> On standard input</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">...</span>
+<span class="go">commit</span>
+<span class="gp">$</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
 <section id="afterword">
 <h2>Afterword<a class="headerlink" href="#afterword" title="Link to this heading">#</a></h2>
 <ul class="simple">
@@ -610,6 +645,7 @@ consumed.</p></td>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#enter-poll">Enter <code class="docutils literal notranslate"><span class="pre">poll()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#possible-events">Possible Events</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solution-read-from-two-input-sources">Solution: Read From Two Input Sources</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#testing">Testing</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#afterword">Afterword</a></li>
 </ul>
   </nav></div>
