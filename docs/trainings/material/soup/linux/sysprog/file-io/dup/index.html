@@ -58,7 +58,7 @@
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/sysprog/file-io/dup/index.html" />
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
-    <link rel="next" title="File Position/Offset (lseek64())" href="../lseek/index.html" />
+    <link rel="next" title="File Position/Offset" href="../lseek/index.html" />
     <link rel="prev" title="Creating Files" href="../create/index.html" /> 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -274,11 +274,11 @@
 <li class="toctree-l4 current active has-children"><a class="reference internal" href="../index.html">Files And File Descriptors</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="../file-descriptors/index.html">File Descriptors: Basics</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../open/index.html"><code class="docutils literal notranslate"><span class="pre">open()</span></code>: Opening Files</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../file-input/index.html">Input From Files (<code class="docutils literal notranslate"><span class="pre">read()</span></code>)</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../file-output/index.html">Output To Files (<code class="docutils literal notranslate"><span class="pre">write()</span></code>)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../file-input/index.html">Reading Files</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../file-output/index.html">Writing Files</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../create/index.html">Creating Files</a></li>
 <li class="toctree-l5 current active"><a class="current reference internal" href="#">Duplicating (<code class="docutils literal notranslate"><span class="pre">dup()</span></code> And Friends)</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../lseek/index.html">File Position/Offset (<code class="docutils literal notranslate"><span class="pre">lseek64()</span></code>)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../lseek/index.html">File Position/Offset</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../misc.html">Miscellaneous: No Offset-Bending, Scatter-Gather IO, Truncating</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../basics-exercise-copy/exercise.html">Exercise: Copy A File</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../basics-exercise-hole.html">Exercise: Create File With Hole</a></li>
@@ -287,7 +287,7 @@
 </details></li>
 <li class="toctree-l4"><a class="reference internal" href="../../process/index.html">Processes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../signals/index.html">Signals</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../eventloop/index.html">Event Loops</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../eventloop/index.html">Event Driven Programming</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../posix-threads/index.html">POSIX Threads</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../scheduling/index.html">Scheduling</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../sysprog_events/topic.html">Sysprog: Events</a></li>
@@ -385,15 +385,15 @@
                 <article class="bd-article">
                    <section id="duplicating-dup-and-friends">
 <h1>Duplicating (<code class="docutils literal notranslate"><span class="pre">dup()</span></code> And Friends)<a class="headerlink" href="#duplicating-dup-and-friends" title="Link to this heading">#</a></h1>
-<aside class="sidebar">
-<p class="sidebar-title">See also</p>
+<aside class="topic">
+<p class="topic-title">See also</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../../../basics/io-redirection-pipes/io-redirection.html"><span class="doc">I/O Redirection</span></a></p></li>
 <li><p><a class="reference internal" href="../../process/fork-basics/index.html"><span class="doc">Basic Process Creation</span></a></p></li>
 </ul>
 </aside>
-<aside class="sidebar">
-<p class="sidebar-title">Documentation</p>
+<aside class="topic">
+<p class="topic-title">Documentation</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/dup.2.html">man -s 2 dup</a></p></li>
 </ul>
@@ -430,12 +430,13 @@ number - <code class="docutils literal notranslate"><span class="pre">42</span><
 <a class="reference internal image-reference" href="../../../../../../../_images/dup.svg"><img alt="../../../../../../../_images/dup.svg" src="../../../../../../../_images/dup.svg" style="width: 648.8000000000001px; height: 522.4px;" />
 </a>
 </section>
-<section id="dup-program">
-<h2><code class="docutils literal notranslate"><span class="pre">dup()</span></code>: Program<a class="headerlink" href="#dup-program" title="Link to this heading">#</a></h2>
+<section id="demo-dup">
+<h2>Demo: <code class="docutils literal notranslate"><span class="pre">dup()</span></code><a class="headerlink" href="#demo-dup" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Create second reference using <code class="docutils literal notranslate"><span class="pre">dup()</span></code></p></li>
 <li><p>Append bytes to file via original file descriptor</p></li>
-<li><p>Inquire offset via dupped file descriptor</p></li>
+<li><p>Inquire offset via duplicated file descriptor (see
+<a class="reference internal" href="../lseek/index.html"><span class="doc">File Position/Offset</span></a>)</p></li>
 </ul>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/d1a81f68a97c65b674ef34665cf36609/dup.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/dup.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
@@ -581,8 +582,8 @@ number 1)</p></li>
 </section>
 <section id="shell-io-redirection-and-pipes">
 <h2>Shell IO Redirection And Pipes<a class="headerlink" href="#shell-io-redirection-and-pipes" title="Link to this heading">#</a></h2>
-<aside class="sidebar">
-<p class="sidebar-title">See also</p>
+<aside class="topic">
+<p class="topic-title">See also</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../../../basics/io-redirection-pipes/io-redirection.html"><span class="doc">I/O Redirection</span></a></p></li>
 <li><p><a class="reference internal" href="../../../basics/io-redirection-pipes/io-redirection-swap-stdout-stderr.html"><span class="doc">I/O Redirection: Swap stdout And stderr</span></a></p></li>
@@ -626,7 +627,7 @@ shell’s <a class="reference internal" href="../../../basics/io-redirection-pip
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-a-file-descriptor-again">What’s A File Descriptor Again?</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#duplicating-creating-another-reference">Duplicating: Creating Another Reference</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dup-program"><code class="docutils literal notranslate"><span class="pre">dup()</span></code>: Program</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demo-dup">Demo: <code class="docutils literal notranslate"><span class="pre">dup()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#standard-output-redirection-with-dup">Standard Output Redirection With <code class="docutils literal notranslate"><span class="pre">dup()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#standardout-redirection-with-dup2">Standardout Redirection With <code class="docutils literal notranslate"><span class="pre">dup2()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shell-io-redirection-and-pipes">Shell IO Redirection And Pipes</a></li>

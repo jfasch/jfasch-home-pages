@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
@@ -59,7 +59,7 @@
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
     <link rel="next" title="Duplicating (dup() And Friends)" href="../dup/index.html" />
-    <link rel="prev" title="Output To Files (write())" href="../file-output/index.html" /> 
+    <link rel="prev" title="Writing Files" href="../file-output/index.html" /> 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />   
@@ -274,11 +274,11 @@
 <li class="toctree-l4 current active has-children"><a class="reference internal" href="../index.html">Files And File Descriptors</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="../file-descriptors/index.html">File Descriptors: Basics</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../open/index.html"><code class="docutils literal notranslate"><span class="pre">open()</span></code>: Opening Files</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../file-input/index.html">Input From Files (<code class="docutils literal notranslate"><span class="pre">read()</span></code>)</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../file-output/index.html">Output To Files (<code class="docutils literal notranslate"><span class="pre">write()</span></code>)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../file-input/index.html">Reading Files</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../file-output/index.html">Writing Files</a></li>
 <li class="toctree-l5 current active"><a class="current reference internal" href="#">Creating Files</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../dup/index.html">Duplicating (<code class="docutils literal notranslate"><span class="pre">dup()</span></code> And Friends)</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../lseek/index.html">File Position/Offset (<code class="docutils literal notranslate"><span class="pre">lseek64()</span></code>)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../lseek/index.html">File Position/Offset</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../misc.html">Miscellaneous: No Offset-Bending, Scatter-Gather IO, Truncating</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../basics-exercise-copy/exercise.html">Exercise: Copy A File</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../basics-exercise-hole.html">Exercise: Create File With Hole</a></li>
@@ -287,7 +287,7 @@
 </details></li>
 <li class="toctree-l4"><a class="reference internal" href="../../process/index.html">Processes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../signals/index.html">Signals</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../eventloop/index.html">Event Loops</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../eventloop/index.html">Event Driven Programming</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../posix-threads/index.html">POSIX Threads</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../scheduling/index.html">Scheduling</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../sysprog_events/topic.html">Sysprog: Events</a></li>
@@ -425,12 +425,14 @@ specifies the bits that are subtracted from it</p></li>
 </ul>
 </li>
 <li><p>Use this on <code class="docutils literal notranslate"><span class="pre">/tmp/somefile</span></code> from previous section
-(<a class="reference internal" href="../file-output/index.html"><span class="doc">Output To Files (write())</span></a>)</p></li>
+(<a class="reference internal" href="../file-output/index.html"><span class="doc">Writing Files</span></a>)</p></li>
 <li><p>⟶ File opened for overwrite (we did not say
 <code class="docutils literal notranslate"><span class="pre">O_APPEND</span></code>)</p></li>
 <li><p>⟶ File mode as before (file existed)</p></li>
 <li><p>Remove file, and call again</p></li>
-<li><p>⟶ Created with <code class="docutils literal notranslate"><span class="pre">mode</span></code> specified</p></li>
+<li><p>⟶ Created with <code class="docutils literal notranslate"><span class="pre">mode</span></code> specified, but <code class="docutils literal notranslate"><span class="pre">umask</span></code>
+subtracted (see <a class="reference internal" href="../../../basics/permissions/umask.html"><span class="doc">here</span></a> for an
+explanation of <code class="docutils literal notranslate"><span class="pre">umask</span></code>)</p></li>
 </ul>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/8d153c1f406b6cc31c26773641046c55/create-simple.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/create-simple.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>

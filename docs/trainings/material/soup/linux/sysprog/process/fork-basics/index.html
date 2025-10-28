@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Basic Process Creation &#8212; Jörg Faschingbauer</title>
+    <title>Process Creation (fork()) &#8212; Jörg Faschingbauer</title>
   
   
   
@@ -59,7 +59,7 @@
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
     <link rel="next" title="Case Study: IPC (Parent/Child) Over Unnamed Pipe" href="../unnamed-pipe-ipc/index.html" />
-    <link rel="prev" title="The Process Tree (And Environment, And procfs)" href="../tree/index.html" /> 
+    <link rel="prev" title="The Process Tree" href="../tree/index.html" /> 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />   
@@ -273,9 +273,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../../syscalls/index.html">System Calls</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../file-io/index.html">Files And File Descriptors</a></li>
 <li class="toctree-l4 current active has-children"><a class="reference internal" href="../index.html">Processes</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l5"><a class="reference internal" href="../exit-args-env/index.html">Exit Status, Arguments, Environment</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../tree/index.html">The Process Tree (And Environment, And <code class="docutils literal notranslate"><span class="pre">procfs</span></code>)</a></li>
-<li class="toctree-l5 current active"><a class="current reference internal" href="#">Basic Process Creation</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../exit/index.html">Process Termination: Exit Status</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../argv/index.html">Argument Vector (<code class="docutils literal notranslate"><span class="pre">argv</span></code>)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../environ/index.html">Environment Variables</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../tree/index.html">The Process Tree</a></li>
+<li class="toctree-l5 current active"><a class="current reference internal" href="#">Process Creation (<code class="docutils literal notranslate"><span class="pre">fork()</span></code>)</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../unnamed-pipe-ipc/index.html">Case Study: IPC (Parent/Child) Over Unnamed Pipe</a></li>
 </ul>
 </details></li>
@@ -360,7 +362,7 @@
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Processes</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Basic Process Creation</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Process Creation (<code class="docutils literal notranslate"><span class="pre">fork()</span></code>)</span></li>
   </ul>
 </nav>
 </div>
@@ -376,56 +378,74 @@
                 
 <div id="searchbox"></div>
                 <article class="bd-article">
-                   <section id="basic-process-creation">
-<h1>Basic Process Creation<a class="headerlink" href="#basic-process-creation" title="Link to this heading">#</a></h1>
-<aside class="sidebar">
-<p class="sidebar-title">See also</p>
+                   <section id="process-creation-fork">
+<h1>Process Creation (<code class="docutils literal notranslate"><span class="pre">fork()</span></code>)<a class="headerlink" href="#process-creation-fork" title="Link to this heading">#</a></h1>
+<aside class="topic">
+<p class="topic-title">See also</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../../file-io/dup/index.html"><span class="doc">Duplicating (dup() And Friends)</span></a></p></li>
 </ul>
 </aside>
-<aside class="sidebar">
-<p class="sidebar-title">Documentation</p>
+<aside class="topic">
+<p class="topic-title">Documentation</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/fork.2.html">man -s 2 fork</a></p></li>
 </ul>
 </aside>
 <section id="process-states">
 <h2>Process States<a class="headerlink" href="#process-states" title="Link to this heading">#</a></h2>
-<a class="reference internal image-reference" href="../../../../../../../_images/process-states.svg"><img alt="../../../../../../../_images/process-states.svg" class="align-center" src="../../../../../../../_images/process-states.svg" style="width: 947.6px; height: 432.0px;" />
+<a class="reference internal image-reference" href="../../../../../../../_images/states.svg"><img alt="../../../../../../../_images/states.svg" class="align-center" src="../../../../../../../_images/states.svg" style="width: 947.6px; height: 432.0px;" />
 </a>
+<ul>
+<li><p>Focus on</p>
 <ul class="simple">
-<li><p>Many of the states reflect the process’s runtime behavior: does it
-wait for something, or has it expired its timeslice, …</p></li>
-<li><p>Much more complex than can be shown on a sketch</p></li>
-<li><p>⟶ Uninterruptible vs. interruptible sleep</p></li>
-<li><p>⟶ Various ways to terminate a process</p></li>
+<li><p><em>Creation</em></p></li>
+<li><p><em>Termination</em>: zombies, and orphanage</p></li>
+</ul>
+</li>
+<li><p>Other states are controlled by the <em>scheduler</em></p>
+<ul class="simple">
+<li><p>Preemption</p></li>
+<li><p>Blocking</p></li>
+<li><p>CPU assignment</p></li>
 <li><p>…</p></li>
+</ul>
+<p>⟶ much more complex than can be shown on a simple
+diagram</p>
+</li>
 </ul>
 </section>
 <section id="creative-weirdness-fork">
 <h2>Creative Weirdness: <code class="docutils literal notranslate"><span class="pre">fork()</span></code><a class="headerlink" href="#creative-weirdness-fork" title="Link to this heading">#</a></h2>
-<aside class="sidebar">
-<p class="sidebar-title">Documentation</p>
+<aside class="topic">
+<p class="topic-title">Documentation</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/fork.2.html">man -s 2 fork</a></p></li>
 </ul>
 </aside>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
+<span class="kt">pid_t</span><span class="w"> </span><span class="nf">fork</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</pre></div>
+</div>
 <ul class="simple">
-<li><p>Creates a child process</p></li>
-<li><p>Exact copy of the calling process</p></li>
-<li><p>On return - <strong>returns twice</strong> - both parent and child continue where
-they left off, <strong>independently</strong></p>
+<li><p>The most innocent-looking function</p></li>
+<li><p>Creates a child process: <em>exact copy of the calling process</em></p></li>
+<li><p><strong>Returns twice</strong></p>
 <ul>
+<li><p>Once in parent</p></li>
+<li><p>Once in child</p></li>
+</ul>
+</li>
+<li><p>Both continue where they left off, <strong>independently</strong></p></li>
 <li><p><em>Parent’s return value</em>: PID of the newly created child process</p></li>
 <li><p><em>Child’s return value</em>: 0 - can use <code class="docutils literal notranslate"><span class="pre">getpid()</span></code> if needed
 (<a class="reference internal" href="../tree/index.html"><span class="doc">here</span></a>)</p></li>
 </ul>
-</li>
-</ul>
 <a class="reference internal image-reference" href="../../../../../../../_images/fork-basic.svg"><img alt="../../../../../../../_images/fork-basic.svg" src="../../../../../../../_images/fork-basic.svg" style="width: 563.6px; height: 345.6px;" />
 </a>
-<p>(Live demo start …)</p>
+</section>
+<section id="demo-fork">
+<h2>Demo: <code class="docutils literal notranslate"><span class="pre">fork()</span></code><a class="headerlink" href="#demo-fork" title="Link to this heading">#</a></h2>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/8320268e6cfabe146b5d3fbdd45ce9e9/basic.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/basic.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
@@ -454,9 +474,16 @@ they left off, <strong>independently</strong></p>
 </div>
 </div>
 </section>
-<section id="return-from-main-and-exit">
-<h2><code class="docutils literal notranslate"><span class="pre">return</span></code> From <code class="docutils literal notranslate"><span class="pre">main()</span></code>, And <code class="docutils literal notranslate"><span class="pre">exit()</span></code><a class="headerlink" href="#return-from-main-and-exit" title="Link to this heading">#</a></h2>
+<section id="sideway-return-from-main-vs-exit">
+<h2>Sideway: <code class="docutils literal notranslate"><span class="pre">return</span></code> From <code class="docutils literal notranslate"><span class="pre">main()</span></code> Vs. <code class="docutils literal notranslate"><span class="pre">exit()</span></code><a class="headerlink" href="#sideway-return-from-main-vs-exit" title="Link to this heading">#</a></h2>
+<aside class="topic">
+<p class="topic-title">See also</p>
 <ul class="simple">
+<li><p><a class="reference internal" href="../exit/index.html"><span class="doc">Process Termination: Exit Status</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Following example code will always return from <code class="docutils literal notranslate"><span class="pre">main()</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">main()</span></code> is special (entry point from C startup/runtime)</p></li>
 <li><p>Return statement in <code class="docutils literal notranslate"><span class="pre">main()</span></code> is special</p>
 <ul>
@@ -468,33 +495,6 @@ they left off, <strong>independently</strong></p>
 <li><p>Return from <code class="docutils literal notranslate"><span class="pre">main()</span></code> has the same effect as calling <code class="docutils literal notranslate"><span class="pre">exit()</span></code>
 instead</p></li>
 </ul>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/3ac8372a947468e2348596fb11ce6c83/basic-exit.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/basic-exit.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;print&gt;</span>
-
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
-<span class="p">{</span>
-<span class="w">    </span><span class="kt">pid_t</span><span class="w"> </span><span class="n">pid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fork</span><span class="p">();</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">pid</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;fork&quot;</span><span class="p">);</span>
-<span class="w">        </span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w">                                       </span><span class="c1">// &lt;-- same as &quot;return 1;&quot;</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">pid</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">println</span><span class="p">(</span><span class="s">&quot;child: pid = {}, ppid = {}&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">                     </span><span class="n">getpid</span><span class="p">(),</span><span class="w"> </span><span class="n">getppid</span><span class="p">());</span>
-<span class="w">        </span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w">                                       </span><span class="c1">// &lt;-- same as &quot;return 0;&quot;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">println</span><span class="p">(</span><span class="s">&quot;parent: pid = {}, child pid = {}&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">                     </span><span class="n">getpid</span><span class="p">(),</span><span class="w"> </span><span class="n">pid</span><span class="p">);</span>
-<span class="w">        </span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w">                                       </span><span class="c1">// &lt;-- same as &quot;return 0;&quot;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div>
 </section>
 <section id="bugs-ahead-code-flow-leakage">
 <h2>Bugs Ahead: Code Flow Leakage<a class="headerlink" href="#bugs-ahead-code-flow-leakage" title="Link to this heading">#</a></h2>
@@ -503,8 +503,12 @@ instead</p></li>
 <li><p>⟶ two code flow paths</p></li>
 <li><p><em>Usually it is a good idea to keep them separate!</em></p></li>
 </ul>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/dae02308c4c48eb76de4d7566b652173/leak-code-flow.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/leak-code-flow.cpp</span></code></a></span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
+<aside class="topic">
+<p class="topic-title">Trainer’s note</p>
+<p>Quiz: show what a <em>fork bomb</em> is</p>
+</aside>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/dae02308c4c48eb76de4d7566b652173/leak-code-flow.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/leak-code-flow.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;print&gt;</span>
 
@@ -536,8 +540,8 @@ instead</p></li>
 </section>
 <section id="file-descriptors-are-inherited">
 <span id="sysprog-process-filedesc-inher"></span><h2>File Descriptors Are Inherited<a class="headerlink" href="#file-descriptors-are-inherited" title="Link to this heading">#</a></h2>
-<aside class="sidebar">
-<p class="sidebar-title">See also</p>
+<aside class="topic">
+<p class="topic-title">See also</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../../file-io/dup/index.html"><span class="doc">Duplicating (dup() And Friends)</span></a></p></li>
 </ul>
@@ -546,12 +550,22 @@ instead</p></li>
 <li><p>Parent opens a file</p></li>
 <li><p>Creates child process</p></li>
 <li><p>⟶ file descriptor is inherited</p></li>
-<li><p>Semantics just like <code class="docutils literal notranslate"><span class="pre">dup()</span></code> (see <a class="reference internal" href="../../file-io/dup/index.html"><span class="doc">here</span></a></p></li>
+<li><p>Semantics just like <code class="docutils literal notranslate"><span class="pre">dup()</span></code> (see <a class="reference internal" href="../../file-io/dup/index.html"><span class="doc">here</span></a>)</p></li>
 </ul>
 <a class="reference internal image-reference" href="../../../../../../../_images/fd-inher.svg"><img alt="../../../../../../../_images/fd-inher.svg" src="../../../../../../../_images/fd-inher.svg" style="width: 648.8000000000001px; height: 500.8px;" />
 </a>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/5e1fba5ed839a6ddd99b23b2bc966a96/fd-inher.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/fd-inher.cpp</span></code></a></span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
+</section>
+<section id="demo-file-descriptor-inheritance">
+<h2>Demo: File Descriptor Inheritance<a class="headerlink" href="#demo-file-descriptor-inheritance" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">/tmp/somefile</span></code> contains <code class="docutils literal notranslate"><span class="pre">ab</span></code></p></li>
+<li><p>Opened for reading by parent</p></li>
+<li><p>Creates child</p></li>
+<li><p>In each of the parent/child branches, one byte is read</p></li>
+<li><p>⟶ file offset apparently shared</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/5e1fba5ed839a6ddd99b23b2bc966a96/fd-inher.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/fd-inher.cpp</span></code></a></span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;fcntl.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;assert.h&gt;</span>
@@ -591,7 +605,7 @@ instead</p></li>
 </pre></div>
 </div>
 </div>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">echo</span><span class="w"> </span>abc<span class="w"> </span>&gt;<span class="w"> </span>/tmp/somefile
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">echo</span><span class="w"> </span>ab<span class="w"> </span>&gt;<span class="w"> </span>/tmp/somefile
 <span class="gp">$ </span>./sysprog-fork-fd-inher
 <span class="go">parent pid = 267811, child pid = 267812</span>
 <span class="go">parent has read one byte: a/0x61</span>
@@ -601,8 +615,8 @@ instead</p></li>
 </section>
 <section id="care-for-your-children-waiting">
 <h2>Care For Your Children - <em>Waiting</em><a class="headerlink" href="#care-for-your-children-waiting" title="Link to this heading">#</a></h2>
-<aside class="sidebar">
-<p class="sidebar-title">Documentation</p>
+<aside class="topic">
+<p class="topic-title">Documentation</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/wait.2.html">man -s 2 wait</a></p></li>
 </ul>
@@ -614,8 +628,8 @@ instead</p></li>
 <a class="reference internal" href="#sysprog-process-status"><span class="std std-ref">below</span></a>)</p></li>
 <li><p>If child has not yet terminated, parent blocks in <code class="docutils literal notranslate"><span class="pre">wait()</span></code></p></li>
 </ul>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/83252df7c1f8fec224c0074143487378/wait.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/wait.cpp</span></code></a></span><a class="headerlink" href="#id5" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/83252df7c1f8fec224c0074143487378/wait.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/wait.cpp</span></code></a></span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sys/wait.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;assert.h&gt;</span>
@@ -661,8 +675,8 @@ memory pages</p></li>
 <li><p>Share data pages initially; copy is made at first write</p></li>
 <li><p>⟶ Copy On Write (COW)</p></li>
 </ul>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/b35032cf1f5f57904ea072a4a87fe242/cow.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/cow.cpp</span></code></a></span><a class="headerlink" href="#id6" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/b35032cf1f5f57904ea072a4a87fe242/cow.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/cow.cpp</span></code></a></span><a class="headerlink" href="#id5" title="Link to this code">#</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sys/wait.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;assert.h&gt;</span>
@@ -700,8 +714,8 @@ memory pages</p></li>
 this case)</p></li>
 <li><p>Exit status: <code class="docutils literal notranslate"><span class="pre">WIFEXITED()</span></code>, <code class="docutils literal notranslate"><span class="pre">WEXITSTATUS()</span></code></p></li>
 </ul>
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/20ff4401617d8cda4f3e1436da0a7594/wait-status.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/wait-status.cpp</span></code></a></span><a class="headerlink" href="#id7" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/20ff4401617d8cda4f3e1436da0a7594/wait-status.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/wait-status.cpp</span></code></a></span><a class="headerlink" href="#id6" title="Link to this code">#</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sys/wait.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;assert.h&gt;</span>
@@ -744,7 +758,8 @@ this case)</p></li>
 <h2>More Exit Information<a class="headerlink" href="#more-exit-information" title="Link to this heading">#</a></h2>
 <p>More state changes than simple exit:</p>
 <ul class="simple">
-<li><p>Signaled, e.g.</p>
+<li><p>Signaled (see
+<a class="reference internal" href="../../signals/index.html"><span class="doc">Signals</span></a>), e.g.</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">SIGINT</span></code>: Ctrl-C from terminal</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">SIGTERM</span></code>: similar, but explicitly sent by another process</p></li>
@@ -763,8 +778,8 @@ information)</p></li>
 </ul>
 </li>
 </ul>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/ec4aeff864fae704f3a98938a33b7ea0/wait-status-more-info.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/wait-status-more-info.cpp</span></code></a></span><a class="headerlink" href="#id8" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/ec4aeff864fae704f3a98938a33b7ea0/wait-status-more-info.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/wait-status-more-info.cpp</span></code></a></span><a class="headerlink" href="#id7" title="Link to this code">#</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sys/wait.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;assert.h&gt;</span>
@@ -823,13 +838,16 @@ information)</p></li>
 <section id="zombies-consequences-of-not-caring-for-children">
 <span id="sysprog-process-zombie"></span><h2>Zombies: Consequences Of Not Caring For Children<a class="headerlink" href="#zombies-consequences-of-not-caring-for-children" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p>Terminated process are still there - shown in <code class="docutils literal notranslate"><span class="pre">ps</span></code> as <code class="docutils literal notranslate"><span class="pre">&lt;defunct&gt;</span></code></p></li>
-<li><p>⟶ Carry information for parents</p></li>
-<li><p>“Zombie”</p></li>
-<li><p>“Reaped” by their parents when they call <code class="docutils literal notranslate"><span class="pre">wait()</span></code></p></li>
+<li><p>Terminated process are still there …</p></li>
+<li><p>… until their parents <code class="docutils literal notranslate"><span class="pre">wait()</span></code> for them</p></li>
+<li><p>⟶ Carry information for parents on how child has
+terminated</p></li>
+<li><p>Usually a very short time span - unless parents are sloppy</p></li>
+<li><p><em>Zombie</em> state: shown in <code class="docutils literal notranslate"><span class="pre">ps</span></code> as <code class="docutils literal notranslate"><span class="pre">&lt;defunct&gt;</span></code></p></li>
+<li><p>“Parents use <code class="docutils literal notranslate"><span class="pre">wait()</span></code> to <em>reap*</em> zombies”</p></li>
 </ul>
-<aside class="sidebar">
-<p class="sidebar-title">Trainer’s note</p>
+<aside class="topic">
+<p class="topic-title">Trainer’s note</p>
 <ul class="simple">
 <li><p>See how child pid still there <code class="docutils literal notranslate"><span class="pre">ps</span> <span class="pre">-fl</span> <span class="pre">&lt;CHILDPID&gt;</span></code></p></li>
 <li><p>⟶ <code class="docutils literal notranslate"><span class="pre">&lt;defunct&gt;</span></code></p></li>
@@ -837,8 +855,8 @@ information)</p></li>
 <li><p>⟶ Reparented (see below)</p></li>
 </ul>
 </aside>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/73a8e137de723cfea1319af8a80b94ff/zombie.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/zombie.cpp</span></code></a></span><a class="headerlink" href="#id9" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/73a8e137de723cfea1319af8a80b94ff/zombie.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/zombie.cpp</span></code></a></span><a class="headerlink" href="#id8" title="Link to this code">#</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sys/wait.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;assert.h&gt;</span>
@@ -869,8 +887,8 @@ information)</p></li>
 </section>
 <section id="orphanage-parent-s-death">
 <h2>Orphanage (Parent’s Death)<a class="headerlink" href="#orphanage-parent-s-death" title="Link to this heading">#</a></h2>
-<aside class="sidebar">
-<p class="sidebar-title">Trainer’s note</p>
+<aside class="topic">
+<p class="topic-title">Trainer’s note</p>
 <ul class="simple">
 <li><p>The program will terminate immediately</p></li>
 <li><p>Child keeps running, deteched from terminal</p></li>
@@ -886,8 +904,8 @@ information)</p></li>
 PR_SET_CHILD_SUBREAPER</a>)</p></li>
 <li><p>Normally the login session leader (<code class="docutils literal notranslate"><span class="pre">systemd</span> <span class="pre">--user</span></code>)</p></li>
 </ul>
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/2d6820af269479e87f235457ee50882e/reparenting.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/reparenting.cpp</span></code></a></span><a class="headerlink" href="#id10" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/2d6820af269479e87f235457ee50882e/reparenting.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/reparenting.cpp</span></code></a></span><a class="headerlink" href="#id9" title="Link to this code">#</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sys/wait.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;assert.h&gt;</span>
@@ -943,9 +961,11 @@ PR_SET_CHILD_SUBREAPER</a>)</p></li>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#process-states">Process States</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creative-weirdness-fork">Creative Weirdness: <code class="docutils literal notranslate"><span class="pre">fork()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#return-from-main-and-exit"><code class="docutils literal notranslate"><span class="pre">return</span></code> From <code class="docutils literal notranslate"><span class="pre">main()</span></code>, And <code class="docutils literal notranslate"><span class="pre">exit()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demo-fork">Demo: <code class="docutils literal notranslate"><span class="pre">fork()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sideway-return-from-main-vs-exit">Sideway: <code class="docutils literal notranslate"><span class="pre">return</span></code> From <code class="docutils literal notranslate"><span class="pre">main()</span></code> Vs. <code class="docutils literal notranslate"><span class="pre">exit()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bugs-ahead-code-flow-leakage">Bugs Ahead: Code Flow Leakage</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#file-descriptors-are-inherited">File Descriptors Are Inherited</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demo-file-descriptor-inheritance">Demo: File Descriptor Inheritance</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#care-for-your-children-waiting">Care For Your Children - <em>Waiting</em></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#copy-on-write-memory-cow">Copy-On-Write Memory (COW)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#waiting-and-exit-status">Waiting, And Exit Status</a></li>

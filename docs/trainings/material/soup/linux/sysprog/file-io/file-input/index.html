@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Input From Files (read()) &#8212; Jörg Faschingbauer</title>
+    <title>Reading Files &#8212; Jörg Faschingbauer</title>
   
   
   
@@ -58,7 +58,7 @@
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/sysprog/file-io/file-input/index.html" />
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
-    <link rel="next" title="Output To Files (write())" href="../file-output/index.html" />
+    <link rel="next" title="Writing Files" href="../file-output/index.html" />
     <link rel="prev" title="open(): Opening Files" href="../open/index.html" /> 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -274,11 +274,11 @@
 <li class="toctree-l4 current active has-children"><a class="reference internal" href="../index.html">Files And File Descriptors</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="../file-descriptors/index.html">File Descriptors: Basics</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../open/index.html"><code class="docutils literal notranslate"><span class="pre">open()</span></code>: Opening Files</a></li>
-<li class="toctree-l5 current active"><a class="current reference internal" href="#">Input From Files (<code class="docutils literal notranslate"><span class="pre">read()</span></code>)</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../file-output/index.html">Output To Files (<code class="docutils literal notranslate"><span class="pre">write()</span></code>)</a></li>
+<li class="toctree-l5 current active"><a class="current reference internal" href="#">Reading Files</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../file-output/index.html">Writing Files</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../create/index.html">Creating Files</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../dup/index.html">Duplicating (<code class="docutils literal notranslate"><span class="pre">dup()</span></code> And Friends)</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../lseek/index.html">File Position/Offset (<code class="docutils literal notranslate"><span class="pre">lseek64()</span></code>)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../lseek/index.html">File Position/Offset</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../misc.html">Miscellaneous: No Offset-Bending, Scatter-Gather IO, Truncating</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../basics-exercise-copy/exercise.html">Exercise: Copy A File</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../basics-exercise-hole.html">Exercise: Create File With Hole</a></li>
@@ -287,7 +287,7 @@
 </details></li>
 <li class="toctree-l4"><a class="reference internal" href="../../process/index.html">Processes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../signals/index.html">Signals</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../eventloop/index.html">Event Loops</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../eventloop/index.html">Event Driven Programming</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../posix-threads/index.html">POSIX Threads</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../scheduling/index.html">Scheduling</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../sysprog_events/topic.html">Sysprog: Events</a></li>
@@ -367,7 +367,7 @@
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Files And File Descriptors</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Input From Files (<code class="docutils literal notranslate"><span class="pre">read()</span></code>)</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Reading Files</span></li>
   </ul>
 </nav>
 </div>
@@ -383,8 +383,8 @@
                 
 <div id="searchbox"></div>
                 <article class="bd-article">
-                   <section id="input-from-files-read">
-<h1>Input From Files (<code class="docutils literal notranslate"><span class="pre">read()</span></code>)<a class="headerlink" href="#input-from-files-read" title="Link to this heading">#</a></h1>
+                   <section id="reading-files">
+<h1>Reading Files<a class="headerlink" href="#reading-files" title="Link to this heading">#</a></h1>
 <aside class="topic">
 <p class="topic-title">Documentation</p>
 <ul class="simple">
@@ -416,7 +416,7 @@
 <li><p>Simplest case</p></li>
 <li><p>Only <code class="docutils literal notranslate"><span class="pre">flags</span></code> needed: <code class="docutils literal notranslate"><span class="pre">O_RDONLY</span></code> (or <code class="docutils literal notranslate"><span class="pre">O_RDWR</span></code> if writing is
 also intended)</p></li>
-<li><p>Third parameter (<code class="docutils literal notranslate"><span class="pre">mode</span></code>) ignored</p></li>
+<li><p>Third parameter (<code class="docutils literal notranslate"><span class="pre">mode</span></code>) ignored (see <a class="reference internal" href="../create/index.html"><span class="doc">Creating Files</span></a>)</p></li>
 </ul>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/5079a823daccb475de9906067094f821/open-readonly.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/open-readonly.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
@@ -439,8 +439,8 @@ also intended)</p></li>
 </div>
 </div>
 </section>
-<section id="read-block-of-bytes">
-<h2>Read Block Of Bytes<a class="headerlink" href="#read-block-of-bytes" title="Link to this heading">#</a></h2>
+<section id="demo-read-one-block-of-bytes">
+<h2>Demo: Read One Block Of Bytes<a class="headerlink" href="#demo-read-one-block-of-bytes" title="Link to this heading">#</a></h2>
 <aside class="topic">
 <p class="topic-title">Documentation</p>
 <ul class="simple">
@@ -500,8 +500,8 @@ what we just read</p></li>
 </pre></div>
 </div>
 </section>
-<section id="read-until-end-of-file">
-<span id="sysprog-fileio-eof"></span><h2>Read Until <em>End-Of-File</em><a class="headerlink" href="#read-until-end-of-file" title="Link to this heading">#</a></h2>
+<section id="demo-read-until-end-of-file">
+<span id="sysprog-fileio-eof"></span><h2>Demo: Read Until <em>End-Of-File</em><a class="headerlink" href="#demo-read-until-end-of-file" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><em>End-of-file</em>: there won’t be any input anymore (file is exhausted)</p></li>
 <li><p>Reached when <code class="docutils literal notranslate"><span class="pre">read()</span></code> returns <em>0 bytes</em></p></li>
@@ -590,8 +590,8 @@ what we just read</p></li>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#open-file-for-reading"><code class="docutils literal notranslate"><span class="pre">open()</span></code> File For Reading</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#read-block-of-bytes">Read Block Of Bytes</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#read-until-end-of-file">Read Until <em>End-Of-File</em></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demo-read-one-block-of-bytes">Demo: Read One Block Of Bytes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demo-read-until-end-of-file">Demo: Read Until <em>End-Of-File</em></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#questions">Questions</a></li>
 </ul>
   </nav></div>
