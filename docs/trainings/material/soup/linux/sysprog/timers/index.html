@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
@@ -58,7 +58,7 @@
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/sysprog/timers/index.html" />
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../search.html" />
-    <link rel="next" title="Clocks (jjj)" href="clocks/index.html" />
+    <link rel="next" title="Clocks, And Points In Time" href="clocks/index.html" />
     <link rel="prev" title="Event Loop Support: signalfd()" href="../signals/signalfd/index.html" /> 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -275,19 +275,20 @@
 <li class="toctree-l4"><a class="reference internal" href="../process/index.html">Processes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../signals/index.html">Signals</a></li>
 <li class="toctree-l4 current active has-children"><a class="current reference internal" href="#">Time, Clocks, Timers And Notification</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l5"><a class="reference internal" href="clocks/index.html">Clocks (jjj)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="clocks/index.html">Clocks, And Points In Time</a></li>
 <li class="toctree-l5"><a class="reference internal" href="historical/index.html">Obsolete Timer APIs</a></li>
-<li class="toctree-l5"><a class="reference internal" href="posix/index.html">POSIX Interval Timers</a></li>
+<li class="toctree-l5"><a class="reference internal" href="posix-intro/index.html">POSIX Timers: Introduction</a></li>
+<li class="toctree-l5"><a class="reference internal" href="posix-async/index.html">POSIX Timers: Asynchronous Notification</a></li>
+<li class="toctree-l5"><a class="reference internal" href="posix-threaded/index.html">POSIX Timers: Threaded Notification</a></li>
+<li class="toctree-l5"><a class="reference internal" href="timerfd/index.html">Timer File Descriptors</a></li>
 </ul>
 </details></li>
 <li class="toctree-l4"><a class="reference internal" href="../eventloop/index.html">Event Driven Programming</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../posix-threads/index.html">POSIX Threads</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../scheduling/index.html">Scheduling</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../sysprog_events/topic.html">Sysprog: Events</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../mmap/index.html">Memory Management Basics (<code class="docutils literal notranslate"><span class="pre">mmap()</span></code>)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../sysprog_ipc/topic.html">Sysprog: POSIX IPC</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../mmap/index.html"><code class="docutils literal notranslate"><span class="pre">mmap</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../ipc-mqueue/topic.html">POSIX Message Queues</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../todo.html">TODO</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../scheduling/index.html">Scheduling And Realtime</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../intro-hw/index.html">Introductory Live Hacking, Hardware-Wise (<code class="docutils literal notranslate"><span class="pre">sysfs</span></code> GPIO)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../blocking-io/index.html">Blocking I/O: What Is That?</a></li>
 </ul>
@@ -375,82 +376,36 @@
                 <article class="bd-article">
                    <section id="time-clocks-timers-and-notification">
 <h1>Time, Clocks, Timers And Notification<a class="headerlink" href="#time-clocks-timers-and-notification" title="Link to this heading">#</a></h1>
+<p>Time is a complex topic, even with computers omitted from the
+picture. This section, naturally, discusses how time - and timers
+(notifications of time-related events) - are handled in Linux.</p>
+<p>Starting with a discussion of <em>clock</em> variants, and various ways to
+<em>synchronously</em> defer execution, we try to cover the vast amount of
+<em>notification</em> possibilities. (I’ll try to not be too judgy on the
+way, but you might know my preferences anyway regarding
+<a class="reference internal" href="../signals/async/index.html"><span class="doc">asynchronous signal delivery</span></a>.)</p>
+<aside class="topic">
+<p class="topic-title">Under development</p>
+<p>This section is still under development. The sheer amount of rabbit
+holes (e.g. POSIX timer overrun semantics, or the implications of
+selecting POSIX <em>threaded</em> delivery) makes it challenging to
+provide conclusive material <em>that is still interesting</em>.</p>
+</aside>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="clocks/index.html">Clocks (jjj)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clocks/index.html">Clocks, And Points In Time</a></li>
 <li class="toctree-l1"><a class="reference internal" href="historical/index.html">Obsolete Timer APIs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="posix/index.html">POSIX Interval Timers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="posix-intro/index.html">POSIX Timers: Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="posix-async/index.html">POSIX Timers: Asynchronous Notification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="posix-threaded/index.html">POSIX Timers: Threaded Notification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timerfd/index.html">Timer File Descriptors</a></li>
 </ul>
 </div>
-<section id="basics">
-<h2>Basics<a class="headerlink" href="#basics" title="Link to this heading">#</a></h2>
-<ul>
-<li><p>POSIX timers: <code class="docutils literal notranslate"><span class="pre">timer_create()</span></code> (and <code class="docutils literal notranslate"><span class="pre">timer_delete()</span></code>, unshown in
-examples)</p>
-<ul>
-<li><p>delivery/expiry: (async) signal, thread (-&gt; later)</p></li>
-<li><p>choose signal to use (<em>never</em> queued, not even rt signals)</p></li>
-<li><p>setup handler for it (see <a class="reference internal" href="../signals/async/index.html"><span class="doc">Asynchronous Signal Handling</span></a>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">timer_create()</span></code> to send that signal on expiry</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man3/sigevent.3type.html">man -s 3 sigevent</a></p></li>
-</ul>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">event</span><span class="p">.</span><span class="n">sigev_notify</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SIGEV_SIGNAL</span><span class="p">;</span><span class="w">    </span><span class="c1">// &lt;-- alternatives?</span>
-<span class="n">event</span><span class="p">.</span><span class="n">sigev_signo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SIGRTMIN</span><span class="p">;</span>
-</pre></div>
-</div>
-</li>
-</ul>
-</li>
-<li><p>one shot (<a class="reference download internal" download="" href="../../../../../../_downloads/40944226d93bdb150662b5b010634a2e/posix-oneshot.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/posix-oneshot.cpp</span></code></a>)</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">it_interval</span></code> is 0 -&gt; oneshot</p></li>
-<li><p>expiry at <code class="docutils literal notranslate"><span class="pre">it_value</span></code></p></li>
-<li><p>nothing new regarding signals</p></li>
-</ul>
-</li>
-<li><p>periodic (<a class="reference download internal" download="" href="../../../../../../_downloads/c6a5d7df7d780ed4d91f3e79a75e79a6/posix-periodic.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/posix-periodic.cpp</span></code></a>)</p>
-<ul class="simple">
-<li><p>note <code class="docutils literal notranslate"><span class="pre">it_interval</span></code> not 0</p></li>
-<li><p>wrap in infinite loop</p></li>
-</ul>
-</li>
-<li><p>thread notification</p></li>
-</ul>
-</section>
 <section id="details">
 <h2>Details<a class="headerlink" href="#details" title="Link to this heading">#</a></h2>
+<section id="limits-anywhere">
+<span id="sysprog-posix-timer-limit"></span><h3>Limits, Anywhere?<a class="headerlink" href="#limits-anywhere" title="Link to this heading">#</a></h3>
 <ul>
-<li><p>thread notification: is a new thread created? <a class="reference external" href="https://man7.org/linux/man-pages/man3/sigevent.3type.html">man -s 3 sigevent</a> says
-that it could, but otherwise nothing usable.</p></li>
-<li><p>multiplexing multiple timers on one signal via siginfo_t</p>
-<ul class="simple">
-<li><p>jjj link from signals/async</p></li>
-<li><p>only 32 rt signals</p></li>
-<li><p>might want to use more timers</p></li>
-<li><p>continue from posix-periodic.cpp</p></li>
-<li><p>add 2nd timer (and arm it differently)</p></li>
-<li><p>remove “interrupted” in main loop</p></li>
-<li><p>-&gt; handler cannot say which</p></li>
-<li><p>-&gt; <a class="reference download internal" download="" href="../../../../../../_downloads/8f312d7d69c8edf8a3ebd5513445cf97/posix-2timers.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/posix-2timers.cpp</span></code></a></p></li>
-</ul>
-<p>solution</p>
-<ul class="simple">
-<li><p>step 1: sigaction -&gt; SA_SIGINFO, sa_sigaction (more info in
-handler)</p>
-<ul>
-<li><p>handler signature: void(int sig, siginfo_t* info, void*)</p></li>
-<li><p>in handler, use <code class="docutils literal notranslate"><span class="pre">info-&gt;si_value</span></code></p></li>
-<li><p>make timer1, timer2 visible in signal handler (-&gt; global)</p></li>
-</ul>
-</li>
-<li><p>event notification setup</p>
-<ul>
-<li><p>event.sival_ptr = &amp;timer{1,2} (-&gt; handler’s info-&gt;si_ptr)</p></li>
-</ul>
-</li>
-</ul>
-</li>
 <li><p>max # timers: <a class="reference download internal" download="" href="../../../../../../_downloads/e24972f9de3369dae612f31164666263/posix-maxtimers.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/posix-maxtimers.cpp</span></code></a> -&gt; 62207</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">ulimit</span><span class="w"> </span>-a
 <span class="go">...</span>
@@ -462,15 +417,19 @@ handler)</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">NOTES</span></code> section</span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>The kernel preallocates a &quot;queued real-time signal&quot; for each
-timer created using timer_create().  Consequently, the number
-of timers is limited by the RLIMIT_SIGPENDING resource limit
-(see setrlimit(2)).
+timer created using timer_create().  Consequently, the number of
+timers is limited by the RLIMIT_SIGPENDING resource limit (see
+setrlimit(2)).
 </pre></div>
 </div>
 </div>
 </li>
-<li><p>overrun</p></li>
 </ul>
+</section>
+<section id="timer-overrun">
+<h3>Timer Overrun<a class="headerlink" href="#timer-overrun" title="Link to this heading">#</a></h3>
+<p>Continue from <a class="reference download internal" download="" href="../../../../../../_downloads/9363759fc97cb353e7115c2a9bd32677/posix-overrun.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/posix-overrun.cpp</span></code></a></p>
+</section>
 </section>
 </section>
 
@@ -500,8 +459,11 @@ of timers is limited by the RLIMIT_SIGPENDING resource limit
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basics">Basics</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#details">Details</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#details">Details</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#limits-anywhere">Limits, Anywhere?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#timer-overrun">Timer Overrun</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Clocks (jjj) &#8212; Jörg Faschingbauer</title>
+    <title>Clocks, And Points In Time &#8212; Jörg Faschingbauer</title>
   
   
   
@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
@@ -271,19 +271,20 @@
 <li class="toctree-l4"><a class="reference internal" href="../../process/index.html">Processes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../signals/index.html">Signals</a></li>
 <li class="toctree-l4 current active has-children"><a class="reference internal" href="../index.html">Time, Clocks, Timers And Notification</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l5 current active"><a class="current reference internal" href="#">Clocks (jjj)</a></li>
+<li class="toctree-l5 current active"><a class="current reference internal" href="#">Clocks, And Points In Time</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../historical/index.html">Obsolete Timer APIs</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../posix/index.html">POSIX Interval Timers</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../posix-intro/index.html">POSIX Timers: Introduction</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../posix-async/index.html">POSIX Timers: Asynchronous Notification</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../posix-threaded/index.html">POSIX Timers: Threaded Notification</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../timerfd/index.html">Timer File Descriptors</a></li>
 </ul>
 </details></li>
 <li class="toctree-l4"><a class="reference internal" href="../../eventloop/index.html">Event Driven Programming</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../posix-threads/index.html">POSIX Threads</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../scheduling/index.html">Scheduling</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../sysprog_events/topic.html">Sysprog: Events</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../mmap/index.html">Memory Management Basics (<code class="docutils literal notranslate"><span class="pre">mmap()</span></code>)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../sysprog_ipc/topic.html">Sysprog: POSIX IPC</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../mmap/index.html"><code class="docutils literal notranslate"><span class="pre">mmap</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../ipc-mqueue/topic.html">POSIX Message Queues</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../todo.html">TODO</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../scheduling/index.html">Scheduling And Realtime</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../intro-hw/index.html">Introductory Live Hacking, Hardware-Wise (<code class="docutils literal notranslate"><span class="pre">sysfs</span></code> GPIO)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../blocking-io/index.html">Blocking I/O: What Is That?</a></li>
 </ul>
@@ -356,7 +357,7 @@
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Time, Clocks, Timers And Notification</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Clocks (jjj)</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Clocks, And Points In Time</span></li>
   </ul>
 </nav>
 </div>
@@ -372,8 +373,15 @@
                 
 <div id="searchbox"></div>
                 <article class="bd-article">
-                   <section id="clocks-jjj">
-<h1>Clocks (jjj)<a class="headerlink" href="#clocks-jjj" title="Link to this heading">#</a></h1>
+                   <section id="clocks-and-points-in-time">
+<h1>Clocks, And Points In Time<a class="headerlink" href="#clocks-and-points-in-time" title="Link to this heading">#</a></h1>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CLOCK_REALTIME</span></code>, <code class="docutils literal notranslate"><span class="pre">CLOCK_MONOTONIC</span></code>, …</p></li>
+<li><p>Resolution, <code class="docutils literal notranslate"><span class="pre">clock_gettime()</span></code>, …</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">tm</span></code>, and <code class="docutils literal notranslate"><span class="pre">strftime()</span></code>, <code class="docutils literal notranslate"><span class="pre">gettimeofday()</span></code>, …</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">{clock_,}nanosleep()</span></code></p></li>
+<li><p>Why <code class="docutils literal notranslate"><span class="pre">TIMER_ABSTIME</span></code>?</p></li>
+</ul>
 </section>
 
 <div class="section ablog__blog_comments">

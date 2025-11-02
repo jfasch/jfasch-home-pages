@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
@@ -274,23 +274,21 @@
 <li class="toctree-l4"><a class="reference internal" href="../file-io/index.html">Files And File Descriptors</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../process/index.html">Processes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../signals/index.html">Signals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../timers/index.html">Time, Clocks, Timers And Notification</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../eventloop/index.html">Event Driven Programming</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../posix-threads/index.html">POSIX Threads</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../scheduling/index.html">Scheduling</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../sysprog_events/topic.html">Sysprog: Events</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../sysprog_ipc/topic.html">Sysprog: POSIX IPC</a></li>
-<li class="toctree-l4 current active has-children"><a class="reference internal" href="index.html"><code class="docutils literal notranslate"><span class="pre">mmap</span></code></a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4 current active has-children"><a class="reference internal" href="index.html">Memory Management Basics (<code class="docutils literal notranslate"><span class="pre">mmap()</span></code>)</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="virtual-memory.html">Virtual Memory: Big Picture</a></li>
 <li class="toctree-l5 current active"><a class="current reference internal" href="#">Lazy Allocation, Demand Paging, And Overcommit</a></li>
 <li class="toctree-l5"><a class="reference internal" href="mmap-intro-anon.html">Introduction To <code class="docutils literal notranslate"><span class="pre">mmap()</span></code>: Anonymous Memory</a></li>
 <li class="toctree-l5"><a class="reference internal" href="file-mappings.html"><code class="docutils literal notranslate"><span class="pre">mmap</span></code>: File Mappings, Basics</a></li>
 <li class="toctree-l5"><a class="reference internal" href="file-mappings-client-server.html">A Simple Client/Server Scenario</a></li>
 <li class="toctree-l5"><a class="reference internal" href="realtime.html">TODO: And Realtime?</a></li>
-<li class="toctree-l5"><a class="reference internal" href="fork.html">TODO: <code class="docutils literal notranslate"><span class="pre">fork()</span></code></a></li>
 </ul>
 </details></li>
+<li class="toctree-l4"><a class="reference internal" href="../sysprog_ipc/topic.html">Sysprog: POSIX IPC</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../ipc-mqueue/topic.html">POSIX Message Queues</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../todo.html">TODO</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../scheduling/index.html">Scheduling And Realtime</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../intro-hw/index.html">Introductory Live Hacking, Hardware-Wise (<code class="docutils literal notranslate"><span class="pre">sysfs</span></code> GPIO)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../blocking-io/index.html">Blocking I/O: What Is That?</a></li>
 </ul>
@@ -361,7 +359,7 @@
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Linux Systems Programming</a></li>
     
     
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link"><code class="docutils literal notranslate"><span class="pre">mmap</span></code></a></li>
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Memory Management Basics (<code class="docutils literal notranslate"><span class="pre">mmap()</span></code>)</a></li>
     
     <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Lazy Allocation, Demand Paging, And Overcommit</span></li>
   </ul>
@@ -392,40 +390,22 @@
 </nav>
 <section id="lazy-allocation-and-overcommit">
 <h2><a class="toc-backref" href="#id1" role="doc-backlink">Lazy Allocation, And Overcommit</a><a class="headerlink" href="#lazy-allocation-and-overcommit" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="table table-left">
-<colgroup>
-<col style="width: 40.0%" />
-<col style="width: 60.0%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><ul class="simple">
+<ul class="simple">
 <li><p>Mappings are <em>unpopulated</em>, initially</p></li>
 <li><p>Not backed by physical memory</p></li>
 <li><p>⟶ MMU knows nothing</p></li>
 <li><p>⟶ Error condition</p></li>
 <li><p>Memory will be allocated at first access</p></li>
-<li><p>⟶ <em>overcommit</em>: if all processes allocated
-memory for all of their mappings, the system would run out of
-memory</p></li>
+<li><p>⟶ <em>overcommit</em>: if all processes allocated memory for
+all of their mappings, the system would run out of memory</p></li>
 <li><p>(generally, they don’t)</p></li>
 </ul>
-</td>
-<td><p><a class="reference download internal" download="" href="../../../../../../_downloads/fb1b6445fa23ad7462872fb5ccecb152/lazy-alloc-unpopulated.odg"><code class="xref download docutils literal notranslate"><span class="pre">drawings/libreoffice/lazy-alloc-unpopulated.odg</span></code></a></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>jjj libreoffice extension dead</p>
+<p>libreoffice extension dead:
+<a class="reference download internal" download="" href="../../../../../../_downloads/fb1b6445fa23ad7462872fb5ccecb152/lazy-alloc-unpopulated.odg"><code class="xref download docutils literal notranslate"><span class="pre">drawings/libreoffice/lazy-alloc-unpopulated.odg</span></code></a></p>
 </section>
 <section id="memory-access-and-allocation">
 <h2><a class="toc-backref" href="#id2" role="doc-backlink">Memory Access, And Allocation</a><a class="headerlink" href="#memory-access-and-allocation" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="table table-left">
-<colgroup>
-<col style="width: 40.0%" />
-<col style="width: 60.0%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><ul class="simple">
+<ul class="simple">
 <li><p>On first access, MMU knows nothing (no TLB entry)</p></li>
 <li><p>⟶ “TLB miss”</p></li>
 <li><p>Page table has nothing too</p></li>
@@ -434,40 +414,24 @@ memory</p></li>
 <li><p>Might require disk IO ⟶ could take a while</p></li>
 <li><p>⟶ No-go if one has <a class="reference internal" href="realtime.html"><span class="doc">realtime requirements</span></a></p></li>
 </ul>
-</td>
-<td><p><a class="reference download internal" download="" href="../../../../../../_downloads/745a7fef3e4ab02e834b7c9a96c15966/lazy-alloc-mmu-trap.odg"><code class="xref download docutils literal notranslate"><span class="pre">drawings/libreoffice/lazy-alloc-mmu-trap.odg</span></code></a></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>jjj libreoffice extension dead</p>
+<p>libreoffice extension dead:
+<a class="reference download internal" download="" href="../../../../../../_downloads/745a7fef3e4ab02e834b7c9a96c15966/lazy-alloc-mmu-trap.odg"><code class="xref download docutils literal notranslate"><span class="pre">drawings/libreoffice/lazy-alloc-mmu-trap.odg</span></code></a></p>
 </section>
 <section id="finish-setup-mapping-kick-process-loose">
 <h2><a class="toc-backref" href="#id3" role="doc-backlink">Finish: Setup Mapping, Kick Process Loose</a><a class="headerlink" href="#finish-setup-mapping-kick-process-loose" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="table table-left">
-<colgroup>
-<col style="width: 40.0%" />
-<col style="width: 60.0%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><ul class="simple">
-<li><p>Finally, when allocation has taken place, page tables and TLB
-are updated</p></li>
+<ul class="simple">
+<li><p>Finally, when allocation has taken place, page tables and TLB are
+updated</p></li>
 <li><p>⟶ Process is runnable again</p></li>
 <li><p>⟶ Subject to scheduling</p></li>
 </ul>
-</td>
-<td><p><a class="reference download internal" download="" href="../../../../../../_downloads/0cdc4be0c5899b2194e16e381c9e11c2/lazy-alloc-allocated.odg"><code class="xref download docutils literal notranslate"><span class="pre">drawings/libreoffice/lazy-alloc-allocated.odg</span></code></a></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>jjj libreoffice extension dead</p>
+<p>libreoffice extension dead:
+<a class="reference download internal" download="" href="../../../../../../_downloads/0cdc4be0c5899b2194e16e381c9e11c2/lazy-alloc-allocated.odg"><code class="xref download docutils literal notranslate"><span class="pre">drawings/libreoffice/lazy-alloc-allocated.odg</span></code></a></p>
 </section>
 <section id="further-notes-tlb-misses-memory-performance">
 <h2><a class="toc-backref" href="#id4" role="doc-backlink">Further Notes: TLB Misses, Memory Performance</a><a class="headerlink" href="#further-notes-tlb-misses-memory-performance" title="Link to this heading">#</a></h2>
-<aside class="sidebar">
-<p class="sidebar-title">See also</p>
+<aside class="topic">
+<p class="topic-title">See also</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../../../c/100-performance/030-memory/topic.html"><span class="doc">Optimizations: Memory Optimizations</span></a></p></li>
 </ul>

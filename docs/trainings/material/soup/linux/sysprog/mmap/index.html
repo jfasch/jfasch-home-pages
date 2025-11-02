@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mmap &#8212; Jörg Faschingbauer</title>
+    <title>Memory Management Basics (mmap()) &#8212; Jörg Faschingbauer</title>
   
   
   
@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
@@ -59,7 +59,7 @@
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../search.html" />
     <link rel="next" title="Virtual Memory: Big Picture" href="virtual-memory.html" />
-    <link rel="prev" title="Code: Sysprog: POSIX IPC" href="../sysprog_ipc/code/index.html" /> 
+    <link rel="prev" title="Trylock/islocked" href="../posix-threads/locked-trylock.html" /> 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />   
@@ -197,10 +197,6 @@
   
 
   
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
-      <span class="fa-solid fa-outdent"></span>
-    </button>
-  
 </div>
 
     </header>
@@ -274,23 +270,21 @@
 <li class="toctree-l4"><a class="reference internal" href="../file-io/index.html">Files And File Descriptors</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../process/index.html">Processes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../signals/index.html">Signals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../timers/index.html">Time, Clocks, Timers And Notification</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../eventloop/index.html">Event Driven Programming</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../posix-threads/index.html">POSIX Threads</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../scheduling/index.html">Scheduling</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../sysprog_events/topic.html">Sysprog: Events</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../sysprog_ipc/topic.html">Sysprog: POSIX IPC</a></li>
-<li class="toctree-l4 current active has-children"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mmap</span></code></a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4 current active has-children"><a class="current reference internal" href="#">Memory Management Basics (<code class="docutils literal notranslate"><span class="pre">mmap()</span></code>)</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l5"><a class="reference internal" href="virtual-memory.html">Virtual Memory: Big Picture</a></li>
 <li class="toctree-l5"><a class="reference internal" href="lazy-alloc.html">Lazy Allocation, Demand Paging, And Overcommit</a></li>
 <li class="toctree-l5"><a class="reference internal" href="mmap-intro-anon.html">Introduction To <code class="docutils literal notranslate"><span class="pre">mmap()</span></code>: Anonymous Memory</a></li>
 <li class="toctree-l5"><a class="reference internal" href="file-mappings.html"><code class="docutils literal notranslate"><span class="pre">mmap</span></code>: File Mappings, Basics</a></li>
 <li class="toctree-l5"><a class="reference internal" href="file-mappings-client-server.html">A Simple Client/Server Scenario</a></li>
 <li class="toctree-l5"><a class="reference internal" href="realtime.html">TODO: And Realtime?</a></li>
-<li class="toctree-l5"><a class="reference internal" href="fork.html">TODO: <code class="docutils literal notranslate"><span class="pre">fork()</span></code></a></li>
 </ul>
 </details></li>
+<li class="toctree-l4"><a class="reference internal" href="../sysprog_ipc/topic.html">Sysprog: POSIX IPC</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../ipc-mqueue/topic.html">POSIX Message Queues</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../todo.html">TODO</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../scheduling/index.html">Scheduling And Realtime</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../intro-hw/index.html">Introductory Live Hacking, Hardware-Wise (<code class="docutils literal notranslate"><span class="pre">sysfs</span></code> GPIO)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../blocking-io/index.html">Blocking I/O: What Is That?</a></li>
 </ul>
@@ -360,7 +354,7 @@
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Linux Systems Programming</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><code class="docutils literal notranslate"><span class="pre">mmap</span></code></span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Memory Management Basics (<code class="docutils literal notranslate"><span class="pre">mmap()</span></code>)</span></li>
   </ul>
 </nav>
 </div>
@@ -376,8 +370,8 @@
                 
 <div id="searchbox"></div>
                 <article class="bd-article">
-                   <section id="mmap">
-<h1><code class="docutils literal notranslate"><span class="pre">mmap</span></code><a class="headerlink" href="#mmap" title="Link to this heading">#</a></h1>
+                   <section id="memory-management-basics-mmap">
+<h1>Memory Management Basics (<code class="docutils literal notranslate"><span class="pre">mmap()</span></code>)<a class="headerlink" href="#memory-management-basics-mmap" title="Link to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="virtual-memory.html">Virtual Memory: Big Picture</a></li>
@@ -386,33 +380,8 @@
 <li class="toctree-l1"><a class="reference internal" href="file-mappings.html"><code class="docutils literal notranslate"><span class="pre">mmap</span></code>: File Mappings, Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="file-mappings-client-server.html">A Simple Client/Server Scenario</a></li>
 <li class="toctree-l1"><a class="reference internal" href="realtime.html">TODO: And Realtime?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="fork.html">TODO: <code class="docutils literal notranslate"><span class="pre">fork()</span></code></a></li>
 </ul>
 </div>
-<section id="links">
-<h2>Links<a class="headerlink" href="#links" title="Link to this heading">#</a></h2>
-<ul>
-<li><p><a class="reference external" href="https://youtu.be/7aONIVSXiJ8?si=DH9IhlIFTAu3d-qC">Introduction to Memory Management in Linux</a></p>
-<iframe width="560" height="315"
-        src="https://www.youtube.com/embed/7aONIVSXiJ8?si=s7Zwa2WkZnHNJG99"
-        title="YouTube video player"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        referrerpolicy="strict-origin-when-cross-origin"
-        allowfullscreen>
-</iframe></li>
-<li><p><a class="reference external" href="https://youtu.be/8hVLcyBkSXY?si=CyyWlhcLG5HJT1bI">understanding mmap, the workhorse behind keeping memory access
-efficient in linux</a></p>
-<iframe width="560" height="315"
-        src="https://www.youtube.com/embed/8hVLcyBkSXY?si=CyyWlhcLG5HJT1bI"
-        title="YouTube video player"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        referrerpolicy="strict-origin-when-cross-origin"
-        allowfullscreen>
-</iframe></li>
-</ul>
-</section>
 </section>
 
 <div class="section ablog__blog_comments">
@@ -428,24 +397,6 @@ efficient in linux</a></p>
             </div>
             
             
-              
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#links">Links</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>
