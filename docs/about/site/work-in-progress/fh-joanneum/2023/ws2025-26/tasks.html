@@ -379,13 +379,125 @@
                 <article class="bd-article">
                    <section id="tasks-rafactoring-realtime-behavior">
 <h1>Tasks: Rafactoring, Realtime Behavior, …<a class="headerlink" href="#tasks-rafactoring-realtime-behavior" title="Link to this heading">#</a></h1>
-<section id="another-panel">
-<span id="fh-ws2023-task-panel"></span><h2>Another Panel<a class="headerlink" href="#another-panel" title="Link to this heading">#</a></h2>
-<p>See <code class="docutils literal notranslate"><span class="pre">textualize</span></code></p>
+<section id="graceful-termination">
+<h2>Graceful Termination<a class="headerlink" href="#graceful-termination" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>In <code class="docutils literal notranslate"><span class="pre">bin/run-door.cpp</span></code> introduce signal handling for <code class="docutils literal notranslate"><span class="pre">SIGINT</span></code> and
+<code class="docutils literal notranslate"><span class="pre">SIGTERM</span></code></p></li>
+<li><p>… to terminate gracefully, drop out of the main loop</p></li>
+<li><p>Before exit, perform necessary cleanup (done my destructors,
+mostly), and print a “bye” message.</p></li>
+</ul>
+</section>
+<section id="elimiate-direct-libgpiod-uses">
+<h2>Elimiate Direct <code class="docutils literal notranslate"><span class="pre">libgpiod</span></code> Uses<a class="headerlink" href="#elimiate-direct-libgpiod-uses" title="Link to this heading">#</a></h2>
+<p>Rollout of <code class="docutils literal notranslate"><span class="pre">{In,Out}putSwitch</span></code>, and especially of
+<code class="docutils literal notranslate"><span class="pre">{In,Out}putSwitchGPIO</span></code>, we are for a moment safe from <code class="docutils literal notranslate"><span class="pre">libgpiod</span></code>
+woes.</p>
+<p>Eliminate all uses of <code class="docutils literal notranslate"><span class="pre">libgpiod</span></code>, in favor of the
+<code class="docutils literal notranslate"><span class="pre">{In,Out}putSwitch</span></code> interface.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MotorLED</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MotorStepper</span></code></p></li>
+</ul>
+</section>
+<section id="sysfs-gpio">
+<h2><code class="docutils literal notranslate"><span class="pre">sysfs</span></code> GPIO<a class="headerlink" href="#sysfs-gpio" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Yet another <code class="docutils literal notranslate"><span class="pre">{In,Out}putSwitch</span></code> implementation</p></li>
+<li><p>Advantage: relieves us (for a moment) from the pain of <code class="docutils literal notranslate"><span class="pre">libgpiod</span></code>.</p></li>
+<li><p>There is this one loopback test where one IO sees <em>immediately</em> the
+update of another - this is fragile, we want to see that test pass
+:-)</p></li>
+</ul>
+</section>
+<section id="structural-refactoring">
+<span id="fh-ws2023-task-struct-refact"></span><h2>Structural Refactoring<a class="headerlink" href="#structural-refactoring" title="Link to this heading">#</a></h2>
+<p>(ml/baum/sinh?)</p>
+<aside class="topic">
+<p class="topic-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docutils.sourceforge.io/docs/ref/rst/directives.html">A ReStructuredText Primer</a></p></li>
+<li><p><a class="reference external" href="https://docutils.sourceforge.io/docs/ref/rst/directives.html">reStructuredText Directives</a>
+(spoiler: <code class="docutils literal notranslate"><span class="pre">image</span></code> or <code class="docutils literal notranslate"><span class="pre">figure</span></code>) <code class="docutils literal notranslate"><span class="pre">image</span></code>)</p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Konzept: structure diagram, dependency diagram in gh/README.rst</p></li>
+<li><p>Include paths? Siehe task <a class="reference internal" href="#fh-ws2025-task-how-to-include-files"><span class="std std-ref">How to include files</span></a></p></li>
+<li><p>Dependencies (<code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">--graphviz</span></code>), see <a class="reference internal" href="../../../../../../trainings/material/soup/misc/cmake/intro/libraries.html#cmake-graphviz"><span class="std std-ref">Visualizing Dependencies</span></a></p></li>
+<li><p>Coordinate with other teams</p>
+<ul>
+<li><p>Communicate major upstream updates to pull/sync</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">#include</span></code> rules, see :ref:fh-ws2025-task-how-to-include-files`</p></li>
+<li><p>…</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="utilities">
+<h2>Utilities<a class="headerlink" href="#utilities" title="Link to this heading">#</a></h2>
+<p>At the level of <code class="docutils literal notranslate"><span class="pre">src/door/timespec.{h,cpp}</span></code> …</p>
+<ul class="simple">
+<li><p>File-IO encapsulation: in sysfs we read and write lots of small
+files.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">{read,write}_int()</span></code>, convenience wrapper</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">{read,write}_string()</span></code>, convenience wrapper</p></li>
+<li><p><a class="reference internal" href="../../../../../../trainings/material/soup/cxx/cxx11/move/index.html"><span class="doc">Move semantics</span></a></p></li>
+<li><p>Exceptions: define base exception centrally, for the entire door
+project, and refine to <code class="docutils literal notranslate"><span class="pre">OSError</span></code> exception (see
+<a class="reference internal" href="../../../../../../trainings/material/soup/linux/sysprog/syscalls/errorhandling/index.html"><span class="doc">errno, And Error Handling</span></a>)
+that is thrown from this module.</p></li>
+<li><p>Write tests: <a class="reference external" href="https://google.github.io/googletest/reference/assertions.html">GoogleTest Assertions Reference</a>
+(search for <code class="docutils literal notranslate"><span class="pre">ASSERT_THROW(statement,exception_type)</span></code>)</p></li>
+</ul>
+</li>
+</ul>
+<p>Initially, put it flat in <code class="docutils literal notranslate"><span class="pre">src/door</span></code>, and coordinate with
+<a class="reference internal" href="#fh-ws2023-task-struct-refact"><span class="std std-ref">Structural Refactoring</span></a>. Could put more into that module
+(the interfaces?).</p>
+</section>
+<section id="test-rack">
+<h2>Test Rack<a class="headerlink" href="#test-rack" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Define the software implications of using this as door environment</p></li>
+<li><p>How do we create input to <em>our</em> inputs? See
+<code class="docutils literal notranslate"><span class="pre">src/door/structs.h</span></code>. Discuss with PLC guys.</p></li>
+</ul>
+</section>
+<section id="delete-copy-where-appropriate">
+<h2><code class="docutils literal notranslate"><span class="pre">=delete</span></code> Copy Where Appropriate<a class="headerlink" href="#delete-copy-where-appropriate" title="Link to this heading">#</a></h2>
+<aside class="topic">
+<p class="topic-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../../../../trainings/material/soup/cxx/cxx11/oo/delete.html"><span class="doc">= delete</span></a></p></li>
+</ul>
+</aside>
+<ul class="simple">
+<li><p>Find out list of such candidates (all the GPIO switches, supposedly,
+as a start)</p></li>
+<li><p>Discuss</p></li>
+<li><p>Fix</p></li>
+</ul>
+</section>
+<section id="a-textual-user-interface">
+<span id="fh-ws2023-task-panel"></span><h2>A <em>Textual</em> User Interface<a class="headerlink" href="#a-textual-user-interface" title="Link to this heading">#</a></h2>
+<p>(See <a class="reference external" href="https://www.textualize.io/">https://www.textualize.io/</a>)</p>
+<p>Write a management application (reachable over the terminal/SSH) for
+tasks like</p>
+<ul class="simple">
+<li><p>Log viewing. Requires that we have a log somewhere; could have one
+that is e.g. buried in <a class="reference external" href="https://docs.python.org/3/library/sqlite3.html" title="(in Python v3.14)"><span>sqlite3 — DB-API 2.0 interface for SQLite databases</span></a></p></li>
+<li><p>Input event injection (e.g. “close-button” pressed)</p></li>
+<li><p>Various hardware testing features, like moving the motor back and
+forth and measure various things</p></li>
+<li><p>…</p></li>
+</ul>
 </section>
 <section id="panel">
 <h2>Panel<a class="headerlink" href="#panel" title="Link to this heading">#</a></h2>
-<p>There is a panel somewhere …</p>
+<p>There is a panel somewhere in the PLC world …</p>
 </section>
 <section id="integration-tests">
 <h2>Integration Tests<a class="headerlink" href="#integration-tests" title="Link to this heading">#</a></h2>
@@ -408,8 +520,8 @@ pass that into <code class="docutils literal notranslate"><span class="pre">main
 <li><p>Bring it into <code class="docutils literal notranslate"><span class="pre">Inputs()</span></code> and <code class="docutils literal notranslate"><span class="pre">Outputs()</span></code></p></li>
 </ul>
 </section>
-<section id="graceful-termination">
-<h2>Graceful Termination<a class="headerlink" href="#graceful-termination" title="Link to this heading">#</a></h2>
+<section id="id1">
+<h2>Graceful Termination<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Signal handling, as explaind in course</p></li>
 <li><p>Before termination, call dtors of all objects that are alive in
@@ -417,7 +529,7 @@ pass that into <code class="docutils literal notranslate"><span class="pre">main
 </ul>
 </section>
 <section id="how-to-include-files">
-<h2>How to include files<a class="headerlink" href="#how-to-include-files" title="Link to this heading">#</a></h2>
+<span id="fh-ws2025-task-how-to-include-files"></span><h2>How to include files<a class="headerlink" href="#how-to-include-files" title="Link to this heading">#</a></h2>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">file.cpp</span></code> includes its own <code class="docutils literal notranslate"><span class="pre">file.h</span></code>, or any other file <em>from
 the same directory</em>. Such files are included like <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&quot;&quot;</span></code></p>
@@ -459,8 +571,8 @@ declaration <code class="docutils literal notranslate"><span class="pre">A</span
 </section>
 <section id="remove-light-barrier-and-push-putton-in-favor-of-in-out-put-switch">
 <h2>Remove Light Barrier And Push Putton (In Favor Of <code class="docutils literal notranslate"><span class="pre">{in,out}put-switch*</span></code>)<a class="headerlink" href="#remove-light-barrier-and-push-putton-in-favor-of-in-out-put-switch" title="Link to this heading">#</a></h2>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">door/CMakeLists.txt</span></code></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">door/CMakeLists.txt</span></code></span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">light-barrier.h</span>
 <span class="go">light-barrier-mock.h</span>
 <span class="go">light-barrier-mock.cpp</span>
@@ -543,11 +655,18 @@ operation. can the device do continuous conversion?</p></li>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#another-panel">Another Panel</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#graceful-termination">Graceful Termination</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#elimiate-direct-libgpiod-uses">Elimiate Direct <code class="docutils literal notranslate"><span class="pre">libgpiod</span></code> Uses</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sysfs-gpio"><code class="docutils literal notranslate"><span class="pre">sysfs</span></code> GPIO</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#structural-refactoring">Structural Refactoring</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utilities">Utilities</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#test-rack">Test Rack</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#delete-copy-where-appropriate"><code class="docutils literal notranslate"><span class="pre">=delete</span></code> Copy Where Appropriate</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-textual-user-interface">A <em>Textual</em> User Interface</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#panel">Panel</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integration-tests">Integration Tests</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#main-run-door-cpp-instantiate-hw-mock-objects">Main <code class="docutils literal notranslate"><span class="pre">run-door.cpp</span></code>: Instantiate HW/Mock Objects</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#graceful-termination">Graceful Termination</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Graceful Termination</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-include-files">How to include files</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#remove-light-barrier-and-push-putton-in-favor-of-in-out-put-switch">Remove Light Barrier And Push Putton (In Favor Of <code class="docutils literal notranslate"><span class="pre">{in,out}put-switch*</span></code>)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sps-machinery-state-machine-not-as-it-was-before">SPS Machinery: State Machine Not As It Was Before</a></li>
