@@ -1,8 +1,32 @@
 .. include:: <mmlalias.txt>
 
 
-Tasks: Rafactoring, Realtime Behavior, ...
-==========================================
+The Big Plan
+============
+
+Teams, Assignments
+------------------
+
+.. list-table:: 
+   :align: left
+   :header-rows: 1
+
+   * * Team
+     * Assigment
+   * * **ReinRaus**
+     * :ref:`fh-ws2025-26-task-sysfs-gpio`
+   * * **Abrissbirne**
+     * :ref:`fh-ws2025-26-task-struct-refact`,
+       :ref:`fh-ws2025-26-task-how-to-include-files`
+   * * **DieSeinigen**
+     * :ref:`fh-ws2025-26-task-testrack`
+   * * **Knepferldrucker**
+     * :ref:`fh-ws2025-26-task-copy-delete`,
+       :ref:`fh-ws2025-26-task-rm-light-push`
+   * * **HighPressure**
+     * :ref:`fh-ws2025-26-task-ads1115`
+   * * **DingsbumsSPS**
+     * :ref:`fh-ws2025-26-task-graceful-termination`
 
 .. contents::
    :local:
@@ -12,6 +36,8 @@ Small Linux (Busybox)
 
 * ramdisk, early boot
 * -> Yocto
+
+.. _fh-ws2025-26-task-graceful-termination:
 
 Graceful Termination
 --------------------
@@ -24,18 +50,7 @@ Graceful Termination
 * Before exit, perform necessary cleanup (done my destructors,
   mostly), and print a "bye" message.
 
-Eliminate Direct ``libgpiod`` Uses
-----------------------------------
-
-Rollout of ``{In,Out}putSwitch``, and especially of
-``{In,Out}putSwitchGPIO``, we are for a moment safe from ``libgpiod``
-woes.
-
-Eliminate all uses of ``libgpiod``, in favor of the
-``{In,Out}putSwitch`` interface.
-
-* ``MotorLED``
-* ``MotorStepper``
+.. _fh-ws2025-26-task-sysfs-gpio:
 
 ``sysfs`` GPIO
 --------------
@@ -48,7 +63,25 @@ Eliminate all uses of ``libgpiod``, in favor of the
   update of another - this is fragile, we want to see that test pass
   :-)
 
-.. _fh-ws2023-task-struct-refact:
+.. topic:: See also
+
+   From :doc:`/trainings/material/soup/linux/sysprog/intro-hw/index`
+
+   * :doc:`/trainings/material/soup/linux/sysprog/intro-hw/sysfs-gpio`
+   * :doc:`/trainings/material/soup/linux/sysprog/intro-hw/get`
+
+     Careful on export:
+
+     .. code-block:: shell
+
+        # export GPIO
+        echo $GPIO > /sys/class/gpio/export
+        
+        # give system time to export GPIO (sadly, this is an asynchronous
+        # operation)
+        sleep 1
+
+.. _fh-ws2025-26-task-struct-refact:
 
 Structural Refactoring
 ----------------------
@@ -61,42 +94,29 @@ Structural Refactoring
      <https://docutils.sourceforge.io/docs/ref/rst/directives.html>`__
    * `reStructuredText Directives
      <https://docutils.sourceforge.io/docs/ref/rst/directives.html>`__
-     (spoiler: ``image`` or ``figure``) ``image``)
+     (spoiler: ``image`` or ``figure``)
 
 * Konzept: structure diagram, dependency diagram in gh/README.rst
-* Include paths? Siehe task :ref:`fh-ws2025-task-how-to-include-files`
+* Include paths? Siehe task :ref:`fh-ws2025-26-task-how-to-include-files`
 * Dependencies (``cmake --graphviz``), see :ref:`cmake-graphviz`
 * Coordinate with other teams
 
   * Communicate major upstream updates to pull/sync
-  * ``#include`` rules, see :ref:fh-ws2025-task-how-to-include-files`
+  * ``#include`` rules, see :ref:`fh-ws2025-26-task-how-to-include-files`
   * ...
 
 * Remove ``libgpiod`` usage from unit tests
+* Rollout of ``{In,Out}putSwitch``, and especially of
+  ``{In,Out}putSwitchGPIO``, we are for a moment safe from
+  ``libgpiod`` woes.
 
-Utilities
----------
+  Eliminate all uses of ``libgpiod``, in favor of the
+  ``{In,Out}putSwitch`` interface.
 
-At the level of ``src/door/timespec.{h,cpp}`` ...
+  * ``MotorLED`` (if not yet done)
+  * ``MotorStepper`` (if not yet done)
 
-* File-IO encapsulation: in sysfs we read and write lots of small
-  files. 
-
-  * ``{read,write}_int()``, convenience wrapper
-  * ``{read,write}_string()``, convenience wrapper
-  * :doc:`Move semantics
-    </trainings/material/soup/cxx/cxx11/move/index>`
-  * Exceptions: define base exception centrally, for the entire door
-    project, and refine to ``OSError`` exception (see
-    :doc:`/trainings/material/soup/linux/sysprog/syscalls/errorhandling/index`)
-    that is thrown from this module.
-  * Write tests: `GoogleTest Assertions Reference
-    <https://google.github.io/googletest/reference/assertions.html>`__
-    (search for ``ASSERT_THROW(statement,exception_type)``)
-
-Initially, put it flat in ``src/door``, and coordinate with
-:ref:`fh-ws2023-task-struct-refact`. Could put more into that module
-(the interfaces?).
+.. _fh-ws2025-26-task-testrack:
 
 Test Rack
 ---------
@@ -105,8 +125,12 @@ Test Rack
 
 * Define the software implications of using this as door environment
 * How do we create input to *our* inputs? See
-  ``src/door/structs.h``. Discuss with PLC guys.
+  ``src/door/structs.h``. Discuss with PLC guys (aka DingsbumsSPS)
 * How would ``Motor`` interface be implemented?
+* ``fasch`` to ask ``msallok`` if we can borrow the panel for
+  integration tests, occasionally
+
+.. _fh-ws2025-26-task-copy-delete:
 
 ``=delete`` Copy Where Appropriate
 ----------------------------------
@@ -173,14 +197,7 @@ Main ``run-door.cpp``: Instantiate HW/Mock Objects
 * Based on that, instantiate mock or real-hw objects
 * Bring it into ``Inputs()`` and ``Outputs()``
 
-Graceful Termination
---------------------
-
-* Signal handling, as explaind in course
-* Before termination, call dtors of all objects that are alive in
-  ``main()``
-
-.. _fh-ws2025-task-how-to-include-files:
+.. _fh-ws2025-26-task-how-to-include-files:
 
 How to include files
 --------------------
@@ -221,10 +238,14 @@ How to include files
      motor-stepper-tests.cpp:#include "../src/door/motor-stepper.h"
      push-button-gpio-test.cpp:#include "../src/door/push-button-gpio.h"
 
+.. _fh-ws2025-26-task-rm-light-push:
+
 Remove Light Barrier And Push Putton (In Favor Of ``{in,out}put-switch*``)
 --------------------------------------------------------------------------
 
 **Knepferldrucker**
+
+Remove entirely:
 
 .. code-block:: console
    :caption: ``door/CMakeLists.txt``
@@ -236,6 +257,30 @@ Remove Light Barrier And Push Putton (In Favor Of ``{in,out}put-switch*``)
    push-button.h
    push-button-mock.h
    push-button-mock.cpp
+
+Utilities
+---------
+
+At the level of ``src/door/timespec.{h,cpp}`` ...
+
+* File-IO encapsulation: in sysfs we read and write lots of small
+  files. 
+
+  * ``{read,write}_int()``, convenience wrapper
+  * ``{read,write}_string()``, convenience wrapper
+  * :doc:`Move semantics
+    </trainings/material/soup/cxx/cxx11/move/index>`
+  * Exceptions: define base exception centrally, for the entire door
+    project, and refine to ``OSError`` exception (see
+    :doc:`/trainings/material/soup/linux/sysprog/syscalls/errorhandling/index`)
+    that is thrown from this module.
+  * Write tests: `GoogleTest Assertions Reference
+    <https://google.github.io/googletest/reference/assertions.html>`__
+    (search for ``ASSERT_THROW(statement,exception_type)``)
+
+Initially, put it flat in ``src/door``, and coordinate with
+:ref:`fh-ws2025-26-task-struct-refact`. Could put more into that module
+(the interfaces?).
 
 SPS Machinery: State Machine Not As It Was Before
 -------------------------------------------------
@@ -261,6 +306,8 @@ Switches
 
 ``src/door/input-switch-gpio.h``: ctor takes ``unsigned int*
 line_number`` - why pointer? (output switch does *not*.)
+
+.. _fh-ws2025-26-task-ads1115:
 
 ADC/ADS1115
 -----------
