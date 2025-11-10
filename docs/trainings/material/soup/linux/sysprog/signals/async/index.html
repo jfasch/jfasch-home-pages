@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
@@ -675,20 +675,6 @@ restart what’s been interrupted</p></li>
 <span class="w">    </span><span class="n">write</span><span class="p">(</span><span class="n">STDOUT_FILENO</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">msg</span><span class="p">));</span><span class="w">            </span><span class="c1">// &lt;-- async-signal-safe</span>
 <span class="p">}</span>
 
-<span class="kt">char</span><span class="w"> </span><span class="nf">read_one_byte</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
-<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">rv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rv</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">errno</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">EINTR</span><span class="p">)</span>
-<span class="w">                </span><span class="k">continue</span><span class="p">;</span><span class="w">                              </span><span class="c1">// &lt;-- restart</span>
-<span class="w">            </span><span class="k">else</span>
-<span class="w">                </span><span class="p">;</span><span class="w">                                      </span><span class="c1">// &lt;-- and now? return error?</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
-
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">println</span><span class="p">(</span><span class="s">&quot;PID={}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">getpid</span><span class="p">());</span>
@@ -702,7 +688,18 @@ restart what’s been interrupted</p></li>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 <span class="w">    </span><span class="p">}</span>
 
-<span class="w">    </span><span class="n">read_one_byte</span><span class="p">();</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
+<span class="w">        </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">nread</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nread</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">errno</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">EINTR</span><span class="p">)</span>
+<span class="w">                </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">            </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;read&quot;</span><span class="p">);</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
@@ -838,7 +835,22 @@ delivery</p></li>
 <em>unspecified in multithreaded programs!</em></p></li>
 <li><p>Multithreaded programs use <a class="reference external" href="https://man7.org/linux/man-pages/man3/pthread_sigmask.3.html">pthread_sigmask()</a></p></li>
 </ul>
-<p>From <a class="reference external" href="https://man7.org/linux/man-pages/man2/sigprocmask.2.html">man -s 2 sigprocmask</a>:</p>
+</section>
+<section id="sigprocmask-manipulate-signal-mask">
+<h2><code class="docutils literal notranslate"><span class="pre">sigprocmask()</span></code>: Manipulate Signal Mask<a class="headerlink" href="#sigprocmask-manipulate-signal-mask" title="Link to this heading">#</a></h2>
+<aside class="topic">
+<p class="topic-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/sigprocmask.2.html">man -s 2 sigprocmask</a></p></li>
+</ul>
+</aside>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;signal.h&gt;</span>
+
+<span class="cm">/* Prototype for the glibc wrapper function */</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">sigprocmask</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">how</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">sigset_t</span><span class="w"> </span><span class="o">*</span><span class="n">_Nullable</span><span class="w"> </span><span class="kr">restrict</span><span class="w"> </span><span class="n">set</span><span class="p">,</span>
+<span class="w">                           </span><span class="kt">sigset_t</span><span class="w"> </span><span class="o">*</span><span class="n">_Nullable</span><span class="w"> </span><span class="kr">restrict</span><span class="w"> </span><span class="n">oldset</span><span class="p">);</span>
+</pre></div>
+</div>
 <div class="pst-scrollable-table-container"><table class="table table-left">
 <tbody>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SIG_BLOCK</span></code></p></td>
@@ -856,6 +868,9 @@ which is not blocked.</p></td>
 </tbody>
 </table>
 </div>
+</section>
+<section id="code-blocking-unblocking-sigusr1">
+<h2>Code: Blocking/Unblocking <code class="docutils literal notranslate"><span class="pre">SIGUSR1</span></code><a class="headerlink" href="#code-blocking-unblocking-sigusr1" title="Link to this heading">#</a></h2>
 <div class="literal-block-wrapper docutils container" id="id9">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/3038e47038144c30c80c3adce703821e/sigmask.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/sigmask.cpp</span></code></a></span><a class="headerlink" href="#id9" title="Link to this code">#</a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
@@ -1117,6 +1132,8 @@ which is not blocked.</p></td>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-restart-interrupted-call">Automatic Restart Interrupted Call</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#async-signal-safety">Async-Signal-Safety</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#blocking-asynchronous-signal-delivery-signal-mask">Blocking Asynchronous Signal Delivery: Signal Mask</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sigprocmask-manipulate-signal-mask"><code class="docutils literal notranslate"><span class="pre">sigprocmask()</span></code>: Manipulate Signal Mask</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#code-blocking-unblocking-sigusr1">Code: Blocking/Unblocking <code class="docutils literal notranslate"><span class="pre">SIGUSR1</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#asking-for-pending-signals">Asking For Pending Signals</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#realtime-signals">Realtime Signals</a></li>
 </ul>
