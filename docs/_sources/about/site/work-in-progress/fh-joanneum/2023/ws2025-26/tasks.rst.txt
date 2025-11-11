@@ -243,21 +243,25 @@ Structural Refactoring (Ongoing)
 
    * submodules, starting with ``utilities/timespec.{h,cpp}``
    * structural, focus on user/programmer comphrendability
- 
-     * e.g. ``motor`` would then consist of: interface, mock, led,
-       stepper
-     * nodes with dependencies nonetheless
-     * most depend on ``utilities``, for example
-     * drawback of such an approach is that programs that are linked
-       statically against a monolith bring everything even if unused
-       (using mock only, or a sensor fake implementation). *not* loaded
-       into memory though during runtime, see
-       :doc:`/trainings/material/soup/linux/toolchain/basics/topic`
-     * if it hurts, we can modify anyway. jetzt kemmas scho.
- 
-       can be worse though: `How the XZ backdoor works
-       <https://lwn.net/Articles/967192/>`__, especially the role of
-       libsystemd.
+   * e.g. ``motor`` would then consist of: interface, mock, led,
+     stepper
+   * nodes with dependencies nonetheless
+   * most depend on ``utilities``, for example
+   * Drawback of cramming interface, lightweight implementations
+     (e.g. mocks) into *the same library*: code size.
+
+     If only the interface, or a lightweight implementation, is
+     needed, the *entire library* is among the dependencies -
+     including all its heavyweight (regarding code size) members.
+
+     That superfluous code will not be loaded into memory though -
+     this is done on-demand when the code is executed. (See
+     :doc:`/trainings/material/soup/linux/toolchain/basics/topic`.)
+   * if it hurts, we can modify anyway. jetzt kemmas scho.
+
+     can be worse though: `How the XZ backdoor works
+     <https://lwn.net/Articles/967192/>`__, especially the role of
+     libsystemd.
 
 * Konzept: structure diagram, dependency diagram in gh/README.rst
 * Include paths? Siehe task :ref:`fh-ws2025-26-task-how-to-include-files`
