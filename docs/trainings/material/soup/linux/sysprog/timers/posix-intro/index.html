@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
@@ -58,7 +58,7 @@
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/sysprog/timers/posix-intro/index.html" />
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
-    <link rel="next" title="POSIX Timers: Asynchronous Notification" href="../posix-async/index.html" />
+    <link rel="next" title="POSIX Timers: Arming (Oneshot Or Periodic)" href="../posix-oneshot-periodic/index.html" />
     <link rel="prev" title="Obsolete Timer APIs" href="../historical/index.html" /> 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -278,7 +278,8 @@
 <li class="toctree-l5"><a class="reference internal" href="../clocks/index.html">Clocks, And Points In Time</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../historical/index.html">Obsolete Timer APIs</a></li>
 <li class="toctree-l5 current active"><a class="current reference internal" href="#">POSIX Timers: Introduction</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../posix-async/index.html">POSIX Timers: Asynchronous Notification</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../posix-oneshot-periodic/index.html">POSIX Timers: Arming (Oneshot Or Periodic)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../posix-siginfo/index.html">POSIX Timers: Additional Information (<code class="docutils literal notranslate"><span class="pre">siginfo_t</span></code>)</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../posix-threaded/index.html">POSIX Timers: Threaded Notification</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../timerfd/index.html">Timer File Descriptors</a></li>
 </ul>
@@ -437,8 +438,27 @@ synchronously for that matter; see
 </div>
 <ul class="simple">
 <li><p>“Callback” configuration via <code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">sigevent</span></code></p></li>
-<li><p>Signal or thread</p></li>
 <li><p>Optional callback parameter</p></li>
+</ul>
+</section>
+<section id="arming-a-timer">
+<h2>“Arming” A Timer<a class="headerlink" href="#arming-a-timer" title="Link to this heading">#</a></h2>
+<aside class="topic">
+<p class="topic-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/timer_settime.2.html">man -s 2 timer_settime</a></p></li>
+</ul>
+</aside>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;time.h&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">timer_settime</span><span class="p">(</span><span class="kt">timer_t</span><span class="w"> </span><span class="n">timerid</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">flags</span><span class="p">,</span>
+<span class="w">                  </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">itimerspec</span><span class="w"> </span><span class="o">*</span><span class="kr">restrict</span><span class="w"> </span><span class="n">new_value</span><span class="p">,</span>
+<span class="w">                  </span><span class="k">struct</span><span class="w"> </span><span class="nc">itimerspec</span><span class="w"> </span><span class="o">*</span><span class="n">_Nullable</span><span class="w"> </span><span class="kr">restrict</span><span class="w"> </span><span class="n">old_value</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>After creation, a timer is idle <a href="#id1"><span class="problematic" id="id2">|longrightarrow|</span></a> must “arm” first</p></li>
+<li><p>Oneshot or periodic (see <a class="reference internal" href="../posix-oneshot-periodic/index.html"><span class="doc">POSIX Timers: Arming (Oneshot Or Periodic)</span></a>)</p></li>
 </ul>
 </section>
 <section id="struct-sigevent">
@@ -450,14 +470,14 @@ synchronously for that matter; see
 </ul>
 <p><strong>Notification type</strong></p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">sigev_notify</span> <span class="pre">=</span> <span class="pre">SIGEV_SIGNAL</span></code></p>
+<li><p><code class="docutils literal notranslate"><span class="pre">sigev_notify</span> <span class="pre">==</span> <span class="pre">SIGEV_SIGNAL</span></code></p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">sigev_signo</span></code>: signal number - user selectable,
 e.g. <code class="docutils literal notranslate"><span class="pre">SIGRTMIN+7</span></code>, or <code class="docutils literal notranslate"><span class="pre">SIGUSR1</span></code></p></li>
 <li><p>Important: even when a realtime signal is chosen (see <a class="reference internal" href="../../signals/async/index.html#sysprog-signals-rtsig"><span class="std std-ref">here</span></a>), <em>multiple expirations are not queued</em></p></li>
 </ul>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sigev_notify</span> <span class="pre">=</span> <span class="pre">SIGEV_THREAD</span></code></p>
+<li><p><code class="docutils literal notranslate"><span class="pre">sigev_notify</span> <span class="pre">==</span> <span class="pre">SIGEV_THREAD</span></code></p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">sigev_notify_function</span></code>: callback function called in a separate
 thread</p></li>
@@ -465,7 +485,7 @@ thread</p></li>
 <a class="reference internal" href="../../posix-threads/020-lifecycle/topic.html"><span class="doc">here</span></a>)</p></li>
 </ul>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sigev_notify</span> <span class="pre">=</span> <span class="pre">SIGEV_NONE</span></code>: must poll using <code class="docutils literal notranslate"><span class="pre">timer_gettime()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sigev_notify</span> <span class="pre">==</span> <span class="pre">SIGEV_NONE</span></code>: must poll using <code class="docutils literal notranslate"><span class="pre">timer_gettime()</span></code></p></li>
 </ul>
 <p><strong>More callback information</strong></p>
 <ul>
@@ -513,6 +533,7 @@ thread</p></li>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creation-and-deletion">Creation And Deletion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#arming-a-timer">“Arming” A Timer</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#struct-sigevent"><code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">sigevent</span></code></a></li>
 </ul>
   </nav></div>
