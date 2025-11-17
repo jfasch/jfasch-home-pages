@@ -59,7 +59,7 @@
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
     <link rel="next" title="Timer File Descriptors" href="../timerfd/index.html" />
-    <link rel="prev" title="POSIX Timers: Asynchronous Notification" href="../posix-async/index.html" /> 
+    <link rel="prev" title="POSIX Timers: Additional Information (siginfo_t)" href="../posix-siginfo/index.html" /> 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />   
@@ -197,6 +197,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -274,7 +278,8 @@
 <li class="toctree-l5"><a class="reference internal" href="../clocks/index.html">Clocks, And Points In Time</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../historical/index.html">Obsolete Timer APIs</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../posix-intro/index.html">POSIX Timers: Introduction</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../posix-async/index.html">POSIX Timers: Asynchronous Notification</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../posix-oneshot-periodic/index.html">POSIX Timers: Arming (Oneshot/Periodic)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../posix-siginfo/index.html">POSIX Timers: Additional Information (<code class="docutils literal notranslate"><span class="pre">siginfo_t</span></code>)</a></li>
 <li class="toctree-l5 current active"><a class="current reference internal" href="#">POSIX Timers: Threaded Notification</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../timerfd/index.html">Timer File Descriptors</a></li>
 </ul>
@@ -284,7 +289,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../eventloop/poll-cpp/index.html">A Naive C++ Eventloop (<code class="docutils literal notranslate"><span class="pre">poll()</span></code>)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../eventloop/exercise-graceful-termination/index.html">Exercise: Graceful Termination Via <code class="docutils literal notranslate"><span class="pre">SIGTERM</span></code>/<code class="docutils literal notranslate"><span class="pre">SIGINT</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../eventloop/exercise-commit-rollback/index.html">Exercise: Commit/Rollback Via <code class="docutils literal notranslate"><span class="pre">SIGUSR1</span></code>/<code class="docutils literal notranslate"><span class="pre">SIGUSR2</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../eventloop/group-dummy.html">Group <code class="docutils literal notranslate"><span class="pre">sysprog.eventloop</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../eventloop/index.html">Group <code class="docutils literal notranslate"><span class="pre">sysprog.eventloop</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../posix-threads/index.html">POSIX Threads</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../mmap/index.html">Memory Management Basics (<code class="docutils literal notranslate"><span class="pre">mmap()</span></code>)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../sysprog_ipc/topic.html">Sysprog: POSIX IPC</a></li>
@@ -380,12 +385,37 @@
                 <article class="bd-article">
                    <section id="posix-timers-threaded-notification">
 <h1>POSIX Timers: Threaded Notification<a class="headerlink" href="#posix-timers-threaded-notification" title="Link to this heading">#</a></h1>
+<section id="signals-unwanted">
+<h2>Signals Unwanted<a class="headerlink" href="#signals-unwanted" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Signal handling is hard (see
+<a class="reference internal" href="../../signals/async/index.html#sysprog-signals-async-signal-safe"><span class="std std-ref">Async-Signal-Safety</span></a>)</p></li>
+<li><p>Creative ways have been found around its peculiarities
+(<a class="reference internal" href="../../signals/async-self-pipe/index.html"><span class="doc">Use Case: Self-Pipe Trick</span></a>)</p></li>
+<li><p>Historically, <a class="reference internal" href="../../signals/async/index.html"><span class="doc">asynchronous delivery</span></a> has
+been the only way to notify processes of something outside of their
+immediate control</p></li>
+</ul>
+</section>
+<section id="oneshot">
+<h2>oneshot<a class="headerlink" href="#oneshot" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>notify function (union sigval)</p></li>
+<li><p>remove sigaction</p></li>
+</ul>
+</section>
+<section id="periodic">
+<h2>periodic<a class="headerlink" href="#periodic" title="Link to this heading">#</a></h2>
+</section>
+<section id="xxx">
+<h2>xxx<a class="headerlink" href="#xxx" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>whole lotta code, mainly taken (and modified) from
-<a class="reference internal" href="../posix-async/index.html"><span class="doc">POSIX Timers: Asynchronous Notification</span></a></p></li>
+<a class="reference internal" href="../posix-oneshot-periodic/index.html"><span class="doc">POSIX Timers: Arming (Oneshot/Periodic)</span></a></p></li>
 <li><p>thread notification: is a new thread created? <a class="reference external" href="https://man7.org/linux/man-pages/man3/sigevent.3type.html">man -s 3 sigevent</a> only
 says that it could. Performance implications?</p></li>
 </ul>
+</section>
 </section>
 
 <div class="section ablog__blog_comments">
@@ -401,6 +431,27 @@ says that it could. Performance implications?</p></li>
             </div>
             
             
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#signals-unwanted">Signals Unwanted</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oneshot">oneshot</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#periodic">periodic</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xxx">xxx</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
