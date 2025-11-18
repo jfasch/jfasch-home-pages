@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/jupyter-sphinx.css?v=572af1d6" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
@@ -58,7 +58,7 @@
     <link rel="canonical" href="https://www.faschingbauer.me/trainings/material/soup/linux/sysprog/timers/posix-threaded/index.html" />
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
-    <link rel="next" title="Timer File Descriptors" href="../timerfd/index.html" />
+    <link rel="next" title="POSIX Timers: Timer Overrun, Limits" href="../posix-misc/index.html" />
     <link rel="prev" title="POSIX Timers: Additional Information (siginfo_t)" href="../posix-siginfo/index.html" /> 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -281,6 +281,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../posix-oneshot-periodic/index.html">POSIX Timers: Arming (Oneshot/Periodic)</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../posix-siginfo/index.html">POSIX Timers: Additional Information (<code class="docutils literal notranslate"><span class="pre">siginfo_t</span></code>)</a></li>
 <li class="toctree-l5 current active"><a class="current reference internal" href="#">POSIX Timers: Threaded Notification</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../posix-misc/index.html">POSIX Timers: Timer Overrun, Limits</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../timerfd/index.html">Timer File Descriptors</a></li>
 </ul>
 </details></li>
@@ -385,6 +386,20 @@
                 <article class="bd-article">
                    <section id="posix-timers-threaded-notification">
 <h1>POSIX Timers: Threaded Notification<a class="headerlink" href="#posix-timers-threaded-notification" title="Link to this heading">#</a></h1>
+<aside class="topic">
+<p class="topic-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../posix-threads/index.html"><span class="doc">POSIX Threads</span></a></p></li>
+<li><p><a class="reference internal" href="../../posix-threads/020-lifecycle/topic.html"><span class="doc">Thread Life Cycle</span></a></p></li>
+</ul>
+</aside>
+<aside class="topic">
+<p class="topic-title">Documentation</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/timer_create.2.html">man -s 2 timer_create</a></p></li>
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man3/sigevent.3type.html">man -s 3 sigevent</a></p></li>
+</ul>
+</aside>
 <section id="signals-unwanted">
 <h2>Signals Unwanted<a class="headerlink" href="#signals-unwanted" title="Link to this heading">#</a></h2>
 <ul class="simple">
@@ -395,26 +410,123 @@
 <li><p>Historically, <a class="reference internal" href="../../signals/async/index.html"><span class="doc">asynchronous delivery</span></a> has
 been the only way to notify processes of something outside of their
 immediate control</p></li>
+<li><p>Well understood though</p></li>
 </ul>
 </section>
-<section id="oneshot">
-<h2>oneshot<a class="headerlink" href="#oneshot" title="Link to this heading">#</a></h2>
+<section id="threaded-timer-expiry-notification">
+<h2>Threaded Timer Expiry Notification<a class="headerlink" href="#threaded-timer-expiry-notification" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p>notify function (union sigval)</p></li>
-<li><p>remove sigaction</p></li>
+<li><p>Async signal safety is rather limiting</p></li>
+<li><p><a class="reference internal" href="../../posix-threads/index.html"><span class="doc">POSIX threads</span></a> run in
+a context that is easier</p></li>
+<li><p>Locking and communication primitives</p></li>
+<li><p>Came much later in history (around year 2000, long after epoch)</p></li>
+<li><p>⟶ Much easier communication from “callback function”
+into the rest of the process</p></li>
 </ul>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">sigevent</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="n">event</span><span class="p">.</span><span class="n">sigev_notify</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SIGEV_THREAD</span><span class="p">;</span>
+<span class="n">event</span><span class="p">.</span><span class="n">sigev_notify_function</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">handler</span><span class="p">;</span>
+<span class="c1">// event.sigev_notify_attributes = ...;</span>
+</pre></div>
+</div>
 </section>
-<section id="periodic">
-<h2>periodic<a class="headerlink" href="#periodic" title="Link to this heading">#</a></h2>
-</section>
-<section id="xxx">
-<h2>xxx<a class="headerlink" href="#xxx" title="Link to this heading">#</a></h2>
+<section id="code-periodic-timer-threaded">
+<h2>Code: Periodic Timer, Threaded<a class="headerlink" href="#code-periodic-timer-threaded" title="Link to this heading">#</a></h2>
+<aside class="topic">
+<p class="topic-title">Trainer’s note</p>
 <ul class="simple">
-<li><p>whole lotta code, mainly taken (and modified) from
-<a class="reference internal" href="../posix-oneshot-periodic/index.html"><span class="doc">POSIX Timers: Arming (Oneshot/Periodic)</span></a></p></li>
-<li><p>thread notification: is a new thread created? <a class="reference external" href="https://man7.org/linux/man-pages/man3/sigevent.3type.html">man -s 3 sigevent</a> only
-says that it could. Performance implications?</p></li>
+<li><p>Copy the program from <a class="reference internal" href="../posix-oneshot-periodic/index.html#sysprog-timers-periodic-code"><span class="std std-ref">Code: Periodic Timers</span></a></p></li>
+<li><p>Modify handler: <code class="docutils literal notranslate"><span class="pre">union</span> <span class="pre">sigval</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">timer_create()</span></code>: <code class="docutils literal notranslate"><span class="pre">SIGEV_THREAD</span></code></p></li>
+<li><p>Remove <code class="docutils literal notranslate"><span class="pre">sigaction()</span></code></p></li>
 </ul>
+</aside>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/a8e5ca9a468bd77b719d46566db22e1d/periodic.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/periodic.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;signal.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;time.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;print&gt;</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="k">union</span><span class="w"> </span><span class="nc">sigval</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w">                    </span><span class="c1">// &lt;-- callback-data</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">msg</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;timer expired</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">write</span><span class="p">(</span><span class="n">STDOUT_FILENO</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">msg</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">timer_t</span><span class="w"> </span><span class="n">timer</span><span class="p">;</span>
+<span class="w">    </span><span class="n">sigevent</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="w">    </span><span class="n">event</span><span class="p">.</span><span class="n">sigev_notify</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SIGEV_THREAD</span><span class="p">;</span><span class="w">                 </span><span class="c1">// &lt;-- threaded notification</span>
+<span class="w">    </span><span class="n">event</span><span class="p">.</span><span class="n">sigev_notify_function</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">handler</span><span class="p">;</span><span class="w">             </span><span class="c1">// &lt;-- function to be called in thread context</span>
+
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">rv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">timer_create</span><span class="p">(</span><span class="n">CLOCK_MONOTONIC</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">timer</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rv</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;timer_create&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="cm">/* timer activation */</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">itimerspec</span><span class="w"> </span><span class="n">sp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">},</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="n">rv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">timer_settime</span><span class="p">(</span><span class="n">timer</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="cm">/*relative*/</span><span class="p">,</span>
+<span class="w">                       </span><span class="o">&amp;</span><span class="n">sp</span><span class="p">,</span>
+<span class="w">                       </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rv</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;timer_settime&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">rv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pause</span><span class="p">();</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rv</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">errno</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">EINTR</span><span class="p">)</span>
+<span class="w">                </span><span class="n">std</span><span class="o">::</span><span class="n">println</span><span class="p">(</span><span class="s">&quot;interrupted&quot;</span><span class="p">);</span>
+<span class="w">            </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;pause&quot;</span><span class="p">);</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="drawback-thread-creation">
+<h2>Drawback: Thread Creation<a class="headerlink" href="#drawback-thread-creation" title="Link to this heading">#</a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>SIGEV_THREAD
+       Notify the process by invoking sigev_notify_function &quot;as  if&quot;  it
+       were  the start function of a new thread.  (Among the implementa‐
+       tion possibilities here are that each  timer  notification  could
+       result  in  the creation of a new thread, or that a single thread
+       is created to receive all notifications.)  The  function  is  in‐
+       voked with sigev_value as its sole argument.  If sigev_notify_at‐
+       tributes  is not NULL, it should point to a pthread_attr_t struc‐
+       ture  that  defines  attributes   for   the   new   thread   (see
+       pthread_attr_init(3)).
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>“each timer notification could result in the creation of a new
+thread”</p></li>
+<li><p>Exactly that is the case</p></li>
+<li><p><em>Thread creation is not free</em></p></li>
+<li><p>⟶ Might impose performance problems for high
+frequency timers</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>strace<span class="w"> </span>-f<span class="w"> </span>./sysprog-timers-threaded-periodic
+<span class="go">...</span>
+<span class="go">[pid 1235513] clone3({flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, child_tid=0x7f270ba0d990, parent_tid=0x7f270ba0d990, exit_signal=0, stack=0x7f270b20d000, stack_size=0x7fff40, tls=0x7f270ba0d6c0} =&gt; {parent_tid=[1235530]}, 88) = 1235530</span>
+<span class="go">...</span>
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -445,9 +557,9 @@ says that it could. Performance implications?</p></li>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#signals-unwanted">Signals Unwanted</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oneshot">oneshot</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#periodic">periodic</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xxx">xxx</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#threaded-timer-expiry-notification">Threaded Timer Expiry Notification</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#code-periodic-timer-threaded">Code: Periodic Timer, Threaded</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#drawback-thread-creation">Drawback: Thread Creation</a></li>
 </ul>
   </nav></div>
 
