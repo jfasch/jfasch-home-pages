@@ -59,7 +59,7 @@
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
     <link rel="next" title="The Problem" href="../../eventloop/problem/index.html" />
-    <link rel="prev" title="POSIX Timers: Threaded Notification" href="../posix-threaded/index.html" /> 
+    <link rel="prev" title="POSIX Timers: Overrun" href="../posix-overrun/index.html" /> 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />   
@@ -197,6 +197,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -277,6 +281,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../posix-oneshot-periodic/index.html">POSIX Timers: Arming (Oneshot/Periodic)</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../posix-siginfo/index.html">POSIX Timers: Additional Information (<code class="docutils literal notranslate"><span class="pre">siginfo_t</span></code>)</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../posix-threaded/index.html">POSIX Timers: Threaded Notification</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../posix-overrun/index.html">POSIX Timers: Overrun</a></li>
 <li class="toctree-l5 current active"><a class="current reference internal" href="#">Timer File Descriptors</a></li>
 </ul>
 </details></li>
@@ -381,11 +386,190 @@
                 <article class="bd-article">
                    <section id="timer-file-descriptors">
 <h1>Timer File Descriptors<a class="headerlink" href="#timer-file-descriptors" title="Link to this heading">#</a></h1>
+<aside class="topic">
+<p class="topic-title">Work in progress</p>
+<p>jjj complete this</p>
+</aside>
+<aside class="topic">
+<p class="topic-title">Documentation</p>
 <ul class="simple">
-<li><p><em>The solution</em> :-)</p></li>
-<li><p>Be aware that there is a limit to open files which is much lower
-than the <a class="reference internal" href="../index.html#sysprog-posix-timer-limit"><span class="std std-ref">limit to POSIX timers</span></a></p></li>
+<li><p><a class="reference external" href="https://man7.org/linux/man-pages/man2/timerfd_create.2.html">man -s 2 timerfd_create</a></p></li>
 </ul>
+</aside>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sys/timerfd.h&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">timerfd_create</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">clockid</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">flags</span><span class="p">);</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">timerfd_settime</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">flags</span><span class="p">,</span>
+<span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">itimerspec</span><span class="w"> </span><span class="o">*</span><span class="n">new_value</span><span class="p">,</span>
+<span class="w">                    </span><span class="k">struct</span><span class="w"> </span><span class="nc">itimerspec</span><span class="w"> </span><span class="o">*</span><span class="n">_Nullable</span><span class="w"> </span><span class="n">old_value</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">timerfd_gettime</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">itimerspec</span><span class="w"> </span><span class="o">*</span><span class="n">curr_value</span><span class="p">);</span>
+</pre></div>
+</div>
+<section id="the-idea">
+<h2>The Idea<a class="headerlink" href="#the-idea" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../eventloop/index.html"><span class="doc">File descriptors emit events</span></a></p>
+<ul>
+<li><p>Incoming data ready</p></li>
+<li><p>Signal is pending (see <a class="reference internal" href="../../signals/signalfd/index.html"><span class="doc">here</span></a>)</p></li>
+<li><p>Edge interrupt detected on IO pin</p></li>
+<li><p>…</p></li>
+</ul>
+</li>
+<li><p>Timer expiration is an event too</p></li>
+<li><p>⟶ What if we could represent a timer by a file
+descriptor?</p></li>
+</ul>
+</section>
+<section id="timer-events-far-superior">
+<h2>Timer <em>Events</em>: Far Superior<a class="headerlink" href="#timer-events-far-superior" title="Link to this heading">#</a></h2>
+<p>Timer expiration delivery options, according to POSIX:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../signals/index.html"><span class="doc">Signals</span></a> are not a
+solution to anything</p></li>
+<li><p><a class="reference internal" href="../../posix-threads/index.html"><span class="doc">Threads</span></a>
+<em>might</em> solve problems but are still hard</p></li>
+<li><p>⟶ This is not creative!</p></li>
+<li><p><a class="reference internal" href="../../eventloop/index.html"><span class="doc">Event driven programming</span></a> …</p>
+<ul>
+<li><p>Not simple, mentally (state machines all over)</p></li>
+<li><p>Technically <em>far</em> superior</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="creation">
+<h2>creation<a class="headerlink" href="#creation" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>no callback specification (<code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">sigevent</span></code>)</p></li>
+<li><p>-&gt; no callbacks</p></li>
+<li><p>event multiplexing <a class="reference internal" href="../../eventloop/index.html"><span class="doc">Group sysprog.eventloop</span></a></p></li>
+<li><p>flags: “nonblocking”, “cloexec”</p></li>
+</ul>
+</section>
+<section id="oneshot">
+<span id="sysprog-timerdf-oneshot-code"></span><h2>oneshot<a class="headerlink" href="#oneshot" title="Link to this heading">#</a></h2>
+<aside class="topic">
+<p class="topic-title">Trainer’s note</p>
+<ul class="simple">
+<li><p>Start with <a class="reference internal" href="../posix-oneshot-periodic/index.html#sysprog-timers-oneshot-code"><span class="std std-ref">Code: One-shot Timers</span></a></p></li>
+<li><p>Remove all signal things</p></li>
+</ul>
+</aside>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/70671ad0502c1827180ff7e76f425a17/oneshot.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/oneshot.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sys/timerfd.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;print&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="cm">/* timer creation */</span><span class="w">                               </span><span class="c1">// &lt;-- this replaces 20+ lines from POSIX timers</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">timer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">timerfd_create</span><span class="p">(</span><span class="n">CLOCK_MONOTONIC</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">timer</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;timerfd_create&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">itimerspec</span><span class="w"> </span><span class="n">sp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="p">.</span><span class="n">it_interval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{.</span><span class="n">tv_sec</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">tv_nsec</span><span class="o">=</span><span class="mi">0</span><span class="p">},</span>
+<span class="w">        </span><span class="p">.</span><span class="n">it_value</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="p">{.</span><span class="n">tv_sec</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">tv_nsec</span><span class="o">=</span><span class="mi">0</span><span class="p">},</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">rv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">timerfd_settime</span><span class="p">(</span><span class="n">timer</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="cm">/*relative*/</span><span class="p">,</span><span class="w">        </span><span class="c1">// &lt;-- almost exactly the same</span>
+<span class="w">                             </span><span class="o">&amp;</span><span class="n">sp</span><span class="p">,</span>
+<span class="w">                             </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rv</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;timerfd_settime&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">num_expirations</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">nread</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read</span><span class="p">(</span><span class="n">timer</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">num_expirations</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">num_expirations</span><span class="p">));</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nread</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;read&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nread</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">num_expirations</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">println</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;well, something&#39;s severely wrong&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">println</span><span class="p">(</span><span class="s">&quot;#expirations: {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">num_expirations</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="periodic">
+<h2>periodic<a class="headerlink" href="#periodic" title="Link to this heading">#</a></h2>
+<aside class="topic">
+<p class="topic-title">Trainer’s note</p>
+<ul class="simple">
+<li><p>Continue from <a class="reference internal" href="#sysprog-timerdf-oneshot-code"><span class="std std-ref">oneshot</span></a></p></li>
+<li><p>Copy <code class="docutils literal notranslate"><span class="pre">timer_settime</span></code> from <a class="reference internal" href="../posix-oneshot-periodic/index.html#sysprog-timers-periodic-code"><span class="std std-ref">Code: Periodic Timers</span></a></p></li>
+<li><p>Loop around expiry</p></li>
+<li><p>jjj show overrun (1ns interval)</p></li>
+</ul>
+</aside>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/cb3038c49148e4db44ec380d73577d6d/periodic.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/periodic.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sys/timerfd.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;print&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">timer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">timerfd_create</span><span class="p">(</span><span class="n">CLOCK_MONOTONIC</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">timer</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;timerfd_create&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">itimerspec</span><span class="w"> </span><span class="n">sp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">},</span><span class="w">                                         </span><span class="c1">// &lt;-- 1 second interval</span>
+<span class="w">        </span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">},</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">rv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">timerfd_settime</span><span class="p">(</span><span class="n">timer</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="cm">/*relative*/</span><span class="p">,</span>
+<span class="w">                             </span><span class="o">&amp;</span><span class="n">sp</span><span class="p">,</span>
+<span class="w">                             </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rv</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;timerfd_settime&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">num_expirations</span><span class="p">;</span>
+<span class="w">        </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">nread</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read</span><span class="p">(</span><span class="n">timer</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">num_expirations</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">num_expirations</span><span class="p">));</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nread</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;read&quot;</span><span class="p">);</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nread</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">num_expirations</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">println</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;well, something&#39;s severely wrong&quot;</span><span class="p">);</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">println</span><span class="p">(</span><span class="s">&quot;#expirations: {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">num_expirations</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="closing-words">
+<h2>closing words<a class="headerlink" href="#closing-words" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Be aware that there is a limit to open files which is much lower
+than the <a class="reference internal" href="../posix-intro/index.html#sysprog-posix-timer-limit"><span class="std std-ref">limit to POSIX timers</span></a></p></li>
+</ul>
+</section>
 </section>
 
 <div class="section ablog__blog_comments">
@@ -401,6 +585,29 @@ than the <a class="reference internal" href="../index.html#sysprog-posix-timer-l
             </div>
             
             
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-idea">The Idea</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#timer-events-far-superior">Timer <em>Events</em>: Far Superior</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creation">creation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oneshot">oneshot</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#periodic">periodic</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#closing-words">closing words</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

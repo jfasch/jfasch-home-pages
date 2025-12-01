@@ -377,7 +377,7 @@
 <li><p><a class="reference internal" href="#wiring-attach-ds2482-800-via-i2c" id="id17">Wiring: Attach DS2482-800 via I2C</a></p></li>
 <li><p><a class="reference internal" href="#configure-software" id="id18">Configure Software</a></p>
 <ul>
-<li><p><a class="reference internal" href="#enable-i2c-and-check-bootloader-config-boot-config-txt" id="id19">Enable I2C, and Check (Bootloader config, <code class="docutils literal notranslate"><span class="pre">/boot/config.txt)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#enable-i2c-and-check-bootloader-config-boot-firmware-config-txt" id="id19">Enable I2C, and Check (Bootloader config, <code class="docutils literal notranslate"><span class="pre">/boot/firmware/config.txt)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#verify-that-our-device-is-there-i2cdetect" id="id20">Verify That Our Device Is There (<code class="docutils literal notranslate"><span class="pre">i2cdetect)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#announce-hotplug-ds2482-to-linux" id="id21">Announce (“Hotplug”) DS2482 to Linux</a></p></li>
 </ul>
@@ -423,8 +423,8 @@ bus master in hardware, attached to the CPU via I2C</p></li>
 temperature sensor as a slave device.</p></li>
 <li><p>Rasperry Pi because everything’s easy there. This article’s
 principles stand unmodified for other platforms that run Linux (more
-handwork might be needed though - Pi’s <code class="docutils literal notranslate"><span class="pre">/boot/config.txt</span></code> is
-really cool, for example).</p></li>
+handwork might be needed though - Pi’s <code class="docutils literal notranslate"><span class="pre">/boot/firmware/config.txt</span></code>
+is really cool, for example).</p></li>
 </ul>
 <p>A <a class="reference external" href="https://en.wikipedia.org/wiki/1-Wire">OneWire</a> device has three
 wires attached to it: data, ground, and power. Data and ground are
@@ -439,7 +439,7 @@ the <code class="docutils literal notranslate"><span class="pre">w1-gpio</span><
 data line, and the kernel driver is then used to <a class="reference external" href="https://en.wikipedia.org/wiki/Bit_banging">bitbang</a> the OneWire protocol in
 and out of the CPU.</p>
 <p>Configuration is easy: say you want to use GPIO 21 as data line. In
-<code class="docutils literal notranslate"><span class="pre">/boot/config.txt</span></code> you write,</p>
+<code class="docutils literal notranslate"><span class="pre">/boot/firmware/config.txt</span></code> you write,</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">dtoverlay=w1-gpio,gpiopin=21</span>
 </pre></div>
 </div>
@@ -584,9 +584,9 @@ diagram below this gives address <code class="docutils literal notranslate"><spa
 <h3><a class="toc-backref" href="#id18" role="doc-backlink">Configure Software</a><a class="headerlink" href="#configure-software" title="Link to this heading">#</a></h3>
 <p>Next, we configure software. Please read <a class="reference internal" href="../i2c/topic.html"><span class="doc">Linux and I2C (using LM73 Temperature Sensor as Slave)</span></a> for
 details; here we just reproduce shortly what is explained there.</p>
-<section id="enable-i2c-and-check-bootloader-config-boot-config-txt">
-<span id="w1-i2c-raspi-bootloader"></span><h4><a class="toc-backref" href="#id19" role="doc-backlink">Enable I2C, and Check (Bootloader config, <code class="docutils literal notranslate"><span class="pre">/boot/config.txt)</span></code></a><a class="headerlink" href="#enable-i2c-and-check-bootloader-config-boot-config-txt" title="Link to this heading">#</a></h4>
-<p>In <code class="docutils literal notranslate"><span class="pre">/boot/config.txt</span></code>, add the following line.</p>
+<section id="enable-i2c-and-check-bootloader-config-boot-firmware-config-txt">
+<span id="w1-i2c-raspi-bootloader"></span><h4><a class="toc-backref" href="#id19" role="doc-backlink">Enable I2C, and Check (Bootloader config, <code class="docutils literal notranslate"><span class="pre">/boot/firmware/config.txt)</span></code></a><a class="headerlink" href="#enable-i2c-and-check-bootloader-config-boot-firmware-config-txt" title="Link to this heading">#</a></h4>
+<p>In <code class="docutils literal notranslate"><span class="pre">/boot/firmware/config.txt</span></code>, add the following line.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>dtparam=i2c_arm=on
 </pre></div>
 </div>
@@ -665,19 +665,26 @@ responsible to communicate with the OneWire devices on the new buses
 </pre></div>
 </div>
 <p>You probably want to do this automatically during boot. Download the
-following file into <code class="docutils literal notranslate"><span class="pre">/usr/local/lib/systemd/system/</span></code> (create that
-directory if it does not exist),</p>
+following file into <code class="docutils literal notranslate"><span class="pre">/etc/systemd/system/</span></code> (create that directory if
+it does not exist),</p>
 <div class="literal-block-wrapper docutils container" id="id10">
 <div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/1079b40b40dc146db96b877a06a872ed/ds2482.service"><code class="xref download docutils literal notranslate"><span class="pre">ds2482.service</span></code></a></span><a class="headerlink" href="#id10" title="Link to this code">#</a></div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Unit</span><span class="p">]</span>
 <span class="n">Description</span><span class="o">=</span><span class="n">DS2482</span><span class="o">-</span><span class="mi">800</span><span class="o">@</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mh">0x18</span><span class="p">)</span>
 
 <span class="p">[</span><span class="n">Service</span><span class="p">]</span>
+<span class="n">Type</span><span class="o">=</span><span class="n">oneshot</span>
 <span class="n">ExecStart</span><span class="o">=/</span><span class="nb">bin</span><span class="o">/</span><span class="n">sh</span> <span class="o">-</span><span class="n">c</span> <span class="s1">&#39;echo ds2482 0x18 &gt; /sys/bus/i2c/devices/i2c-1/new_device&#39;</span>
 
 <span class="p">[</span><span class="n">Install</span><span class="p">]</span>
+<span class="n">WantedBy</span><span class="o">=</span><span class="n">multi</span><span class="o">-</span><span class="n">user</span><span class="o">.</span><span class="n">target</span>
 </pre></div>
 </div>
+</div>
+<p>Enable and start the unit as usual,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>ds2482.service
+<span class="gp"># </span>systemctl<span class="w"> </span>start<span class="w"> </span>ds2482.service
+</pre></div>
 </div>
 <p>See if driver is loaded,</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>lsmod<span class="w"> </span><span class="p">|</span>grep<span class="w"> </span>ds2482
@@ -751,8 +758,8 @@ power and ground.</p>
 <h3><a class="toc-backref" href="#id24" role="doc-backlink">Hardware Bringup</a><a class="headerlink" href="#hardware-bringup" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>All the wiring</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code> configuration in <code class="docutils literal notranslate"><span class="pre">/boot/config.txt</span></code></p></li>
-<li><p>I2C configuration in <code class="docutils literal notranslate"><span class="pre">/boot/config.txt</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">w1-gpio</span></code> configuration in <code class="docutils literal notranslate"><span class="pre">/boot/firmware/config.txt</span></code></p></li>
+<li><p>I2C configuration in <code class="docutils literal notranslate"><span class="pre">/boot/firmware/config.txt</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">echo</span> <span class="pre">ds2482</span> <span class="pre">0x18</span> <span class="pre">&gt;</span> <span class="pre">/sys/bus/i2c/devices/i2c-1/new_device</span></code> to load a driver</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">lsmod</span></code></p></li>
 <li><p>All the files in <code class="docutils literal notranslate"><span class="pre">sysfs</span></code></p></li>
@@ -1039,7 +1046,7 @@ external DS2482 add-on.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Overview</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wiring-attach-ds2482-800-via-i2c">Wiring: Attach DS2482-800 via I2C</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configure-software">Configure Software</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#enable-i2c-and-check-bootloader-config-boot-config-txt">Enable I2C, and Check (Bootloader config, <code class="docutils literal notranslate"><span class="pre">/boot/config.txt)</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#enable-i2c-and-check-bootloader-config-boot-firmware-config-txt">Enable I2C, and Check (Bootloader config, <code class="docutils literal notranslate"><span class="pre">/boot/firmware/config.txt)</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#verify-that-our-device-is-there-i2cdetect">Verify That Our Device Is There (<code class="docutils literal notranslate"><span class="pre">i2cdetect)</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#announce-hotplug-ds2482-to-linux">Announce (“Hotplug”) DS2482 to Linux</a></li>
 </ul>

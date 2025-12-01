@@ -197,6 +197,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -377,6 +381,8 @@
 <li><p><a class="reference internal" href="../poll-cpp/index.html"><span class="doc">A Naive C++ Eventloop (poll())</span></a></p></li>
 </ul>
 </aside>
+<section id="exercise">
+<h2>Exercise<a class="headerlink" href="#exercise" title="Link to this heading">#</a></h2>
 <p>Our <a class="reference internal" href="../poll-cpp/index.html"><span class="doc">database application</span></a>
 still does not commit the database when terminated like processes are
 usually terminated,</p>
@@ -400,6 +406,125 @@ and
 <a class="reference internal" href="../poll-cpp/udp-db-code.html"><span class="doc">class UDPToDatabase</span></a>
 for how such a <code class="docutils literal notranslate"><span class="pre">hookup()</span></code> method is usually implemented</p>
 </section>
+<section id="solution">
+<h2>Solution<a class="headerlink" href="#solution" title="Link to this heading">#</a></h2>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/5ca5a0e1a07878b722daef8627edb985/graceful-term.h"><code class="xref download docutils literal notranslate"><span class="pre">code/graceful-term.h</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;eventloop.h&quot;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">GracefulTerminator</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">InputHandler</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">GracefulTerminator</span><span class="p">();</span>
+<span class="w">    </span><span class="o">~</span><span class="n">GracefulTerminator</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">hookup</span><span class="p">(</span><span class="n">Eventloop</span><span class="o">&amp;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">EventAction</span><span class="w"> </span><span class="nf">ready</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">_fd</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/44cce2543c59cc0d108729228effcf60/graceful-term.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/graceful-term.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;graceful-term.h&quot;</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;format&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdexcept&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;assert.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;signal.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sys/signalfd.h&gt;</span>
+
+<span class="n">GracefulTerminator</span><span class="o">::</span><span class="n">GracefulTerminator</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">sigset_t</span><span class="w"> </span><span class="n">sigmask</span><span class="p">;</span>
+<span class="w">    </span><span class="n">sigemptyset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sigmask</span><span class="p">);</span>
+<span class="w">    </span><span class="n">sigaddset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sigmask</span><span class="p">,</span><span class="w"> </span><span class="n">SIGTERM</span><span class="p">);</span>
+<span class="w">    </span><span class="n">sigaddset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sigmask</span><span class="p">,</span><span class="w"> </span><span class="n">SIGINT</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">_fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">signalfd</span><span class="p">(</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">sigmask</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">_fd</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span>
+<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;signalfd: {} ({})&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">),</span><span class="w"> </span><span class="n">errno</span><span class="p">));</span>
+
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">rv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_BLOCK</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">sigmask</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rv</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">close</span><span class="p">(</span><span class="n">_fd</span><span class="p">);</span>
+<span class="w">        </span><span class="n">_fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;sigprocmask: {} ({})&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">),</span><span class="w"> </span><span class="n">errno</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">GracefulTerminator</span><span class="o">::~</span><span class="n">GracefulTerminator</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">_fd</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span>
+<span class="w">        </span><span class="n">close</span><span class="p">(</span><span class="n">_fd</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">GracefulTerminator</span><span class="o">::</span><span class="n">hookup</span><span class="p">(</span><span class="n">Eventloop</span><span class="o">&amp;</span><span class="w"> </span><span class="n">loop</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">loop</span><span class="p">.</span><span class="n">register_input</span><span class="p">(</span><span class="n">_fd</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">EventAction</span><span class="w"> </span><span class="n">GracefulTerminator</span><span class="o">::</span><span class="n">ready</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">fd</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">_fd</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">signalfd_siginfo</span><span class="w"> </span><span class="n">signals</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span><span class="w">                       </span><span class="c1">// &lt;-- SIGTERM, SIGINT</span>
+<span class="w">    </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">nread</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="n">signals</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">signals</span><span class="p">));</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nread</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span>
+<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;read: {} ({})&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">),</span><span class="w"> </span><span class="n">errno</span><span class="p">));</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">        </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">signals</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">ssi_signo</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="no">SIGTERM</span><span class="p">:</span>
+<span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="no">SIGINT</span><span class="p">:</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">EventAction</span><span class="o">::</span><span class="n">Quit</span><span class="p">;</span><span class="w">              </span><span class="c1">// &lt;-- what if the other signal is pending?</span>
+<span class="w">            </span><span class="k">default</span><span class="o">:</span>
+<span class="w">                </span><span class="n">assert</span><span class="p">(</span><span class="o">!</span><span class="s">&quot;receiving signal that I did not request&quot;</span><span class="p">);</span>
+<span class="w">                </span><span class="k">break</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">EventAction</span><span class="o">::</span><span class="n">Continue</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../../_downloads/1014fc91d544807542a226b7b73442c1/main.cpp"><code class="xref download docutils literal notranslate"><span class="pre">code/main.cpp</span></code></a></span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;database.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;eventloop.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;udp-db.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;stdin-db.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;graceful-term.h&quot;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Eventloop</span><span class="w"> </span><span class="n">loop</span><span class="p">;</span><span class="w">                                    </span><span class="c1">// &lt;-- main loop</span>
+<span class="w">    </span><span class="n">Database</span><span class="w"> </span><span class="n">db</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">UDPToDatabase</span><span class="w"> </span><span class="n">udp</span><span class="p">(</span><span class="s">&quot;0.0.0.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1234</span><span class="p">,</span><span class="w"> </span><span class="n">db</span><span class="p">);</span><span class="w">            </span><span class="c1">// &lt;-- satellite</span>
+<span class="w">    </span><span class="n">StdinToDatabase</span><span class="w"> </span><span class="n">stdin</span><span class="p">(</span><span class="n">db</span><span class="p">);</span><span class="w">                         </span><span class="c1">// &lt;-- satellite</span>
+<span class="w">    </span><span class="n">GracefulTerminator</span><span class="w"> </span><span class="n">terminator</span><span class="p">;</span><span class="w">                     </span><span class="c1">// &lt;-- satellite</span>
+
+<span class="w">    </span><span class="n">udp</span><span class="p">.</span><span class="n">hookup</span><span class="p">(</span><span class="n">loop</span><span class="p">);</span><span class="w">                                  </span><span class="c1">// &lt;-- register with loop</span>
+<span class="w">    </span><span class="n">stdin</span><span class="p">.</span><span class="n">hookup</span><span class="p">(</span><span class="n">loop</span><span class="p">);</span><span class="w">                                </span><span class="c1">// &lt;-- register with loop</span>
+<span class="w">    </span><span class="n">terminator</span><span class="p">.</span><span class="n">hookup</span><span class="p">(</span><span class="n">loop</span><span class="p">);</span><span class="w">                           </span><span class="c1">// &lt;-- register with loop</span>
+
+<span class="w">    </span><span class="n">loop</span><span class="p">.</span><span class="n">run</span><span class="p">();</span><span class="w">                                        </span><span class="c1">// &lt;-- run until quit</span>
+
+<span class="w">    </span><span class="n">db</span><span class="p">.</span><span class="n">commit</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
 
 <div class="section ablog__blog_comments">
    
@@ -414,6 +539,25 @@ for how such a <code class="docutils literal notranslate"><span class="pre">hook
             </div>
             
             
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise">Exercise</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solution">Solution</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
