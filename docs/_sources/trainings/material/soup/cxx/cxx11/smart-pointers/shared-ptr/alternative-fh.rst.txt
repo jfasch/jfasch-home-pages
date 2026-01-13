@@ -1,0 +1,80 @@
+.. include:: <mmlalias.txt>
+
+
+``std::shared_ptr`` (Alternative Take: Transition From Raw Pointers)
+====================================================================
+
+.. topic:: See also
+
+   * :doc:`topic`
+
+This is a task that I gave to students, expanding on :doc:`topic`:
+refactoring memory management in an existing program by replacing raw
+pointers with something better.
+
+The (stripped-down) program can be called like so,
+
+* Using the test/mock implementation of some interface
+
+  .. code-block:: console
+     
+     $ ./program test
+
+* Using the real implementation of some interface (usually using some
+  real hardware on a Linux system, like GPIO or I2C)
+
+  .. code-block:: console
+     
+     $ ./program real
+
+Original Version: Raw Pointers
+------------------------------
+
+A heap allocation of either ``TestImplemention`` or
+``RealImplemention`` is made, depending on the value of the
+commandline parameter, and assigned to an ``Interface`` (the abstract
+base class of both) pointer ``my_obj``.
+
+**Problem**: avoiding memory leaks is hard - the allocation must be
+freed, so we must take care to ``delete`` the object that we
+allocated.
+
+.. literalinclude:: code/shared-ptr-raw.cpp
+   :caption: :download:`code/shared-ptr-raw.cpp`
+   :language: c++
+
+Replacing *Raw* With *Shared* Pointers (Clumsy Version)
+-------------------------------------------------------
+
+.. topic:: See also
+
+   * :doc:`topic`
+
+**Solution**: using shared pointers. I the program below we replaced
+all raw pointer types with their correspondingly typed
+``std::shared_ptr<>`` template instances. As ``my_obj`` goes out of
+scope (as a consequence of the return statement), the allocation is
+freed *automatically*.
+
+**Problem**: much redundant writing
+
+.. literalinclude:: code/shared-ptr-explicit-shared-ptr.cpp
+   :caption: :download:`code/shared-ptr-explicit-shared-ptr.cpp`
+   :language: c++
+
+Using ``std::make_shared<>()`` (Less Clumsy)
+--------------------------------------------
+
+Reducing redundancy by using the ``std::make_shared<>()`` template
+function. 
+
+Note:
+
+* ``new`` is not called directly
+* The constructor is not called directly
+* The parameters of the ``RealImplemention`` constructor are
+  *forwarded* through by ``std::make_shared<>()`` (see :doc:`here </trainings/material/soup/cxx/cxx11/perfect-forwarding/topic>` for more)
+
+.. literalinclude:: code/shared-ptr-make_shared.cpp
+   :caption: :download:`code/shared-ptr-make_shared.cpp`
+   :language: c++
