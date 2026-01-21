@@ -383,13 +383,13 @@
 <h1>Get Value Of GPIO<a class="headerlink" href="#get-value-of-gpio" title="Link to this heading">#</a></h1>
 <nav class="contents local" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#retrieving-value-manually-on-the-commandline" id="id3">Retrieving Value Manually, On The Commandline</a></p></li>
-<li><p><a class="reference internal" href="#shell-script" id="id4">Shell Script</a></p></li>
-<li><p><a class="reference internal" href="#c-program" id="id5">C Program</a></p></li>
+<li><p><a class="reference internal" href="#retrieving-value-manually-on-the-commandline" id="id1">Retrieving Value Manually, On The Commandline</a></p></li>
+<li><p><a class="reference internal" href="#shell-script" id="id2">Shell Script</a></p></li>
+<li><p><a class="reference internal" href="#c-program" id="id3">C Program</a></p></li>
 </ul>
 </nav>
 <section id="retrieving-value-manually-on-the-commandline">
-<h2><a class="toc-backref" href="#id3" role="doc-backlink">Retrieving Value Manually, On The Commandline</a><a class="headerlink" href="#retrieving-value-manually-on-the-commandline" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Retrieving Value Manually, On The Commandline</a><a class="headerlink" href="#retrieving-value-manually-on-the-commandline" title="Link to this heading">#</a></h2>
 <ul>
 <li><p>Export GPIO <code class="docutils literal notranslate"><span class="pre">26</span></code></p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">echo</span><span class="w"> </span><span class="m">26</span><span class="w"> </span>&gt;<span class="w"> </span>/sys/class/gpio/export
@@ -409,7 +409,7 @@
 </ul>
 </section>
 <section id="shell-script">
-<h2><a class="toc-backref" href="#id4" role="doc-backlink">Shell Script</a><a class="headerlink" href="#shell-script" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Shell Script</a><a class="headerlink" href="#shell-script" title="Link to this heading">#</a></h2>
 <aside class="sidebar">
 <p><strong>See also</strong></p>
 <ul class="simple">
@@ -422,119 +422,9 @@
 <span class="go">0</span>
 </pre></div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/80833e67c8e3d9e20d8835bece14617a/blink-get-sysfs"><code class="xref download docutils literal notranslate"><span class="pre">/trainings/material/soup/linux/sysprog/code/blink/shell/blink-get-sysfs</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/sh</span>
-
-<span class="nb">set</span><span class="w"> </span>-e
-
-<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$#</span><span class="w"> </span>-ne<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>Usage:<span class="w"> </span><span class="nv">$0</span><span class="w"> </span><span class="s1">&#39;&lt;GPIO#&gt;&#39;</span><span class="w"> </span><span class="m">1</span>&gt;<span class="p">&amp;</span><span class="m">2</span>
-<span class="w">    </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
-<span class="k">fi</span>
-
-<span class="nv">GPIO</span><span class="o">=</span><span class="nv">$1</span>
-
-<span class="c1"># export GPIO</span>
-<span class="nb">echo</span><span class="w"> </span><span class="nv">$GPIO</span><span class="w"> </span>&gt;<span class="w"> </span>/sys/class/gpio/export
-
-<span class="c1"># give system time to export GPIO (sadly, this is an asynchronous</span>
-<span class="c1"># operation)</span>
-sleep<span class="w"> </span><span class="m">1</span>
-
-<span class="c1"># configure GPIO as input</span>
-<span class="nb">echo</span><span class="w"> </span><span class="k">in</span><span class="w"> </span>&gt;<span class="w"> </span>/sys/class/gpio/gpio<span class="nv">$GPIO</span>/direction
-
-<span class="c1"># get value</span>
-cat<span class="w"> </span>/sys/class/gpio/gpio<span class="nv">$GPIO</span>/value
-</pre></div>
-</div>
-</div>
 </section>
 <section id="c-program">
-<h2><a class="toc-backref" href="#id5" role="doc-backlink">C Program</a><a class="headerlink" href="#c-program" title="Link to this heading">#</a></h2>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/ca1837807203d82556505acad6babcf2/blink-get-sysfs.cpp"><code class="xref download docutils literal notranslate"><span class="pre">/trainings/material/soup/linux/sysprog/code/blink/sysfs/blink-get-sysfs.cpp</span></code></a></span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;fcntl.h&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;assert.h&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
-
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
-<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">std</span><span class="p">;</span>
-
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span>
-<span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">argc</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">cerr</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Usage: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; &lt;GPIO#&gt;&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">GPIO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
-<span class="w">    </span><span class="n">stoi</span><span class="p">(</span><span class="n">GPIO</span><span class="p">);</span><span class="w"> </span><span class="c1">// check if GPIO is int</span>
-
-<span class="w">    </span><span class="c1">// export GPIO</span>
-<span class="w">    </span><span class="c1">// -----------</span>
-<span class="w">    </span><span class="c1">//</span>
-<span class="w">    </span><span class="c1">// $ echo $GPIO &gt; /sys/class/gpio/export</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">open</span><span class="p">(</span><span class="s">&quot;/sys/class/gpio/export&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">O_WRONLY</span><span class="p">);</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fd</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;open export file&quot;</span><span class="p">);</span>
-<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-<span class="w">        </span><span class="p">}</span>
-
-<span class="w">        </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">nwritten</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">write</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO</span><span class="p">,</span><span class="w"> </span><span class="n">strlen</span><span class="p">(</span><span class="n">GPIO</span><span class="p">));</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nwritten</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;write to export file&quot;</span><span class="p">);</span>
-<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-<span class="w">        </span><span class="p">}</span>
-
-<span class="w">        </span><span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="c1">// give system time to export GPIO (sadly, this is an asynchronous</span>
-<span class="w">    </span><span class="c1">// operation)</span>
-<span class="w">    </span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-
-<span class="w">    </span><span class="c1">// configure GPIO as input</span>
-<span class="w">    </span><span class="c1">// -----------------------</span>
-<span class="w">    </span><span class="c1">//</span>
-<span class="w">    </span><span class="c1">// $ echo in &gt; /sys/class/gpio/gpio$GPIO/direction</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="kt">char</span><span class="w"> </span><span class="n">filename</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
-<span class="w">        </span><span class="n">sprintf</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;/sys/class/gpio/gpio%s/direction&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO</span><span class="p">);</span>
-<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="n">O_WRONLY</span><span class="p">);</span>
-<span class="w">        </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">nwritten</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">write</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;in&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nwritten</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;configure direction&quot;</span><span class="p">);</span>
-<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">        </span><span class="n">assert</span><span class="p">(</span><span class="n">nwritten</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
-<span class="w">        </span><span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="c1">// get value</span>
-<span class="w">    </span><span class="c1">// ---------</span>
-<span class="w">    </span><span class="c1">//</span>
-<span class="w">    </span><span class="c1">// $ cat /sys/class/gpio/gpio$GPIO/value</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="kt">char</span><span class="w"> </span><span class="n">filename</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
-<span class="w">        </span><span class="n">sprintf</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;/sys/class/gpio/gpio%s/value&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO</span><span class="p">);</span>
-<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="n">O_RDONLY</span><span class="p">);</span>
-<span class="w">        </span><span class="n">assert</span><span class="p">(</span><span class="n">fd</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">-1</span><span class="p">);</span>
-<span class="w">        </span><span class="kt">char</span><span class="w"> </span><span class="n">value</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;x&quot;</span><span class="p">;</span>
-<span class="w">        </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">nread</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
-<span class="w">        </span><span class="n">assert</span><span class="p">(</span><span class="n">nread</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
-
-<span class="w">        </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div>
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">C Program</a><a class="headerlink" href="#c-program" title="Link to this heading">#</a></h2>
 </section>
 </section>
 

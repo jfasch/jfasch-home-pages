@@ -383,12 +383,12 @@
 <h1>Interrupts In Userspace<a class="headerlink" href="#interrupts-in-userspace" title="Link to this heading">#</a></h1>
 <nav class="contents local" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#manual-configuration" id="id2">Manual Configuration</a></p></li>
-<li><p><a class="reference internal" href="#c-program-configuration-event-loop" id="id3">C Program: Configuration, Event Loop</a></p></li>
+<li><p><a class="reference internal" href="#manual-configuration" id="id1">Manual Configuration</a></p></li>
+<li><p><a class="reference internal" href="#c-program-configuration-event-loop" id="id2">C Program: Configuration, Event Loop</a></p></li>
 </ul>
 </nav>
 <section id="manual-configuration">
-<h2><a class="toc-backref" href="#id2" role="doc-backlink">Manual Configuration</a><a class="headerlink" href="#manual-configuration" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Manual Configuration</a><a class="headerlink" href="#manual-configuration" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Request GPIO 26, and configure as <em>input</em> (see <a class="reference internal" href="sysfs-gpio.html"><span class="doc">Intro: sysfs GPIO</span></a>)</p></li>
 <li><p>Configure interrupts</p></li>
@@ -403,130 +403,7 @@ concepts</p></li>
 </ul>
 </section>
 <section id="c-program-configuration-event-loop">
-<h2><a class="toc-backref" href="#id3" role="doc-backlink">C Program: Configuration, Event Loop</a><a class="headerlink" href="#c-program-configuration-event-loop" title="Link to this heading">#</a></h2>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><a class="reference download internal" download="" href="../../../../../../_downloads/2d45786c11f8573ea4cdd1e28d84215a/blink-watch-sysfs.cpp"><code class="xref download docutils literal notranslate"><span class="pre">/trainings/material/soup/linux/sysprog/code/blink/sysfs/blink-watch-sysfs.cpp</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;fcntl.h&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;assert.h&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sys/select.h&gt;</span>
-
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
-<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">std</span><span class="p">;</span>
-
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span>
-<span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">argc</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">cerr</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Usage: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; &lt;GPIO#&gt;&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">GPIO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
-<span class="w">    </span><span class="n">stoi</span><span class="p">(</span><span class="n">GPIO</span><span class="p">);</span><span class="w"> </span><span class="c1">// check if GPIO is int</span>
-
-<span class="w">    </span><span class="c1">// export GPIO</span>
-<span class="w">    </span><span class="c1">// -----------</span>
-<span class="w">    </span><span class="c1">//</span>
-<span class="w">    </span><span class="c1">// $ echo $GPIO &gt; /sys/class/gpio/export</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">open</span><span class="p">(</span><span class="s">&quot;/sys/class/gpio/export&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">O_WRONLY</span><span class="p">);</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fd</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;open export file&quot;</span><span class="p">);</span>
-<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-<span class="w">        </span><span class="p">}</span>
-
-<span class="w">        </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">nwritten</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">write</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO</span><span class="p">,</span><span class="w"> </span><span class="n">strlen</span><span class="p">(</span><span class="n">GPIO</span><span class="p">));</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nwritten</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;write to export file&quot;</span><span class="p">);</span>
-<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-<span class="w">        </span><span class="p">}</span>
-
-<span class="w">        </span><span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="c1">// give system time to export GPIO (sadly, this is an asynchronous</span>
-<span class="w">    </span><span class="c1">// operation)</span>
-<span class="w">    </span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-
-<span class="w">    </span><span class="c1">// configure GPIO as input</span>
-<span class="w">    </span><span class="c1">// -----------------------</span>
-<span class="w">    </span><span class="c1">//</span>
-<span class="w">    </span><span class="c1">// $ echo in &gt; /sys/class/gpio/gpio$GPIO/direction</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="kt">char</span><span class="w"> </span><span class="n">filename</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
-<span class="w">        </span><span class="n">sprintf</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;/sys/class/gpio/gpio%s/direction&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO</span><span class="p">);</span>
-<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="n">O_WRONLY</span><span class="p">);</span>
-<span class="w">        </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">nwritten</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">write</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;in&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nwritten</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;configure direction&quot;</span><span class="p">);</span>
-<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">        </span><span class="n">assert</span><span class="p">(</span><span class="n">nwritten</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
-<span class="w">        </span><span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="c1">// edge detection: &quot;rising&quot;</span>
-<span class="w">    </span><span class="c1">// ------------------------</span>
-<span class="w">    </span><span class="c1">// </span>
-<span class="w">    </span><span class="c1">// $ echo rising &gt; /sys/class/gpio/gpio$GPIO/direction/edge</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="kt">char</span><span class="w"> </span><span class="n">filename</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
-<span class="w">        </span><span class="n">sprintf</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;/sys/class/gpio/gpio%s/edge&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO</span><span class="p">);</span>
-<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="n">O_WRONLY</span><span class="p">);</span>
-<span class="w">        </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">nwritten</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">write</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;rising&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">);</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nwritten</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;configure edge&quot;</span><span class="p">);</span>
-<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">        </span><span class="n">assert</span><span class="p">(</span><span class="n">nwritten</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">6</span><span class="p">);</span>
-<span class="w">        </span><span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="c1">// wait for value to change</span>
-<span class="w">    </span><span class="c1">// ------------------------</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="kt">char</span><span class="w"> </span><span class="n">filename</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
-<span class="w">        </span><span class="n">sprintf</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;/sys/class/gpio/gpio%s/value&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO</span><span class="p">);</span>
-<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="n">O_RDONLY</span><span class="p">);</span>
-<span class="w">        </span><span class="n">assert</span><span class="p">(</span><span class="n">fd</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">-1</span><span class="p">);</span>
-
-<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">fd_set</span><span class="w"> </span><span class="n">exc_fds</span><span class="p">;</span>
-<span class="w">            </span><span class="n">FD_ZERO</span><span class="p">(</span><span class="o">&amp;</span><span class="n">exc_fds</span><span class="p">);</span>
-<span class="w">            </span><span class="n">FD_SET</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">exc_fds</span><span class="p">);</span>
-
-<span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">nready</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">select</span><span class="p">(</span><span class="n">fd</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">exc_fds</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nready</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;select&quot;</span><span class="p">);</span>
-<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">            </span><span class="n">assert</span><span class="p">(</span><span class="n">nready</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
-
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">FD_ISSET</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">exc_fds</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="kt">char</span><span class="w"> </span><span class="n">value</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;x&quot;</span><span class="p">;</span>
-<span class="w">                </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">nread</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
-<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nread</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                    </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;read value&quot;</span><span class="p">);</span>
-<span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
-<span class="w">                </span><span class="p">}</span>
-
-<span class="w">                </span><span class="kt">off_t</span><span class="w"> </span><span class="n">off</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lseek</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">SEEK_SET</span><span class="p">);</span>
-<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">off</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                    </span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;lseek&quot;</span><span class="p">);</span>
-<span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="mi">6</span><span class="p">;</span>
-<span class="w">                </span><span class="p">}</span>
-
-<span class="w">                </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;EEK:&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div>
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">C Program: Configuration, Event Loop</a><a class="headerlink" href="#c-program-configuration-event-loop" title="Link to this heading">#</a></h2>
 </section>
 </section>
 

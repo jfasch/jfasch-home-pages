@@ -6,7 +6,7 @@
 static void handler(int signal, siginfo_t* info,       // <-- SA_SIGINFO handler
                     void* ctx)
 {
-    std::println("{} overruns", info->si_overrun);
+    std::println("{} overruns", info->si_overrun);     // <-- Linux specific: si_overrun
 }
 
 int main()
